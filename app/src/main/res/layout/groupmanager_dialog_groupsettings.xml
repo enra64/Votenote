@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <EditText
+        android:id="@+id/groupmanager_groupsettings_edit_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:ems="10" />
+
+    <TextView
+        android:id="@+id/min_votes"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/groupmanager_groupsettings_edit_name"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="5dp"
+        android:text="Erforderliche Votierung:"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <SeekBar
+        android:id="@+id/groupmanager_groupsettings_seek_min_votierungs"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/min_votes"
+        android:layout_toLeftOf="@+id/groupmanager_groupsettings_text_min_votierungs" />
+
+    <TextView
+        android:id="@+id/groupmanager_groupsettings_text_min_votierungs"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignTop="@+id/groupmanager_groupsettings_seek_min_votierungs"
+        android:text="50%"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <TextView
+        android:id="@+id/prespoints"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/groupmanager_groupsettings_seek_min_votierungs"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="5dp"
+        android:text="Erforderliche Vortragspunkte"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <SeekBar
+        android:id="@+id/groupmanager_groupsettings_seek_prespoints"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignRight="@+id/groupmanager_groupsettings_seek_min_votierungs"
+        android:layout_below="@+id/prespoints"
+        android:focusableInTouchMode="false" />
+
+    <TextView
+        android:id="@+id/groupmanager_groupsettings_text_prespoints"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/groupmanager_groupsettings_seek_prespoints"
+        android:layout_alignParentRight="true"
+        android:text="3"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Aufgaben pro Übung"
+        android:id="@+id/est_assign_per_uebung"
+        android:layout_below="@+id/groupmanager_groupsettings_text_prespoints"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="5dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="5"
+        android:id="@+id/groupmanager_groupsettings_text_assignments_per_uebung"
+        android:layout_alignBottom="@+id/groupmanager_groupsettings_seek_assignments_per_uebung"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <SeekBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/groupmanager_groupsettings_seek_assignments_per_uebung"
+        android:layout_below="@+id/est_assign_per_uebung"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignRight="@+id/groupmanager_groupsettings_seek_prespoints"
+        android:layout_alignEnd="@+id/groupmanager_groupsettings_seek_prespoints" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Anzahl Übungen"
+        android:id="@+id/est_ueb_count"
+        android:layout_below="@+id/groupmanager_groupsettings_seek_assignments_per_uebung"
+        android:layout_alignLeft="@+id/est_assign_per_uebung"
+        android:layout_alignStart="@+id/est_assign_per_uebung" />
+
+    <SeekBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/groupmanager_groupsettings_seek_estimated_uebung_count"
+        android:layout_below="@+id/est_ueb_count"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignRight="@+id/groupmanager_groupsettings_seek_assignments_per_uebung"
+        android:layout_alignEnd="@+id/groupmanager_groupsettings_seek_assignments_per_uebung" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="12"
+        android:id="@+id/groupmanager_groupsettings_text_estimated_uebung_count"
+        android:layout_alignBottom="@+id/groupmanager_groupsettings_seek_estimated_uebung_count"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+</RelativeLayout>

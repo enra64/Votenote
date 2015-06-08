@@ -1,0 +1,27 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="de.oerntec.votenote.MainActivity" >
+
+    <item
+        android:id="@+id/action_add_entry"
+        android:icon="@drawable/ic_action_new_entry"
+        android:showAsAction="ifRoom"
+        android:title="Neuer Eintrag"/>
+    <item
+        android:id="@+id/action_prespoints"
+        android:icon="@drawable/ic_action_prespoints"
+        android:showAsAction="ifRoom"
+        android:title="Punkte verwalten"/>
+    <item
+        android:id="@+id/action_show_diagram"
+        android:showAsAction="never"
+        android:title="Diagramm zeigen"/>
+    <item
+        android:id="@+id/action_export"
+        android:showAsAction="never"
+        android:title="Übungen exportieren"/>
+    <item
+        android:id="@+id/action_groupmanagement"
+        android:showAsAction="never"
+        android:title="Übungen verwalten"/>
+</menu>
