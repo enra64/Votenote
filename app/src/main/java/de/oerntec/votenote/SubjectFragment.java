@@ -4,6 +4,7 @@ package de.oerntec.votenote;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -15,8 +16,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.CursorAdapter;
 import android.widget.ListView;
-import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
 /**
@@ -71,7 +72,7 @@ public class SubjectFragment extends Fragment {
     }
 
     public void notifyOfChangedDataset() {
-        ((SimpleCursorAdapter) voteList.getAdapter()).swapCursor(entryDB.getGroupRecords(databaseID)).close();
+        ((LessonAdapter) voteList.getAdapter()).changeCursor(entryDB.getGroupRecords(databaseID));
         setAverageNeededAssignments();
         setVoteAverage();
         setCurrentPresentationPointStatus();
@@ -122,21 +123,8 @@ public class SubjectFragment extends Fragment {
         if (allEntryCursor.getCount() == 0)
             Log.e("Main Listview", "Received Empty allEntryCursor for group " + currentGroupName + " with id " + databaseID);
 
-        //define wanted columns
-        String[] columns = {DatabaseCreator.ENTRIES_NUMMER_UEBUNG, DatabaseCreator.ENTRIES_MY_VOTES, DatabaseCreator.ENTRIES_MAX_VOTES};
-        //define id values of views to be set
-        int[] toViews = {R.id.mainfragment_listitem_uebungnummer, R.id.mainfragment_listitem_myvote, R.id.mainfragment_listitem_maxvote};
-
-        // create the adapter using the cursor pointing to the desired data
-        //as well as the layout information
-        final SimpleCursorAdapter groupAdapter = new SimpleCursorAdapter(
-                getActivity(),
-                R.layout.mainfragment_listitem,
-                allEntryCursor,
-                columns,
-                toViews,
-                0);
-        voteList.setAdapter(groupAdapter);
+        //set custom adapter
+        voteList.setAdapter(new LessonAdapter(getActivity(), allEntryCursor, 0));
 
         final SubjectFragment thisRef = this;
 
@@ -262,5 +250,35 @@ public class SubjectFragment extends Fragment {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         ((MainActivity) activity).onSectionAttached(getArguments().getInt(ARG_SECTION_NUMBER));
+    }
+
+    private class LessonAdapter extends CursorAdapter {
+        public LessonAdapter(Context context, Cursor c, int flags) {
+            super(context, c, flags);
+        }
+
+        @Override
+        public View newView(Context context, Cursor cursor, ViewGroup parent) {
+            LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+            View retView = inflater.inflate(android.R.layout.simple_list_item_2, parent, false);
+            return retView;
+        }
+
+        @Override
+        public void bindView(View view, Context context, Cursor cursor) {
+            //find textviews
+            TextView upper = (TextView) view.findViewById(android.R.id.text1);
+            TextView lower = (TextView) view.findViewById(android.R.id.text2);
+
+            //load strings
+            String lessonIndex = cursor.getString(0);
+            String myVote = cursor.getString(1);
+            String maxVote = cursor.getString(2);
+            String voteString = Integer.valueOf(myVote) < 2 ? " Votierung" : " Votierungen";
+
+            //set texts
+            upper.setText(myVote + " von " + maxVote + voteString);
+            lower.setText(lessonIndex + ". Übung");
+        }
     }
 }

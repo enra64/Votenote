@@ -1,16 +1,20 @@
 package de.oerntec.votenote;
 
 import android.app.Activity;
+import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.SparseBooleanArray;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.CheckBox;
+import android.widget.CursorAdapter;
 import android.widget.ListView;
-import android.widget.SimpleCursorAdapter;
+import android.widget.TextView;
 
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.series.DataPoint;
@@ -27,7 +31,6 @@ public class DiagramActivity extends Activity {
     static DBEntries entriesDB;
     static GraphView graph;
     Random r;
-    SimpleCursorAdapter uebungChooserAdapter;
     int databaseID, positionID;
     Map<Integer, LineGraphSeries<DataPoint>> lineGraphMap;
     int[] colorArray;
@@ -91,44 +94,34 @@ public class DiagramActivity extends Activity {
 
     private void initializeListview() {
         //initialize ListView
-        ListView uebungChooser = (ListView) findViewById(R.id.diagramactivity_listview_whichuebungs);
+        final ListView uebungChooser = (ListView) findViewById(R.id.diagramactivity_listview_whichuebungs);
 
-        // set up the drawer's list view with items and click listener
+        //load names
         Cursor allNamesCursor = groupsDB.getAllButOneGroupNames(databaseID);
-        //define wanted columns
-        String[] sourceColumns = {DatabaseCreator.GROUPS_NAMEN};
-
-        //define id values of views to be set
-        int[] targetViews = {R.id.diagramactivity_listview_listitem_text_name};
-
-        // create the adapter using the cursor pointing to the desired data
-        uebungChooserAdapter = new SimpleCursorAdapter(
-                this,
-                R.layout.diagramactivity_listitem,
-                allNamesCursor,
-                sourceColumns,
-                targetViews,
-                0);
 
         //get listview
-        uebungChooser = (ListView) findViewById(R.id.diagramactivity_listview_whichuebungs);
-        uebungChooser.setAdapter(uebungChooserAdapter);
+        uebungChooser.setAdapter(new SubjectAdapter(this, allNamesCursor, 0));
+        uebungChooser.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
         uebungChooser.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                CheckBox thisBox = (CheckBox) view.findViewById(R.id.diagramactivity_listview_listitem_checkbox);
                 int translation = groupsDB.translatePositionToIDExclusive(position, databaseID);
 
-                thisBox.setChecked(!thisBox.isChecked());
-                if (thisBox.isChecked()) {
+                SparseBooleanArray checkedArray = uebungChooser.getCheckedItemPositions();
+
+                if (checkedArray.get(position)) {
+                    //apply bool array
                     enabledArray[position] = true;
+                    //get from saved value
                     if (lineGraphMap.containsKey(translation))
                         graph.addSeries(lineGraphMap.get(translation));
+                        //create new
                     else {
                         LineGraphSeries<DataPoint> newLine = getGroupLineGraph(translation);
                         lineGraphMap.put(translation, newLine);
                         graph.addSeries(lineGraphMap.get(translation));
                     }
+                    //handle colors
                     colorStackPointer++;
                 } else {
                     enabledArray[position] = false;
@@ -249,5 +242,30 @@ public class DiagramActivity extends Activity {
                 return (true);
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private class SubjectAdapter extends CursorAdapter {
+        public SubjectAdapter(Context context, Cursor c, int flags) {
+            super(context, c, flags);
+        }
+
+        @Override
+        public View newView(Context context, Cursor cursor, ViewGroup parent) {
+            LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+            View retView = inflater.inflate(android.R.layout.simple_list_item_multiple_choice, parent, false);
+            return retView;
+        }
+
+        @Override
+        public void bindView(View view, Context context, Cursor cursor) {
+            //find textviews
+            TextView description = (TextView) view.findViewById(android.R.id.text1);
+
+            //load strings
+            String subjectName = cursor.getString(1);
+
+            //set text
+            description.setText(subjectName);
+        }
     }
 }

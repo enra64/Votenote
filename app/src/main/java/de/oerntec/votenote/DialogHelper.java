@@ -92,7 +92,7 @@ public class DialogHelper {
 
         //build alertdialog
         new AlertDialog.Builder(mActivity)
-                .setTitle("Neue Übungsnotiz")
+                .setTitle(lessonID == ADD_LESSON_CODE ? "Neue Übungsnotiz" : "Übung " + lessonID + " ändern?")
                 .setView(rootView)
                 .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
