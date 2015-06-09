@@ -68,7 +68,7 @@ public class SubjectFragment extends Fragment {
     }
 
     public void notifyOfChangedDataset() {
-        ((SimpleCursorAdapter) voteList.getAdapter()).notifyDataSetChanged();
+        ((SimpleCursorAdapter) voteList.getAdapter()).swapCursor(entryDB.getGroupRecords(databaseID)).close();
         setAverageNeededAssignments();
         setVoteAverage();
         setCurrentPresentationPointStatus();
@@ -141,7 +141,7 @@ public class SubjectFragment extends Fragment {
         voteList.setOnItemClickListener(new OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, final long id) {
-                DialogHelper.showChangeLessonDialog((MainActivity) getActivity(), databaseID, thisRef, position + 1);
+                DialogHelper.showChangeLessonDialog((MainActivity) getActivity(), databaseID, position + 1);
             }
         });
 
@@ -191,7 +191,7 @@ public class SubjectFragment extends Fragment {
      */
     private void setAverageNeededAssignments() {
         float scheduledMaximumAssignments = groupDB.getScheduledWork(databaseID);
-        float numberOfNeededAssignments = ((float) scheduledMaximumAssignments * (float) groupDB.getMinVote(databaseID)) / (float) 100;
+        float numberOfNeededAssignments = (scheduledMaximumAssignments * (float) groupDB.getMinVote(databaseID)) / (float) 100;
         float numberOfVotedAssignments = entryDB.getCompletedAssignmentCount(databaseID);
         float remainingNeededAssignments = numberOfNeededAssignments - numberOfVotedAssignments;
         int numberOfElapsedLessons = entryDB.getGroupRecordCount(databaseID);
@@ -212,7 +212,13 @@ public class SubjectFragment extends Fragment {
             averageNeededVotesView.setTextColor(textColor);
     }
 
-    private int calculateAverageVotierung(int forSection){
+    /**
+     * calculate the current average vote
+     *
+     * @param forSection the subject id
+     * @return
+     */
+    private float calculateAverageVotierung(int forSection) {
         //get avg cursor
         Cursor avgCursor = entryDB.getGroupRecords(forSection);
         int maxVoteCount = 0, myVoteCount = 0;
@@ -223,16 +229,16 @@ public class SubjectFragment extends Fragment {
         }
         //close the cursor; it did its job
         avgCursor.close();
-
+        float myVoteFactor = (float) myVoteCount / (float) maxVoteCount;
         //calc percentage
-        return (int) ((float) myVoteCount / (float) maxVoteCount * 100);
+        return myVoteFactor * 100.f;
     }
 
     /**
-     * VOTE AVERAGE CALCULATION
+     * Set the current average vote
      */
     private void setVoteAverage() {
-        int average = calculateAverageVotierung(databaseID);
+        float average = calculateAverageVotierung(databaseID);
 
         //no votes have been given
         if (entryDB.getGroupRecordCount(databaseID) == 0)
@@ -242,7 +248,7 @@ public class SubjectFragment extends Fragment {
         int minVote = groupDB.getMinVote(databaseID);
 
         //write percentage and color coding to summaryview
-        averageVoteView.setText(average + "%");
+        averageVoteView.setText(String.format("%.1f", average) + "%");
 
         //color text in
         averageVoteView.setTextColor(average >= minVote ? Color.argb(255, 153, 204, 0) : Color.argb(255, 204, 0, 0));//red

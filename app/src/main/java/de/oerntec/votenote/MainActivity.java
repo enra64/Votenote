@@ -25,19 +25,15 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
     private static DBGroups groupsDB;
     private static DBEntries entryDB;
     private static int mCurrentSelectedPosition;
-    private static MainActivity mInstance;
     /**
      * Used to store the last screen title. For use in
      * {@link #restoreActionBar()}.
      */
     private CharSequence mTitle;
 
-    //public static MainActivity getInstance(){return mInstance;}
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mInstance = this;
 
         //database access
         groupsDB = DBGroups.setupInstance(this);
@@ -55,11 +51,6 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 
     }
 
-    @Override
-    protected void onDestroy() {
-        mInstance = null;
-        super.onDestroy();
-    }
 
     @Override
     public void onResume() {
@@ -149,6 +140,9 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * Get the currently shown fragment to reload all data
+     */
     public void notifyCurrentFragment() {
         ((SubjectFragment) getFragmentManager().findFragmentById(R.id.container)).notifyOfChangedDataset();
     }

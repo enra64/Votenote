@@ -10,15 +10,31 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class DialogHelper {
+    private static final int ADD_LESSON_CODE = -2;
 
+    /**
+     * Show an add lesson dialog
+     *
+     * @param mActivity Activity to use for references
+     * @param groupID   id of the group to add a lesson to
+     */
     public static void showAddLessonDialog(final MainActivity mActivity, final int groupID) {
-        showLessonDialog(mActivity, groupID, -1);
+        showLessonDialog(mActivity, groupID, ADD_LESSON_CODE);
     }
 
+    /**
+     * Show a dialog to change a lesson entry
+     * @param mActivity the activity for reference usage
+     * @param groupID the id of the subject
+     * @param translatedLessonID the id of the lesson, translated (+1) from listview
+     */
     public static void showChangeLessonDialog(final MainActivity mActivity, final int groupID, final int translatedLessonID) {
         showLessonDialog(mActivity, groupID, translatedLessonID);
     }
 
+    /**
+     * Shows a dialog to edit or add a lesson
+     */
     private static void showLessonDialog(final MainActivity mActivity, final int groupID, final int lessonID) {
         //db access
         final DBGroups groupsDB = DBGroups.getInstance();
@@ -82,7 +98,7 @@ public class DialogHelper {
                     public void onClick(DialogInterface dialog, int whichButton) {
                         if (myVote.getValue() <= maxVote.getValue()) {
                             //decide whether to add an entry or change an existing one
-                            if (lessonID != -1)
+                            if (lessonID == ADD_LESSON_CODE)
                                 entryDB.addEntry(groupID, maxVote.getValue(), myVote.getValue());
                             else
                                 entryDB.changeEntry(groupID, lessonID, maxVote.getValue(), myVote.getValue());
@@ -97,10 +113,14 @@ public class DialogHelper {
         }).show();
     }
 
+    /**
+     * shows the dialog to change the presentation points
+     * @param dataBaseId ID of the group in the database
+     * @param activity reference for various stuff
+     */
     public static void showPresentationPointDialog(final int dataBaseId, final MainActivity activity) {
         //db access
         final DBGroups groupsDB = DBGroups.getInstance();
-        final DBEntries entryDB = DBEntries.getInstance();
 
         final View inputView = activity.getLayoutInflater().inflate(R.layout.mainfragment_dialog_prespoints, null);
         final NumberPicker presPointPicker = (NumberPicker) inputView.findViewById(R.id.mainfragment_dialog_prespoints_picker);
