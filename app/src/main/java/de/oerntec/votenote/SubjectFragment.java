@@ -53,6 +53,9 @@ public class SubjectFragment extends Fragment {
      */
     private ListView voteList;
 
+    /**
+     * the views of a lesson
+     */
     private TextView averageVoteView, presentationPointsView, averageNeededVotesView;
 
     /**
@@ -173,8 +176,10 @@ public class SubjectFragment extends Fragment {
         return rootView;
     }
 
+    /**
+     * Write the presentation point status to the textview
+     */
     private void setCurrentPresentationPointStatus() {
-        //PRESPOINT INFO
         int presentationPoints = groupDB.getPresPoints(databaseID);
         int minimumPresentationPoints = groupDB.getMinPresPoints(databaseID);
 
@@ -214,9 +219,8 @@ public class SubjectFragment extends Fragment {
 
     /**
      * calculate the current average vote
-     *
      * @param forSection the subject id
-     * @return
+     * @return the average vote
      */
     private float calculateAverageVotierung(int forSection) {
         //get avg cursor
