@@ -1,24 +1,29 @@
 package de.oerntec.votenote;
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.database.Cursor;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.CursorAdapter;
 import android.widget.ListView;
-import android.widget.SimpleCursorAdapter;
+import android.widget.TextView;
 
 /**
  * Fragment used for managing interactions for and presentation of a navigation
@@ -58,10 +63,9 @@ public class NavigationDrawerFragment extends Fragment {
     private boolean mFromSavedInstanceState;
     private boolean mUserLearnedDrawer;
 
-    private SimpleCursorAdapter groupAdapter;
+    private SubjectAdapter groupAdapter;
 
     private DBGroups groupsDB;
-    //private DBEntries entryDB;
 
     public NavigationDrawerFragment() {
     }
@@ -131,21 +135,11 @@ public class NavigationDrawerFragment extends Fragment {
         // set up the drawer's list view with items and click listener
         Cursor allEntryCursor = groupsDB.getAllGroupNames();
 
-        //define wanted columns
-        String[] columns = {DatabaseCreator.GROUPS_NAMEN};
 
-        //define id values of views to be set
-        int[] to = {R.id.drawerListItem};
 
         // create the adapter using the cursor pointing to the desired data
         //as well as the layout information
-        groupAdapter = new SimpleCursorAdapter(
-                getActivity(),
-                R.layout.navigationfragment_listitem,
-                allEntryCursor,
-                columns,
-                to,
-                0);
+        groupAdapter = new SubjectAdapter(getActivity(), allEntryCursor, 0);
 
         ActionBar actionBar = getActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
@@ -221,6 +215,8 @@ public class NavigationDrawerFragment extends Fragment {
 
     private void selectItem(int position) {
         mCurrentSelectedPosition = position;
+        if (groupAdapter != null)
+            groupAdapter.setSelectedPosition(position);
         if (mDrawerListView != null) {
             mDrawerListView.setItemChecked(position, true);
         }
@@ -301,7 +297,7 @@ public class NavigationDrawerFragment extends Fragment {
     }
 
     private ActionBar getActionBar() {
-        return getActivity().getActionBar();
+        return ((ActionBarActivity) getActivity()).getSupportActionBar();
     }
 
     public void forceReload() {
@@ -320,5 +316,54 @@ public class NavigationDrawerFragment extends Fragment {
          * Called when an item in the navigation drawer is selected.
          */
         void onNavigationDrawerItemSelected(int position);
+    }
+
+    private class SubjectAdapter extends CursorAdapter {
+        private int currentlySelectedPosition;
+        private float defaultTextSize;
+        private boolean savedSizeFlag = false;
+
+        public SubjectAdapter(Context context, Cursor c, int flags) {
+            super(context, c, flags);
+        }
+
+        @Override
+        public View newView(Context context, Cursor cursor, ViewGroup parent) {
+            LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+            View retView = inflater.inflate(android.R.layout.simple_list_item_1, parent, false);
+            return retView;
+        }
+
+        public void setSelectedPosition(int pos) {
+            currentlySelectedPosition = pos;
+        }
+
+        @Override
+        public void bindView(View view, Context context, Cursor cursor) {
+            //find textviews
+            TextView description = (TextView) view.findViewById(android.R.id.text1);
+
+            //load strings
+            String subjectName = cursor.getString(1);
+
+            //check whether the requested view is the currently selected view
+            if (cursor.getPosition() == currentlySelectedPosition) {
+                description.setTypeface(Typeface.DEFAULT_BOLD);
+                description.setBackgroundColor(Color.parseColor("#FFCCCCCC"));
+            } else {
+                description.setTypeface(Typeface.DEFAULT);
+                description.setBackgroundColor(Color.argb(0, 204, 204, 204));
+            }
+
+            if (!savedSizeFlag) {
+                defaultTextSize = description.getTextSize();
+                savedSizeFlag = true;
+            }
+
+            description.setTextSize(defaultTextSize + 0.1f);
+
+            //set text
+            description.setText(subjectName);
+        }
     }
 }

@@ -3,24 +3,15 @@
 
     <item
         jar="C:\Users\Arne\Documents\Development\Android\Votenote\Votenote\app\build\intermediates\exploded-aar\com.android.support\support-v4\22.1.1\classes.jar"
-        jumboMode="false"
-        revision="21.1.2" sha1="c95ba8152923e4872e86a82cfcba9a51c0214328">
+        jumboMode="false" revision="21.1.2" sha1="c95ba8152923e4872e86a82cfcba9a51c0214328">
         <dex
             dex="C:\Users\Arne\Documents\Development\Android\Votenote\Votenote\app\build\intermediates\pre-dexed\debug\classes-64b2dc7b7a051c346da0e2c4489662a4a03c6e20.jar" />
     </item>
     <item
-        jar="C:\Users\Arne\Documents\Development\Android\Votenote\Votenote\app\build\intermediates\exploded-aar\com.jjoe64\graphview\4.0.0\classes.jar"
-        jumboMode="false"
-        revision="21.1.2" sha1="ae24ad61a573cd1faf8261f5ec6d8f0cb58ddaad">
+        jar="C:\Users\Arne\Documents\Development\Android\Votenote\Votenote\app\build\intermediates\exploded-aar\com.android.support\appcompat-v7\22.1.1\classes.jar"
+        jumboMode="false" revision="21.1.2" sha1="a3ff3c506644c820eb2bdf06e8339f72be578551">
         <dex
-            dex="C:\Users\Arne\Documents\Development\Android\Votenote\Votenote\app\build\intermediates\pre-dexed\debug\classes-3e1946bb4e53364fd57ee43453e5c87e8ffb14df.jar" />
-    </item>
-    <item
-        jar="C:\Users\Arne\Documents\Development\Android\Votenote\Votenote\app\build\intermediates\exploded-aar\com.android.support\appcompat-v7\20.0.0\classes.jar"
-        jumboMode="false"
-        revision="21.1.2"
-        sha1="f21927d22fe31889ecce94dd697a2e75b137e0ef">
-        <dex dex="C:\Users\Arne\Documents\Development\Android\Votenote\Votenote\app\build\intermediates\pre-dexed\debug\classes-50a94a280333acc0e9e54cee238638b158c49d96.jar" />
+            dex="C:\Users\Arne\Documents\Development\Android\Votenote\Votenote\app\build\intermediates\pre-dexed\debug\classes-56078bb5960e30fc8981f44a7aa78df962893c7d.jar" />
     </item>
     <item
         jar="C:\Users\Arne\Documents\Development\Android\Votenote\Votenote\app\build\intermediates\exploded-aar\com.android.support\support-v4\22.1.1\libs\internal_impl-22.1.1.jar"
@@ -30,9 +21,14 @@
             dex="C:\Users\Arne\Documents\Development\Android\Votenote\Votenote\app\build\intermediates\pre-dexed\debug\internal_impl-22.1.1-df31d15b3907068b9d6b84d89d099bd495d24ae6.jar" />
     </item>
     <item
+        jar="C:\Users\Arne\Documents\Development\Android\Votenote\Votenote\app\build\intermediates\exploded-aar\com.jjoe64\graphview\4.0.1\classes.jar"
+        jumboMode="false" revision="21.1.2" sha1="37bf8de5b4f9e7e93006db783b9b3168e32e38e9">
+        <dex
+            dex="C:\Users\Arne\Documents\Development\Android\Votenote\Votenote\app\build\intermediates\pre-dexed\debug\classes-63a50af7fd9bd90e5315405f713015f579bfebaa.jar" />
+    </item>
+    <item
         jar="C:\Users\Arne\AppData\Local\Android\android-sdk\extras\android\m2repository\com\android\support\support-annotations\22.1.1\support-annotations-22.1.1.jar"
-        jumboMode="false"
-        revision="21.1.2" sha1="01d051a6bfb1218b1db2d3a5af0480ac2c25c42a">
+        jumboMode="false" revision="21.1.2" sha1="01d051a6bfb1218b1db2d3a5af0480ac2c25c42a">
         <dex
             dex="C:\Users\Arne\Documents\Development\Android\Votenote\Votenote\app\build\intermediates\pre-dexed\debug\support-annotations-22.1.1-23a8c8b44d8b3a98a458b4c103ec264d95a9feee.jar" />
     </item>

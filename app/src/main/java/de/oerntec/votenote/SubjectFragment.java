@@ -253,6 +253,9 @@ public class SubjectFragment extends Fragment {
     }
 
     private class LessonAdapter extends CursorAdapter {
+        private float defaultTextSize;
+        private boolean savedSizeFlag = false;
+
         public LessonAdapter(Context context, Cursor c, int flags) {
             super(context, c, flags);
         }
@@ -279,6 +282,13 @@ public class SubjectFragment extends Fragment {
             //set texts
             upper.setText(myVote + " von " + maxVote + voteString);
             lower.setText(lessonIndex + ". Übung");
+
+            if (!savedSizeFlag) {
+                defaultTextSize = upper.getTextSize();
+                savedSizeFlag = true;
+            }
+
+            upper.setTextSize(defaultTextSize + 0.1f);
         }
     }
 }
