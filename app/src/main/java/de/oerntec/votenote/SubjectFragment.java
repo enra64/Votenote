@@ -16,11 +16,8 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
-import android.widget.NumberPicker;
-import android.widget.NumberPicker.OnScrollListener;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
-import android.widget.Toast;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -51,6 +48,11 @@ public class SubjectFragment extends Fragment {
      */
     private int databaseID;
 
+    /**
+     * List containing the vote data
+     */
+    private ListView voteList;
+
     private TextView averageVoteView, presentationPointsView, averageNeededVotesView;
 
     /**
@@ -65,7 +67,13 @@ public class SubjectFragment extends Fragment {
         return fragment;
     }
 
-
+    public void notifyOfChangedDataset() {
+        ((SimpleCursorAdapter) voteList.getAdapter()).notifyDataSetChanged();
+        setAverageNeededAssignments();
+        setVoteAverage();
+        setCurrentPresentationPointStatus();
+        Log.i("subfrag", "reloaded");
+    }
 
     /* MAIN FRAGMENT BUILDING
      * Build the main fragment containing uebung specific info, and the main listview
@@ -77,7 +85,7 @@ public class SubjectFragment extends Fragment {
 
         //find and inflate everything
         View rootView = inflater.inflate(R.layout.mainfragment, container, false);
-        ListView voteList = (ListView) rootView.findViewById(R.id.mainfragment_list_votelist);
+        voteList = (ListView) rootView.findViewById(R.id.mainfragment_list_votelist);
 
         averageVoteView = (TextView) rootView.findViewById(R.id.mainfragment_text_averagevote);
         presentationPointsView = (TextView) rootView.findViewById(R.id.mainfragment_text_prespoints);
@@ -99,19 +107,11 @@ public class SubjectFragment extends Fragment {
         String currentGroupName = groupDB.getGroupName(databaseID);
         Log.i("Main activity", "Loading Group, DB says ID" + databaseID + ", Name " + currentGroupName);
 
-        //PRESPOINT INFO
-        int presPoints = groupDB.getPresPoints(databaseID);
-        int minPresPoints = groupDB.getMinPresPoints(databaseID);
-
-        //set text informing of current presentation point level, handling plural by the way.
-        presentationPointsView.setText(presPoints + " von " + minPresPoints + (minPresPoints > 1 ? " Vorträgen" : " Vortrag"));
-
-        //make view invisible if no presentations are required
-        if (minPresPoints == 0)
-            presentationPointsView.setVisibility(View.GONE);
+        //apply presentation point status
+        setCurrentPresentationPointStatus();
 
         //average needed votation
-        setAverageNeededAssignments(averageNeededVotesView);
+        setAverageNeededAssignments();
 
         //LISTVIEW FOR uebung instances
         Cursor allEntryCursor = entryDB.getGroupRecords(databaseID);
@@ -134,84 +134,14 @@ public class SubjectFragment extends Fragment {
                 toViews,
                 0);
         voteList.setAdapter(groupAdapter);
-        //votelist adaptering finished
+
+        final SubjectFragment thisRef = this;
 
         //Listener for list click, change entry dialog
         voteList.setOnItemClickListener(new OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, final long id) {
-                //beginning to configure dialog view
-                final int translatedPosition = position + 1;
-
-                //inflate view, find the textview containing the explanation
-                final View pickView = getActivity().getLayoutInflater().inflate(R.layout.mainfragment_dialog_newentry, null);
-                final TextView infoView = (TextView) pickView.findViewById(R.id.infoTextView);
-
-                //find number pickers
-                final NumberPicker maxVote = (NumberPicker) pickView.findViewById(R.id.pickerMaxVote);
-                final NumberPicker myVote = (NumberPicker) pickView.findViewById(R.id.pickerMyVote);
-                //configure the number pickers for translatedposition, connect to infoview
-                configureNumberPickers(infoView, maxVote, myVote, translatedPosition);
-                //finished configuring view
-
-                    /*
-                     * alert dialog for changing entry
-                     */
-                //building alertdialog with the view just configured
-                new AlertDialog.Builder(getActivity())
-                        .setTitle("Eintrag ändern")
-                        .setView(pickView)
-                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int whichButton) {
-                                if (myVote.getValue() <= maxVote.getValue()) {//check for valid entry
-                                    //change db entry
-                                    entryDB.changeEntry(databaseID, translatedPosition, maxVote.getValue(), myVote.getValue());
-                                    //reload list- and textview; close old cursor
-                                    groupAdapter.swapCursor(entryDB.getGroupRecords(databaseID)).close();
-                                    setVoteAverage(averageVoteView);
-                                    setAverageNeededAssignments(averageNeededVotesView);
-                                } else
-                                    Toast.makeText(getActivity(), "Mehr votiert als möglich!", Toast.LENGTH_SHORT).show();
-                            }
-                        }).setNegativeButton("Abbrechen", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                    }
-                }).show();
-            }
-
-            /**
-             * configures the numberpickers with the given parameters
-             */
-            private void configureNumberPickers(final TextView infoView, final NumberPicker maxVote, final NumberPicker myVote, int translatedPosition) {
-                //get the old values from the database; position +1 because natural counting style
-                //is used when counting the uebungs
-                Cursor oldValues = entryDB.getEntry(databaseID, translatedPosition);
-                maxVote.setMinValue(1);
-                maxVote.setMaxValue(15);
-                maxVote.setValue(groupDB.getScheduledAssignmentsPerUebung(databaseID));
-                myVote.setMinValue(0);
-                myVote.setMaxValue(15);
-                if (oldValues.getCount() > 0)
-                    myVote.setValue(oldValues.getInt(0));
-                else
-                    myVote.setValue(0);
-
-                //add change listener to update dialog if pickers changed
-                myVote.setOnScrollListener(new OnScrollListener() {
-                    @Override
-                    public void onScrollStateChange(NumberPicker thisPicker, int isIdle) {
-                        infoView.setText(thisPicker.getValue() + " von " + maxVote.getValue() + " Votes");
-                    }
-                });
-                maxVote.setOnScrollListener(new OnScrollListener() {
-                    @Override
-                    public void onScrollStateChange(NumberPicker thisPicker, int isIdle) {
-                        infoView.setText(myVote.getValue() + " von " + thisPicker.getValue() + " Votes");
-                    }
-                });
-                //set the current values of the pickers as explanation text
-                infoView.setText(myVote.getValue() + " von " + maxVote.getValue() + " Votes");
-                oldValues.close();
+                DialogHelper.showChangeLessonDialog((MainActivity) getActivity(), databaseID, thisRef, position + 1);
             }
         });
 
@@ -228,9 +158,7 @@ public class SubjectFragment extends Fragment {
                                 //change db entry
                                 entryDB.removeEntry(databaseID, translatedPosition);
                                 //reload list- and textview; close old cursor
-                                groupAdapter.swapCursor(entryDB.getGroupRecords(databaseID)).close();
-                                setVoteAverage(averageVoteView);
-                                setAverageNeededAssignments(averageNeededVotesView);
+                                thisRef.notifyOfChangedDataset();
                             }
                         }).setNegativeButton("Abbrechen", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
@@ -241,17 +169,29 @@ public class SubjectFragment extends Fragment {
         });
 
         //set summaryView to average
-        setVoteAverage(averageVoteView);
+        setVoteAverage();
         return rootView;
+    }
+
+    private void setCurrentPresentationPointStatus() {
+        //PRESPOINT INFO
+        int presentationPoints = groupDB.getPresPoints(databaseID);
+        int minimumPresentationPoints = groupDB.getMinPresPoints(databaseID);
+
+        //set text informing of current presentation point level, handling plural by the way.
+        presentationPointsView.setText(presentationPoints + " von " + minimumPresentationPoints + (minimumPresentationPoints > 1 ? " Vorträgen" : " Vortrag"));
+
+        //make view invisible if no presentations are required
+        if (minimumPresentationPoints == 0)
+            presentationPointsView.setVisibility(View.GONE);
     }
 
     /**
      * Sets how many Assignments have to be voted for to achieve the set minimum voting.
-     * @param averageNeededVotesView
      */
-    private void setAverageNeededAssignments(TextView averageNeededVotesView) {
+    private void setAverageNeededAssignments() {
         float scheduledMaximumAssignments = groupDB.getScheduledWork(databaseID);
-        float numberOfNeededAssignments = (float) (((float) scheduledMaximumAssignments * (float) groupDB.getMinVote(databaseID)) / (float) 100);
+        float numberOfNeededAssignments = ((float) scheduledMaximumAssignments * (float) groupDB.getMinVote(databaseID)) / (float) 100;
         float numberOfVotedAssignments = entryDB.getCompletedAssignmentCount(databaseID);
         float remainingNeededAssignments = numberOfNeededAssignments - numberOfVotedAssignments;
         int numberOfElapsedLessons = entryDB.getGroupRecordCount(databaseID);
@@ -291,7 +231,7 @@ public class SubjectFragment extends Fragment {
     /**
      * VOTE AVERAGE CALCULATION
      */
-    private void setVoteAverage(TextView affectedView) {
+    private void setVoteAverage() {
         int average = calculateAverageVotierung(databaseID);
 
         //no votes have been given
