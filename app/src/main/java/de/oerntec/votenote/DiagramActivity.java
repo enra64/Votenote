@@ -121,7 +121,7 @@ public class DiagramActivity extends Activity {
                         lineGraphMap.put(translation, newLine);
                         graph.addSeries(lineGraphMap.get(translation));
                     }
-                    //handle colors
+                    //handle colors test
                     colorStackPointer++;
                 } else {
                     enabledArray[position] = false;
