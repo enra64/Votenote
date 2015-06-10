@@ -17,14 +17,17 @@
         app:showAsAction="always" />
     <item
         android:id="@+id/action_show_diagram"
+        android:showAsAction="never"
         android:title="Diagramm zeigen"
         app:showAsAction="never" />
     <item
         android:id="@+id/action_export"
+        android:showAsAction="never"
         android:title="Übungen exportieren"
         app:showAsAction="never" />
     <item
         android:id="@+id/action_groupmanagement"
+        android:showAsAction="never"
         android:title="Übungen verwalten"
         app:showAsAction="never" />
 </menu>

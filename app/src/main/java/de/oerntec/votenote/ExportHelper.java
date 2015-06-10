@@ -104,18 +104,20 @@ public class ExportHelper {
                 s.append("\r\n");
                 Cursor entryCursor = entryDB.getGroupRecords(translated);
 
-                //read db to string
-                do {
-                    s.append(entryCursor.getInt(0));
-                    s.append(";");
-                    s.append(entryCursor.getInt(1));
-                    s.append(";");
-                    s.append(entryCursor.getInt(2));
-                    s.append("\r\n");
-                } while (entryCursor.moveToNext());
+                if (entryCursor.getCount() > 0) {
+                    //read db to string
+                    do {
+                        s.append(entryCursor.getInt(0));
+                        s.append(";");
+                        s.append(entryCursor.getInt(1));
+                        s.append(";");
+                        s.append(entryCursor.getInt(2));
+                        s.append("\r\n");
+                    } while (entryCursor.moveToNext());
 
-                //add some free lines
-                s.append("\r\n\r\n");
+                    //add some free lines
+                    s.append("\r\n\r\n");
+                }
             }
         }
         //get current time for filename
@@ -139,7 +141,7 @@ public class ExportHelper {
                 File writeoutFile = new File(root, fileName + ".csv");
                 FileWriter writer = new FileWriter(writeoutFile);
                 Log.i("exporter", writer.getEncoding());
-                writer.append(exportString.toString());
+                writer.append(exportString);
                 writer.flush();
                 writer.close();
                 Toast.makeText(context, "Datei unter " + writeoutFile.getAbsolutePath() + " gespeichert.", Toast.LENGTH_LONG).show();
