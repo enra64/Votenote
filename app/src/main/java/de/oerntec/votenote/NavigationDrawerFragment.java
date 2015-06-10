@@ -1,5 +1,6 @@
 package de.oerntec.votenote;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
@@ -13,8 +14,6 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -141,7 +140,7 @@ public class NavigationDrawerFragment extends Fragment {
         //as well as the layout information
         groupAdapter = new SubjectAdapter(getActivity(), allEntryCursor, 0);
 
-        ActionBar actionBar = getActionBar();
+        ActionBar actionBar = getActivity().getActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setHomeButtonEnabled(true);
 
@@ -282,22 +281,6 @@ public class NavigationDrawerFragment extends Fragment {
         Cursor allNames = groupsDB.getAllGroupNames();
         allNames.moveToPosition(position);
         return allNames.getString(1);
-    }
-
-    /**
-     * Per the navigation drawer design guidelines, updates the action bar to
-     * show the global app 'context', rather than just what's in the current
-     * screen.
-     */
-    private void showGlobalContextActionBar() {
-        ActionBar actionBar = getActionBar();
-        actionBar.setDisplayShowTitleEnabled(true);
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-        actionBar.setTitle(R.string.app_name);
-    }
-
-    private ActionBar getActionBar() {
-        return ((ActionBarActivity) getActivity()).getSupportActionBar();
     }
 
     public void forceReload() {

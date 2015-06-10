@@ -82,7 +82,7 @@ public class DialogHelper {
                 int myVoteValue = myVote.getValue();
                 int maxVoteValue = maxVote.getValue();
                 infoView.setText(myVoteValue + " von " + maxVoteValue + " Votierungen");
-                infoView.setTextColor(myVoteValue < maxVoteValue ? Color.argb(255, 153, 204, 0) /*green*/ : Color.argb(255, 204, 0, 0));//red
+                infoView.setTextColor(myVoteValue <= maxVoteValue ? Color.argb(255, 153, 204, 0) /*green*/ : Color.argb(255, 204, 0, 0));//red
             }
         };
 
