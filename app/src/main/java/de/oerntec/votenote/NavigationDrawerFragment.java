@@ -8,7 +8,6 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.Color;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActionBarDrawerToggle;
@@ -331,10 +330,10 @@ public class NavigationDrawerFragment extends Fragment {
 
             //check whether the requested view is the currently selected view
             if (cursor.getPosition() == currentlySelectedPosition) {
-                description.setTypeface(Typeface.DEFAULT_BOLD);
+                //description.setTypeface(Typeface.DEFAULT_BOLD);
                 description.setBackgroundColor(Color.parseColor("#FFCCCCCC"));
             } else {
-                description.setTypeface(Typeface.DEFAULT);
+                //description.setTypeface(Typeface.DEFAULT);
                 description.setBackgroundColor(Color.argb(0, 204, 204, 204));
             }
 
@@ -343,7 +342,7 @@ public class NavigationDrawerFragment extends Fragment {
                 savedSizeFlag = true;
             }
 
-            description.setTextSize(defaultTextSize + 0.1f);
+            description.setTextSize(defaultTextSize + 0.065f);
 
             //set text
             description.setText(subjectName);
