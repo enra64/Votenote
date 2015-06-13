@@ -32,6 +32,7 @@ public class DatabaseCreator extends SQLiteOpenHelper {
     public static final String GROUPS_SCHEDULED_NUMBER_OF_LESSONS ="uebung_count";
     public static final String GROUPS_SCHEDULED_MAXIMUM_VOTIERUNG_PER_LESSON ="uebung_maxvotes_per_ueb";
     public static final String TABLE_NAME_GROUPS="uebungen_gruppen";
+
     private static final int DATABASE_VERSION = 12;
     private static final String CREATE_DATABASE_ENTRIES =
             "create table " + TABLE_NAME_ENTRIES + "( " + ENTRIES_ID + " integer primary key," +
@@ -39,6 +40,7 @@ public class DatabaseCreator extends SQLiteOpenHelper {
                     ENTRIES_NUMMER_UEBUNG + " integer not null," +
                     ENTRIES_MAX_VOTES + " integer not null," +
                     ENTRIES_MY_VOTES + " integer not null);";
+
     private static final String CREATE_DATABASE_GROUPS =
             "create table "+TABLE_NAME_GROUPS+"( "+GROUPS_ID+" integer primary key," +
     		GROUPS_NAMEN+" string not null," +

@@ -51,8 +51,8 @@ public class DBGroups{
 		Log.i("dbgroups:delete", "deleted "+groupName+" at "+groupId);
 		String whereClause = DatabaseCreator.GROUPS_NAMEN +"=?"+" AND "+ID_COLUMN+"=?";
 		String[]whereArgs = new String[] {groupName, String.valueOf(groupId)};
-		return database.delete(TABLE, whereClause , whereArgs);
-	}
+        return database.delete(TABLE, whereClause, whereArgs);
+    }
 	
 	/**
 	 * Adds a group to the Table, if it does not exist;
@@ -239,8 +239,12 @@ public class DBGroups{
         mCursor.close();
         return answer; // iterate to get each value.
     }
-	
-	/**
+
+    public void dropData() {
+        database.delete(DatabaseCreator.TABLE_NAME_GROUPS, null, null);
+    }
+
+    /**
 	 * returns a cursor with all 
 	 * @return
 	 */

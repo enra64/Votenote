@@ -26,6 +26,11 @@
         android:title="Übungen exportieren"
         app:showAsAction="never" />
     <item
+        android:id="@+id/action_import"
+        android:showAsAction="never"
+        android:title="Übungen importieren"
+        app:showAsAction="never" />
+    <item
         android:id="@+id/action_groupmanagement"
         android:showAsAction="never"
         android:title="Übungen verwalten"

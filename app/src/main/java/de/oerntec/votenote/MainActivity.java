@@ -25,16 +25,21 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
     private static DBGroups groupsDB;
     private static DBEntries entryDB;
     private static int mCurrentSelectedPosition;
+    private static MainActivity me;
     /**
      * Used to store the last screen title. For use in
      * {@link #restoreActionBar()}.
      */
     private CharSequence mTitle;
 
+    public static void toast(String text) {
+        Toast.makeText(me, text, Toast.LENGTH_SHORT).show();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        me = this;
         //database access
         groupsDB = DBGroups.setupInstance(this);
         entryDB = DBEntries.setupInstance(this);
@@ -52,7 +57,6 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
     }
-
 
     @Override
     public void onResume() {
@@ -128,6 +132,10 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
                 break;
             case R.id.action_export:
                 new XmlExporter().export("test");
+                //ExportHelper.createExportDialog(this);
+                break;
+            case R.id.action_import:
+                new XmlExporter().importXml("test");
                 //ExportHelper.createExportDialog(this);
                 break;
             case R.id.action_show_diagram:

@@ -42,6 +42,10 @@ public class DBEntries{
         return mInstance;
     }
 
+    public void dropData() {
+        database.delete(DatabaseCreator.TABLE_NAME_ENTRIES, null, null);
+    }
+
     /**
      * Adds a group to the Table, if it does not exist;
      * if a group with the given name exists, we change it.
@@ -95,7 +99,7 @@ public class DBEntries{
     public Cursor getEntry(int uebungTyp, int uebungNummer){
         String[] cols = new String[] {MY_VOTE_NUMBER_COLUMN, MAX_VOTE_NUMBER_COLUMN, ID_COLUMN};
         String[] whereArgs={String.valueOf(uebungTyp), String.valueOf(uebungNummer)};
-        Cursor mCursor = database.query(true, TABLE, cols, UEBUNG_TYP_ID_COLUMN +"=?"+" AND "+UEBUNG_NUMMER_COLUMN+"=?", whereArgs, null, null, null, null);
+        Cursor mCursor = database.query(true, TABLE, cols, UEBUNG_TYP_ID_COLUMN + "=?" + " AND " + UEBUNG_NUMMER_COLUMN + "=?", whereArgs, null, null, null, null);
         if (mCursor != null)
             mCursor.moveToFirst();
         return mCursor; // iterate to get each value.
@@ -109,27 +113,31 @@ public class DBEntries{
 
     /**
      * Add an entry to the respective uebung
-     * @param uebungTyp
-     * @param maxVote
-     * @param myVote
      */
-    public void addEntry(int uebungTyp, int maxVote, int myVote){
-        Cursor lastEntryNummerCursor = database.query(true, TABLE, new String[] {UEBUNG_NUMMER_COLUMN}, UEBUNG_TYP_ID_COLUMN +"="+uebungTyp, null, null, null, UEBUNG_NUMMER_COLUMN+" DESC", null);
+    public void addEntry(int uebungTyp, int maxVote, int myVote) {
+        Cursor lastEntryNummerCursor = database.query(true, TABLE, new String[]{UEBUNG_NUMMER_COLUMN}, UEBUNG_TYP_ID_COLUMN + "=" + uebungTyp, null, null, null, UEBUNG_NUMMER_COLUMN + " DESC", null);
         //init cursor
-        int lastNummer=1;
-        if (lastEntryNummerCursor != null){
-            if(!lastEntryNummerCursor.moveToFirst())
+        int lastNummer = 1;
+        if (lastEntryNummerCursor != null) {
+            if (!lastEntryNummerCursor.moveToFirst())
                 Log.w("db:groups", "empty cursor");
         }
-        if(lastEntryNummerCursor.getCount()!=0)
-            lastNummer=lastEntryNummerCursor.getInt(0)+1;
+        if (lastEntryNummerCursor.getCount() != 0)
+            lastNummer = lastEntryNummerCursor.getInt(0) + 1;
 
-        Log.i("db:entries:add", "adding entry with lastnummer"+lastNummer+" for group "+uebungTyp);
+        addEntry(uebungTyp, maxVote, myVote, lastNummer);
+    }
+
+    /**
+     * Add an entry to the respective uebung
+     */
+    public void addEntry(int uebungTyp, int maxVote, int myVote, int uebungNummer) {
+        Log.i("db:entries:add", "adding entry with lastnummer" + uebungNummer + " for group " + uebungTyp);
 
         //create values for insert or update
         ContentValues values = new ContentValues();
         values.put(UEBUNG_TYP_ID_COLUMN, uebungTyp);
-        values.put(UEBUNG_NUMMER_COLUMN, lastNummer);
+        values.put(UEBUNG_NUMMER_COLUMN, uebungNummer);
         values.put(MAX_VOTE_NUMBER_COLUMN, maxVote);
         values.put(MY_VOTE_NUMBER_COLUMN, myVote);
 
