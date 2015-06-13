@@ -6,9 +6,9 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 public class DatabaseCreator extends SQLiteOpenHelper {
-    private static final String DATABASE = "uebungen";
-    
-    private static final int DATABASE_VERSION = 12;
+    public static final String DATABASE_NAME = "uebungen";
+    //database entries
+    public static final String ENTRIES_ID = "_id";
 
     /* Database creation sql statement
      * We need
@@ -18,23 +18,11 @@ public class DatabaseCreator extends SQLiteOpenHelper {
      * -maximum votierungs: max_votierung
      * -my votierungs: my_votierung
      */
-    
-    //database entries
-    public static final String ENTRIES_ID="_id";
     public static final String ENTRIES_TYP_UEBUNG="typ_uebung";
     public static final String ENTRIES_NUMMER_UEBUNG="nummer_uebung";
     public static final String ENTRIES_MAX_VOTES="max_votierung";
     public static final String ENTRIES_MY_VOTES="my_votierung";
-
     public static final String TABLE_NAME_ENTRIES="uebungen_eintraege";
-    
-    private static final String CREATE_DATABASE_ENTRIES = 
-    		"create table "+TABLE_NAME_ENTRIES+"( "+ENTRIES_ID+" integer primary key," +
-    		ENTRIES_TYP_UEBUNG+" int not null, " +
-            ENTRIES_NUMMER_UEBUNG+" integer not null," +
-    		ENTRIES_MAX_VOTES+" integer not null," +
-    		ENTRIES_MY_VOTES+" integer not null);";
-    
     //database groups
     public static final String GROUPS_ID="_id";
     public static final String GROUPS_NAMEN="uebung_name";
@@ -43,11 +31,16 @@ public class DatabaseCreator extends SQLiteOpenHelper {
     public static final String UEBUNG_MINIMUM_PRESENTATION_POINTS_COLUMN ="uebung_max_prespoints";
     public static final String GROUPS_SCHEDULED_NUMBER_OF_LESSONS ="uebung_count";
     public static final String GROUPS_SCHEDULED_MAXIMUM_VOTIERUNG_PER_LESSON ="uebung_maxvotes_per_ueb";
-    
     public static final String TABLE_NAME_GROUPS="uebungen_gruppen";
-    
-    private static final String CREATE_DATABASE_GROUPS = 
-    		"create table "+TABLE_NAME_GROUPS+"( "+GROUPS_ID+" integer primary key," +
+    private static final int DATABASE_VERSION = 12;
+    private static final String CREATE_DATABASE_ENTRIES =
+            "create table " + TABLE_NAME_ENTRIES + "( " + ENTRIES_ID + " integer primary key," +
+                    ENTRIES_TYP_UEBUNG + " int not null, " +
+                    ENTRIES_NUMMER_UEBUNG + " integer not null," +
+                    ENTRIES_MAX_VOTES + " integer not null," +
+                    ENTRIES_MY_VOTES + " integer not null);";
+    private static final String CREATE_DATABASE_GROUPS =
+            "create table "+TABLE_NAME_GROUPS+"( "+GROUPS_ID+" integer primary key," +
     		GROUPS_NAMEN+" string not null," +
     		GROUPS_MIN_VOTE+" integer DEFAULT 50,"+
     		GROUPS_PRESENTATIONPOINTS + " integer DEFAULT 0,"+
@@ -56,7 +49,7 @@ public class DatabaseCreator extends SQLiteOpenHelper {
                     DatabaseCreator.UEBUNG_MINIMUM_PRESENTATION_POINTS_COLUMN + " integer DEFAULT 2);";
 
     public DatabaseCreator(Context context) {
-        super(context, DATABASE, null, DATABASE_VERSION);
+        super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
     // Method is called during creation of the database

@@ -8,11 +8,9 @@ import android.util.Log;
 
 public class DBEntries{
 
-    private DatabaseCreator dbHelper;
-
-    private SQLiteDatabase database;
-
     public final static String TABLE=DatabaseCreator.TABLE_NAME_ENTRIES; // name of table
+    public final static String ID_COLUMN = DatabaseCreator.ENTRIES_ID; // id value for employee
+    public final static String UEBUNG_TYP_ID_COLUMN = DatabaseCreator.ENTRIES_TYP_UEBUNG;  //name of the uebung
 
     /* Database creation sql statement from database helper
      * We need
@@ -22,15 +20,12 @@ public class DBEntries{
      * -maximum votierungs: max_votierung
      * -my votierungs: my_votierung
      */
-
-    public final static String ID_COLUMN=DatabaseCreator.ENTRIES_ID; // id value for employee
-
-    public final static String UEBUNG_TYP_ID_COLUMN =DatabaseCreator.ENTRIES_TYP_UEBUNG;  //name of the uebung
     public final static String UEBUNG_NUMMER_COLUMN=DatabaseCreator.ENTRIES_NUMMER_UEBUNG;  //which iteration of the uebung is it
     public final static String MAX_VOTE_NUMBER_COLUMN=DatabaseCreator.ENTRIES_MAX_VOTES;  //max possible vote count
     public final static String MY_VOTE_NUMBER_COLUMN=DatabaseCreator.ENTRIES_MY_VOTES;  //my vote count
-
     private static DBEntries mInstance;
+    private DatabaseCreator dbHelper;
+    private SQLiteDatabase database;
 
     private DBEntries(Context context){
         dbHelper = new DatabaseCreator(context);
@@ -74,6 +69,10 @@ public class DBEntries{
             database.insert(TABLE, null, values);
         //mandatory cursorclosing
         mCursor.close();
+    }
+
+    public Cursor getAllData() {
+        return database.rawQuery("SELECT * FROM " + DatabaseCreator.TABLE_NAME_ENTRIES, new String[0]);
     }
 
     public void changeEntry(int uebungTyp, int uebungNummer, int maxVote, int myVote){

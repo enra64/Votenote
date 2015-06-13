@@ -7,9 +7,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 public class DBGroups{
-	private DatabaseCreator dbHelper;  
-	
-	private SQLiteDatabase database;  
+	public final static int NO_GROUPS_EXIST = -1;
+	public final static String TABLE = "uebungen_gruppen";
 	
 	/* Database creation sql statement from database helper
 	 * We need
@@ -19,15 +18,10 @@ public class DBGroups{
 	 * -maximum votierungs: max_votierung
 	 * -my votierungs: my_votierung
 	 */
-	
-	public final static int NO_GROUPS_EXIST=-1;
-	
-	public final static String TABLE="uebungen_gruppen";
-	
 	public final static String ID_COLUMN="_id";
-
-
 	private static DBGroups mInstance;
+	private DatabaseCreator dbHelper;
+	private SQLiteDatabase database;
 
 	private DBGroups(Context context){
 	    dbHelper = new DatabaseCreator(context);
@@ -42,6 +36,10 @@ public class DBGroups{
 
 	public static DBGroups getInstance(){
 		return mInstance;
+	}
+
+	public Cursor getAllData() {
+		return database.rawQuery("SELECT * FROM " + DatabaseCreator.TABLE_NAME_GROUPS, new String[0]);
 	}
 	
 	/**

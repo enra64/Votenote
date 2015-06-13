@@ -127,7 +127,8 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
                 DialogHelper.showPresentationPointDialog(groupID, this);
                 break;
             case R.id.action_export:
-                ExportHelper.createExportDialog(this);
+                new XmlExporter().export("test");
+                //ExportHelper.createExportDialog(this);
                 break;
             case R.id.action_show_diagram:
                 //only show diagram if more than 0 entries exist
