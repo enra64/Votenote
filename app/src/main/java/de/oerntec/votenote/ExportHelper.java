@@ -37,7 +37,7 @@ public class ExportHelper {
         // set up the drawer's list view with items and click listener
         Cursor allNamesCursor = groupsDB.getAllGroupNames();
         //define wanted columnsgroupsDB
-        String[] sourceColumns = {DatabaseCreator.GROUPS_NAMEN};
+        String[] sourceColumns = {DatabaseCreator.SUBJECTS_NAME};
 
         //define id values of views to be set
         int[] targetViews = {R.id.diagramactivity_listview_listitem_text_name};

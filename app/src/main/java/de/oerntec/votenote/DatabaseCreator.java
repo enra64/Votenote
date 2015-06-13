@@ -18,20 +18,21 @@ public class DatabaseCreator extends SQLiteOpenHelper {
      * -maximum votierungs: max_votierung
      * -my votierungs: my_votierung
      */
-    public static final String ENTRIES_TYP_UEBUNG="typ_uebung";
-    public static final String ENTRIES_NUMMER_UEBUNG="nummer_uebung";
-    public static final String ENTRIES_MAX_VOTES="max_votierung";
-    public static final String ENTRIES_MY_VOTES="my_votierung";
-    public static final String TABLE_NAME_ENTRIES="uebungen_eintraege";
+    public static final String ENTRIES_TYP_UEBUNG = "typ_uebung";
+    public static final String ENTRIES_NUMMER_UEBUNG = "nummer_uebung";
+    public static final String ENTRIES_MAX_VOTES = "max_votierung";
+    public static final String ENTRIES_MY_VOTES = "my_votierung";
+    public static final String TABLE_NAME_ENTRIES = "uebungen_eintraege";
     //database groups
-    public static final String GROUPS_ID="_id";
-    public static final String GROUPS_NAMEN="uebung_name";
-    public static final String GROUPS_MIN_VOTE="uebung_minvote";
-    public static final String GROUPS_PRESENTATIONPOINTS="uebung_prespoints";
-    public static final String UEBUNG_MINIMUM_PRESENTATION_POINTS_COLUMN ="uebung_max_prespoints";
-    public static final String GROUPS_SCHEDULED_NUMBER_OF_LESSONS ="uebung_count";
-    public static final String GROUPS_SCHEDULED_MAXIMUM_VOTIERUNG_PER_LESSON ="uebung_maxvotes_per_ueb";
-    public static final String TABLE_NAME_GROUPS="uebungen_gruppen";
+    public static final String SUBJECTS_ID = "_id";
+    public static final String SUBJECTS_NAME = "uebung_name";
+    public static final String SUBJECTS_MINIMUM_VOTE_PERCENTAGE = "uebung_minvote";
+    public static final String SUBJECTS_CURRENT_PRESENTATION_POINTS = "uebung_prespoints";
+    public static final String SUBJECTS_WANTED_PRESENTATION_POINTS = "uebung_max_prespoints";
+    public static final String SUBJECTS_SCHEDULED_NUMBER_OF_LESSONS = "uebung_count";
+    public static final String SUBJECTS_SCHEDULED_ASSIGNMENTS_PER_LESSON = "uebung_maxvotes_per_ueb";
+
+    public static final String TABLE_NAME_SUBJECTS = "uebungen_gruppen";
 
     private static final int DATABASE_VERSION = 12;
     private static final String CREATE_DATABASE_ENTRIES =
@@ -42,13 +43,13 @@ public class DatabaseCreator extends SQLiteOpenHelper {
                     ENTRIES_MY_VOTES + " integer not null);";
 
     private static final String CREATE_DATABASE_GROUPS =
-            "create table "+TABLE_NAME_GROUPS+"( "+GROUPS_ID+" integer primary key," +
-    		GROUPS_NAMEN+" string not null," +
-    		GROUPS_MIN_VOTE+" integer DEFAULT 50,"+
-    		GROUPS_PRESENTATIONPOINTS + " integer DEFAULT 0,"+
-                    GROUPS_SCHEDULED_NUMBER_OF_LESSONS + " integer DEFAULT 12,"+
-                    GROUPS_SCHEDULED_MAXIMUM_VOTIERUNG_PER_LESSON + " integer DEFAULT 12,"+
-                    DatabaseCreator.UEBUNG_MINIMUM_PRESENTATION_POINTS_COLUMN + " integer DEFAULT 2);";
+            "create table " + TABLE_NAME_SUBJECTS + "( " + SUBJECTS_ID + " integer primary key," +
+                    SUBJECTS_NAME + " string not null," +
+                    SUBJECTS_MINIMUM_VOTE_PERCENTAGE + " integer DEFAULT 50," +
+                    SUBJECTS_CURRENT_PRESENTATION_POINTS + " integer DEFAULT 0," +
+                    SUBJECTS_SCHEDULED_NUMBER_OF_LESSONS + " integer DEFAULT 12," +
+                    SUBJECTS_SCHEDULED_ASSIGNMENTS_PER_LESSON + " integer DEFAULT 12," +
+                    DatabaseCreator.SUBJECTS_WANTED_PRESENTATION_POINTS + " integer DEFAULT 2);";
 
     public DatabaseCreator(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -57,23 +58,23 @@ public class DatabaseCreator extends SQLiteOpenHelper {
     // Method is called during creation of the database
     @Override
     public void onCreate(SQLiteDatabase database) {
-    	database.execSQL(CREATE_DATABASE_ENTRIES);
-    	database.execSQL(CREATE_DATABASE_GROUPS);
+        database.execSQL(CREATE_DATABASE_ENTRIES);
+        database.execSQL(CREATE_DATABASE_GROUPS);
     }
 
     // Method is called during an upgrade of the database,
     @Override
-    public void onUpgrade(SQLiteDatabase database,int oldVersion,int newVersion){
+    public void onUpgrade(SQLiteDatabase database, int oldVersion, int newVersion) {
         Log.w(DatabaseCreator.class.getName(),
-                         "Upgrading database from version " + oldVersion + " to "
-                         + newVersion + ", which will destroy all old data");
-        if(newVersion==12){
-        	Log.i("database:creator", "changed to "+newVersion+" from "+oldVersion);
-        	database.execSQL("ALTER TABLE "+TABLE_NAME_GROUPS+" ADD "+ DatabaseCreator.UEBUNG_MINIMUM_PRESENTATION_POINTS_COLUMN +" INTEGER DEFAULT 2");
+                "Upgrading database from version " + oldVersion + " to "
+                        + newVersion + ", which will destroy all old data");
+        if (newVersion == 12) {
+            Log.i("database:creator", "changed to " + newVersion + " from " + oldVersion);
+            database.execSQL("ALTER TABLE " + TABLE_NAME_SUBJECTS + " ADD " + DatabaseCreator.SUBJECTS_WANTED_PRESENTATION_POINTS + " INTEGER DEFAULT 2");
         }
-        if(oldVersion==12){
-        	database.execSQL("ALTER TABLE "+TABLE_NAME_GROUPS+" ADD "+ GROUPS_SCHEDULED_NUMBER_OF_LESSONS +" INTEGER DEFAULT 12");
-        	database.execSQL("ALTER TABLE "+TABLE_NAME_GROUPS+" ADD "+ GROUPS_SCHEDULED_MAXIMUM_VOTIERUNG_PER_LESSON +" INTEGER DEFAULT 5");
+        if (oldVersion == 12) {
+            database.execSQL("ALTER TABLE " + TABLE_NAME_SUBJECTS + " ADD " + SUBJECTS_SCHEDULED_NUMBER_OF_LESSONS + " INTEGER DEFAULT 12");
+            database.execSQL("ALTER TABLE " + TABLE_NAME_SUBJECTS + " ADD " + SUBJECTS_SCHEDULED_ASSIGNMENTS_PER_LESSON + " INTEGER DEFAULT 5");
         }
     }
 }

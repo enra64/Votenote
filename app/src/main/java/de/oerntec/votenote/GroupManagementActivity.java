@@ -196,11 +196,11 @@ public class GroupManagementActivity extends Activity {
         // set up the drawer's list view with items and click listener
         Cursor allCursor = groupsDB.getAllGroupsInfos();
         //define wanted columns
-        String[] columns = {DatabaseCreator.GROUPS_NAMEN,
-                DatabaseCreator.GROUPS_MIN_VOTE,
-                DatabaseCreator.UEBUNG_MINIMUM_PRESENTATION_POINTS_COLUMN,
-                DatabaseCreator.GROUPS_SCHEDULED_NUMBER_OF_LESSONS,
-                DatabaseCreator.GROUPS_SCHEDULED_MAXIMUM_VOTIERUNG_PER_LESSON};
+        String[] columns = {DatabaseCreator.SUBJECTS_NAME,
+                DatabaseCreator.SUBJECTS_MINIMUM_VOTE_PERCENTAGE,
+                DatabaseCreator.SUBJECTS_WANTED_PRESENTATION_POINTS,
+                DatabaseCreator.SUBJECTS_SCHEDULED_NUMBER_OF_LESSONS,
+                DatabaseCreator.SUBJECTS_SCHEDULED_ASSIGNMENTS_PER_LESSON};
 
         //define id values of views to be set
         int[] to = {R.id.groupmanager_listitem_text_groupname,
