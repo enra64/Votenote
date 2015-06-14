@@ -6,18 +6,19 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class DBGroups {
     public final static int NO_GROUPS_EXIST = -1;
-    public final static String TABLE = "uebungen_gruppen";
 
-    public final static String ID_COLUMN = "_id";
     private static DBGroups mInstance;
-    private DatabaseCreator dbHelper;
     private SQLiteDatabase database;
 
     private DBGroups(Context context) {
-        dbHelper = new DatabaseCreator(context);
+        DatabaseCreator dbHelper = new DatabaseCreator(context);
         database = dbHelper.getWritableDatabase();
+
     }
 
     public static DBGroups setupInstance(Context context) {
@@ -42,9 +43,9 @@ public class DBGroups {
      */
     public int deleteRecord(String groupName, int groupId) {
         Log.i("dbgroups:delete", "deleted " + groupName + " at " + groupId);
-        String whereClause = DatabaseCreator.SUBJECTS_NAME + "=?" + " AND " + ID_COLUMN + "=?";
+        String whereClause = DatabaseCreator.SUBJECTS_NAME + "=?" + " AND " + DatabaseCreator.SUBJECTS_ID + "=?";
         String[] whereArgs = new String[]{groupName, String.valueOf(groupId)};
-        return database.delete(TABLE, whereClause, whereArgs);
+        return database.delete(DatabaseCreator.TABLE_NAME_SUBJECTS, whereClause, whereArgs);
     }
 
     /**
@@ -57,22 +58,15 @@ public class DBGroups {
      */
     public int addGroup(String groupName, int minVot, int minPres, int newScheduledUebungCount, int newScheduledAssignmentsPerUebung) {
         //check whether group name exists; abort if it does
-        String[] testColumns = new String[]{ID_COLUMN, DatabaseCreator.SUBJECTS_NAME};
-        Cursor testCursor = database.query(true, TABLE, testColumns, null, null, null, null, ID_COLUMN + " DESC", null);
-        if (testCursor != null)
-            testCursor.moveToFirst();
-        while (testCursor.moveToNext()) {
-            if (testCursor.getString(1).equals(groupName))
-                return -1;
+        String[] testColumns = new String[]{DatabaseCreator.SUBJECTS_ID, DatabaseCreator.SUBJECTS_NAME};
+        Cursor testCursor = database.query(true, DatabaseCreator.TABLE_NAME_SUBJECTS, testColumns, DatabaseCreator.SUBJECTS_NAME + "=?", new String[]{groupName}, null, null, DatabaseCreator.SUBJECTS_ID + " DESC", null);
+
+        //abort if group already exists
+        if (testCursor.getCount() > 0) {
+            testCursor.close();
+            return -1;
         }
-        //get a cursor with the id of the given getGroupName
-        String[] cols = new String[]{ID_COLUMN};
-        String[] whereArgs = {groupName};
-        Cursor mCursor = database.query(true, TABLE, cols, DatabaseCreator.SUBJECTS_NAME + "=?", whereArgs, null, null, null, null);
-        //init cursor
-        if (mCursor != null)
-            if (!mCursor.moveToFirst())
-                Log.w("db:groups", "empty cursor");
+        testCursor.close();
 
         //create values for insert or update
         ContentValues values = new ContentValues();
@@ -82,20 +76,9 @@ public class DBGroups {
         values.put(DatabaseCreator.SUBJECTS_SCHEDULED_NUMBER_OF_LESSONS, newScheduledUebungCount);
         values.put(DatabaseCreator.SUBJECTS_SCHEDULED_ASSIGNMENTS_PER_LESSON, newScheduledAssignmentsPerUebung);
 
-        //name already exists->update
-        if (mCursor.getCount() == 1) {
-            Log.i("DBGroups", "changing entry");
-            int existingId = mCursor.getInt(0);
-            String[] whereArgsUpdate = {String.valueOf(existingId)};
-            database.update(TABLE, values, ID_COLUMN + "=?", whereArgsUpdate);
-        }
         //insert name, because it does not exist yet
-        else {
-            Log.i("DBGroups", "adding group");
-            database.insert(TABLE, null, values);
-        }
-        //mandatory cursorclosing
-        mCursor.close();
+        Log.i("DBGroups", "adding group");
+        database.insert(DatabaseCreator.TABLE_NAME_SUBJECTS, null, values);
         return 1;
     }
 
@@ -163,11 +146,11 @@ public class DBGroups {
      */
     public Cursor getAllGroupNames() {
         //sort cursor by name to have a defined order
-        String[] cols = new String[]{ID_COLUMN,
+        String[] cols = new String[]{DatabaseCreator.SUBJECTS_ID,
                 DatabaseCreator.SUBJECTS_NAME,
                 DatabaseCreator.SUBJECTS_MINIMUM_VOTE_PERCENTAGE,
                 DatabaseCreator.SUBJECTS_WANTED_PRESENTATION_POINTS};
-        Cursor mCursor = database.query(true, TABLE, cols, null, null, null, null, ID_COLUMN + " DESC", null);
+        Cursor mCursor = database.query(true, DatabaseCreator.TABLE_NAME_SUBJECTS, cols, null, null, null, null, DatabaseCreator.SUBJECTS_ID + " DESC", null);
         if (mCursor != null)
             mCursor.moveToFirst();
         return mCursor; // iterate to get each value.
@@ -175,8 +158,8 @@ public class DBGroups {
 
     public Cursor getAllButOneGroupNames(int excludedID) {
         //sort cursor by name to have a defined order
-        String[] cols = new String[]{ID_COLUMN, DatabaseCreator.SUBJECTS_NAME};
-        Cursor mCursor = database.query(true, TABLE, cols, ID_COLUMN + "!=?", new String[]{excludedID + ""}, null, null, ID_COLUMN + " DESC", null);
+        String[] cols = new String[]{DatabaseCreator.SUBJECTS_ID, DatabaseCreator.SUBJECTS_NAME};
+        Cursor mCursor = database.query(true, DatabaseCreator.TABLE_NAME_SUBJECTS, cols, DatabaseCreator.SUBJECTS_ID + "!=?", new String[]{excludedID + ""}, null, null, DatabaseCreator.SUBJECTS_ID + " DESC", null);
         if (mCursor != null)
             mCursor.moveToFirst();
         return mCursor; // iterate to get each value.
@@ -184,8 +167,8 @@ public class DBGroups {
 
     public int getNumberOfSubjects() {
         //sort cursor by name to have a defined order
-        String[] cols = new String[]{ID_COLUMN};
-        Cursor mCursor = database.query(true, TABLE, cols, null, null, null, null, ID_COLUMN + " DESC", null);
+        String[] cols = new String[]{DatabaseCreator.SUBJECTS_ID};
+        Cursor mCursor = database.query(true, DatabaseCreator.TABLE_NAME_SUBJECTS, cols, null, null, null, null, DatabaseCreator.SUBJECTS_ID + " DESC", null);
         int answer = mCursor.getCount();
         mCursor.close();
         return answer; // iterate to get each value.
@@ -202,16 +185,39 @@ public class DBGroups {
      */
     public Cursor getAllGroupsInfos() {
         //sort cursor by name to have a defined reihenfolg
-        String[] cols = new String[]{ID_COLUMN,
+        String[] cols = new String[]{DatabaseCreator.SUBJECTS_ID,
                 DatabaseCreator.SUBJECTS_NAME,
                 DatabaseCreator.SUBJECTS_MINIMUM_VOTE_PERCENTAGE,
                 DatabaseCreator.SUBJECTS_WANTED_PRESENTATION_POINTS,
                 DatabaseCreator.SUBJECTS_SCHEDULED_NUMBER_OF_LESSONS,
                 DatabaseCreator.SUBJECTS_SCHEDULED_ASSIGNMENTS_PER_LESSON};
-        Cursor mCursor = database.query(true, TABLE, cols, null, null, null, null, ID_COLUMN + " DESC", null);
+        Cursor mCursor = database.query(true, DatabaseCreator.TABLE_NAME_SUBJECTS, cols, null, null, null, null, DatabaseCreator.SUBJECTS_ID + " DESC", null);
         if (mCursor != null)
             mCursor.moveToFirst();
         return mCursor; // iterate to get each value.
+    }
+
+    public List<Subject> getAllLessons() {
+        String[] cols = new String[]{DatabaseCreator.SUBJECTS_ID,//0
+                DatabaseCreator.SUBJECTS_NAME,//1
+                DatabaseCreator.SUBJECTS_MINIMUM_VOTE_PERCENTAGE,//2
+                DatabaseCreator.SUBJECTS_CURRENT_PRESENTATION_POINTS,//3
+                DatabaseCreator.SUBJECTS_WANTED_PRESENTATION_POINTS,//4
+                DatabaseCreator.SUBJECTS_SCHEDULED_NUMBER_OF_LESSONS,//5
+                DatabaseCreator.SUBJECTS_SCHEDULED_ASSIGNMENTS_PER_LESSON};//6
+        Cursor mCursor = database.query(true, DatabaseCreator.TABLE_NAME_SUBJECTS, cols, null, null, null, null, null, null);
+        ArrayList<Subject> resultList = new ArrayList<>();
+        while (mCursor.moveToNext()) {
+            resultList.add(new Subject(mCursor.getString(0), //id
+                    mCursor.getString(1), //name
+                    mCursor.getString(2), //minvote
+                    mCursor.getString(3), //current prespoints
+                    mCursor.getString(5), //sched lesson count
+                    mCursor.getString(6), //sched assignments per lesson
+                    mCursor.getString(4))); //wanted prespoints
+        }
+        mCursor.close();
+        return resultList;
     }
 
     /**
@@ -220,18 +226,18 @@ public class DBGroups {
      * @return the cursor
      */
     public Cursor getGroupAt(int id) {
-        String[] cols = new String[]{ID_COLUMN, DatabaseCreator.SUBJECTS_NAME,
+        String[] cols = new String[]{DatabaseCreator.SUBJECTS_ID, DatabaseCreator.SUBJECTS_NAME,
                 DatabaseCreator.SUBJECTS_SCHEDULED_NUMBER_OF_LESSONS,
                 DatabaseCreator.SUBJECTS_SCHEDULED_ASSIGNMENTS_PER_LESSON};
         String[] whereArgs = new String[]{String.valueOf(id)};
-        Cursor mCursor = database.query(true, TABLE, cols, ID_COLUMN + "=?", whereArgs, null, null, null, null);
+        Cursor mCursor = database.query(true, DatabaseCreator.TABLE_NAME_SUBJECTS, cols, DatabaseCreator.SUBJECTS_ID + "=?", whereArgs, null, null, null, null);
         if (mCursor != null)
             mCursor.moveToFirst();
         return mCursor; // iterate to get each value.
     }
 
     public Subject getGroup(int databaseId) {
-        String[] cols = new String[]{ID_COLUMN,//0
+        String[] cols = new String[]{DatabaseCreator.SUBJECTS_ID,//0
                 DatabaseCreator.SUBJECTS_NAME,//1
                 DatabaseCreator.SUBJECTS_MINIMUM_VOTE_PERCENTAGE,//2
                 DatabaseCreator.SUBJECTS_CURRENT_PRESENTATION_POINTS,//3
@@ -239,7 +245,7 @@ public class DBGroups {
                 DatabaseCreator.SUBJECTS_SCHEDULED_NUMBER_OF_LESSONS,//5
                 DatabaseCreator.SUBJECTS_SCHEDULED_ASSIGNMENTS_PER_LESSON};//6
         String[] whereArgs = new String[]{String.valueOf(databaseId)};
-        Cursor mCursor = database.query(true, TABLE, cols, ID_COLUMN + "=?", whereArgs, null, null, null, null);
+        Cursor mCursor = database.query(true, DatabaseCreator.TABLE_NAME_SUBJECTS, cols, DatabaseCreator.SUBJECTS_ID + "=?", whereArgs, null, null, null, null);
         if (mCursor != null)
             mCursor.moveToFirst();
         Subject returnValue = new Subject(mCursor.getString(0), //id
@@ -259,7 +265,7 @@ public class DBGroups {
         values.put(DatabaseCreator.SUBJECTS_SCHEDULED_NUMBER_OF_LESSONS, newScheduledUebungCount);
         values.put(DatabaseCreator.SUBJECTS_SCHEDULED_ASSIGNMENTS_PER_LESSON, newScheduledAssignmentsPerUebung);
 
-        database.update(TABLE, values, ID_COLUMN + "=?", new String[]{String.valueOf(groupID)});
+        database.update(DatabaseCreator.TABLE_NAME_SUBJECTS, values, DatabaseCreator.SUBJECTS_ID + "=?", new String[]{String.valueOf(groupID)});
     }
 
     /**
@@ -287,7 +293,7 @@ public class DBGroups {
      * @param id ID of the concerned Group
      * @return see above
      */
-    public int getScheduledAssignmentsPerUebung(int id) {
+    public int getScheduledAssignmentsPerLesson(int id) {
         return Integer.valueOf(getGroup(id).subjectScheduledAssignmentsPerLesson);
     }
 
@@ -307,25 +313,10 @@ public class DBGroups {
      * @return num of affected rows
      */
     public int changeName(int dbID, String oldName, String newName) {
-        String[] cols = new String[]{ID_COLUMN, DatabaseCreator.SUBJECTS_NAME};
         String[] whereArgs = new String[]{String.valueOf(dbID), oldName};
-        Cursor mCursor = database.query(true, TABLE, cols, ID_COLUMN + "=? AND " + DatabaseCreator.SUBJECTS_NAME + "=?", whereArgs, null, null, ID_COLUMN + " DESC", null);
-        if (mCursor != null && mCursor.getCount() != 0) {
-            mCursor.moveToFirst();
-            ContentValues values = new ContentValues();
-            values.put(DatabaseCreator.SUBJECTS_NAME, newName);
-            if (mCursor.getString(1).equals(oldName)) {
-                mCursor.close();
-                return database.update(TABLE, values, ID_COLUMN + "=? AND " + DatabaseCreator.SUBJECTS_NAME + "=?", whereArgs);
-            } else {
-                Log.e("dbgroups:changename", "namecheck failed");
-                mCursor.close();
-                return -1;
-            }
-        } else {//cursor that should contain old name and id is empty -> group does not exist
-            mCursor.close();
-            return -1;
-        }
+        ContentValues values = new ContentValues();
+        values.put(DatabaseCreator.SUBJECTS_NAME, newName);
+        return database.update(DatabaseCreator.TABLE_NAME_SUBJECTS, values, DatabaseCreator.SUBJECTS_ID + "=? AND " + DatabaseCreator.SUBJECTS_NAME + "=?", whereArgs);
     }
 
 
@@ -353,7 +344,7 @@ public class DBGroups {
         values.put(DatabaseCreator.SUBJECTS_MINIMUM_VOTE_PERCENTAGE, minValue);
 
         String[] whereArgs = {String.valueOf(databaseID)};
-        return database.update(TABLE, values, ID_COLUMN + "=?", whereArgs);
+        return database.update(DatabaseCreator.TABLE_NAME_SUBJECTS, values, DatabaseCreator.SUBJECTS_ID + "=?", whereArgs);
     }
 
     /**
@@ -367,7 +358,7 @@ public class DBGroups {
         String[] whereArgs = {String.valueOf(dbID)};
         ContentValues values = new ContentValues();
         values.put(DatabaseCreator.SUBJECTS_CURRENT_PRESENTATION_POINTS, presPoints);
-        return database.update(TABLE, values, ID_COLUMN + "=?", whereArgs);
+        return database.update(DatabaseCreator.TABLE_NAME_SUBJECTS, values, DatabaseCreator.SUBJECTS_ID + "=?", whereArgs);
     }
 
     /**
@@ -392,7 +383,7 @@ public class DBGroups {
         String[] whereArgs = {String.valueOf(dbID)};
         ContentValues values = new ContentValues();
         values.put(DatabaseCreator.SUBJECTS_WANTED_PRESENTATION_POINTS, minPresPoints);
-        return database.update(TABLE, values, ID_COLUMN + "=?", whereArgs);
+        return database.update(DatabaseCreator.TABLE_NAME_SUBJECTS, values, DatabaseCreator.SUBJECTS_ID + "=?", whereArgs);
     }
 
     /**
@@ -406,7 +397,7 @@ public class DBGroups {
     }
 
     class Subject {
-        private String id,
+        String id,
                 subjectName,
                 subjectMinimumVotePercentage,
                 subjectCurrentPresentationPoints,

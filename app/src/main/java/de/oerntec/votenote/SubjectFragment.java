@@ -199,7 +199,7 @@ public class SubjectFragment extends Fragment {
             averageNeededVotesView.setText("Noch durchschnittlich " + String.format("%.2f", neededAssignmentsPerUebung) + " Aufgaben pro Übung");
 
         //set color
-        if (neededAssignmentsPerUebung > groupDB.getScheduledAssignmentsPerUebung(databaseID))
+        if (neededAssignmentsPerUebung > groupDB.getScheduledAssignmentsPerLesson(databaseID))
             averageNeededVotesView.setTextColor(Color.argb(255, 204, 0, 0));//red
         else
             averageNeededVotesView.setTextColor(textColor);

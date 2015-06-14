@@ -8,11 +8,10 @@ import android.util.Log;
 
 public class DBEntries {
     private static DBEntries mInstance;
-    private DatabaseCreator dbHelper;
     private SQLiteDatabase database;
 
     private DBEntries(Context context) {
-        dbHelper = new DatabaseCreator(context);
+        DatabaseCreator dbHelper = new DatabaseCreator(context);
         database = dbHelper.getWritableDatabase();
     }
 
@@ -115,7 +114,7 @@ public class DBEntries {
         String[] whereArgs = new String[]{String.valueOf(groupID)};
         Cursor mCursor = database.query(true, DatabaseCreator.TABLE_NAME_ENTRIES, cols, DatabaseCreator.ENTRIES_LESSON_ID + "=?", whereArgs, null, null, DatabaseCreator.ENTRIES_NUMMER_UEBUNG + " DESC", null);
         //init standard return
-        int returnValue = DBGroups.getInstance().getScheduledAssignmentsPerUebung(groupID);
+        int returnValue = DBGroups.getInstance().getScheduledAssignmentsPerLesson(groupID);
         if (mCursor != null) {
             //sorted by descending, so first value is highest uebung nummer
             mCursor.moveToFirst();

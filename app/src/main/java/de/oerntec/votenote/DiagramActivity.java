@@ -142,7 +142,7 @@ public class DiagramActivity extends Activity {
                 int id = groupsDB.translatePositionToIDExclusive(pos, databaseID);
 
                 int entryHighestX = groupsDB.getScheduledNumberOfLessons(id);
-                int entryHighestY = groupsDB.getScheduledAssignmentsPerUebung(id);
+                int entryHighestY = groupsDB.getScheduledAssignmentsPerLesson(id);
                 Log.i("diagram boundaries", groupsDB.getGroupName(id) + " is checked with id " + id + " and \"position\" " + pos + ", using cID " + colorStackPointer);
                 if (xMax < entryHighestX)
                     xMax = entryHighestX;
@@ -153,7 +153,7 @@ public class DiagramActivity extends Activity {
 
         //exclusively handle activity start series
         int entryHighestX = groupsDB.getScheduledNumberOfLessons(databaseID);
-        int entryHighestY = groupsDB.getScheduledAssignmentsPerUebung(databaseID);
+        int entryHighestY = groupsDB.getScheduledAssignmentsPerLesson(databaseID);
         if (xMax < entryHighestX)
             xMax = entryHighestX;
         if (yMax < entryHighestY)
@@ -215,7 +215,7 @@ public class DiagramActivity extends Activity {
 
         //set amount of x, y labels
         graph.getGridLabelRenderer().setNumHorizontalLabels(groupsDB.getScheduledNumberOfLessons(databaseID));
-        graph.getGridLabelRenderer().setNumVerticalLabels(groupsDB.getScheduledAssignmentsPerUebung(databaseID) + 1);
+        graph.getGridLabelRenderer().setNumVerticalLabels(groupsDB.getScheduledAssignmentsPerLesson(databaseID) + 1);
 
         //change text size
         graph.getGridLabelRenderer().setTextSize(28);
@@ -228,7 +228,7 @@ public class DiagramActivity extends Activity {
         //change y scaling
         graph.getViewport().setYAxisBoundsManual(true);
         graph.getViewport().setMinY(0);
-        graph.getViewport().setMaxY(groupsDB.getScheduledAssignmentsPerUebung(databaseID));
+        graph.getViewport().setMaxY(groupsDB.getScheduledAssignmentsPerLesson(databaseID));
 
         graph.getLegendRenderer().setVisible(true);
     }
