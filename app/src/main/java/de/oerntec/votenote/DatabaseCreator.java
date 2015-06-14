@@ -7,22 +7,16 @@ import android.util.Log;
 
 public class DatabaseCreator extends SQLiteOpenHelper {
     public static final String DATABASE_NAME = "uebungen";
-    //database entries
-    public static final String ENTRIES_ID = "_id";
 
-    /* Database creation sql statement
-     * We need
-     * -key: _id
-     * -which uebung_typ: typ_uebung
-     * -which uebung_number: nummer_uebung
-     * -maximum votierungs: max_votierung
-     * -my votierungs: my_votierung
-     */
-    public static final String ENTRIES_TYP_UEBUNG = "typ_uebung";
+    //entries database
+    public static final String ENTRIES_ID = "_id";
+    public static final String ENTRIES_LESSON_ID = "typ_uebung";
     public static final String ENTRIES_NUMMER_UEBUNG = "nummer_uebung";
     public static final String ENTRIES_MAX_VOTES = "max_votierung";
     public static final String ENTRIES_MY_VOTES = "my_votierung";
+
     public static final String TABLE_NAME_ENTRIES = "uebungen_eintraege";
+
     //database groups
     public static final String SUBJECTS_ID = "_id";
     public static final String SUBJECTS_NAME = "uebung_name";
@@ -37,7 +31,7 @@ public class DatabaseCreator extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 12;
     private static final String CREATE_DATABASE_ENTRIES =
             "create table " + TABLE_NAME_ENTRIES + "( " + ENTRIES_ID + " integer primary key," +
-                    ENTRIES_TYP_UEBUNG + " int not null, " +
+                    ENTRIES_LESSON_ID + " int not null, " +
                     ENTRIES_NUMMER_UEBUNG + " integer not null," +
                     ENTRIES_MAX_VOTES + " integer not null," +
                     ENTRIES_MY_VOTES + " integer not null);";

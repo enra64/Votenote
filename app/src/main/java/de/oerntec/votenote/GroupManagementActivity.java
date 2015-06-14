@@ -345,7 +345,7 @@ public class GroupManagementActivity extends Activity {
         });
 
         //uebung instances help
-        int oldScheduledUebungCount = groupsDB.getScheduledUebungInstanceCount(databaseID);
+        int oldScheduledUebungCount = groupsDB.getScheduledNumberOfLessons(databaseID);
         estimatedUebungCountHelp.setText(oldScheduledUebungCount + "");
 
         //ubeung instances seek

@@ -51,7 +51,7 @@ public class DiagramActivity extends Activity {
         positionID = groupsDB.translateIDtoPosition(databaseID);
 
         //initialize array containing what is enabled
-        enabledArray = new boolean[groupsDB.getUebungCount() - 1];
+        enabledArray = new boolean[groupsDB.getNumberOfSubjects() - 1];
 
         //init random
         r = new Random();
@@ -79,7 +79,7 @@ public class DiagramActivity extends Activity {
     }
 
     private void generateGoldenRatioColors() {
-        int uebungCount = groupsDB.getUebungCount();
+        int uebungCount = groupsDB.getNumberOfSubjects();
         float sat = .5f, val = .95f;
         float goldenFloat = 0.618033988749895f;
         colorArray = new int[uebungCount];
@@ -141,7 +141,7 @@ public class DiagramActivity extends Activity {
             if (enabledArray[pos]) {
                 int id = groupsDB.translatePositionToIDExclusive(pos, databaseID);
 
-                int entryHighestX = groupsDB.getScheduledUebungInstanceCount(id);
+                int entryHighestX = groupsDB.getScheduledNumberOfLessons(id);
                 int entryHighestY = groupsDB.getScheduledAssignmentsPerUebung(id);
                 Log.i("diagram boundaries", groupsDB.getGroupName(id) + " is checked with id " + id + " and \"position\" " + pos + ", using cID " + colorStackPointer);
                 if (xMax < entryHighestX)
@@ -152,7 +152,7 @@ public class DiagramActivity extends Activity {
         }
 
         //exclusively handle activity start series
-        int entryHighestX = groupsDB.getScheduledUebungInstanceCount(databaseID);
+        int entryHighestX = groupsDB.getScheduledNumberOfLessons(databaseID);
         int entryHighestY = groupsDB.getScheduledAssignmentsPerUebung(databaseID);
         if (xMax < entryHighestX)
             xMax = entryHighestX;
@@ -214,7 +214,7 @@ public class DiagramActivity extends Activity {
         graph.addSeries(lineGraphMap.get(databaseID));
 
         //set amount of x, y labels
-        graph.getGridLabelRenderer().setNumHorizontalLabels(groupsDB.getScheduledUebungInstanceCount(databaseID));
+        graph.getGridLabelRenderer().setNumHorizontalLabels(groupsDB.getScheduledNumberOfLessons(databaseID));
         graph.getGridLabelRenderer().setNumVerticalLabels(groupsDB.getScheduledAssignmentsPerUebung(databaseID) + 1);
 
         //change text size
@@ -223,7 +223,7 @@ public class DiagramActivity extends Activity {
         // set manual X bounds
         graph.getViewport().setXAxisBoundsManual(true);
         graph.getViewport().setMinX(1);
-        graph.getViewport().setMaxX(groupsDB.getScheduledUebungInstanceCount(databaseID));
+        graph.getViewport().setMaxX(groupsDB.getScheduledNumberOfLessons(databaseID));
 
         //change y scaling
         graph.getViewport().setYAxisBoundsManual(true);

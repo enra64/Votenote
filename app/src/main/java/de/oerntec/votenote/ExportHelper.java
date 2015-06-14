@@ -32,7 +32,7 @@ public class ExportHelper {
         info.setText("Die Exportdatei wird nach \"" + Environment.getExternalStorageDirectory() + "/Votenote\" gespeichert. (Dein normaler Speicher)");
 
         //list containing uebungs to export
-        final boolean[] untranslatedExportList = new boolean[groupsDB.getUebungCount()];
+        final boolean[] untranslatedExportList = new boolean[groupsDB.getNumberOfSubjects()];
 
         // set up the drawer's list view with items and click listener
         Cursor allNamesCursor = groupsDB.getAllGroupNames();

@@ -188,7 +188,7 @@ public class SubjectFragment extends Fragment {
         float numberOfVotedAssignments = entryDB.getCompletedAssignmentCount(databaseID);
         float remainingNeededAssignments = numberOfNeededAssignments - numberOfVotedAssignments;
         int numberOfElapsedLessons = entryDB.getGroupRecordCount(databaseID);
-        float numberOfLessonsLeft = groupDB.getScheduledUebungInstanceCount(databaseID) - numberOfElapsedLessons;
+        float numberOfLessonsLeft = groupDB.getScheduledNumberOfLessons(databaseID) - numberOfElapsedLessons;
         float neededAssignmentsPerUebung = remainingNeededAssignments / numberOfLessonsLeft;
 
         if (numberOfLessonsLeft == 0)

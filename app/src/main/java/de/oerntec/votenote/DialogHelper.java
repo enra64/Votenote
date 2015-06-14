@@ -37,16 +37,15 @@ public class DialogHelper {
      */
     private static void showLessonDialog(final MainActivity mActivity, final int groupID, final int lessonID) {
         //db access
-        final DBGroups groupsDB = DBGroups.getInstance();
         final DBEntries entryDB = DBEntries.getInstance();
 
         //adding entry, use values put in last
-        int maxVoteValue = groupsDB.getScheduledAssignmentsPerUebung(groupID);
+        int maxVoteValue = entryDB.getPrevMaxVote(groupID);
         int myVoteValue;
 
-        //got a previous lesson which we should load
+        //got a previous lesson which we should load (aka not inserting a new one)
         if (lessonID != -1) {
-            Cursor oldValues = entryDB.getEntry(groupID, lessonID);
+            Cursor oldValues = entryDB.getEntryCursor(groupID, lessonID);
             myVoteValue = oldValues.getCount() > 0 ? oldValues.getInt(0) : 0;
             oldValues.close();
         } else

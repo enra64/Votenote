@@ -6,39 +6,23 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
-public class DBEntries{
-
-    public final static String TABLE=DatabaseCreator.TABLE_NAME_ENTRIES; // name of table
-    public final static String ID_COLUMN = DatabaseCreator.ENTRIES_ID; // id value for employee
-    public final static String UEBUNG_TYP_ID_COLUMN = DatabaseCreator.ENTRIES_TYP_UEBUNG;  //name of the uebung
-
-    /* Database creation sql statement from database helper
-     * We need
-     * -key: _id
-     * -which uebung_typ: typ_uebung
-     * -which uebung_number: nummer_uebung
-     * -maximum votierungs: max_votierung
-     * -my votierungs: my_votierung
-     */
-    public final static String UEBUNG_NUMMER_COLUMN=DatabaseCreator.ENTRIES_NUMMER_UEBUNG;  //which iteration of the uebung is it
-    public final static String MAX_VOTE_NUMBER_COLUMN=DatabaseCreator.ENTRIES_MAX_VOTES;  //max possible vote count
-    public final static String MY_VOTE_NUMBER_COLUMN=DatabaseCreator.ENTRIES_MY_VOTES;  //my vote count
+public class DBEntries {
     private static DBEntries mInstance;
     private DatabaseCreator dbHelper;
     private SQLiteDatabase database;
 
-    private DBEntries(Context context){
+    private DBEntries(Context context) {
         dbHelper = new DatabaseCreator(context);
         database = dbHelper.getWritableDatabase();
     }
 
-    public static DBEntries setupInstance(Context context){
-        if(mInstance == null)
+    public static DBEntries setupInstance(Context context) {
+        if (mInstance == null)
             mInstance = new DBEntries(context);
         return mInstance;
     }
 
-    public static DBEntries getInstance(){
+    public static DBEntries getInstance() {
         return mInstance;
     }
 
@@ -46,68 +30,34 @@ public class DBEntries{
         database.delete(DatabaseCreator.TABLE_NAME_ENTRIES, null, null);
     }
 
-    /**
-     * Adds a group to the Table, if it does not exist;
-     * if a group with the given name exists, we change it.
-     */
-    public void changeOrAddEntry(String uebungTyp, int maxVote, int myVote){
-        //get a cursor with all entries
-        String[] cols = new String[] {ID_COLUMN, UEBUNG_TYP_ID_COLUMN, UEBUNG_TYP_ID_COLUMN};
-        Cursor mCursor = database.query(true, TABLE, cols, null, null, null, null, null, null);
-
-        //create values for insert or update
-        ContentValues values = new ContentValues();
-        values.put(UEBUNG_TYP_ID_COLUMN, uebungTyp);
-        values.put(UEBUNG_NUMMER_COLUMN, 12);
-        values.put(MAX_VOTE_NUMBER_COLUMN, maxVote);
-        values.put(MY_VOTE_NUMBER_COLUMN, myVote);
-
-        //name already exists->update
-        if(mCursor.getCount()==1){
-            int existingId=mCursor.getInt(0);
-            String[] whereArgs={String.valueOf(existingId)};
-            database.update(TABLE, values, ID_COLUMN+"=?", whereArgs);
-        }
-        //insert name, because it does not exist yet
-        else
-            database.insert(TABLE, null, values);
-        //mandatory cursorclosing
-        mCursor.close();
-    }
-
     public Cursor getAllData() {
         return database.rawQuery("SELECT * FROM " + DatabaseCreator.TABLE_NAME_ENTRIES, new String[0]);
     }
 
-    public void changeEntry(int uebungTyp, int uebungNummer, int maxVote, int myVote){
+    public void changeEntry(int uebungTyp, int uebungNummer, int maxVote, int myVote) {
         //create values for insert or update
         ContentValues values = new ContentValues();
-        values.put(MAX_VOTE_NUMBER_COLUMN, maxVote);
-        values.put(MY_VOTE_NUMBER_COLUMN, myVote);
+        values.put(DatabaseCreator.ENTRIES_MAX_VOTES, maxVote);
+        values.put(DatabaseCreator.ENTRIES_MY_VOTES, myVote);
 
-        String[] whereArgs={String.valueOf(uebungTyp), String.valueOf(uebungNummer)};
-        int affectedRows=database.update(TABLE, values, UEBUNG_TYP_ID_COLUMN +"=?"+" AND "+UEBUNG_NUMMER_COLUMN+"=?", whereArgs);
-        Log.i("dbentries:changeentry", "changed "+affectedRows+" entries");
+        String[] whereArgs = {String.valueOf(uebungTyp), String.valueOf(uebungNummer)};
+        int affectedRows = database.update(DatabaseCreator.TABLE_NAME_ENTRIES, values, DatabaseCreator.ENTRIES_LESSON_ID + "=?" + " AND " + DatabaseCreator.ENTRIES_NUMMER_UEBUNG + "=?", whereArgs);
+        Log.i("dbentries:changeentry", "changed " + affectedRows + " entries");
     }
 
-    /**
-     *
-     * @param uebungTyp Type of the uebung concerned
-     * @param uebungNummer Nummer of the entry
-     * @return A cursor containing myvote, maxvote and id
-     */
-    public Cursor getEntry(int uebungTyp, int uebungNummer){
-        String[] cols = new String[] {MY_VOTE_NUMBER_COLUMN, MAX_VOTE_NUMBER_COLUMN, ID_COLUMN};
-        String[] whereArgs={String.valueOf(uebungTyp), String.valueOf(uebungNummer)};
-        Cursor mCursor = database.query(true, TABLE, cols, UEBUNG_TYP_ID_COLUMN + "=?" + " AND " + UEBUNG_NUMMER_COLUMN + "=?", whereArgs, null, null, null, null);
+
+    public Cursor getEntryCursor(int uebungTyp, int uebungNummer) {
+        String[] cols = new String[]{DatabaseCreator.ENTRIES_MY_VOTES, DatabaseCreator.ENTRIES_MAX_VOTES, DatabaseCreator.ENTRIES_ID};
+        String[] whereArgs = {String.valueOf(uebungTyp), String.valueOf(uebungNummer)};
+        Cursor mCursor = database.query(true, DatabaseCreator.TABLE_NAME_ENTRIES, cols, DatabaseCreator.ENTRIES_LESSON_ID + "=?" + " AND " + DatabaseCreator.ENTRIES_NUMMER_UEBUNG + "=?", whereArgs, null, null, null, null);
         if (mCursor != null)
             mCursor.moveToFirst();
         return mCursor; // iterate to get each value.
     }
 
     public void deleteAllEntriesForGroup(int groupId) {
-        String[] whereArgs = new String[] {String.valueOf(groupId)};
-        int checkValue=database.delete(TABLE, UEBUNG_TYP_ID_COLUMN +"=?" , whereArgs);
+        String[] whereArgs = new String[]{String.valueOf(groupId)};
+        int checkValue = database.delete(DatabaseCreator.TABLE_NAME_ENTRIES, DatabaseCreator.ENTRIES_LESSON_ID + "=?", whereArgs);
         Log.i("dbgroups:delete", "deleting all " + checkValue + " entries of type " + groupId);
     }
 
@@ -115,16 +65,14 @@ public class DBEntries{
      * Add an entry to the respective uebung
      */
     public void addEntry(int uebungTyp, int maxVote, int myVote) {
-        Cursor lastEntryNummerCursor = database.query(true, TABLE, new String[]{UEBUNG_NUMMER_COLUMN}, UEBUNG_TYP_ID_COLUMN + "=" + uebungTyp, null, null, null, UEBUNG_NUMMER_COLUMN + " DESC", null);
+        Cursor lastEntryNummerCursor = database.query(true, DatabaseCreator.TABLE_NAME_ENTRIES, new String[]{DatabaseCreator.ENTRIES_NUMMER_UEBUNG}, DatabaseCreator.ENTRIES_LESSON_ID + "=" + uebungTyp, null, null, null, DatabaseCreator.ENTRIES_NUMMER_UEBUNG + " DESC", null);
         //init cursor
         int lastNummer = 1;
-        if (lastEntryNummerCursor != null) {
-            if (!lastEntryNummerCursor.moveToFirst())
-                Log.w("db:groups", "empty cursor");
-        }
-        if (lastEntryNummerCursor.getCount() != 0)
+
+        if (lastEntryNummerCursor.getCount() > 0)
             lastNummer = lastEntryNummerCursor.getInt(0) + 1;
 
+        lastEntryNummerCursor.close();
         addEntry(uebungTyp, maxVote, myVote, lastNummer);
     }
 
@@ -136,72 +84,65 @@ public class DBEntries{
 
         //create values for insert or update
         ContentValues values = new ContentValues();
-        values.put(UEBUNG_TYP_ID_COLUMN, uebungTyp);
-        values.put(UEBUNG_NUMMER_COLUMN, uebungNummer);
-        values.put(MAX_VOTE_NUMBER_COLUMN, maxVote);
-        values.put(MY_VOTE_NUMBER_COLUMN, myVote);
+        values.put(DatabaseCreator.ENTRIES_LESSON_ID, uebungTyp);
+        values.put(DatabaseCreator.ENTRIES_NUMMER_UEBUNG, uebungNummer);
+        values.put(DatabaseCreator.ENTRIES_MAX_VOTES, maxVote);
+        values.put(DatabaseCreator.ENTRIES_MY_VOTES, myVote);
 
-        database.insert(TABLE, null, values);
+        database.insert(DatabaseCreator.TABLE_NAME_ENTRIES, null, values);
     }
 
     /**
-     * Return a cursor for all entries
-     * @return the cursor
+     * remove the entry and decrease the uebung_nummer for all following entries
      */
-    public Cursor getAllRecords(){
-        String[] wantedColumns = new String[] {UEBUNG_NUMMER_COLUMN, MY_VOTE_NUMBER_COLUMN, MAX_VOTE_NUMBER_COLUMN, ID_COLUMN};
-        Cursor mCursor = database.query(true, TABLE, wantedColumns, null, null, null, null, null, null);
-        if (mCursor != null)
-            mCursor.moveToFirst();
-        return mCursor; // iterate to get each value.
-    }
-
-    /**
-     * Set the deleted flag for the given entry
-     */
-    public void removeEntry(int uebungID, int uebungNummer){
+    public void removeEntry(int uebungID, int uebungNummer) {
         //remove correct entry
-        database.delete(TABLE, UEBUNG_TYP_ID_COLUMN + "=" + uebungID + " AND " + UEBUNG_NUMMER_COLUMN + "=" + uebungNummer, null);
+        database.delete(DatabaseCreator.TABLE_NAME_ENTRIES, DatabaseCreator.ENTRIES_LESSON_ID + "=" + uebungID + " AND " + DatabaseCreator.ENTRIES_NUMMER_UEBUNG + "=" + uebungNummer, null);
         //decrease uebungnummer for all following entries
-        String query = "UPDATE "+TABLE+" SET "+UEBUNG_NUMMER_COLUMN+" = "+UEBUNG_NUMMER_COLUMN+" - 1 " +
-                "WHERE "+ UEBUNG_TYP_ID_COLUMN + " = ? AND "+UEBUNG_NUMMER_COLUMN+" > ?";
+        String query = "UPDATE " + DatabaseCreator.TABLE_NAME_ENTRIES + " SET " + DatabaseCreator.ENTRIES_NUMMER_UEBUNG + " = " + DatabaseCreator.ENTRIES_NUMMER_UEBUNG + " - 1 " +
+                "WHERE " + DatabaseCreator.ENTRIES_LESSON_ID + " = ? AND " + DatabaseCreator.ENTRIES_NUMMER_UEBUNG + " > ?";
         database.execSQL(query, new String[]{String.valueOf(uebungID), String.valueOf(uebungNummer)});
-        //UPDATE uebungen_eintraege SET nummer_uebung = nummer_uebung-1 WHERE typ_uebung=1 AND nummer_uebung>3
     }
 
-    public int getPrevMaxVote(int groupID){
-        String[] cols = new String[] {ID_COLUMN, MAX_VOTE_NUMBER_COLUMN};
-        String[] whereArgs = new String[] {String.valueOf(groupID)};
-        Cursor mCursor = database.query(true, TABLE, cols, UEBUNG_TYP_ID_COLUMN +"=?", whereArgs, null, null, UEBUNG_NUMMER_COLUMN+" DESC", null);
+    /**
+     * The previously given maximum vote value, or the scheduled assignment count if no previous entry exists
+     *
+     * @param groupID id of the group tp get a valuie for
+     * @return maximum possible vote
+     */
+    public int getPrevMaxVote(int groupID) {
+        String[] cols = new String[]{DatabaseCreator.ENTRIES_ID, DatabaseCreator.ENTRIES_MAX_VOTES};
+        String[] whereArgs = new String[]{String.valueOf(groupID)};
+        Cursor mCursor = database.query(true, DatabaseCreator.TABLE_NAME_ENTRIES, cols, DatabaseCreator.ENTRIES_LESSON_ID + "=?", whereArgs, null, null, DatabaseCreator.ENTRIES_NUMMER_UEBUNG + " DESC", null);
         //init standard return
-        int returnValue=10;
-        if (mCursor != null){
+        int returnValue = DBGroups.getInstance().getScheduledAssignmentsPerUebung(groupID);
+        if (mCursor != null) {
             //sorted by descending, so first value is highest uebung nummer
             mCursor.moveToFirst();
-            if(mCursor.getCount()!=0)
-                returnValue= mCursor.getInt(1);
+            if (mCursor.getCount() != 0)
+                returnValue = mCursor.getInt(1);
+            mCursor.close();
         }
-        mCursor.close();
         return returnValue;
     }
 
-    public int getPrevVote(int groupID){
-        String[] cols = new String[] {ID_COLUMN, MY_VOTE_NUMBER_COLUMN};
-        String[] whereArgs = new String[] {String.valueOf(groupID)};
-        Cursor mCursor = database.query(true, TABLE, cols, UEBUNG_TYP_ID_COLUMN +"=?", whereArgs, null, null, UEBUNG_NUMMER_COLUMN+" DESC", null);
+    public int getPrevVote(int groupID) {
+        String[] cols = new String[]{DatabaseCreator.ENTRIES_ID, DatabaseCreator.ENTRIES_MY_VOTES};
+        String[] whereArgs = new String[]{String.valueOf(groupID)};
+        Cursor mCursor = database.query(true, DatabaseCreator.TABLE_NAME_ENTRIES, cols, DatabaseCreator.ENTRIES_LESSON_ID + "=?", whereArgs, null, null, DatabaseCreator.ENTRIES_NUMMER_UEBUNG + " DESC", "LIMIT 1");
         //init standard return
-        int returnValue=3;
-        if (mCursor != null){
+        int returnValue = 3;
+        if (mCursor != null) {
             //sorted by descending, so first value is highest uebung nummer
             mCursor.moveToFirst();
-            if(mCursor.getCount()!=0)
-                returnValue= mCursor.getInt(1);
+            if (mCursor.getCount() != 0)
+                returnValue = mCursor.getInt(1);
+            mCursor.close();
         }
-        mCursor.close();
         return returnValue;
     }
 
-    public int getGroupRecordCount(int groupType){
+    public int getGroupRecordCount(int groupType) {
         Cursor mCursor = getGroupRecords(groupType);
         int answer = mCursor.getCount();
         mCursor.close();
@@ -210,32 +151,24 @@ public class DBEntries{
 
     /**
      * Return a cursor for the selected group_type
-     * {UEBUNG_NUMMER_COLUMN, MY_VOTE_NUMBER_COLUMN, MAX_VOTE_NUMBER_COLUMN, ID_COLUMN}
+     * {DatabaseCreator.ENTRIES_NUMMER_UEBUNG, DatabaseCreator.ENTRIES_MY_VOTES, DatabaseCreator.ENTRIES_MAX_VOTES, DatabaseCreator.ENTRIES_ID}
+     *
      * @param groupType The ID or Type of the inquired Group
      * @return the cursor
      */
-    public Cursor getGroupRecords(int groupType){
-        String[] cols = new String[] {UEBUNG_NUMMER_COLUMN, MY_VOTE_NUMBER_COLUMN, MAX_VOTE_NUMBER_COLUMN, ID_COLUMN};
-        String[] whereArgs = new String[] {String.valueOf(groupType)};
-        Cursor mCursor = database.query(true, TABLE, cols, UEBUNG_TYP_ID_COLUMN +"=?", whereArgs, null, null, null, null);
+    public Cursor getGroupRecords(int groupType) {
+        String[] cols = new String[]{DatabaseCreator.ENTRIES_NUMMER_UEBUNG, DatabaseCreator.ENTRIES_MY_VOTES, DatabaseCreator.ENTRIES_MAX_VOTES, DatabaseCreator.ENTRIES_ID};
+        String[] whereArgs = new String[]{String.valueOf(groupType)};
+        Cursor mCursor = database.query(true, DatabaseCreator.TABLE_NAME_ENTRIES, cols, DatabaseCreator.ENTRIES_LESSON_ID + "=?", whereArgs, null, null, null, null);
         if (mCursor != null)
             mCursor.moveToFirst();
         return mCursor; // iterate to get each value.
     }
 
-    public int getCompletedAssignmentCount(int groupID){
+    public int getCompletedAssignmentCount(int groupID) {
         Cursor cursor = database.rawQuery(
-                "SELECT SUM("+MY_VOTE_NUMBER_COLUMN+") FROM "+TABLE+" WHERE "+ UEBUNG_TYP_ID_COLUMN +"="+groupID, null);
-        if(cursor.moveToFirst()) {
-            return cursor.getInt(0);
-        }
-        return -1;
-    }
-
-    public int getElapsedAssignmentCount(int groupID){
-        Cursor cursor = database.rawQuery(
-                "SELECT SUM("+MAX_VOTE_NUMBER_COLUMN+") FROM "+TABLE+" WHERE "+ UEBUNG_TYP_ID_COLUMN +"="+groupID, null);
-        if(cursor.moveToFirst()) {
+                "SELECT SUM(" + DatabaseCreator.ENTRIES_MY_VOTES + ") FROM " + DatabaseCreator.TABLE_NAME_ENTRIES + " WHERE " + DatabaseCreator.ENTRIES_LESSON_ID + "=" + groupID, null);
+        if (cursor.moveToFirst()) {
             return cursor.getInt(0);
         }
         return -1;
