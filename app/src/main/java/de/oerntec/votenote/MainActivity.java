@@ -5,7 +5,6 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.app.FragmentManager;
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
@@ -17,14 +16,18 @@ import android.widget.Toast;
 public class MainActivity extends Activity implements NavigationDrawerFragment.NavigationDrawerCallbacks {
 
     /**
+     * Request code for getting notified when the first subject has been added
+     */
+    public static final int ADD_FIRST_SUBJECT_REQUEST = 0;
+    /**
      * Fragment managing the behaviors, interactions and presentation of the
      * navigation drawer.
      */
-    private static NavigationDrawerFragment mNavigationDrawerFragment;
+    protected static NavigationDrawerFragment mNavigationDrawerFragment;
     //database connection
     private static DBGroups groupsDB;
     private static DBEntries entryDB;
-    private static int mCurrentSelectedPosition;
+    private static int mCurrentSelectedId;
     private static MainActivity me;
     /**
      * Used to store the last screen title. For use in
@@ -71,7 +74,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
     @Override
     public void onNavigationDrawerItemSelected(int position) {
         //keep track of what fragment is shown
-        mCurrentSelectedPosition = position;
+        mCurrentSelectedId = groupsDB.translatePositionToID(position);
         // update the main content by replacing fragments
         Log.i("votenote main", "selected fragment " + position);
         FragmentManager fragmentManager = getFragmentManager();
@@ -87,19 +90,19 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
      * @param section datbase index+1
      */
     public void onSectionAttached(int section) {
-        Cursor allNames = groupsDB.getAllGroupNames();
-        if (allNames.getCount() != 0) {
-            allNames.moveToPosition(section);
-            mTitle = allNames.getString(1);
-        } else
-            mTitle = "Übung hinzufügen!";
+        DBGroups.Subject sectionData = groupsDB.getGroup(groupsDB.translatePositionToID(section));
+        mTitle = sectionData == null ? "Übung hinzufügen!" : sectionData.subjectName;
+        restoreActionBar();
     }
 
     public void restoreActionBar() {
         ActionBar actionBar = getActionBar();
+        if (actionBar == null) return;
+        //noinspection deprecation
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
         actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setTitle(mTitle);
+        invalidateOptionsMenu();
     }
 
     @Override
@@ -110,6 +113,10 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
             // decide what to show in the action bar.
             getMenuInflater().inflate(R.menu.main, menu);
             restoreActionBar();
+            if (groupsDB.getWantedPresPoints(mCurrentSelectedId) == 0)
+                menu.findItem(R.id.action_prespoints).setVisible(false);
+            else
+                menu.findItem(R.id.action_prespoints).setVisible(true);
             return true;
         }
         return super.onCreateOptionsMenu(menu);
@@ -117,38 +124,46 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        final int groupID = groupsDB.translatePositionToID(mCurrentSelectedPosition);
+        final int groupID = mCurrentSelectedId;
 
         switch (item.getItemId()) {
             case R.id.action_groupmanagement:
                 Intent intent = new Intent(this, GroupManagementActivity.class);
+                startActivityForResult(intent, ADD_FIRST_SUBJECT_REQUEST);
                 startActivity(intent);
                 break;
             case R.id.action_add_entry:
-                DialogHelper.showAddLessonDialog(this, groupID);
+                MainDialogHelper.showAddLessonDialog(this, groupID);
                 break;
             case R.id.action_prespoints:
-                DialogHelper.showPresentationPointDialog(groupID, this);
+                MainDialogHelper.showPresentationPointDialog(groupID, this);
                 break;
             case R.id.action_export:
-                new XmlExporter().export("test");
-                //ExportHelper.createExportDialog(this);
+                MainDialogHelper.showExportChooseDialog(this);
                 break;
             case R.id.action_import:
-                new XmlExporter().importXml("test");
-                //ExportHelper.createExportDialog(this);
+                new XmlExporter().importDialog(this);
                 break;
             case R.id.action_show_diagram:
                 //only show diagram if more than 0 entries exist
                 if (entryDB.getGroupRecordCount(groupID) > 0) {
                     Intent bintent = new Intent(this, DiagramActivity.class);
                     bintent.putExtra("databaseID", groupID);
-                    startActivity(bintent);
+                    startActivityForResult(bintent, ADD_FIRST_SUBJECT_REQUEST);
                 } else
                     Toast.makeText(getApplicationContext(), "Diese Übung hat keine Daten!", Toast.LENGTH_SHORT).show();
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == ADD_FIRST_SUBJECT_REQUEST) {
+            mNavigationDrawerFragment.selectItem(0);
+            Log.i("on result", "trying to reload fragment");
+        } else
+            super.onActivityResult(requestCode, resultCode, data);
     }
 
     /**

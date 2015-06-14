@@ -101,7 +101,7 @@ public class SubjectFragment extends Fragment {
         if (databaseID == DBGroups.NO_GROUPS_EXIST) {
             Intent intent = new Intent(getActivity(), GroupManagementActivity.class);
             intent.putExtra("firstGroup", true);
-            startActivity(intent);
+            getActivity().startActivityForResult(intent, MainActivity.ADD_FIRST_SUBJECT_REQUEST);
             return rootView;
         }
 
@@ -132,7 +132,7 @@ public class SubjectFragment extends Fragment {
         voteList.setOnItemClickListener(new OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, final long id) {
-                DialogHelper.showChangeLessonDialog((MainActivity) getActivity(), databaseID, position + 1);
+                MainDialogHelper.showChangeLessonDialog((MainActivity) getActivity(), databaseID, position + 1);
             }
         });
 
@@ -169,7 +169,7 @@ public class SubjectFragment extends Fragment {
      */
     private void setCurrentPresentationPointStatus() {
         int presentationPoints = groupDB.getPresPoints(databaseID);
-        int minimumPresentationPoints = groupDB.getMinPresPoints(databaseID);
+        int minimumPresentationPoints = groupDB.getWantedPresPoints(databaseID);
 
         //set text informing of current presentation point level, handling plural by the way.
         presentationPointsView.setText(presentationPoints + " von " + minimumPresentationPoints + (minimumPresentationPoints > 1 ? " Vorträgen" : " Vortrag"));
@@ -197,6 +197,9 @@ public class SubjectFragment extends Fragment {
             averageNeededVotesView.setText("Mehr Übungen eingetragen als eingestellt!");
         else
             averageNeededVotesView.setText("Noch durchschnittlich " + String.format("%.2f", neededAssignmentsPerUebung) + " Aufgaben pro Übung");
+
+        if (scheduledMaximumAssignments < 0)
+            averageVoteView.setText("Fehler erkannt. Werte unbrauchbar.");
 
         //set color
         if (neededAssignmentsPerUebung > groupDB.getScheduledAssignmentsPerLesson(databaseID))
@@ -240,7 +243,10 @@ public class SubjectFragment extends Fragment {
         int minVote = groupDB.getMinVote(databaseID);
 
         //write percentage and color coding to summaryview
-        averageVoteView.setText(String.format("%.1f", average) + "%");
+        if (Float.isNaN(average))
+            averageVoteView.setText("Add Entry!");
+        else
+            averageVoteView.setText(String.format("%.1f", average) + "%");
 
         //color text in
         averageVoteView.setTextColor(average >= minVote ? Color.argb(255, 153, 204, 0) : Color.argb(255, 204, 0, 0));//red
@@ -263,8 +269,7 @@ public class SubjectFragment extends Fragment {
         @Override
         public View newView(Context context, Cursor cursor, ViewGroup parent) {
             LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-            View retView = inflater.inflate(android.R.layout.simple_list_item_2, parent, false);
-            return retView;
+            return inflater.inflate(android.R.layout.simple_list_item_2, parent, false);
         }
 
         @Override

@@ -13,7 +13,6 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -51,6 +50,7 @@ public class NavigationDrawerFragment extends Fragment {
     /**
      * Helper component that ties the action bar to the navigation drawer.
      */
+    @SuppressWarnings("deprecation")
     private ActionBarDrawerToggle mDrawerToggle;
 
     private DrawerLayout mDrawerLayout;
@@ -133,18 +133,18 @@ public class NavigationDrawerFragment extends Fragment {
         // set up the drawer's list view with items and click listener
         Cursor allEntryCursor = groupsDB.getAllGroupNames();
 
-
-
         // create the adapter using the cursor pointing to the desired data
         //as well as the layout information
         groupAdapter = new SubjectAdapter(getActivity(), allEntryCursor, 0);
 
         ActionBar actionBar = getActivity().getActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setHomeButtonEnabled(true);
-
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setHomeButtonEnabled(true);
+        }
         // ActionBarDrawerToggle ties together the the proper interactions
         // between the navigation drawer and the action bar app icon.
+        //noinspection deprecation
         mDrawerToggle = new ActionBarDrawerToggle(getActivity(), /* host Activity */
                 mDrawerLayout, /* DrawerLayout object */
                 R.drawable.ic_drawer, /* nav drawer image to replace 'Up' caret */
@@ -160,12 +160,10 @@ public class NavigationDrawerFragment extends Fragment {
             @Override
             public void onDrawerClosed(View drawerView) {
                 super.onDrawerClosed(drawerView);
-                if (!isAdded()) {
+                if (!isAdded())
                     return;
-                }
 
                 getActivity().invalidateOptionsMenu(); // calls
-                // onPrepareOptionsMenu()
             }
 
             @Override
@@ -190,16 +188,8 @@ public class NavigationDrawerFragment extends Fragment {
                 }
 
                 getActivity().invalidateOptionsMenu(); // calls
-                // onPrepareOptionsMenu()
             }
         };
-
-        // If the user hasn't 'learned' about the drawer, open it to introduce
-        // them to the drawer,
-        // per the navigation drawer design guidelines.
-        if (!mUserLearnedDrawer && !mFromSavedInstanceState) {
-            //mDrawerLayout.openDrawer(mFragmentContainerView);
-        }
 
         // Defer code dependent on restoration of previous instance state.
         mDrawerLayout.post(new Runnable() {
@@ -211,10 +201,11 @@ public class NavigationDrawerFragment extends Fragment {
         mDrawerLayout.setDrawerListener(mDrawerToggle);
     }
 
-    private void selectItem(int position) {
+    protected void selectItem(int position) {
         mCurrentSelectedPosition = position;
         if (groupAdapter != null)
             groupAdapter.setSelectedPosition(position);
+
         if (mDrawerListView != null) {
             mDrawerListView.setItemChecked(position, true);
         }
@@ -227,7 +218,7 @@ public class NavigationDrawerFragment extends Fragment {
     }
 
     public void reloadAdapter() {
-        groupAdapter.swapCursor(groupsDB.getAllGroupNames()).close();
+        groupAdapter.changeCursor(groupsDB.getAllGroupNames());
     }
 
     @Override
@@ -236,8 +227,7 @@ public class NavigationDrawerFragment extends Fragment {
         try {
             mCallbacks = (NavigationDrawerCallbacks) activity;
         } catch (ClassCastException e) {
-            throw new ClassCastException(
-                    "Activity must implement NavigationDrawerCallbacks.");
+            throw new ClassCastException("Activity must implement NavigationDrawerCallbacks.");
         }
     }
 
@@ -264,15 +254,13 @@ public class NavigationDrawerFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         //gets called upon drawer click
-        if (mDrawerToggle.onOptionsItemSelected(item))
-            return true;
-        return super.onOptionsItemSelected(item);
+        return mDrawerToggle.onOptionsItemSelected(item) || super.onOptionsItemSelected(item);
     }
 
     /**
      * Returns the name of the group at the position according to the db
      *
-     * @param position
+     * @param position the position in drawer
      * @return A string containing the name
      */
     @SuppressWarnings("unused")
@@ -280,13 +268,6 @@ public class NavigationDrawerFragment extends Fragment {
         Cursor allNames = groupsDB.getAllGroupNames();
         allNames.moveToPosition(position);
         return allNames.getString(1);
-    }
-
-    public void forceReload() {
-        Log.i("votenote:drawer", "forced reloading");
-        groupAdapter.swapCursor(groupsDB.getAllGroupNames()).close();
-        mDrawerLayout.closeDrawer(mFragmentContainerView);
-        mDrawerLayout.openDrawer(mFragmentContainerView);
     }
 
     /**
@@ -312,8 +293,7 @@ public class NavigationDrawerFragment extends Fragment {
         @Override
         public View newView(Context context, Cursor cursor, ViewGroup parent) {
             LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-            View retView = inflater.inflate(android.R.layout.simple_list_item_1, parent, false);
-            return retView;
+            return inflater.inflate(android.R.layout.simple_list_item_1, parent, false);
         }
 
         public void setSelectedPosition(int pos) {

@@ -85,8 +85,8 @@ public class DBGroups {
     /**
      * This function returns the id of the group that is displayed at drawerselection in the drawer
      *
-     * @param drawerSelection
-     * @return
+     * @param drawerSelection position in the drawer. _not_ the database id
+     * @return the database id corresponding to the position
      */
     public int translatePositionToID(int drawerSelection) {
         Cursor groups = getAllGroupNames();
@@ -180,8 +180,6 @@ public class DBGroups {
 
     /**
      * returns a cursor with all
-     *
-     * @return
      */
     public Cursor getAllGroupsInfos() {
         //sort cursor by name to have a defined reihenfolg
@@ -236,6 +234,12 @@ public class DBGroups {
         return mCursor; // iterate to get each value.
     }
 
+    /**
+     * Get specific group data
+     *
+     * @param databaseId db id of the group
+     * @return data. null when no group was found
+     */
     public Subject getGroup(int databaseId) {
         String[] cols = new String[]{DatabaseCreator.SUBJECTS_ID,//0
                 DatabaseCreator.SUBJECTS_NAME,//1
@@ -246,8 +250,10 @@ public class DBGroups {
                 DatabaseCreator.SUBJECTS_SCHEDULED_ASSIGNMENTS_PER_LESSON};//6
         String[] whereArgs = new String[]{String.valueOf(databaseId)};
         Cursor mCursor = database.query(true, DatabaseCreator.TABLE_NAME_SUBJECTS, cols, DatabaseCreator.SUBJECTS_ID + "=?", whereArgs, null, null, null, null);
-        if (mCursor != null)
+        if (mCursor.getCount() > 0)
             mCursor.moveToFirst();
+        else
+            return null;
         Subject returnValue = new Subject(mCursor.getString(0), //id
                 mCursor.getString(1), //name
                 mCursor.getString(2), //minvote
@@ -274,34 +280,38 @@ public class DBGroups {
      * @return the cursor
      */
     public int getScheduledWork(int id) {
-        return Integer.valueOf(getGroup(id).subjectScheduledLessonCount) * Integer.valueOf(getGroup(id).subjectScheduledAssignmentsPerLesson);
+        Subject val = getGroup(id);
+        return val == null ? -1 : Integer.valueOf(val.subjectScheduledLessonCount) * Integer.valueOf(val.subjectScheduledAssignmentsPerLesson);
     }
 
     /**
      * Returns the entered amount of uebung instances
      *
-     * @param id ID of the concerned Group
+     * @param dbID ID of the concerned Group
      * @return see above
      */
-    public int getScheduledNumberOfLessons(int id) {
-        return Integer.valueOf(getGroup(id).subjectScheduledLessonCount);
+    public int getScheduledNumberOfLessons(int dbID) {
+        Subject val = getGroup(dbID);
+        return val == null ? -1 : Integer.valueOf(val.subjectScheduledLessonCount);
     }
 
     /**
      * Returns the entered amount estimated assignments per uebung
      *
-     * @param id ID of the concerned Group
+     * @param dbID ID of the concerned Group
      * @return see above
      */
-    public int getScheduledAssignmentsPerLesson(int id) {
-        return Integer.valueOf(getGroup(id).subjectScheduledAssignmentsPerLesson);
+    public int getScheduledAssignmentsPerLesson(int dbID) {
+        Subject val = getGroup(dbID);
+        return val == null ? -1 : Integer.valueOf(val.subjectScheduledAssignmentsPerLesson);
     }
 
     /**
      * Return the name of the group with the specified id
      */
     public String getGroupName(int dbID) {
-        return getGroup(dbID).subjectName;
+        Subject val = getGroup(dbID);
+        return val == null ? "null" : val.subjectName;
     }
 
     /**
@@ -327,7 +337,8 @@ public class DBGroups {
      * @return minvote
      */
     public int getMinVote(int dbID) {
-        return Integer.valueOf(getGroup(dbID).subjectMinimumVotePercentage);
+        Subject val = getGroup(dbID);
+        return val == null ? -1 : Integer.valueOf(val.subjectMinimumVotePercentage);
     }
 
     /**
@@ -368,7 +379,8 @@ public class DBGroups {
      * @return Prespoint number
      */
     public int getPresPoints(int dbID) {
-        return Integer.valueOf(getGroup(dbID).subjectCurrentPresentationPoints);
+        Subject val = getGroup(dbID);
+        return val == null ? -1 : Integer.valueOf(val.subjectCurrentPresentationPoints);
     }
 
     /**
@@ -390,10 +402,11 @@ public class DBGroups {
      * Get the minimum prespoints for the given group
      *
      * @param dbID ID of the Group
-     * @return Minimum number of Prespoints needed for passing
+     * @return Minimum number of Prespoints needed for passing, -1 on null
      */
-    public int getMinPresPoints(int dbID) {
-        return Integer.valueOf(getGroup(dbID).subjectWantedPresentationPoints);
+    public int getWantedPresPoints(int dbID) {
+        Subject val = getGroup(dbID);
+        return val == null ? -1 : Integer.valueOf(val.subjectWantedPresentationPoints);
     }
 
     class Subject {

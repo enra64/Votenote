@@ -1,5 +1,6 @@
 package de.oerntec.votenote;
 
+import android.app.Activity;
 import android.database.Cursor;
 import android.os.Environment;
 import android.util.Log;
@@ -30,7 +31,50 @@ public class XmlExporter {
     // private final SQLiteDatabase db;
     private XmlBuilder xmlBuilder;
 
-    public void export(String fileName) {
+    public void exportDialog(final Activity activity) {
+        SimpleFileDialog fileOpenDialog = new SimpleFileDialog(
+                activity,
+                "FileSave",
+                new SimpleFileDialog.SimpleFileDialogListener() {
+                    @Override
+                    public void onChosenDir(String chosenDir) {
+                        new XmlExporter().export(chosenDir);
+                        if (activity instanceof MainActivity) {
+                            MainActivity.mNavigationDrawerFragment.reloadAdapter();
+                            MainActivity.mNavigationDrawerFragment.selectItem(0);
+                        } else if (activity instanceof GroupManagementActivity) {
+                            ((GroupManagementActivity) activity).reloadList();
+                        }
+                    }
+                }
+        );
+        //You can change the default filename using the public variable "Default_File_Name"
+        //fileOpenDialog.default_file_name = "export.xml";
+        fileOpenDialog.chooseFile_or_Dir(/*fileOpenDialog.default_file_name*/);
+    }
+
+    public void importDialog(final Activity activity) {
+        SimpleFileDialog fileOpenDialog = new SimpleFileDialog(
+                activity,
+                "FileOpen..",
+                new SimpleFileDialog.SimpleFileDialogListener() {
+                    @Override
+                    public void onChosenDir(String chosenDir) {
+                        new XmlExporter().importXml(chosenDir);
+                        if (activity instanceof MainActivity) {
+                            MainActivity.mNavigationDrawerFragment.reloadAdapter();
+                            MainActivity.mNavigationDrawerFragment.selectItem(0);
+                        } else if (activity instanceof GroupManagementActivity) {
+                            ((GroupManagementActivity) activity).reloadList();
+                        }
+                    }
+                }
+        );
+        //You can change the default filename using the public variable "Default_File_Name"
+        fileOpenDialog.chooseFile_or_Dir();
+    }
+
+    private void export(String fileName) {
         try {
             xmlBuilder = new XmlBuilder();
         } catch (IOException e) {
@@ -53,7 +97,7 @@ public class XmlExporter {
             e.printStackTrace();
         }
         try {
-            writeToFile(xmlString, fileName + ".xml");
+            writeToFile(xmlString, fileName);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -75,9 +119,8 @@ public class XmlExporter {
         xmlBuilder.closeTable();
     }
 
-    public void importXml(String filename) {
-        File dir = new File(Environment.getExternalStorageDirectory(), XmlExporter.DATASUBDIRECTORY);
-        File file = new File(dir, filename + ".xml");
+    private void importXml(String filename) {
+        File file = new File(filename);
         InputStream inputStream;
         DBEntries.getInstance().dropData();
         DBGroups.getInstance().dropData();
@@ -98,9 +141,7 @@ public class XmlExporter {
             parser.setInput(in, null);
             parser.nextTag();
             parse(parser);
-        } catch (XmlPullParserException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+        } catch (XmlPullParserException | IOException e) {
             e.printStackTrace();
         } finally {
             try {
@@ -196,7 +237,7 @@ public class XmlExporter {
     }
 
     private String readText(XmlPullParser parser) throws IOException, XmlPullParserException {
-        String result = "";
+        String result;
         result = parser.nextText();
         Log.i("parser", result == null ? "null" : result);
         if (parser.getEventType() != XmlPullParser.END_TAG) {
@@ -266,20 +307,21 @@ public class XmlExporter {
         }
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     private void writeToFile(final String xmlString, final String exportFileName) throws IOException {
         File dir = new File(Environment.getExternalStorageDirectory(), XmlExporter.DATASUBDIRECTORY);
         if (!dir.exists())
             dir.mkdirs();
-        File file = new File(dir, exportFileName);
+        File file = new File(exportFileName);
         file.createNewFile();
 
         ByteBuffer buff = ByteBuffer.wrap(xmlString.getBytes());
         FileChannel channel = new FileOutputStream(file).getChannel();
+        //noinspection TryFinallyCanBeTryWithResources
         try {
             channel.write(buff);
         } finally {
-            if (null != channel)
-                channel.close();
+            channel.close();
         }
     }
 

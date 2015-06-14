@@ -131,7 +131,7 @@ public class GroupManagementActivity extends Activity {
         if (changePosition != ADD_SUBJECT_CODE) {
             databaseID = groupsDB.translatePositionToID(changePosition);
             nameHint = groupsDB.getGroup(databaseID).subjectName;
-            presentationPointsHint = groupsDB.getMinPresPoints(databaseID);
+            presentationPointsHint = groupsDB.getWantedPresPoints(databaseID);
             minimumVotePercentageHint = groupsDB.getMinVote(databaseID);
             scheduledAssignmentsPerLesson = groupsDB.getScheduledAssignmentsPerLesson(databaseID);
             scheduledNumberOfLessons = groupsDB.getScheduledNumberOfLessons(databaseID);
@@ -157,7 +157,7 @@ public class GroupManagementActivity extends Activity {
         final SeekBar estimatedUebungCountSeek = (SeekBar) input.findViewById(R.id.groupmanager_groupsettings_seek_estimated_uebung_count);
 
         //offer hint to user
-        nameInput.setText(nameHint);
+        nameInput.setHint(nameHint);
 
         //minpreshelp
         presInfo.setText("" + presentationPointsHint);
@@ -271,7 +271,8 @@ public class GroupManagementActivity extends Activity {
                             if (groupsDB.addGroup(newName, minimumVoteValue, minimumPresentationPoints, scheduledLessonCount, scheduledAssignmentsPerLesson) == -1)
                                 Toast.makeText(getApplicationContext(), "Übung existiert schon", Toast.LENGTH_SHORT).show();
                             else
-                                groupAdapter.changeCursor(groupsDB.getAllGroupsInfos());
+                                reloadList();
+                            setResult(RESULT_OK);
                         } else {
                             //change minimum vote, pres value
                             if (groupsDB.setMinVote(dbId, minimumVoteValue) != 1)
@@ -285,7 +286,7 @@ public class GroupManagementActivity extends Activity {
 
                             groupsDB.changeName(dbId, finalOldName, newName);
                         }
-                        groupAdapter.changeCursor(groupsDB.getAllGroupsInfos());
+                        reloadList();
                     }
                 }).setNegativeButton("Abbrechen", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
@@ -335,6 +336,10 @@ public class GroupManagementActivity extends Activity {
         }).show();
     }
 
+    public void reloadList() {
+        groupAdapter.changeCursor(groupsDB.getAllGroupsInfos());
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -342,13 +347,23 @@ public class GroupManagementActivity extends Activity {
         // as you specify a parent activity in AndroidManifest.xml.
         switch (item.getItemId()) {
             case android.R.id.home:
+                setResult(RESULT_OK);
                 this.finish();
                 return (true);
+            case R.id.action_read_from_storage:
+                new XmlExporter().importDialog(this);
+                return true;
             case R.id.action_add_group:
                 showLessonDialog(ADD_SUBJECT_CODE);
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        setResult(RESULT_OK);
     }
 
     @Override

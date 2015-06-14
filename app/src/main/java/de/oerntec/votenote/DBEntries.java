@@ -68,7 +68,7 @@ public class DBEntries {
         //init cursor
         int lastNummer = 1;
 
-        if (lastEntryNummerCursor.getCount() > 0)
+        if (lastEntryNummerCursor.moveToFirst())
             lastNummer = lastEntryNummerCursor.getInt(0) + 1;
 
         lastEntryNummerCursor.close();

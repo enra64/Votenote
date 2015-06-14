@@ -10,4 +10,11 @@
         android:title="Neue Gruppe"
         app:showAsAction="always" />
 
+    <item
+        android:id="@+id/action_read_from_storage"
+        android:icon="@drawable/ic_action_storage_access"
+        android:showAsAction="ifRoom"
+        android:title="Importieren"
+        app:showAsAction="ifRoom" />
+
 </menu>

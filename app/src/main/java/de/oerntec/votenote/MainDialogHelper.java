@@ -9,7 +9,7 @@ import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class DialogHelper {
+public class MainDialogHelper {
     private static final int ADD_LESSON_CODE = -2;
 
     /**
@@ -112,6 +112,26 @@ public class DialogHelper {
         }).show();
     }
 
+    public static void showExportChooseDialog(final MainActivity con) {
+        AlertDialog.Builder b = new AlertDialog.Builder(con);
+        b.setTitle("Export");
+        b.setMessage("Nach CSV oder nach XML exportieren? XML-Dateien können wieder importiert werden.");
+        b.setPositiveButton("XML", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                new XmlExporter().exportDialog(con);
+            }
+        });
+        b.setNegativeButton("CSV", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                ExportHelper.createExportDialog(con);
+            }
+        });
+        b.setNeutralButton("Abbrechen", null);
+        b.create().show();
+    }
+
     /**
      * shows the dialog to change the presentation points
      * @param dataBaseId ID of the group in the database
@@ -125,7 +145,7 @@ public class DialogHelper {
         final NumberPicker presPointPicker = (NumberPicker) inputView.findViewById(R.id.mainfragment_dialog_prespoints_picker);
 
         presPointPicker.setMinValue(0);
-        presPointPicker.setMaxValue(groupsDB.getMinPresPoints(dataBaseId));
+        presPointPicker.setMaxValue(groupsDB.getWantedPresPoints(dataBaseId));
         presPointPicker.setValue(groupsDB.getPresPoints(dataBaseId));
 
 		/*
