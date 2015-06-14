@@ -125,7 +125,7 @@ public class MainDialogHelper {
         b.setNegativeButton("CSV", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                ExportHelper.createExportDialog(con);
+                ExportHelper.exportDialog(con);
             }
         });
         b.setNeutralButton("Abbrechen", null);

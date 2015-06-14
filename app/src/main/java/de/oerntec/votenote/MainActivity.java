@@ -12,6 +12,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+/*
+* VERSION HISTORY
+* 1.0: ka.
+* 1.2: Export via xml, csv via filechooser, import from xml. updated looks to lollipop
+* */
+
 @SuppressLint("InflateParams")
 public class MainActivity extends Activity implements NavigationDrawerFragment.NavigationDrawerCallbacks {
 

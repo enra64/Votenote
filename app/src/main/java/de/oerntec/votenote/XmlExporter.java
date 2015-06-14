@@ -2,7 +2,6 @@ package de.oerntec.votenote;
 
 import android.app.Activity;
 import android.database.Cursor;
-import android.os.Environment;
 import android.util.Log;
 import android.util.Xml;
 
@@ -39,12 +38,6 @@ public class XmlExporter {
                     @Override
                     public void onChosenDir(String chosenDir) {
                         new XmlExporter().export(chosenDir);
-                        if (activity instanceof MainActivity) {
-                            MainActivity.mNavigationDrawerFragment.reloadAdapter();
-                            MainActivity.mNavigationDrawerFragment.selectItem(0);
-                        } else if (activity instanceof GroupManagementActivity) {
-                            ((GroupManagementActivity) activity).reloadList();
-                        }
                     }
                 }
         );
@@ -308,14 +301,12 @@ public class XmlExporter {
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    private void writeToFile(final String xmlString, final String exportFileName) throws IOException {
-        File dir = new File(Environment.getExternalStorageDirectory(), XmlExporter.DATASUBDIRECTORY);
-        if (!dir.exists())
-            dir.mkdirs();
-        File file = new File(exportFileName);
+    public void writeToFile(final String string, final String exportFilePath) throws IOException {
+        File file = new File(exportFilePath);
+        file.getParentFile().mkdirs();
         file.createNewFile();
 
-        ByteBuffer buff = ByteBuffer.wrap(xmlString.getBytes());
+        ByteBuffer buff = ByteBuffer.wrap(string.getBytes());
         FileChannel channel = new FileOutputStream(file).getChannel();
         //noinspection TryFinallyCanBeTryWithResources
         try {
