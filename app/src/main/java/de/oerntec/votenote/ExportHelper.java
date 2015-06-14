@@ -19,8 +19,8 @@ public class ExportHelper {
                 }
         );
         //You can change the default filename using the public variable "Default_File_Name"
-        //fileOpenDialog.default_file_name = "export.xml";
-        fileOpenDialog.chooseFile_or_Dir(/*fileOpenDialog.default_file_name*/);
+        fileOpenDialog.default_file_name = "export.csv";
+        fileOpenDialog.chooseFile_or_Dir();
     }
 
     private static void export(final String path) {
