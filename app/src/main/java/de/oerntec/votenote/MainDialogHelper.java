@@ -2,7 +2,6 @@ package de.oerntec.votenote;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.database.Cursor;
 import android.graphics.Color;
 import android.view.View;
 import android.widget.NumberPicker;
@@ -39,17 +38,18 @@ public class MainDialogHelper {
         //db access
         final DBEntries entryDB = DBEntries.getInstance();
 
-        //adding entry, use values put in last
-        int maxVoteValue = entryDB.getPrevMaxVote(groupID);
+        int maxVoteValue;
         int myVoteValue;
 
-        //got a previous lesson which we should load (aka not inserting a new one)
-        if (lessonID != -1) {
-            Cursor oldValues = entryDB.getEntryCursor(groupID, lessonID);
-            myVoteValue = oldValues.getCount() > 0 ? oldValues.getInt(0) : 0;
-            oldValues.close();
-        } else
-            myVoteValue = entryDB.getPrevVote(groupID);
+        //set values according to usage (add or change)
+        if (lessonID == ADD_LESSON_CODE) {
+            maxVoteValue = entryDB.getPreviousMaximumVote(groupID);
+            myVoteValue = entryDB.getPreviousMyVote(groupID);
+        } else {
+            DBEntries.Lesson oldValues = entryDB.getLesson(groupID, lessonID);
+            myVoteValue = oldValues != null ? oldValues.myVotes : 0;
+            maxVoteValue = oldValues != null ? oldValues.maxVotes : 0;
+        }
 
         //inflate rootView
         final View rootView = mActivity.getLayoutInflater().inflate(R.layout.mainfragment_dialog_newentry, null);
@@ -73,24 +73,8 @@ public class MainDialogHelper {
         infoView.setText(myVote.getValue() + " von " + maxVote.getValue() + " Votierungen");
         infoView.setTextColor(Color.argb(255, 153, 204, 0));//green
 
-        //listener for the vote picker
-        NumberPicker.OnValueChangeListener votePickerListener = new NumberPicker.OnValueChangeListener() {
-            @Override
-            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-                //load new values
-                int myVoteValue = myVote.getValue();
-                int maxVoteValue = maxVote.getValue();
-                infoView.setText(myVoteValue + " von " + maxVoteValue + " Votierungen");
-                infoView.setTextColor(myVoteValue <= maxVoteValue ? Color.argb(255, 153, 204, 0) /*green*/ : Color.argb(255, 204, 0, 0));//red
-            }
-        };
-
-        //add change listener to update dialog explanation if pickers changed
-        myVote.setOnValueChangedListener(votePickerListener);
-        maxVote.setOnValueChangedListener(votePickerListener);
-
         //build alertdialog
-        new AlertDialog.Builder(mActivity)
+        final AlertDialog dialog = new AlertDialog.Builder(mActivity)
                 .setTitle(lessonID == ADD_LESSON_CODE ? "Neue Übungsnotiz" : "Übung " + lessonID + " ändern?")
                 .setView(rootView)
                 .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
@@ -98,9 +82,9 @@ public class MainDialogHelper {
                         if (myVote.getValue() <= maxVote.getValue()) {
                             //decide whether to add an entry or change an existing one
                             if (lessonID == ADD_LESSON_CODE)
-                                entryDB.addEntry(groupID, maxVote.getValue(), myVote.getValue());
+                                entryDB.addLesson(groupID, maxVote.getValue(), myVote.getValue());
                             else
-                                entryDB.changeEntry(groupID, lessonID, maxVote.getValue(), myVote.getValue());
+                                entryDB.changeLesson(groupID, lessonID, maxVote.getValue(), myVote.getValue());
                             //reload current fragment
                             mActivity.notifyCurrentFragment();
                         } else
@@ -109,7 +93,27 @@ public class MainDialogHelper {
                 }).setNegativeButton("Abbrechen", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
             }
-        }).show();
+                }).create();
+
+        //listener for the vote picker
+        NumberPicker.OnValueChangeListener votePickerListener = new NumberPicker.OnValueChangeListener() {
+            @Override
+            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+                //load new values
+                int myVoteValue = myVote.getValue();
+                int maxVoteValue = maxVote.getValue();
+                infoView.setText(myVoteValue + " von " + maxVoteValue + " Votierungen");
+                boolean isValid = myVoteValue <= maxVoteValue;
+                dialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(isValid);
+                infoView.setTextColor(isValid ? Color.argb(255, 153, 204, 0) /*green*/ : Color.argb(255, 204, 0, 0));//red
+            }
+        };
+
+        //add change listener to update dialog explanation if pickers changed
+        myVote.setOnValueChangedListener(votePickerListener);
+        maxVote.setOnValueChangedListener(votePickerListener);
+
+        dialog.show();
     }
 
     public static void showExportChooseDialog(final MainActivity con) {

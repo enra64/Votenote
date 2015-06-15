@@ -72,7 +72,7 @@ public class SubjectFragment extends Fragment {
     }
 
     public void notifyOfChangedDataset() {
-        ((LessonAdapter) voteList.getAdapter()).changeCursor(entryDB.getGroupRecords(databaseID));
+        ((LessonAdapter) voteList.getAdapter()).changeCursor(entryDB.getAllLessonsForSubject(databaseID));
         setAverageNeededAssignments();
         setVoteAverage();
         setCurrentPresentationPointStatus();
@@ -118,7 +118,7 @@ public class SubjectFragment extends Fragment {
         setAverageNeededAssignments();
 
         //LISTVIEW FOR uebung instances
-        Cursor allEntryCursor = entryDB.getGroupRecords(databaseID);
+        Cursor allEntryCursor = entryDB.getAllLessonsForSubject(databaseID);
 
         if (allEntryCursor.getCount() == 0)
             Log.e("Main Listview", "Received Empty allEntryCursor for group " + currentGroupName + " with id " + databaseID);
@@ -187,7 +187,7 @@ public class SubjectFragment extends Fragment {
         float numberOfNeededAssignments = (scheduledMaximumAssignments * (float) groupDB.getMinVote(databaseID)) / (float) 100;
         float numberOfVotedAssignments = entryDB.getCompletedAssignmentCount(databaseID);
         float remainingNeededAssignments = numberOfNeededAssignments - numberOfVotedAssignments;
-        int numberOfElapsedLessons = entryDB.getGroupRecordCount(databaseID);
+        int numberOfElapsedLessons = entryDB.getLessonCountForSubject(databaseID);
         float numberOfLessonsLeft = groupDB.getScheduledNumberOfLessons(databaseID) - numberOfElapsedLessons;
         float neededAssignmentsPerUebung = remainingNeededAssignments / numberOfLessonsLeft;
 
@@ -215,7 +215,7 @@ public class SubjectFragment extends Fragment {
      */
     private float calculateAverageVotierung(int forSection) {
         //get avg cursor
-        Cursor avgCursor = entryDB.getGroupRecords(forSection);
+        Cursor avgCursor = entryDB.getAllLessonsForSubject(forSection);
         int maxVoteCount = 0, myVoteCount = 0;
         for (int i = 0; i < avgCursor.getCount(); i++) {
             myVoteCount += avgCursor.getInt(1);
@@ -236,7 +236,7 @@ public class SubjectFragment extends Fragment {
         float average = calculateAverageVotierung(databaseID);
 
         //no votes have been given
-        if (entryDB.getGroupRecordCount(databaseID) == 0)
+        if (entryDB.getLessonCountForSubject(databaseID) == 0)
             averageVoteView.setText("Füge einen Eintrag ein.");
 
         //get minvote for section

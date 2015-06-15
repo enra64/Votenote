@@ -57,6 +57,18 @@ public class DBGroups {
      * @return -1 if group exists, 1 else.
      */
     public int addGroup(String groupName, int minVot, int minPres, int newScheduledUebungCount, int newScheduledAssignmentsPerUebung) {
+        return addGroup(groupName, minVot, minPres, -1, newScheduledUebungCount, newScheduledAssignmentsPerUebung);
+    }
+
+    /**
+     * Adds a group with the given Parameters
+     *
+     * @param groupName Name of the new Group
+     * @param minVot    minimum vote
+     * @param minPres   minimum presentation points
+     * @return -1 if group exists, 1 else.
+     */
+    public int addGroup(String groupName, int minVot, int minPres, int currentPres, int newScheduledUebungCount, int newScheduledAssignmentsPerUebung) {
         //check whether group name exists; abort if it does
         String[] testColumns = new String[]{DatabaseCreator.SUBJECTS_ID, DatabaseCreator.SUBJECTS_NAME};
         Cursor testCursor = database.query(true, DatabaseCreator.TABLE_NAME_SUBJECTS, testColumns, DatabaseCreator.SUBJECTS_NAME + "=?", new String[]{groupName}, null, null, DatabaseCreator.SUBJECTS_ID + " DESC", null);
@@ -72,6 +84,8 @@ public class DBGroups {
         ContentValues values = new ContentValues();
         values.put(DatabaseCreator.SUBJECTS_NAME, groupName);
         values.put(DatabaseCreator.SUBJECTS_MINIMUM_VOTE_PERCENTAGE, minVot);
+        if (currentPres > 0)
+            values.put(DatabaseCreator.SUBJECTS_CURRENT_PRESENTATION_POINTS, currentPres);
         values.put(DatabaseCreator.SUBJECTS_WANTED_PRESENTATION_POINTS, minPres);
         values.put(DatabaseCreator.SUBJECTS_SCHEDULED_NUMBER_OF_LESSONS, newScheduledUebungCount);
         values.put(DatabaseCreator.SUBJECTS_SCHEDULED_ASSIGNMENTS_PER_LESSON, newScheduledAssignmentsPerUebung);
@@ -418,7 +432,8 @@ public class DBGroups {
                 subjectScheduledAssignmentsPerLesson,
                 subjectWantedPresentationPoints;
 
-        public Subject(String id, String subjectName, String subjectMinimumVotePercentage, String subjectCurrentPresentationPoints, String subjectScheduledLessonCount, String subjectScheduledAssignmentsPerLesson, String subjectWantedPresentationPoints) {
+        public Subject(String id, String subjectName, String subjectMinimumVotePercentage, String subjectCurrentPresentationPoints,
+                       String subjectScheduledLessonCount, String subjectScheduledAssignmentsPerLesson, String subjectWantedPresentationPoints) {
             this.id = id;
             this.subjectName = subjectName;
             this.subjectMinimumVotePercentage = subjectMinimumVotePercentage;

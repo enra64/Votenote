@@ -10,8 +10,8 @@ public class DatabaseCreator extends SQLiteOpenHelper {
 
     //entries database
     public static final String ENTRIES_ID = "_id";
-    public static final String ENTRIES_LESSON_ID = "typ_uebung";
-    public static final String ENTRIES_NUMMER_UEBUNG = "nummer_uebung";
+    public static final String ENTRIES_SUBJECT_ID = "typ_uebung";
+    public static final String ENTRIES_LESSON_ID = "nummer_uebung";
     public static final String ENTRIES_MAX_VOTES = "max_votierung";
     public static final String ENTRIES_MY_VOTES = "my_votierung";
 
@@ -31,8 +31,8 @@ public class DatabaseCreator extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 12;
     private static final String CREATE_DATABASE_ENTRIES =
             "create table " + TABLE_NAME_ENTRIES + "( " + ENTRIES_ID + " integer primary key," +
-                    ENTRIES_LESSON_ID + " int not null, " +
-                    ENTRIES_NUMMER_UEBUNG + " integer not null," +
+                    ENTRIES_SUBJECT_ID + " int not null, " +
+                    ENTRIES_LESSON_ID + " integer not null," +
                     ENTRIES_MAX_VOTES + " integer not null," +
                     ENTRIES_MY_VOTES + " integer not null);";
 

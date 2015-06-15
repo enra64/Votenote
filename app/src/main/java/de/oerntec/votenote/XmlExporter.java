@@ -222,7 +222,7 @@ public class XmlExporter {
 
         parser.next();
         parser.require(XmlPullParser.END_TAG, null, "row");
-        db.addEntry(
+        db.addLesson(
                 Integer.valueOf(typ_uebung),
                 Integer.valueOf(max_votierung),
                 Integer.valueOf(my_votierung),
@@ -279,6 +279,7 @@ public class XmlExporter {
                 uebung_name,
                 Integer.valueOf(uebung_minvote),
                 Integer.valueOf(uebung_max_prespoints),
+                Integer.valueOf(uebung_prespoints),
                 Integer.valueOf(uebung_count),
                 Integer.valueOf(uebung_maxvotes_per_ueb));
     }

@@ -54,7 +54,7 @@ public class ExportHelper {
             s.append(";;\r\n");
             s.append("Nummer,Gemachte Aufgaben,Maximale Aufgaben");
             s.append("\r\n");
-            Cursor entryCursor = entryDB.getGroupRecords(Integer.valueOf(subject.id));
+            Cursor entryCursor = entryDB.getAllLessonsForSubject(Integer.valueOf(subject.id));
 
             if (entryCursor.getCount() > 0) {
                 //read db to string

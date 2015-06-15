@@ -152,7 +152,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
                 break;
             case R.id.action_show_diagram:
                 //only show diagram if more than 0 entries exist
-                if (entryDB.getGroupRecordCount(groupID) > 0) {
+                if (entryDB.getLessonCountForSubject(groupID) > 0) {
                     Intent bintent = new Intent(this, DiagramActivity.class);
                     bintent.putExtra("databaseID", groupID);
                     startActivityForResult(bintent, ADD_FIRST_SUBJECT_REQUEST);

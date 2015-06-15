@@ -167,7 +167,7 @@ public class DiagramActivity extends Activity {
 
     private LineGraphSeries<DataPoint> getGroupLineGraph(int group) {
         //get cursor
-        Cursor all = entriesDB.getGroupRecords(group);
+        Cursor all = entriesDB.getAllLessonsForSubject(group);
 
         //debug
         Log.d("diagram", "linegraph for " + databaseID + " (" + groupsDB.getGroupName(databaseID) + ")");
@@ -252,8 +252,7 @@ public class DiagramActivity extends Activity {
         @Override
         public View newView(Context context, Cursor cursor, ViewGroup parent) {
             LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-            View retView = inflater.inflate(android.R.layout.simple_list_item_multiple_choice, parent, false);
-            return retView;
+            return inflater.inflate(android.R.layout.simple_list_item_multiple_choice, parent, false);
         }
 
         @Override
