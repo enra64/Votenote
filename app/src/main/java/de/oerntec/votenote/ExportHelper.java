@@ -8,10 +8,10 @@ import java.util.List;
 
 public class ExportHelper {
     public static void exportDialog(final Activity activity) {
-        SimpleFileDialog fileOpenDialog = new SimpleFileDialog(
+        FileDialog fileOpenDialog = new FileDialog(
                 activity,
                 "FileSave",
-                new SimpleFileDialog.SimpleFileDialogListener() {
+                new FileDialog.FileDialogListener() {
                     @Override
                     public void onChosenDir(String chosenDir) {
                         export(chosenDir);
@@ -19,7 +19,7 @@ public class ExportHelper {
                 }
         );
         //You can change the default filename using the public variable "Default_File_Name"
-        fileOpenDialog.default_file_name = "export.csv";
+        fileOpenDialog.defaultFileName = "export.csv";
         fileOpenDialog.chooseFile_or_Dir();
     }
 

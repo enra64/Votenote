@@ -4,7 +4,7 @@
     android:layout_height="match_parent">
 
     <Button
-        android:id="@+id/dialog_file_chooser_new_directory"
+        android:id="@+id/dialog_file_chooser_new_directory_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
@@ -17,11 +17,11 @@
     <ListView
         android:id="@+id/dialog_file_chooser_list"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_above="@+id/dialog_file_chooser_file_name_edit"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/dialog_file_chooser_new_directory" />
+        android:layout_below="@+id/dialog_file_chooser_new_directory_button" />
 
     <EditText
         android:id="@+id/dialog_file_chooser_file_name_edit"

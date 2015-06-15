@@ -31,10 +31,10 @@ public class XmlExporter {
     private XmlBuilder xmlBuilder;
 
     public void exportDialog(final Activity activity) {
-        SimpleFileDialog fileOpenDialog = new SimpleFileDialog(
+        FileDialog fileOpenDialog = new FileDialog(
                 activity,
                 "FileSave",
-                new SimpleFileDialog.SimpleFileDialogListener() {
+                new FileDialog.FileDialogListener() {
                     @Override
                     public void onChosenDir(String chosenDir) {
                         new XmlExporter().export(chosenDir);
@@ -42,15 +42,15 @@ public class XmlExporter {
                 }
         );
         //You can change the default filename using the public variable "Default_File_Name"
-        //fileOpenDialog.default_file_name = "export.xml";
-        fileOpenDialog.chooseFile_or_Dir(/*fileOpenDialog.default_file_name*/);
+        //fileOpenDialog.defaultFileName = "export.xml";
+        fileOpenDialog.chooseFile_or_Dir(/*fileOpenDialog.defaultFileName*/);
     }
 
     public void importDialog(final Activity activity) {
-        SimpleFileDialog fileOpenDialog = new SimpleFileDialog(
+        FileDialog fileOpenDialog = new FileDialog(
                 activity,
                 "FileOpen..",
-                new SimpleFileDialog.SimpleFileDialogListener() {
+                new FileDialog.FileDialogListener() {
                     @Override
                     public void onChosenDir(String chosenDir) {
                         new XmlExporter().importXml(chosenDir);
