@@ -52,7 +52,7 @@ import java.util.List;
 //import android.content.DialogInterface.OnKeyListener;
 //import android.view.KeyEvent;
 
-public class SimpleFileDialog {
+public class FileDialog {
     private static final int FileOpen = 0;
     private static final int FileSave = 1;
     private static final int FolderChoose = 2;
@@ -71,7 +71,7 @@ public class SimpleFileDialog {
     private ArrayAdapter<String> m_listAdapter = null;
     private boolean m_goToUpper = false;
 
-    public SimpleFileDialog(Context context, String file_select_type, SimpleFileDialogListener SimpleFileDialogListener) {
+    public FileDialog(Context context, String file_select_type, SimpleFileDialogListener SimpleFileDialogListener) {
         switch (file_select_type) {
             case "FileOpen":
                 Select_type = FileOpen;
@@ -142,7 +142,7 @@ public class SimpleFileDialog {
         m_dir = dir;
         m_subdirs = getDirectories(dir);
 
-        class SimpleFileDialogOnClickListener implements DialogInterface.OnClickListener {
+        class SimpleFileDialogOnClickListener implements OnClickListener {
             public void onClick(DialogInterface dialog, int item) {
                 String m_dir_old = m_dir;
                 String sel = "" + ((AlertDialog) dialog).getListView().getAdapter().getItem(item);
@@ -247,7 +247,7 @@ public class SimpleFileDialog {
     //////                                   START DIALOG DEFINITION                                    //////
     //////////////////////////////////////////////////////////////////////////////////////////////////////////
     private AlertDialog.Builder createDirectoryChooserDialog(String title, List<String> listItems,
-                                                             DialogInterface.OnClickListener onClickListener) {
+                                                             OnClickListener onClickListener) {
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(m_context);
         ////////////////////////////////////////////////
         // Create title text showing file select type //
@@ -287,7 +287,7 @@ public class SimpleFileDialog {
                                                     // Show new folder name input dialog
                                                     new AlertDialog.Builder(m_context).
                                                             setTitle("New Folder Name").
-                                                            setView(input).setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                                            setView(input).setPositiveButton("OK", new OnClickListener() {
                                                         public void onClick(DialogInterface dialog, int whichButton) {
                                                             Editable newDir = input.getText();
                                                             String newDirName = newDir.toString();
