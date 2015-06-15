@@ -137,7 +137,7 @@ public class NavigationDrawerFragment extends Fragment {
         //as well as the layout information
         groupAdapter = new SubjectAdapter(getActivity(), allEntryCursor, 0);
 
-        ActionBar actionBar = getActivity().getActionBar();
+        final ActionBar actionBar = getActivity().getActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setHomeButtonEnabled(true);
@@ -172,6 +172,8 @@ public class NavigationDrawerFragment extends Fragment {
                 if (!isAdded()) {
                     return;
                 }
+                if (actionBar != null)
+                    actionBar.setTitle("VoteNote");
                 mDrawerListView.setAdapter(groupAdapter);
                 mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
 
