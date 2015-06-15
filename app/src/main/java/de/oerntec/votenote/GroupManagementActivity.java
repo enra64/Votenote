@@ -348,8 +348,8 @@ public class GroupManagementActivity extends Activity {
         switch (item.getItemId()) {
             case android.R.id.home:
                 setResult(RESULT_OK);
-                this.finish();
-                return (true);
+                finish();
+                return true;
             case R.id.action_read_from_storage:
                 new XmlExporter().importDialog(this);
                 return true;
@@ -358,12 +358,6 @@ public class GroupManagementActivity extends Activity {
                 return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        setResult(RESULT_OK);
     }
 
     @Override

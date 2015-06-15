@@ -136,7 +136,6 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
             case R.id.action_groupmanagement:
                 Intent intent = new Intent(this, GroupManagementActivity.class);
                 startActivityForResult(intent, ADD_FIRST_SUBJECT_REQUEST);
-                startActivity(intent);
                 break;
             case R.id.action_add_entry:
                 MainDialogHelper.showAddLessonDialog(this, groupID);
