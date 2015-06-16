@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.util.List;
 
 public class ExportHelper {
-    public static void exportDialog(final Activity activity) {
+    public static FileDialog exportDialog(final Activity activity) {
         FileDialog fileOpenDialog = new FileDialog(
                 activity,
                 "FileSave",
@@ -21,6 +21,7 @@ public class ExportHelper {
         //You can change the default filename using the public variable "Default_File_Name"
         fileOpenDialog.defaultFileName = "export.csv";
         fileOpenDialog.chooseFile_or_Dir();
+        return fileOpenDialog;
     }
 
     private static void export(final String path) {

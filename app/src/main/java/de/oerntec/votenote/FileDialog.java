@@ -25,12 +25,14 @@ package de.oerntec.votenote;
 */
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.os.Environment;
 import android.text.Editable;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -156,6 +158,17 @@ public class FileDialog {
                 }
             }
         }).setNegativeButton("Cancel", null);
+        dialogBuilder.setOnKeyListener(new Dialog.OnKeyListener() {
+            @Override
+            public boolean onKey(DialogInterface arg0, int keyCode, KeyEvent event) {
+                if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN) {
+                    goToUpperLevel();
+                    Log.i("keylistener", "back");
+                    return true;
+                }
+                return false;
+            }
+        });
 
         final AlertDialog dirsDialog = dialogBuilder.create();
 
@@ -205,7 +218,7 @@ public class FileDialog {
 
         Collections.sort(dirs, new Comparator<String>() {
             public int compare(String o1, String o2) {
-                //small to big. begin with items containing / (list directories first)
+                //small to big.(a to z) begin with items containing .. | / (list directories first)
                 if ("..".equals(o1))
                     return -1;
                 if ("..".equals(o2))
@@ -315,6 +328,16 @@ public class FileDialog {
 
         builder.setCancelable(false);
         return builder;
+    }
+
+    private void goToUpperLevel() {
+        if (m_dir.equals(mSdcardDirectory) || "/".equals(m_dir))
+            return;
+        m_dir = m_dir.substring(0, m_dir.lastIndexOf("/"));
+        if ("".equals(m_dir)) {
+            m_dir = "/";
+        }
+        updateDirectory();
     }
 
     private void updateDirectory() {

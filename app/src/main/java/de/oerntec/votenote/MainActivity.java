@@ -35,6 +35,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
     private static DBEntries entryDB;
     private static int mCurrentSelectedId;
     private static MainActivity me;
+
     /**
      * Used to store the last screen title. For use in
      * {@link #restoreActionBar()}.
