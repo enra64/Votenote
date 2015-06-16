@@ -8,7 +8,6 @@ import java.io.IOException;
 import de.oerntec.votenote.DBLessons;
 import de.oerntec.votenote.DBSubjects;
 import de.oerntec.votenote.DatabaseCreator;
-import de.oerntec.votenote.FileDialog;
 
 /**
  * XmlBuilder is used to write XML tags (open and close, and a few attributes)
@@ -72,7 +71,7 @@ public class XmlExporter {
             do {
                 xmlBuilder.openRow();
                 for (int i = 0; i < cols; i++)
-                    if (allCursor.getColumnIndex("_id") != i)
+                    if ("subjects".equals(name) || allCursor.getColumnIndex("_id") != i)
                         xmlBuilder.addColumn(allCursor.getColumnName(i), allCursor.getString(i));
                 xmlBuilder.closeRow();
             } while (allCursor.moveToNext());

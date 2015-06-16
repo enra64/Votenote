@@ -3,13 +3,13 @@
 
     <Preference
         android:key="csv_export"
-        android:title="CSV-Datei erstellen"></Preference>
+        android:title="CSV-Datei erstellen" />
     <Preference
         android:key="xml_export"
-        android:title="XML-Sicherung erstellen"></Preference>
+        android:title="XML-Sicherung erstellen" />
 
     <Preference
         android:key="xml_import"
-        android:title="XML-Sicherung importieren"></Preference>
+        android:title="XML-Sicherung importieren" />
 
 </PreferenceScreen>

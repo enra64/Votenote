@@ -95,7 +95,9 @@ public class DBLessons {
 
     public void deleteAllEntriesForGroup(int subjectId) {
         String[] whereArgs = new String[]{String.valueOf(subjectId)};
-        int checkValue = database.delete(DatabaseCreator.TABLE_NAME_ENTRIES, DatabaseCreator.ENTRIES_SUBJECT_ID + "=?", whereArgs);
+        int checkValue =
+                database.delete(DatabaseCreator.TABLE_NAME_ENTRIES,
+                        DatabaseCreator.ENTRIES_SUBJECT_ID + "=?", whereArgs);
         Log.i("dbgroups:delete", "deleting all " + checkValue + " entries of type " + subjectId);
     }
 
@@ -104,15 +106,16 @@ public class DBLessons {
      */
     public void addLesson(int subjectId, int maxVote, int myVote) {
         String[] cols = new String[]{DatabaseCreator.ENTRIES_LESSON_ID};
-        Cursor lastEntryNummerCursor =
-                database.query(true, DatabaseCreator.TABLE_NAME_ENTRIES, cols, DatabaseCreator.ENTRIES_SUBJECT_ID + "=" + subjectId, null, null, null, DatabaseCreator.ENTRIES_LESSON_ID + " DESC", "1");
+        Cursor lastEntryNummerCursor = database.query(true, DatabaseCreator.TABLE_NAME_ENTRIES, cols,
+                DatabaseCreator.ENTRIES_SUBJECT_ID + "=" + subjectId, null,
+                null, null, DatabaseCreator.ENTRIES_LESSON_ID + " DESC", "1");
         //default value
-        int lastNummer = 1;
+        int lastEntryLessonId = 1;
         //try to get a new lesson id
         if (lastEntryNummerCursor.moveToFirst())
-            lastNummer = lastEntryNummerCursor.getInt(0) + 1;
+            lastEntryLessonId = lastEntryNummerCursor.getInt(0) + 1;
         lastEntryNummerCursor.close();
-        addLesson(subjectId, maxVote, myVote, lastNummer);
+        addLesson(subjectId, maxVote, myVote, lastEntryLessonId);
     }
 
     /**

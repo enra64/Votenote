@@ -8,7 +8,6 @@ import java.util.List;
 
 import de.oerntec.votenote.DBLessons;
 import de.oerntec.votenote.DBSubjects;
-import de.oerntec.votenote.FileDialog;
 import de.oerntec.votenote.MainActivity;
 import de.oerntec.votenote.Subject;
 

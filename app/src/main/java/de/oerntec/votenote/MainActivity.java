@@ -22,6 +22,7 @@ import android.widget.Toast;
 * updated looks to lollipop
 * settings activity for importing and exporting and reverse lesson sort and drawer start
 * added a digit behind the comma on percentage to avoid fucking up
+* moved subject control to settings activity
 * */
 
 @SuppressLint("InflateParams")
@@ -166,10 +167,10 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
         final int groupID = mCurrentSelectedId;
 
         switch (item.getItemId()) {
-            case R.id.action_groupmanagement:
+            /*case R.id.action_groupmanagement:
                 Intent intent = new Intent(this, GroupManagementActivity.class);
                 startActivityForResult(intent, ADD_FIRST_SUBJECT_REQUEST);
-                break;
+                break;*/
             case R.id.action_add_entry:
                 MainDialogHelper.showAddLessonDialog(this, groupID);
                 break;

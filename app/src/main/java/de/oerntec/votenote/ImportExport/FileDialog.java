@@ -1,4 +1,4 @@
-package de.oerntec.votenote;
+package de.oerntec.votenote.ImportExport;
 
 /*
 * 
@@ -51,6 +51,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+
+import de.oerntec.votenote.R;
 
 public class FileDialog {
     private static final int FileOpen = 0;

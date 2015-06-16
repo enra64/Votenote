@@ -1,4 +1,7 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <Preference
+        android:key="subject_manage_key"
+        android:title="Übungen verwalten" />
 
     <CheckBoxPreference
         android:defaultValue="false"
@@ -14,6 +17,6 @@
 
     <Preference
         android:key="version_key"
-        android:title="Version 1.2"></Preference>
+        android:title="Version 1.2" />
 
 </PreferenceScreen>

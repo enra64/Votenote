@@ -1,8 +1,11 @@
 package de.oerntec.votenote.ImportExport;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.util.Log;
 import android.util.Xml;
+import android.widget.Toast;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -15,19 +18,45 @@ import java.io.InputStream;
 
 import de.oerntec.votenote.DBLessons;
 import de.oerntec.votenote.DBSubjects;
-import de.oerntec.votenote.FileDialog;
 import de.oerntec.votenote.GroupManagementActivity;
 import de.oerntec.votenote.MainActivity;
 
 public class XmlImporter {
+    public static boolean success;
+
     public static void importDialog(final Activity activity) {
+        //if there already are subjects, ask the user whether he truly wants to delete everything
+        if (DBSubjects.getInstance().getCount() > 0) {
+            AlertDialog.Builder b = new AlertDialog.Builder(activity);
+            b.setTitle("Überschreiben?");
+            b.setMessage("Alle derzeitigen Einträge werden gelöscht!");
+            b.setPositiveButton("Fortfahren", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    startDialog(activity);
+                }
+            });
+            b.setNegativeButton("Abbrechen", null);
+            b.show();
+        } else
+            startDialog(activity);
+    }
+
+    private static void startDialog(final Activity activity) {
         FileDialog fileOpenDialog = new FileDialog(
                 activity,
                 "FileOpen..",
                 new FileDialog.FileDialogListener() {
                     @Override
                     public void onChosenDir(String chosenDir) {
+                        success = true;
                         importXml(chosenDir);
+                        //check whether an exception was catched
+                        if (success)
+                            Toast.makeText(activity, "Kein Fehler", Toast.LENGTH_LONG).show();
+                        else
+                            Toast.makeText(activity, "Fehler", Toast.LENGTH_LONG).show();
+
                         if (activity instanceof MainActivity) {
                             MainActivity.mNavigationDrawerFragment.reloadAdapter();
                             MainActivity.mNavigationDrawerFragment.selectItem(0);
@@ -64,12 +93,14 @@ public class XmlImporter {
             parser.nextTag();
             parse(parser);
         } catch (XmlPullParserException | IOException e) {
+            success = false;
             e.printStackTrace();
         } finally {
             try {
                 in.close();
             } catch (IOException e) {
                 e.printStackTrace();
+                success = false;
             }
         }
     }
@@ -84,7 +115,7 @@ public class XmlImporter {
             // Starts by looking for the entry tag
             if (name.equals("table")) {
                 parseEntryTable(parser);
-                parser.next();
+                parser.nextTag();
                 parseSubjectTable(parser);
             } else {
                 skip(parser);
@@ -129,27 +160,27 @@ public class XmlImporter {
         DBLessons db = DBLessons.getInstance();
         parser.require(XmlPullParser.START_TAG, null, "row");
 
-        parser.next();
+        parser.nextTag();
         parser.require(XmlPullParser.START_TAG, null, "typ_uebung");
         String typ_uebung = readText(parser);
         parser.require(XmlPullParser.END_TAG, null, "typ_uebung");
 
-        parser.next();
+        parser.nextTag();
         parser.require(XmlPullParser.START_TAG, null, "nummer_uebung");
         String nummer_uebung = readText(parser);
         parser.require(XmlPullParser.END_TAG, null, "nummer_uebung");
 
-        parser.next();
+        parser.nextTag();
         parser.require(XmlPullParser.START_TAG, null, "max_votierung");
         String max_votierung = readText(parser);
         parser.require(XmlPullParser.END_TAG, null, "max_votierung");
 
-        parser.next();
+        parser.nextTag();
         parser.require(XmlPullParser.START_TAG, null, "my_votierung");
         String my_votierung = readText(parser);
         parser.require(XmlPullParser.END_TAG, null, "my_votierung");
 
-        parser.next();
+        parser.nextTag();
         parser.require(XmlPullParser.END_TAG, null, "row");
         db.addLesson(
                 Integer.valueOf(typ_uebung),
@@ -172,39 +203,45 @@ public class XmlImporter {
         DBSubjects db = DBSubjects.getInstance();
         parser.require(XmlPullParser.START_TAG, null, "row");
 
-        parser.next();
+        parser.nextTag();
+        parser.require(XmlPullParser.START_TAG, null, "_id");
+        String id = readText(parser);
+        parser.require(XmlPullParser.END_TAG, null, "_id");
+
+        parser.nextTag();
         parser.require(XmlPullParser.START_TAG, null, "uebung_name");
         String uebung_name = readText(parser);
         parser.require(XmlPullParser.END_TAG, null, "uebung_name");
 
-        parser.next();
+        parser.nextTag();
         parser.require(XmlPullParser.START_TAG, null, "uebung_minvote");
         String uebung_minvote = readText(parser);
         parser.require(XmlPullParser.END_TAG, null, "uebung_minvote");
 
-        parser.next();
+        parser.nextTag();
         parser.require(XmlPullParser.START_TAG, null, "uebung_prespoints");
         String uebung_prespoints = readText(parser);
         parser.require(XmlPullParser.END_TAG, null, "uebung_prespoints");
 
-        parser.next();
+        parser.nextTag();
         parser.require(XmlPullParser.START_TAG, null, "uebung_count");
         String uebung_count = readText(parser);
         parser.require(XmlPullParser.END_TAG, null, "uebung_count");
 
-        parser.next();
+        parser.nextTag();
         parser.require(XmlPullParser.START_TAG, null, "uebung_maxvotes_per_ueb");
         String uebung_maxvotes_per_ueb = readText(parser);
         parser.require(XmlPullParser.END_TAG, null, "uebung_maxvotes_per_ueb");
 
-        parser.next();
+        parser.nextTag();
         parser.require(XmlPullParser.START_TAG, null, "uebung_max_prespoints");
         String uebung_max_prespoints = readText(parser);
         parser.require(XmlPullParser.END_TAG, null, "uebung_max_prespoints");
 
-        parser.next();
+        parser.nextTag();
         parser.require(XmlPullParser.END_TAG, null, "row");
         db.addGroup(
+                Integer.valueOf(id),
                 uebung_name,
                 Integer.valueOf(uebung_minvote),
                 Integer.valueOf(uebung_max_prespoints),

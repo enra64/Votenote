@@ -3,6 +3,7 @@ package de.oerntec.votenote;
 import android.annotation.TargetApi;
 import android.app.ActionBar;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
@@ -157,6 +158,15 @@ public class SettingsActivity extends PreferenceActivity {
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 XmlExporter.exportDialog(thisRef);
+                return true;
+            }
+        });
+
+        findPreference("subject_manage_key").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                Intent intent = new Intent(thisRef, GroupManagementActivity.class);
+                startActivity(intent);
                 return true;
             }
         });
