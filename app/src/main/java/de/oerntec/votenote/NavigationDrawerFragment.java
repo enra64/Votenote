@@ -64,7 +64,7 @@ public class NavigationDrawerFragment extends Fragment {
 
     private SubjectAdapter groupAdapter;
 
-    private DBGroups groupsDB;
+    private DBSubjects groupsDB;
 
     public NavigationDrawerFragment() {
     }
@@ -74,7 +74,7 @@ public class NavigationDrawerFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         //get database
-        groupsDB = DBGroups.getInstance();
+        groupsDB = DBSubjects.getInstance();
 
         // Read in the flag indicating whether or not the user has demonstrated
         // awareness of the
@@ -205,7 +205,7 @@ public class NavigationDrawerFragment extends Fragment {
         mDrawerLayout.setDrawerListener(mDrawerToggle);
     }
 
-    protected void selectItem(int position) {
+    public void selectItem(int position) {
         mCurrentSelectedPosition = position;
         if (groupAdapter != null)
             groupAdapter.setSelectedPosition(position);

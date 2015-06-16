@@ -33,11 +33,11 @@ public class SubjectFragment extends Fragment {
     /**
      * DB Singleton instance
      */
-    private static DBGroups groupDB = DBGroups.getInstance();
+    private static DBSubjects groupDB = DBSubjects.getInstance();
     /**
      * DB Singleton instance
      */
-    private static DBEntries entryDB = DBEntries.getInstance();
+    private static DBLessons entryDB = DBLessons.getInstance();
 
     /**
      * Save the default text color, because apparently there is no constant for that.
@@ -98,7 +98,7 @@ public class SubjectFragment extends Fragment {
         textColor = presentationPointsView.getCurrentTextColor();
 
         //if translatedSection is -1, no group has been added yet
-        if (databaseID == DBGroups.NO_GROUPS_EXIST) {
+        if (databaseID == DBSubjects.NO_GROUPS_EXIST) {
             Intent intent = new Intent(getActivity(), GroupManagementActivity.class);
             intent.putExtra("firstGroup", true);
             getActivity().startActivityForResult(intent, MainActivity.ADD_FIRST_SUBJECT_REQUEST);

@@ -10,11 +10,14 @@ import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceCategory;
 import android.preference.PreferenceFragment;
-import android.preference.PreferenceManager;
 import android.support.v4.app.NavUtils;
 import android.view.MenuItem;
 
 import java.util.List;
+
+import de.oerntec.votenote.ImportExport.CsvExporter;
+import de.oerntec.votenote.ImportExport.XmlExporter;
+import de.oerntec.votenote.ImportExport.XmlImporter;
 
 /**
  * A {@link PreferenceActivity} that presents a set of application settings. On
@@ -70,28 +73,6 @@ public class SettingsActivity extends PreferenceActivity {
                 || !isXLargeTablet(context);
     }
 
-    /**
-     * Binds a preference's summary to its value. More specifically, when the
-     * preference's value is changed, its summary (line of text below the
-     * preference title) is updated to reflect the value. The summary is also
-     * immediately updated upon calling this method. The exact display format is
-     * dependent on the type of preference.
-     *
-     * @see #sBindPreferenceSummaryToValueListener
-     */
-    private static void bindPreferenceSummaryToValue(Preference preference) {
-        // Set the listener to watch for value changes.
-        preference.setOnPreferenceChangeListener(sBindPreferenceSummaryToValueListener);
-
-        // Trigger the listener immediately with the preference's
-        // current value.
-        sBindPreferenceSummaryToValueListener.onPreferenceChange(preference,
-                PreferenceManager
-                        .getDefaultSharedPreferences(preference.getContext())
-                        .getString(preference.getKey(), ""));
-    }
-
-    //sort lessons in reverse, start with drawer open
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -122,7 +103,6 @@ public class SettingsActivity extends PreferenceActivity {
             //
             // http://developer.android.com/design/patterns/navigation.html#up-vs-back
             //
-            // TODO: If Settings has multiple levels, Up should navigate up
             // that hierarchy.
             NavUtils.navigateUpFromSameTask(this);
             return true;
@@ -168,7 +148,7 @@ public class SettingsActivity extends PreferenceActivity {
         findPreference("csv_export").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                ExportHelper.exportDialog(thisRef);
+                CsvExporter.exportDialog(thisRef);
                 return true;
             }
         });
@@ -176,7 +156,7 @@ public class SettingsActivity extends PreferenceActivity {
         findPreference("xml_export").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                new XmlExporter().exportDialog(thisRef);
+                XmlExporter.exportDialog(thisRef);
                 return true;
             }
         });
@@ -184,7 +164,7 @@ public class SettingsActivity extends PreferenceActivity {
         findPreference("xml_import").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                new XmlExporter().importDialog(thisRef);
+                XmlImporter.importDialog(thisRef);
                 return true;
             }
         });

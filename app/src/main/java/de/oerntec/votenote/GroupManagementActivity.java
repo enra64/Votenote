@@ -23,12 +23,14 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import de.oerntec.votenote.ImportExport.XmlImporter;
+
 @SuppressLint("InflateParams")
 public class GroupManagementActivity extends Activity {
 
     private static final int ADD_SUBJECT_CODE = -1;
-    static DBGroups groupsDB;
-    static DBEntries entriesDB;
+    static DBSubjects groupsDB;
+    static DBLessons entriesDB;
     static SimpleCursorAdapter groupAdapter;
     ListView mainList;
 
@@ -56,8 +58,8 @@ public class GroupManagementActivity extends Activity {
             }
         }
         //get db
-        groupsDB = DBGroups.getInstance();
-        entriesDB = DBEntries.getInstance();
+        groupsDB = DBSubjects.getInstance();
+        entriesDB = DBLessons.getInstance();
 
 		/*
 		 * create listview
@@ -204,7 +206,6 @@ public class GroupManagementActivity extends Activity {
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
             }
-
             @Override
             public void onProgressChanged(SeekBar arg0, int progress, boolean arg2) {
                 estimatedAssignmentsHelp.setText(progress + "");
@@ -335,7 +336,7 @@ public class GroupManagementActivity extends Activity {
                 finish();
                 return true;
             case R.id.action_read_from_storage:
-                new XmlExporter().importDialog(this);
+                XmlImporter.importDialog(this);
                 return true;
             case R.id.action_add_group:
                 showLessonDialog(ADD_SUBJECT_CODE);

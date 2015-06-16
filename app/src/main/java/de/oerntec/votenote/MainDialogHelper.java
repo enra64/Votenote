@@ -36,7 +36,7 @@ public class MainDialogHelper {
      */
     private static void showLessonDialog(final MainActivity mActivity, final int groupID, final int lessonID) {
         //db access
-        final DBEntries entryDB = DBEntries.getInstance();
+        final DBLessons entryDB = DBLessons.getInstance();
 
         int maxVoteValue;
         int myVoteValue;
@@ -46,7 +46,7 @@ public class MainDialogHelper {
             maxVoteValue = entryDB.getPreviousMaximumVote(groupID);
             myVoteValue = entryDB.getPreviousMyVote(groupID);
         } else {
-            DBEntries.Lesson oldValues = entryDB.getLesson(groupID, lessonID);
+            DBLessons.Lesson oldValues = entryDB.getLesson(groupID, lessonID);
             myVoteValue = oldValues != null ? oldValues.myVotes : 0;
             maxVoteValue = oldValues != null ? oldValues.maxVotes : 0;
         }
@@ -123,7 +123,7 @@ public class MainDialogHelper {
      */
     public static void showPresentationPointDialog(final int dataBaseId, final MainActivity activity) {
         //db access
-        final DBGroups groupsDB = DBGroups.getInstance();
+        final DBSubjects groupsDB = DBSubjects.getInstance();
 
         final View inputView = activity.getLayoutInflater().inflate(R.layout.mainfragment_dialog_prespoints, null);
         final NumberPicker presPointPicker = (NumberPicker) inputView.findViewById(R.id.mainfragment_dialog_prespoints_picker);

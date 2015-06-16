@@ -1,7 +1,6 @@
-package de.oerntec.votenote;
+package de.oerntec.votenote.ImportExport;
 
 import android.app.Activity;
-import android.database.Cursor;
 import android.util.Log;
 import android.util.Xml;
 
@@ -11,49 +10,24 @@ import org.xmlpull.v1.XmlPullParserException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
 
-/**
- * XmlBuilder is used to write XML tags (open and close, and a few attributes)
- * to a StringBuilder. Here we have nothing to do with IO or SQL, just a fancy StringBuilder.
- *
- * @author ccollins from http://stackoverflow.com/a/13140325
- */
-public class XmlExporter {
+import de.oerntec.votenote.DBLessons;
+import de.oerntec.votenote.DBSubjects;
+import de.oerntec.votenote.FileDialog;
+import de.oerntec.votenote.GroupManagementActivity;
+import de.oerntec.votenote.MainActivity;
 
-    static final String DATASUBDIRECTORY = "Votenote";
-
-    // private final SQLiteDatabase db;
-    private XmlBuilder xmlBuilder;
-
-    public void exportDialog(final Activity activity) {
-        FileDialog fileOpenDialog = new FileDialog(
-                activity,
-                "FileSave",
-                new FileDialog.FileDialogListener() {
-                    @Override
-                    public void onChosenDir(String chosenDir) {
-                        new XmlExporter().export(chosenDir);
-                    }
-                }
-        );
-        //You can change the default filename using the public variable "Default_File_Name"
-        //fileOpenDialog.defaultFileName = "export.xml";
-        fileOpenDialog.chooseFile_or_Dir(/*fileOpenDialog.defaultFileName*/);
-    }
-
-    public void importDialog(final Activity activity) {
+public class XmlImporter {
+    public static void importDialog(final Activity activity) {
         FileDialog fileOpenDialog = new FileDialog(
                 activity,
                 "FileOpen..",
                 new FileDialog.FileDialogListener() {
                     @Override
                     public void onChosenDir(String chosenDir) {
-                        new XmlExporter().importXml(chosenDir);
+                        importXml(chosenDir);
                         if (activity instanceof MainActivity) {
                             MainActivity.mNavigationDrawerFragment.reloadAdapter();
                             MainActivity.mNavigationDrawerFragment.selectItem(0);
@@ -67,56 +41,11 @@ public class XmlExporter {
         fileOpenDialog.chooseFile_or_Dir();
     }
 
-    private void export(String fileName) {
-        try {
-            xmlBuilder = new XmlBuilder();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        xmlBuilder.start(DatabaseCreator.DATABASE_NAME);
-
-        try {
-            //export both tables
-            exportTable(DBEntries.getInstance().getAllData(), "entries");
-            exportTable(DBGroups.getInstance().getAllData(), "subjects");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        String xmlString = null;
-        try {
-            xmlString = xmlBuilder.end();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        try {
-            writeToFile(xmlString, fileName);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void exportTable(Cursor allCursor, String name) throws IOException {
-        xmlBuilder.openTable(name);
-        if (allCursor.moveToFirst()) {
-            int cols = allCursor.getColumnCount();
-            do {
-                xmlBuilder.openRow();
-                for (int i = 0; i < cols; i++)
-                    if (allCursor.getColumnIndex("_id") != i)
-                        xmlBuilder.addColumn(allCursor.getColumnName(i), allCursor.getString(i));
-                xmlBuilder.closeRow();
-            } while (allCursor.moveToNext());
-        }
-        allCursor.close();
-        xmlBuilder.closeTable();
-    }
-
-    private void importXml(String filename) {
+    private static void importXml(String filename) {
         File file = new File(filename);
         InputStream inputStream;
-        DBEntries.getInstance().dropData();
-        DBGroups.getInstance().dropData();
+        DBLessons.getInstance().dropData();
+        DBSubjects.getInstance().dropData();
         try {
             inputStream = new FileInputStream(file);
         } catch (FileNotFoundException e) {
@@ -127,7 +56,7 @@ public class XmlExporter {
         startParser(inputStream);
     }
 
-    private void startParser(InputStream in) {
+    private static void startParser(InputStream in) {
         try {
             XmlPullParser parser = Xml.newPullParser();
             parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
@@ -145,7 +74,7 @@ public class XmlExporter {
         }
     }
 
-    private void parse(XmlPullParser parser) throws XmlPullParserException, IOException {
+    private static void parse(XmlPullParser parser) throws XmlPullParserException, IOException {
         parser.require(XmlPullParser.START_TAG, null, "database");
         while (parser.next() != XmlPullParser.END_TAG) {
             if (parser.getEventType() != XmlPullParser.START_TAG) {
@@ -163,7 +92,7 @@ public class XmlExporter {
         }
     }
 
-    private void parseSubjectTable(XmlPullParser parser) throws XmlPullParserException, IOException {
+    private static void parseSubjectTable(XmlPullParser parser) throws XmlPullParserException, IOException {
         parser.require(XmlPullParser.START_TAG, null, "table");
         while (parser.next() != XmlPullParser.END_TAG) {
             if (parser.getEventType() != XmlPullParser.START_TAG) {
@@ -179,7 +108,7 @@ public class XmlExporter {
         }
     }
 
-    private void parseEntryTable(XmlPullParser parser) throws XmlPullParserException, IOException {
+    private static void parseEntryTable(XmlPullParser parser) throws XmlPullParserException, IOException {
         parser.require(XmlPullParser.START_TAG, null, "table");
         while (parser.next() != XmlPullParser.END_TAG) {
             if (parser.getEventType() != XmlPullParser.START_TAG) {
@@ -196,8 +125,8 @@ public class XmlExporter {
         }
     }
 
-    private void parseEntry(XmlPullParser parser) throws IOException, XmlPullParserException {
-        DBEntries db = DBEntries.getInstance();
+    private static void parseEntry(XmlPullParser parser) throws IOException, XmlPullParserException {
+        DBLessons db = DBLessons.getInstance();
         parser.require(XmlPullParser.START_TAG, null, "row");
 
         parser.next();
@@ -229,18 +158,18 @@ public class XmlExporter {
                 Integer.valueOf(nummer_uebung));
     }
 
-    private String readText(XmlPullParser parser) throws IOException, XmlPullParserException {
+    private static String readText(XmlPullParser parser) throws IOException, XmlPullParserException {
         String result;
         result = parser.nextText();
-        Log.i("parser", result == null ? "null" : result);
+        //Log.i("parser", result == null ? "null" : result);
         if (parser.getEventType() != XmlPullParser.END_TAG) {
             parser.nextTag();
         }
         return result;
     }
 
-    private void parseSubject(XmlPullParser parser) throws IOException, XmlPullParserException {
-        DBGroups db = DBGroups.getInstance();
+    private static void parseSubject(XmlPullParser parser) throws IOException, XmlPullParserException {
+        DBSubjects db = DBSubjects.getInstance();
         parser.require(XmlPullParser.START_TAG, null, "row");
 
         parser.next();
@@ -284,7 +213,7 @@ public class XmlExporter {
                 Integer.valueOf(uebung_maxvotes_per_ueb));
     }
 
-    private void skip(XmlPullParser parser) throws XmlPullParserException, IOException {
+    private static void skip(XmlPullParser parser) throws XmlPullParserException, IOException {
         if (parser.getEventType() != XmlPullParser.START_TAG) {
             throw new IllegalStateException();
         }
@@ -300,89 +229,4 @@ public class XmlExporter {
             }
         }
     }
-
-    @SuppressWarnings("ResultOfMethodCallIgnored")
-    public void writeToFile(final String string, final String exportFilePath) throws IOException {
-        File file = new File(exportFilePath);
-        file.getParentFile().mkdirs();
-        file.createNewFile();
-
-        ByteBuffer buff = ByteBuffer.wrap(string.getBytes());
-        FileChannel channel = new FileOutputStream(file).getChannel();
-        //noinspection TryFinallyCanBeTryWithResources
-        try {
-            channel.write(buff);
-        } finally {
-            channel.close();
-        }
-    }
-
-    /**
-     * XmlBuilder is used to write XML tags (open and close, and a few attributes)
-     * to a StringBuilder. Here we have nothing to do with IO or SQL, just a fancy StringBuilder.
-     *
-     * @author ccollins from http://stackoverflow.com/a/13140325
-     */
-    static class XmlBuilder {
-        private static final String OPEN_XML_STANZA = "<?xml version=\"1.0\" encoding=\"utf-8\"?>";
-        private static final String CLOSE_WITH_TICK = "'>";
-        private static final String CLOSE_NO_TICK = ">";
-        private static final String START_OPEN_TAG = "<";
-        private static final String START_CLOSE_TAG = "</";
-        private static final String DB_OPEN = "<database xmlversion='1' name='";
-        private static final String DB_CLOSE = "</database>";
-        private static final String TABLE_OPEN = "<table name='";
-        private static final String TABLE_CLOSE = "</table>";
-        private static final String ROW_OPEN = "<row>";
-        private static final String ROW_CLOSE = "</row>";
-
-        private final StringBuilder sb;
-
-        public XmlBuilder() throws IOException {
-            sb = new StringBuilder();
-        }
-
-        void start(final String dbName) {
-            sb.append(XmlBuilder.OPEN_XML_STANZA);
-            sb.append(XmlBuilder.DB_OPEN);
-            sb.append(dbName);
-            sb.append(XmlBuilder.CLOSE_WITH_TICK);
-        }
-
-        String end() throws IOException {
-            sb.append(XmlBuilder.DB_CLOSE);
-            return sb.toString();
-        }
-
-        void openTable(final String tableName) {
-            sb.append(XmlBuilder.TABLE_OPEN);
-            sb.append(tableName);
-            sb.append(XmlBuilder.CLOSE_WITH_TICK);
-        }
-
-        void closeTable() {
-            sb.append(XmlBuilder.TABLE_CLOSE);
-        }
-
-        void openRow() {
-            sb.append(XmlBuilder.ROW_OPEN);
-        }
-
-        void closeRow() {
-            sb.append(XmlBuilder.ROW_CLOSE);
-        }
-
-        void addColumn(final String tag, final String val) {
-            sb.append(XmlBuilder.START_OPEN_TAG);
-            sb.append(tag);
-            sb.append(XmlBuilder.CLOSE_NO_TICK);
-
-            sb.append(val);
-
-            sb.append(XmlBuilder.START_CLOSE_TAG);
-            sb.append(tag);
-            sb.append(XmlBuilder.CLOSE_NO_TICK);
-        }
-    }
-
 }

@@ -6,11 +6,11 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
-public class DBEntries {
+public class DBLessons {
     /**
      * Singleton instance
      */
-    private static DBEntries mInstance;
+    private static DBLessons mInstance;
 
     /**
      * Database object used for accessing the database
@@ -22,7 +22,7 @@ public class DBEntries {
      *
      * @param context context needed for database
      */
-    private DBEntries(Context context) {
+    private DBLessons(Context context) {
         DatabaseCreator dbHelper = new DatabaseCreator(context);
         database = dbHelper.getWritableDatabase();
     }
@@ -32,9 +32,9 @@ public class DBEntries {
      * @param context context needed for creating the db access
      * @return the instance itself
      */
-    public static DBEntries setupInstance(Context context) {
+    public static DBLessons setupInstance(Context context) {
         if (mInstance == null)
-            mInstance = new DBEntries(context);
+            mInstance = new DBLessons(context);
         return mInstance;
     }
 
@@ -42,7 +42,7 @@ public class DBEntries {
      * Singleton getter
      * @return the singleton instance
      */
-    public static DBEntries getInstance() {
+    public static DBLessons getInstance() {
         return mInstance;
     }
 
@@ -160,7 +160,7 @@ public class DBEntries {
         if (mCursor.moveToFirst())
             returnValue = mCursor.getInt(1);
         else//default to the scheduled value
-            returnValue = DBGroups.getInstance().getScheduledAssignmentsPerLesson(subjectId);
+            returnValue = DBSubjects.getInstance().getScheduledAssignmentsPerLesson(subjectId);
         mCursor.close();
         return returnValue;
     }
@@ -181,7 +181,7 @@ public class DBEntries {
         if (mCursor.moveToFirst())
             returnValue = mCursor.getInt(1);
         else//return the scheduled amount of work as default
-            returnValue = DBGroups.getInstance().getScheduledAssignmentsPerLesson(subjectId);
+            returnValue = DBSubjects.getInstance().getScheduledAssignmentsPerLesson(subjectId);
         mCursor.close();
         return returnValue;
     }

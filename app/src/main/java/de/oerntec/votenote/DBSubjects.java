@@ -9,25 +9,25 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DBGroups {
+public class DBSubjects {
     public final static int NO_GROUPS_EXIST = -1;
 
-    private static DBGroups mInstance;
+    private static DBSubjects mInstance;
     private SQLiteDatabase database;
 
-    private DBGroups(Context context) {
+    private DBSubjects(Context context) {
         DatabaseCreator dbHelper = new DatabaseCreator(context);
         database = dbHelper.getWritableDatabase();
 
     }
 
-    public static DBGroups setupInstance(Context context) {
+    public static DBSubjects setupInstance(Context context) {
         if (mInstance == null)
-            mInstance = new DBGroups(context);
+            mInstance = new DBSubjects(context);
         return mInstance;
     }
 
-    public static DBGroups getInstance() {
+    public static DBSubjects getInstance() {
         return mInstance;
     }
 
@@ -91,7 +91,7 @@ public class DBGroups {
         values.put(DatabaseCreator.SUBJECTS_SCHEDULED_ASSIGNMENTS_PER_LESSON, newScheduledAssignmentsPerUebung);
 
         //insert name, because it does not exist yet
-        Log.i("DBGroups", "adding group");
+        Log.i("DBSubjects", "adding group");
         database.insert(DatabaseCreator.TABLE_NAME_SUBJECTS, null, values);
         return 1;
     }
@@ -287,7 +287,7 @@ public class DBGroups {
     }
 
     public void setScheduledUebungCountAndAssignments(int groupID, int newScheduledUebungCount, int newScheduledAssignmentsPerUebung) {
-        Log.i("DBGroups", "changing uebung schedule");
+        Log.i("DBSubjects", "changing uebung schedule");
         ContentValues values = new ContentValues();
         values.put(DatabaseCreator.SUBJECTS_SCHEDULED_NUMBER_OF_LESSONS, newScheduledUebungCount);
         values.put(DatabaseCreator.SUBJECTS_SCHEDULED_ASSIGNMENTS_PER_LESSON, newScheduledAssignmentsPerUebung);
@@ -370,7 +370,7 @@ public class DBGroups {
      * @return Affected row count
      */
     public int setMinVote(int databaseID, int minValue) {
-        Log.i("DBGroups", "changing minvalue");
+        Log.i("DBSubjects", "changing minvalue");
         //create values for insert or update
         ContentValues values = new ContentValues();
         values.put(DatabaseCreator.SUBJECTS_MINIMUM_VOTE_PERCENTAGE, minValue);
@@ -430,25 +430,5 @@ public class DBGroups {
         return val == null ? -1 : Integer.valueOf(val.subjectWantedPresentationPoints);
     }
 
-    class Subject {
-        String id,
-                subjectName,
-                subjectMinimumVotePercentage,
-                subjectCurrentPresentationPoints,
-                subjectScheduledLessonCount,
-                subjectScheduledAssignmentsPerLesson,
-                subjectWantedPresentationPoints;
-
-        public Subject(String id, String subjectName, String subjectMinimumVotePercentage, String subjectCurrentPresentationPoints,
-                       String subjectScheduledLessonCount, String subjectScheduledAssignmentsPerLesson, String subjectWantedPresentationPoints) {
-            this.id = id;
-            this.subjectName = subjectName;
-            this.subjectMinimumVotePercentage = subjectMinimumVotePercentage;
-            this.subjectCurrentPresentationPoints = subjectCurrentPresentationPoints;
-            this.subjectScheduledLessonCount = subjectScheduledLessonCount;
-            this.subjectScheduledAssignmentsPerLesson = subjectScheduledAssignmentsPerLesson;
-            this.subjectWantedPresentationPoints = subjectWantedPresentationPoints;
-        }
-    }
 }
 

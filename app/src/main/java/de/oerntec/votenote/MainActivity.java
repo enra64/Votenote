@@ -35,10 +35,10 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
      * Fragment managing the behaviors, interactions and presentation of the
      * navigation drawer.
      */
-    protected static NavigationDrawerFragment mNavigationDrawerFragment;
+    public static NavigationDrawerFragment mNavigationDrawerFragment;
     //database connection
-    private static DBGroups groupsDB;
-    private static DBEntries entryDB;
+    private static DBSubjects groupsDB;
+    private static DBLessons entryDB;
     private static int mCurrentSelectedId, mCurrentSelectedPosition;
     private static MainActivity me;
 
@@ -65,8 +65,8 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
         super.onCreate(savedInstanceState);
         me = this;
         //database access
-        groupsDB = DBGroups.setupInstance(this);
-        entryDB = DBEntries.setupInstance(this);
+        groupsDB = DBSubjects.setupInstance(this);
+        entryDB = DBLessons.setupInstance(this);
 
         //to avoid calling groupsDB before having it started, setting the view has been
         //moved here
@@ -129,7 +129,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
      * @param section datbase index+1
      */
     public void onSectionAttached(int section) {
-        DBGroups.Subject sectionData = groupsDB.getGroup(groupsDB.translatePositionToID(section));
+        Subject sectionData = groupsDB.getGroup(groupsDB.translatePositionToID(section));
         mTitle = sectionData == null ? "Übung hinzufügen!" : sectionData.subjectName;
         restoreActionBar();
     }

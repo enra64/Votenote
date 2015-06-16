@@ -1,4 +1,4 @@
-package de.oerntec.votenote;
+package de.oerntec.votenote.ImportExport;
 
 import android.app.Activity;
 import android.database.Cursor;
@@ -6,7 +6,13 @@ import android.database.Cursor;
 import java.io.IOException;
 import java.util.List;
 
-public class ExportHelper {
+import de.oerntec.votenote.DBLessons;
+import de.oerntec.votenote.DBSubjects;
+import de.oerntec.votenote.FileDialog;
+import de.oerntec.votenote.MainActivity;
+import de.oerntec.votenote.Subject;
+
+public class CsvExporter {
     public static FileDialog exportDialog(final Activity activity) {
         FileDialog fileOpenDialog = new FileDialog(
                 activity,
@@ -26,17 +32,17 @@ public class ExportHelper {
 
     private static void export(final String path) {
         //get database access
-        final DBGroups groupsDB = DBGroups.getInstance();
-        final DBEntries entryDB = DBEntries.getInstance();
+        final DBSubjects groupsDB = DBSubjects.getInstance();
+        final DBLessons entryDB = DBLessons.getInstance();
 
         StringBuilder s = new StringBuilder();
         //seperator for excel
         s.append("sep=;");
         s.append("\r\n");
 
-        List<DBGroups.Subject> subjectList = groupsDB.getAllLessons();
+        List<Subject> subjectList = groupsDB.getAllLessons();
 
-        for (DBGroups.Subject subject : subjectList) {
+        for (Subject subject : subjectList) {
             String groupName = subject.subjectName;
             s.append(groupName);
             s.append(": ");
@@ -73,7 +79,7 @@ public class ExportHelper {
             }
         }
         try {
-            new XmlExporter().writeToFile(s.toString(), path);
+            Writer.writeToFile(s.toString(), path);
         } catch (IOException e) {
             e.printStackTrace();
             MainActivity.toast("Fehlschlag!");

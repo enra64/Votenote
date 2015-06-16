@@ -27,8 +27,8 @@ import java.util.Random;
 
 
 public class DiagramActivity extends Activity {
-    static DBGroups groupsDB;
-    static DBEntries entriesDB;
+    static DBSubjects groupsDB;
+    static DBLessons entriesDB;
     static GraphView graph;
     Random r;
     int databaseID, positionID;
@@ -43,8 +43,8 @@ public class DiagramActivity extends Activity {
         setContentView(R.layout.diagramactivity);
 
         //get db connections
-        groupsDB = DBGroups.getInstance();
-        entriesDB = DBEntries.getInstance();
+        groupsDB = DBSubjects.getInstance();
+        entriesDB = DBLessons.getInstance();
 
         //set the standard databaseID, translated position
         databaseID = getIntent().getIntExtra("databaseID", 1);
