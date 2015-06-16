@@ -116,26 +116,6 @@ public class MainDialogHelper {
         dialog.show();
     }
 
-    public static void showExportChooseDialog(final MainActivity con) {
-        AlertDialog.Builder b = new AlertDialog.Builder(con);
-        b.setTitle("Export");
-        b.setMessage("Nach CSV oder nach XML exportieren? XML-Dateien können wieder importiert werden.");
-        b.setPositiveButton("XML", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                new XmlExporter().exportDialog(con);
-            }
-        });
-        b.setNegativeButton("CSV", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                ExportHelper.exportDialog(con);
-            }
-        });
-        b.setNeutralButton("Abbrechen", null);
-        b.create().show();
-    }
-
     /**
      * shows the dialog to change the presentation points
      * @param dataBaseId ID of the group in the database

@@ -94,29 +94,16 @@ public class GroupManagementActivity extends Activity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, final long id) {
                 Log.d("gmanage", "handling listview click on " + view.toString());
-                showNameActionsDialog(position);
+                showLessonDialog(position);
             }
         });
-    }
-
-    private void showNameActionsDialog(final int position) {
-        //get name of the group supposed to be deleted
-        Cursor allCursor = groupsDB.getAllGroupNames();
-        allCursor.moveToPosition(position);
-        final String oldName = allCursor.getString(1);
-        allCursor.close();
-
-        new AlertDialog.Builder(this)
-                .setTitle(oldName)
-                .setPositiveButton("Ändern", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                        showLessonDialog(position);
-                    }
-                }).setNegativeButton("Löschen", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int whichButton) {
+        mainList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
                 showDeleteDialog(position);
+                return true;
             }
-        }).show();
+        });
     }
 
     private void showLessonDialog(final int changePosition) {
@@ -249,7 +236,7 @@ public class GroupManagementActivity extends Activity {
         String title;
         if (changePosition == ADD_SUBJECT_CODE) {
             if (groupsDB.getNumberOfSubjects() == 0)
-                title = "Create your first subject!";
+                title = "Create your first subject";
             else
                 title = "Create a new subject";
         } else
@@ -288,10 +275,7 @@ public class GroupManagementActivity extends Activity {
                         }
                         reloadList();
                     }
-                }).setNegativeButton("Abbrechen", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                    }
-                });
+                }).setNegativeButton("Abbrechen", null);
         final AlertDialog dialog = b.create();
 
         //check for bad characters

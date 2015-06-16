@@ -19,7 +19,7 @@
             android:id="@+id/textView1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Übung oder Votierungen hinzufügen"
+            android:text="@string/tutorial_add_button"
             android:textAppearance="?android:attr/textAppearanceLarge" />
 
     </LinearLayout>
@@ -39,7 +39,7 @@
             android:id="@+id/textView2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Präsentationspunkte verwalten"
+            android:text="@string/tutorial_control_prespoints"
             android:textAppearance="?android:attr/textAppearanceLarge" />
 
     </LinearLayout>
@@ -49,7 +49,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:text="Erstelle mit dem Plus oben rechts deine erste Übung"
+        android:text="@string/tutorial_create_your_first_subject"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
 </LinearLayout>

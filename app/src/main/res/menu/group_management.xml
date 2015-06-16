@@ -7,13 +7,13 @@
         android:id="@+id/action_add_group"
         android:icon="@drawable/ic_action_new_entry"
         android:showAsAction="always"
-        android:title="Neue Gruppe"
+        android:title="@string/action_new_lesson"
         app:showAsAction="always" />
 
     <item
         android:id="@+id/action_read_from_storage"
         android:icon="@drawable/ic_action_import"
         android:showAsAction="ifRoom"
-        android:title="Importieren"
+        android:title="@string/action_import"
         app:showAsAction="ifRoom" />
 </menu>

@@ -12,7 +12,7 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:text="New folder" />
+        android:text="@string/new_folder_button" />
 
     <ListView
         android:id="@+id/dialog_file_chooser_list"

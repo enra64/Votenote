@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Votenote</string>
+    <string name="action_control_subjects">Control subjects</string>
+    <string name="action_import">Import</string>
+    <string name="action_new_group">New subject</string>
+    <string name="action_new_lesson">New lesson</string>
+    <string name="action_set_prespoints">Control presentation points</string>
+    <string name="action_show_diagram">Diagram</string>
+    <string name="action_show_settings">Settings</string>
+    <string name="main_x_assignments_done">Assignments</string>
+    <string name="main_x_th_lesson">. lesson</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="new_folder_button">New folder</string>
+    <string name="subjectmanager_assignments_per_lesson">Assignments per lesson</string>
+    <string name="subjectmanager_lesson_count">Lesson count</string>
+    <string name="subjectmanager_needed_prespoints">Needed presentation points</string>
+    <string name="subjectmanager_needed_work">Needed percentage</string>
+    <string name="subjectmanager_set_prespoints"> presentation points, </string>
+    <string name="subjectmanager_x_assignments"> assignments</string>
+    <string name="subjectmanager_x_lesson_a"> lessons a</string>
+    <string name="title_activity_diagram">Diagram</string>
+    <string name="title_activity_group_management">Control subjects</string>
+    <string name="title_activity_settings">Settings</string>
+    <string name="tutorial_add_button">Add a lesson or subject</string>
+    <string name="tutorial_control_prespoints">Control presentation points</string>
+    <string name="tutorial_create_your_first_subject">Create your first lesson with the plus in the upper right</string>
+</resources>

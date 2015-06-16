@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Votenote</string>
+    <string name="action_control_subjects">Übungen verwalten</string>
+    <string name="action_import">Importieren</string>
+    <string name="action_new_group">Neue Gruppe</string>
+    <string name="action_new_lesson">Neuer Eintrag</string>
+    <string name="action_set_prespoints">Punkte verwalten</string>
+    <string name="action_show_diagram">Diagramm</string>
+    <string name="action_show_settings">Einstellungen</string>
+    <string name="main_x_assignments_done">Votierungen</string>
+    <string name="main_x_th_lesson">. Übung</string>
+    <string name="navigation_drawer_close">Navigation Drawer schließen</string>
+    <string name="navigation_drawer_open">Navigation Drawer öffnen</string>
+    <string name="new_folder_button">Neuer Ordner</string>
+    <string name="subjectmanager_assignments_per_lesson">Aufgaben pro Übung</string>
+    <string name="subjectmanager_lesson_count">Anzahl Übungen</string>
+    <string name="subjectmanager_needed_prespoints">Erforderliche Vortragspunkte</string>
+    <string name="subjectmanager_needed_work">Erforderliche Votierung</string>
+    <string name="subjectmanager_set_prespoints">Vortragspunkte,</string>
+    <string name="subjectmanager_x_assignments">Aufgaben</string>
+    <string name="subjectmanager_x_lesson_a">Übungen mit je</string>
+    <string name="title_activity_diagram">Diagramm</string>
+    <string name="title_activity_group_management">Übungen verwalten</string>
+    <string name="title_activity_settings">Einstellungen</string>
+    <string name="tutorial_add_button">Übung oder Votierungen hinzufügen</string>
+    <string name="tutorial_control_prespoints">Präsentationspunkte verwalten</string>
+    <string name="tutorial_create_your_first_subject">Präsentationspunkte verwalten</string>
+</resources>

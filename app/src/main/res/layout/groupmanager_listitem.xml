@@ -1,105 +1,112 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:minHeight="60dp" >
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Mathe"
         android:id="@+id/groupmanager_listitem_text_groupname"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
-
-    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="100"
-        android:id="@+id/groupmanager_listitem_text_needed_percentage"
-        android:layout_below="@+id/groupmanager_listitem_text_groupname"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:textColor="#ff8b8b8b" />
+        android:layout_alignParentTop="true"
+        android:text="Mathe"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        tools:ignore="HardcodedText" />
 
     <TextView
+        android:id="@+id/groupmanager_listitem_text_needed_percentage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/groupmanager_listitem_text_groupname"
+        android:text="100"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="99"
+        android:textColor="#ff8b8b8b"
+        tools:ignore="HardcodedText" />
+
+    <TextView
         android:id="@+id/groupmanager_listitem_text_scheduled_uebungs"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/groupmanager_listitem_text_seperator_prespoints"
-        android:layout_toRightOf="@+id/groupmanager_listitem_text_seperator_prespoints"
         android:layout_toEndOf="@+id/groupmanager_listitem_text_seperator_prespoints"
-        android:textColor="#ff8b8b8b" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="10"
-        android:id="@+id/groupmanager_listitem_text_prespoints"
-        android:layout_alignBottom="@+id/groupmanager_listitem_text_seperator_percentage"
-        android:layout_toRightOf="@+id/groupmanager_listitem_text_seperator_percentage"
-        android:layout_toEndOf="@+id/groupmanager_listitem_text_seperator_percentage"
-        android:textColor="#ff8b8b8b" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:layout_toRightOf="@+id/groupmanager_listitem_text_seperator_prespoints"
         android:text="99"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textColor="#ff8b8b8b"
+        tools:ignore="HardcodedText" />
+
+    <TextView
+        android:id="@+id/groupmanager_listitem_text_prespoints"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/groupmanager_listitem_text_seperator_percentage"
+        android:layout_toEndOf="@+id/groupmanager_listitem_text_seperator_percentage"
+        android:layout_toRightOf="@+id/groupmanager_listitem_text_seperator_percentage"
+        android:text="10"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textColor="#ff8b8b8b"
+        tools:ignore="HardcodedText" />
+
+    <TextView
         android:id="@+id/groupmanager_listitem_text_scheduled_assignments"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/groupmanager_listitem_text_seperator_scheduebungs"
-        android:layout_toRightOf="@+id/groupmanager_listitem_text_seperator_scheduebungs"
         android:layout_toEndOf="@+id/groupmanager_listitem_text_seperator_scheduebungs"
-        android:textColor="#ff8b8b8b" />
+        android:layout_toRightOf="@+id/groupmanager_listitem_text_seperator_scheduebungs"
+        android:text="99"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textColor="#ff8b8b8b"
+        tools:ignore="HardcodedText" />
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text=" Aufgaben"
         android:id="@+id/groupmanager_listitem_text_seperator_assignments"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/groupmanager_listitem_text_scheduled_assignments"
-        android:layout_toRightOf="@+id/groupmanager_listitem_text_scheduled_assignments"
         android:layout_toEndOf="@+id/groupmanager_listitem_text_scheduled_assignments"
+        android:layout_toRightOf="@+id/groupmanager_listitem_text_scheduled_assignments"
+        android:text="@string/subjectmanager_x_assignments"
+        android:textAppearance="?android:attr/textAppearanceSmall"
         android:textColor="#ff8b8b8b" />
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text=" Übungen mit je "
         android:id="@+id/groupmanager_listitem_text_seperator_scheduebungs"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/groupmanager_listitem_text_scheduled_uebungs"
-        android:layout_toRightOf="@+id/groupmanager_listitem_text_scheduled_uebungs"
         android:layout_toEndOf="@+id/groupmanager_listitem_text_scheduled_uebungs"
+        android:layout_toRightOf="@+id/groupmanager_listitem_text_scheduled_uebungs"
+        android:text="@string/subjectmanager_x_lesson_a"
+        android:textAppearance="?android:attr/textAppearanceSmall"
         android:textColor="#ff8b8b8b" />
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="%, "
         android:id="@+id/groupmanager_listitem_text_seperator_percentage"
-        android:layout_alignBottom="@+id/groupmanager_listitem_text_needed_percentage"
-        android:layout_toRightOf="@+id/groupmanager_listitem_text_needed_percentage"
-        android:layout_toEndOf="@+id/groupmanager_listitem_text_needed_percentage"
-        android:textColor="#ff8b8b8b" />
-
-    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/groupmanager_listitem_text_needed_percentage"
+        android:layout_toEndOf="@+id/groupmanager_listitem_text_needed_percentage"
+        android:layout_toRightOf="@+id/groupmanager_listitem_text_needed_percentage"
+        android:text="%, "
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text=" Vortragspunkte, "
+        android:textColor="#ff8b8b8b"
+        tools:ignore="HardcodedText" />
+
+    <TextView
         android:id="@+id/groupmanager_listitem_text_seperator_prespoints"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/groupmanager_listitem_text_prespoints"
-        android:layout_toRightOf="@+id/groupmanager_listitem_text_prespoints"
         android:layout_toEndOf="@+id/groupmanager_listitem_text_prespoints"
+        android:layout_toRightOf="@+id/groupmanager_listitem_text_prespoints"
+        android:text="@string/subjectmanager_set_prespoints"
+        android:textAppearance="?android:attr/textAppearanceSmall"
         android:textColor="#ff8b8b8b" />
 
 </RelativeLayout>

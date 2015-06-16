@@ -285,7 +285,7 @@ public class SubjectFragment extends Fragment {
             String voteString = Integer.valueOf(myVote) < 2 ? " Votierung" : " Votierungen";
 
             //set tag for later identification avoiding all
-            view.setTag(lessonIndex);
+            view.setTag(Integer.valueOf(lessonIndex));
 
             //set texts
             upper.setText(myVote + " von " + maxVote + voteString);

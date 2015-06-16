@@ -69,8 +69,7 @@ public class DiagramActivity extends Activity {
         lineGraphMap = new HashMap<>();
 
         //set title, start graph
-        setTitle(groupsDB.getGroupName(databaseID));
-
+        ((TextView) findViewById(R.id.diagramactivity_text_info)).setText(groupsDB.getGroupName(databaseID));
         //do all the work for the graph here
         initializeGraph();
 
