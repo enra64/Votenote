@@ -112,6 +112,13 @@ public class DBGroups {
         return translatedSection;
     }
 
+    public int getCount() {
+        Cursor c = getAllGroupNames();
+        int val = c.getCount();
+        c.close();
+        return val;
+    }
+
 
     public int translatePositionToIDExclusive(int drawerSelection, int excludedID) {
         Cursor groups = getAllButOneGroupNames(excludedID);

@@ -22,20 +22,13 @@
         android:title="Diagramm"
         app:showAsAction="ifRoom" />
     <item
-        android:id="@+id/action_export"
-        android:icon="@drawable/ic_action_export"
-        android:showAsAction="ifRoom"
-        android:title="Export"
-        app:showAsAction="ifRoom" />
-    <item
-        android:id="@+id/action_import"
-        android:icon="@drawable/ic_action_import"
-        android:showAsAction="ifRoom"
-        android:title="Import"
-        app:showAsAction="ifRoom" />
-    <item
         android:id="@+id/action_groupmanagement"
         android:showAsAction="never"
         android:title="Übungen verwalten"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_settings"
+        android:showAsAction="never"
+        android:title="Einstellungen"
         app:showAsAction="never" />
 </menu>

@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.app.FragmentManager;
 import android.content.Intent;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.Menu;
@@ -15,7 +16,11 @@ import android.widget.Toast;
 /*
 * VERSION HISTORY
 * 1.0: ka.
-* 1.2: Export via xml, csv via filechooser, import from xml. updated looks to lollipop
+* 1.2:
+* Export via xml, csv via filechooser,
+* import from xml.
+* updated looks to lollipop
+* settings activity for importing and exporting and reverse lesson sort and drawer start
 * */
 
 @SuppressLint("InflateParams")
@@ -33,7 +38,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
     //database connection
     private static DBGroups groupsDB;
     private static DBEntries entryDB;
-    private static int mCurrentSelectedId;
+    private static int mCurrentSelectedId, mCurrentSelectedPosition;
     private static MainActivity me;
 
     /**
@@ -44,6 +49,14 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 
     public static void toast(String text) {
         Toast.makeText(me, text, Toast.LENGTH_SHORT).show();
+    }
+
+    public static boolean getPreference(String key, boolean def) {
+        return PreferenceManager.getDefaultSharedPreferences(me).getBoolean(key, def);
+    }
+
+    public static int getPreference(String key, int def) {
+        return PreferenceManager.getDefaultSharedPreferences(me).getInt(key, def);
     }
 
     @Override
@@ -71,8 +84,15 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
     @Override
     public void onResume() {
         super.onResume();
-        if (mNavigationDrawerFragment != null)
+        if (mNavigationDrawerFragment != null) {
             mNavigationDrawerFragment.reloadAdapter();
+            int lastSelected = getPreference("last_selected_dbid", 0);
+            if (lastSelected < groupsDB.getCount())
+                mNavigationDrawerFragment.selectItem(lastSelected);
+            //open drawer on each resume because the user may want that
+            if (getPreference("open_drawer_on_start", false))
+                mNavigationDrawerFragment.openDrawer();
+        }
     }
 
     /**
@@ -82,6 +102,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
     public void onNavigationDrawerItemSelected(int position) {
         //keep track of what fragment is shown
         mCurrentSelectedId = groupsDB.translatePositionToID(position);
+        mCurrentSelectedPosition = position;
         // update the main content by replacing fragments
         Log.i("votenote main", "selected fragment " + position);
         FragmentManager fragmentManager = getFragmentManager();
@@ -89,6 +110,16 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
                 .beginTransaction()
                 .replace(R.id.container,
                         SubjectFragment.newInstance(position)).commit();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        //save where the user left
+        if (mCurrentSelectedId != -1) {
+            setPreference("last_selected_dbid", mCurrentSelectedPosition);
+            Log.i("last selected", "" + mCurrentSelectedPosition);
+        }
     }
 
     /**
@@ -144,11 +175,8 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
             case R.id.action_prespoints:
                 MainDialogHelper.showPresentationPointDialog(groupID, this);
                 break;
-            case R.id.action_export:
-                MainDialogHelper.showExportChooseDialog(this);
-                break;
-            case R.id.action_import:
-                new XmlExporter().importDialog(this);
+            case R.id.action_settings:
+                startActivity(new Intent(this, SettingsActivity.class));
                 break;
             case R.id.action_show_diagram:
                 //only show diagram if more than 0 entries exist
@@ -170,6 +198,10 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
             Log.i("on result", "trying to reload fragment");
         } else
             super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    public void setPreference(String key, int val) {
+        PreferenceManager.getDefaultSharedPreferences(this).edit().putInt(key, val).apply();
     }
 
     /**

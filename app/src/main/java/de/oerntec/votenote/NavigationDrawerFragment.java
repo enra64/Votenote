@@ -13,6 +13,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -174,6 +175,7 @@ public class NavigationDrawerFragment extends Fragment {
                 }
                 if (actionBar != null)
                     actionBar.setTitle("VoteNote");
+
                 mDrawerListView.setAdapter(groupAdapter);
                 mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
 
@@ -237,6 +239,10 @@ public class NavigationDrawerFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mCallbacks = null;
+    }
+
+    public void openDrawer() {
+        mDrawerLayout.openDrawer(Gravity.LEFT);
     }
 
     @Override

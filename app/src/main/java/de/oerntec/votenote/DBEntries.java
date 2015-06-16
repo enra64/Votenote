@@ -54,7 +54,7 @@ public class DBEntries {
     }
 
     /**
-     * Get all data, mainly for export
+     * Get all data, only for export
      * @return all lesson data
      */
     public Cursor getAllData() {
@@ -152,7 +152,8 @@ public class DBEntries {
     public int getPreviousMaximumVote(int subjectId) {
         String[] cols = new String[]{DatabaseCreator.ENTRIES_ID, DatabaseCreator.ENTRIES_MAX_VOTES};
         String[] whereArgs = new String[]{String.valueOf(subjectId)};
-        Cursor mCursor = database.query(true, DatabaseCreator.TABLE_NAME_ENTRIES, cols, DatabaseCreator.ENTRIES_SUBJECT_ID + "=?", whereArgs, null, null, DatabaseCreator.ENTRIES_LESSON_ID + " DESC", "1");
+        Cursor mCursor = database.query(true, DatabaseCreator.TABLE_NAME_ENTRIES, cols,
+                DatabaseCreator.ENTRIES_SUBJECT_ID + "=?", whereArgs, null, null, DatabaseCreator.ENTRIES_LESSON_ID + " DESC", "1");
         //init return
         int returnValue;
         //sorted by descending, so first value is highest uebung nummer
@@ -173,7 +174,8 @@ public class DBEntries {
     public int getPreviousMyVote(int subjectId) {
         String[] cols = new String[]{DatabaseCreator.ENTRIES_ID, DatabaseCreator.ENTRIES_MY_VOTES};
         String[] whereArgs = new String[]{String.valueOf(subjectId)};
-        Cursor mCursor = database.query(true, DatabaseCreator.TABLE_NAME_ENTRIES, cols, DatabaseCreator.ENTRIES_SUBJECT_ID + "=?", whereArgs, null, null, DatabaseCreator.ENTRIES_LESSON_ID + " DESC", "1");
+        Cursor mCursor = database.query(true, DatabaseCreator.TABLE_NAME_ENTRIES, cols,
+                DatabaseCreator.ENTRIES_SUBJECT_ID + "=?", whereArgs, null, null, DatabaseCreator.ENTRIES_LESSON_ID + " DESC", "1");
         int returnValue;
         //sorted by descending, so first value is highest uebung nummer
         if (mCursor.moveToFirst())
@@ -207,7 +209,12 @@ public class DBEntries {
     public Cursor getAllLessonsForSubject(int subjectId) {
         String[] cols = new String[]{DatabaseCreator.ENTRIES_LESSON_ID, DatabaseCreator.ENTRIES_MY_VOTES, DatabaseCreator.ENTRIES_MAX_VOTES, DatabaseCreator.ENTRIES_ID};
         String[] whereArgs = new String[]{String.valueOf(subjectId)};
-        Cursor mCursor = database.query(true, DatabaseCreator.TABLE_NAME_ENTRIES, cols, DatabaseCreator.ENTRIES_SUBJECT_ID + "=?", whereArgs, null, null, null, null);
+        boolean isLatestFirst = MainActivity.getPreference("reverse_lesson_sort", false);
+        Cursor mCursor;
+        if (!isLatestFirst)
+            mCursor = database.query(true, DatabaseCreator.TABLE_NAME_ENTRIES, cols, DatabaseCreator.ENTRIES_SUBJECT_ID + "=?", whereArgs, null, null, null, null);
+        else
+            mCursor = database.query(true, DatabaseCreator.TABLE_NAME_ENTRIES, cols, DatabaseCreator.ENTRIES_SUBJECT_ID + "=?", whereArgs, null, null, DatabaseCreator.ENTRIES_LESSON_ID + " DESC", null);
         mCursor.moveToFirst();
         return mCursor; // iterate to get each value.
     }

@@ -1,0 +1,15 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+    <Preference
+        android:key="csv_export"
+        android:title="CSV-Datei erstellen"></Preference>
+    <Preference
+        android:key="xml_export"
+        android:title="XML-Sicherung erstellen"></Preference>
+
+    <Preference
+        android:key="xml_import"
+        android:title="XML-Sicherung importieren"></Preference>
+
+</PreferenceScreen>
