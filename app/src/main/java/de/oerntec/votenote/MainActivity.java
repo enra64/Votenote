@@ -21,6 +21,7 @@ import android.widget.Toast;
 * import from xml.
 * updated looks to lollipop
 * settings activity for importing and exporting and reverse lesson sort and drawer start
+* added a digit behind the comma on percentage to avoid fucking up
 * */
 
 @SuppressLint("InflateParams")

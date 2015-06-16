@@ -25,10 +25,10 @@ public class MainDialogHelper {
      * Show a dialog to change a lesson entry
      * @param mActivity the activity for reference usage
      * @param groupID the id of the subject
-     * @param translatedLessonID the id of the lesson, translated (+1) from listview
+     * @param translatedLessonPosition the id of the lesson, translated (+1) from listview
      */
-    public static void showChangeLessonDialog(final MainActivity mActivity, final int groupID, final int translatedLessonID) {
-        showLessonDialog(mActivity, groupID, translatedLessonID);
+    public static void showChangeLessonDialog(final MainActivity mActivity, final int groupID, final int translatedLessonPosition) {
+        showLessonDialog(mActivity, groupID, translatedLessonPosition);
     }
 
     /**

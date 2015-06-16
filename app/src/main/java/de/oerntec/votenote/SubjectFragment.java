@@ -132,7 +132,7 @@ public class SubjectFragment extends Fragment {
         voteList.setOnItemClickListener(new OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, final long id) {
-                MainDialogHelper.showChangeLessonDialog((MainActivity) getActivity(), databaseID, position + 1);
+                MainDialogHelper.showChangeLessonDialog((MainActivity) getActivity(), databaseID, (Integer) view.getTag());
             }
         });
 
@@ -283,6 +283,9 @@ public class SubjectFragment extends Fragment {
             String myVote = cursor.getString(1);
             String maxVote = cursor.getString(2);
             String voteString = Integer.valueOf(myVote) < 2 ? " Votierung" : " Votierungen";
+
+            //set tag for later identification avoiding all
+            view.setTag(lessonIndex);
 
             //set texts
             upper.setText(myVote + " von " + maxVote + voteString);
