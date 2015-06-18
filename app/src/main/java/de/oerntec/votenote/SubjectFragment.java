@@ -147,7 +147,7 @@ public class SubjectFragment extends Fragment {
                         .setPositiveButton(R.string.dialog_button_ok, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
                                 //change db entry
-                                entryDB.removeEntry(databaseID, translatedPosition);
+                                entryDB.removeEntry(databaseID, (Integer) view.getTag());
                                 //reload list- and textview; close old cursor
                                 thisRef.notifyOfChangedDataset();
                             }
