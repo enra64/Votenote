@@ -62,4 +62,11 @@
     <string name="past_lessons">Past lessons:</string>
     <string name="remaining_needed_assignments">Remaining needed lessons:</string>
     <string name="voted_assignments">Voted assignments:</string>
+    <string name="pref_xml_import">Import XML save</string>
+    <string name="pref_xml_export">Export XML backup</string>
+    <string name="pref_lesson_sort_title">Lesson order</string>
+    <string name="pref_lesson_sort">When the box is checked, the newest lesson will be shown first.</string>
+    <string name="pref_drawer_start_title">Drawer start</string>
+    <string name="pref_drawer_start_description">When the box is checked, the drawer will be opened on each resume.</string>
+    <string name="pref_csv_export">Create CSV export</string>
 </resources>

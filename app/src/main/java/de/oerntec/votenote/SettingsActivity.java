@@ -211,4 +211,13 @@ public class SettingsActivity extends PreferenceActivity {
             addPreferencesFromResource(R.xml.pref_all);
         }
     }
+
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    public static class ExportPreferenceFragment extends PreferenceFragment {
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            addPreferencesFromResource(R.xml.pref_import_export);
+        }
+    }
 }

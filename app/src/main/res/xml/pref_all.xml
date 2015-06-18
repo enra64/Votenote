@@ -6,14 +6,14 @@
     <CheckBoxPreference
         android:defaultValue="false"
         android:key="reverse_lesson_sort"
-        android:summary="Bei gesetzter CheckBox wird die neueste Übung zuerst angezeigt."
-        android:title="Übungsreihenfolge" />
+        android:summary="@string/pref_lesson_sort"
+        android:title="@string/pref_lesson_sort_title" />
 
     <CheckBoxPreference
         android:defaultValue="false"
         android:key="open_drawer_on_start"
-        android:summary="Bei gesetzter CheckBox wird der Drawer beim starten angezeigt."
-        android:title="Drawer-Start" />
+        android:summary="@string/pref_drawer_start_description"
+        android:title="@string/pref_drawer_start_title" />
 
     <Preference
         android:key="version_key"
