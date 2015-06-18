@@ -23,8 +23,9 @@ public class MainDialogHelper {
 
     /**
      * Show a dialog to change a lesson entry
-     * @param mActivity the activity for reference usage
-     * @param groupID the id of the subject
+     *
+     * @param mActivity                the activity for reference usage
+     * @param groupID                  the id of the subject
      * @param translatedLessonPosition the id of the lesson, translated (+1) from listview
      */
     public static void showChangeLessonDialog(final MainActivity mActivity, final int groupID, final int translatedLessonPosition) {
@@ -70,12 +71,12 @@ public class MainDialogHelper {
         myVote.setValue(myVoteValue);
 
         //set the current values of the pickers as explanation text
-        infoView.setText(myVote.getValue() + " von " + maxVote.getValue() + " Votierungen");
+        infoView.setText(myVote.getValue() + " " + R.string.main_dialog_lesson_von + " " + maxVote.getValue() + " " + R.string.main_dialog_lesson_votes);
         infoView.setTextColor(Color.argb(255, 153, 204, 0));//green
 
         //build alertdialog
         final AlertDialog dialog = new AlertDialog.Builder(mActivity)
-                .setTitle(lessonID == ADD_LESSON_CODE ? "Neue Übungsnotiz" : "Übung " + lessonID + " ändern?")
+                .setTitle(lessonID == ADD_LESSON_CODE ? mActivity.getString(R.string.main_dialog_lesson_new_lesson_title) : "Übung " + lessonID + " " + "ändern?")
                 .setView(rootView)
                 .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
@@ -88,12 +89,9 @@ public class MainDialogHelper {
                             //reload current fragment
                             mActivity.notifyCurrentFragment();
                         } else
-                            Toast.makeText(mActivity, "Mehr votiert als möglich!", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(mActivity, (R.string.main_dialog_lesson_voted_too_much), Toast.LENGTH_SHORT).show();
                     }
-                }).setNegativeButton("Abbrechen", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int whichButton) {
-            }
-                }).create();
+                }).setNegativeButton((R.string.dialog_button_abort), null).create();
 
         //listener for the vote picker
         NumberPicker.OnValueChangeListener votePickerListener = new NumberPicker.OnValueChangeListener() {
@@ -102,7 +100,7 @@ public class MainDialogHelper {
                 //load new values
                 int myVoteValue = myVote.getValue();
                 int maxVoteValue = maxVote.getValue();
-                infoView.setText(myVoteValue + " von " + maxVoteValue + " Votierungen");
+                infoView.setText(myVoteValue + " " + (R.string.main_dialog_lesson_von) + " " + maxVoteValue + " " + (R.string.main_dialog_lesson_votes));
                 boolean isValid = myVoteValue <= maxVoteValue;
                 dialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(isValid);
                 infoView.setTextColor(isValid ? Color.argb(255, 153, 204, 0) /*green*/ : Color.argb(255, 204, 0, 0));//red
@@ -118,8 +116,9 @@ public class MainDialogHelper {
 
     /**
      * shows the dialog to change the presentation points
+     *
      * @param dataBaseId ID of the group in the database
-     * @param activity reference for various stuff
+     * @param activity   reference for various stuff
      */
     public static void showPresentationPointDialog(final int dataBaseId, final MainActivity activity) {
         //db access
@@ -137,18 +136,15 @@ public class MainDialogHelper {
 		 */
         AlertDialog.Builder b = new AlertDialog.Builder(activity)
                 .setView(inputView)
-                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                .setPositiveButton(R.string.dialog_button_ok, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
                         //write new prespoint count to db
                         groupsDB.setPresPoints(dataBaseId, presPointPicker.getValue());
                         //reload fragment
                         activity.notifyCurrentFragment();
                     }
-                }).setNegativeButton("Abbrechen", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                    }
-                });
-        b.setTitle("Erreichte Präsentationspunkte");
+                }).setNegativeButton(R.string.dialog_button_abort, null);
+        b.setTitle((R.string.main_dialog_pres_title));
         b.create().show();
     }
 }

@@ -50,10 +50,7 @@ public class GroupManagementActivity extends Activity {
                 Builder b = new AlertDialog.Builder(this);
                 b.setTitle("Tutorial");
                 b.setView(this.getLayoutInflater().inflate(R.layout.mainfragment_dialog_firstgroup, null));
-                b.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                    }
-                });
+                b.setPositiveButton(getString(R.string.dialog_button_ok), null);
                 b.create().show();
             }
         }
@@ -237,17 +234,17 @@ public class GroupManagementActivity extends Activity {
         String title;
         if (changePosition == ADD_SUBJECT_CODE) {
             if (groupsDB.getNumberOfSubjects() == 0)
-                title = "Create your first subject";
+                title = getString(R.string.subject_manage_add_title_first_subject);
             else
-                title = "Create a new subject";
+                title = getString(R.string.subject_manage_add_title_new_subject);
         } else
-            title = "Change " + nameHint;
+            title = getString(R.string.subject_manage_add_title_change_subject) + " " + nameHint;
 
         //build alertdialog
-        Builder b = new AlertDialog.Builder(this)
+        Builder b = new Builder(this)
                 .setView(input)
                 .setTitle(title)
-                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                .setPositiveButton(getString(R.string.dialog_button_ok), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
                         String newName = nameInput.getText().toString();
                         int minimumVoteValue = minVoteSeek.getProgress();
@@ -257,7 +254,7 @@ public class GroupManagementActivity extends Activity {
 
                         if (changePosition == ADD_SUBJECT_CODE) {
                             if (groupsDB.addGroup(newName, minimumVoteValue, minimumPresentationPoints, scheduledLessonCount, scheduledAssignmentsPerLesson) == -1)
-                                Toast.makeText(getApplicationContext(), "Übung existiert schon", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getApplicationContext(), getString(R.string.subject_manage_subject_exists_already), Toast.LENGTH_SHORT).show();
                             else
                                 reloadList();
                             setResult(RESULT_OK);
@@ -272,11 +269,12 @@ public class GroupManagementActivity extends Activity {
                             //change group NAME if it changed
                             Log.d("groupmanager", "trying to update name of " + finalOldName + " to " + newName);
 
-                            groupsDB.changeName(dbId, finalOldName, newName);
+                            if (!"".equals(newName))
+                                groupsDB.changeName(dbId, finalOldName, newName);
                         }
                         reloadList();
                     }
-                }).setNegativeButton("Abbrechen", null);
+                }).setNegativeButton(getString(R.string.dialog_button_abort), null);
         final AlertDialog dialog = b.create();
 
         //check for bad characters
@@ -289,7 +287,7 @@ public class GroupManagementActivity extends Activity {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 String value = String.valueOf(s);
                 if (value.contains("<") || value.contains(">") || value.contains("/'")) {
-                    Toast.makeText(getApplication(), "Dein Gruppenname enthält XML-Zeichen!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplication(), getString(R.string.subject_manage_bad_subject_name), Toast.LENGTH_SHORT).show();
                     dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
                 } else
                     dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
@@ -307,18 +305,15 @@ public class GroupManagementActivity extends Activity {
         final int databaseID = groupsDB.translatePositionToID(deletePosition);
         final String groupName = groupsDB.getGroupName(databaseID);
         //request confirmation
-        new AlertDialog.Builder(this)
-                .setTitle(groupName + " löschen?")
-                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+        new Builder(this)
+                .setTitle(groupName + " " + getString(R.string.group_delete_title))
+                .setPositiveButton(getString(R.string.dialog_button_ok), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
                         groupsDB.deleteRecord(groupName, databaseID);
                         entriesDB.deleteAllEntriesForGroup(databaseID);
                         groupAdapter.swapCursor(groupsDB.getAllGroupsInfos()).close();
                     }
-                }).setNegativeButton("Abbrechen", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int whichButton) {
-            }
-        }).show();
+                }).setNegativeButton(getString(R.string.dialog_button_abort), null).show();
     }
 
     public void reloadList() {

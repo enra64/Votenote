@@ -136,12 +136,12 @@ public class SettingsActivity extends PreferenceActivity {
 
         // Add 'data and sync' preferences, and a corresponding header.
         PreferenceCategory fakeHeader = new PreferenceCategory(this);
-        fakeHeader.setTitle("Allgemeine Einstellungen");
+        fakeHeader.setTitle((R.string.pref_general_settings));
         getPreferenceScreen().addPreference(fakeHeader);
         addPreferencesFromResource(R.xml.pref_all);
 
         fakeHeader = new PreferenceCategory(this);
-        fakeHeader.setTitle("Importieren und Exportieren");
+        fakeHeader.setTitle((R.string.pref_imexport));
         getPreferenceScreen().addPreference(fakeHeader);
         addPreferencesFromResource(R.xml.pref_import_export);
 

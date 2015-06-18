@@ -131,7 +131,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
      */
     public void onSectionAttached(int section) {
         Subject sectionData = groupsDB.getGroup(groupsDB.translatePositionToID(section));
-        mTitle = sectionData == null ? "Übung hinzufügen!" : sectionData.subjectName;
+        mTitle = sectionData == null ? getString(R.string.main_add_subject_command) : sectionData.subjectName;
         restoreActionBar();
     }
 
@@ -187,7 +187,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
                     bintent.putExtra("databaseID", groupID);
                     startActivityForResult(bintent, ADD_FIRST_SUBJECT_REQUEST);
                 } else
-                    Toast.makeText(getApplicationContext(), "Diese Übung hat keine Daten!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), getString(R.string.main_toast_no_data), Toast.LENGTH_SHORT).show();
                 break;
         }
         return super.onOptionsItemSelected(item);

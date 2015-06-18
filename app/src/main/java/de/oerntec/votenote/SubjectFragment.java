@@ -143,18 +143,15 @@ public class SubjectFragment extends Fragment {
                 final int translatedPosition = position + 1;
 
                 new AlertDialog.Builder(getActivity())
-                        .setTitle("Eintrag löschen?")
-                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                        .setTitle((R.string.subject_fragment_delete_lesson))
+                        .setPositiveButton(R.string.dialog_button_ok, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
                                 //change db entry
                                 entryDB.removeEntry(databaseID, translatedPosition);
                                 //reload list- and textview; close old cursor
                                 thisRef.notifyOfChangedDataset();
                             }
-                        }).setNegativeButton("Abbrechen", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                    }
-                }).show();
+                        }).setNegativeButton(R.string.dialog_button_abort, null).show();
                 return true;
             }
         });
@@ -172,7 +169,8 @@ public class SubjectFragment extends Fragment {
         int minimumPresentationPoints = groupDB.getWantedPresPoints(databaseID);
 
         //set text informing of current presentation point level, handling plural by the way.
-        presentationPointsView.setText(presentationPoints + " von " + minimumPresentationPoints + (minimumPresentationPoints > 1 ? " Vorträgen" : " Vortrag"));
+        presentationPointsView.setText(presentationPoints + " " + R.string.main_dialog_lesson_von + " " + minimumPresentationPoints + " " +
+                (minimumPresentationPoints > 1 ? (R.string.presentation_plural) : (R.string.presentation_singular)));
 
         //make view invisible if no presentations are required
         if (minimumPresentationPoints == 0)
@@ -192,14 +190,15 @@ public class SubjectFragment extends Fragment {
         float neededAssignmentsPerUebung = remainingNeededAssignments / numberOfLessonsLeft;
 
         if (numberOfLessonsLeft == 0)
-            averageNeededVotesView.setText("Angegebene Übungsanzahl erreicht.");
+            averageNeededVotesView.setText((R.string.subject_fragment_reached_scheduled_lesson_count));
         else if (numberOfLessonsLeft < 0)
-            averageNeededVotesView.setText("Mehr Übungen eingetragen als eingestellt!");
+            averageNeededVotesView.setText((R.string.subject_fragment_overshot_lesson_count));
         else
-            averageNeededVotesView.setText("Noch durchschnittlich " + String.format("%.2f", neededAssignmentsPerUebung) + " Aufgaben pro Übung");
+            averageNeededVotesView.setText((R.string.subject_fragment_on_average) + " " +
+                    String.format("%.2f", neededAssignmentsPerUebung) + " " + (R.string.subject_fragment_assignments_per_lesson));
 
         if (scheduledMaximumAssignments < 0)
-            averageVoteView.setText("Fehler erkannt. Werte unbrauchbar.");
+            averageVoteView.setText((R.string.subject_fragment_error_detected));
 
         //set color
         if (neededAssignmentsPerUebung > groupDB.getScheduledAssignmentsPerLesson(databaseID))
@@ -210,6 +209,7 @@ public class SubjectFragment extends Fragment {
 
     /**
      * calculate the current average vote
+     *
      * @param forSection the subject id
      * @return the average vote
      */
@@ -237,14 +237,14 @@ public class SubjectFragment extends Fragment {
 
         //no votes have been given
         if (entryDB.getLessonCountForSubject(databaseID) == 0)
-            averageVoteView.setText("Füge einen Eintrag ein.");
+            averageVoteView.setText((R.string.add_lesson_command));
 
         //get minvote for section
         int minVote = groupDB.getMinVote(databaseID);
 
         //write percentage and color coding to summaryview
         if (Float.isNaN(average))
-            averageVoteView.setText("Add Entry!");
+            averageVoteView.setText(R.string.add_lesson_command);
         else
             averageVoteView.setText(String.format("%.1f", average) + "%");
 
@@ -282,14 +282,15 @@ public class SubjectFragment extends Fragment {
             String lessonIndex = cursor.getString(0);
             String myVote = cursor.getString(1);
             String maxVote = cursor.getString(2);
-            String voteString = Integer.valueOf(myVote) < 2 ? " Votierung" : " Votierungen";
+            String voteString = " " + (Integer.valueOf(myVote) < 2 ? getString(R.string.subject_fragment_singular_vote)
+                    : getString(R.string.main_dialog_lesson_votes));
 
             //set tag for later identification avoiding all
             view.setTag(Integer.valueOf(lessonIndex));
 
             //set texts
-            upper.setText(myVote + " von " + maxVote + voteString);
-            lower.setText(lessonIndex + ". Übung");
+            upper.setText(myVote + " " + R.string.main_dialog_lesson_von + " " + maxVote + voteString);
+            lower.setText(lessonIndex + R.string.main_x_th_lesson);
 
             if (!savedSizeFlag) {
                 defaultTextSize = upper.getTextSize();
