@@ -53,4 +53,13 @@
     <string name="dialog_button_ok">OK</string>
     <string name="dialog_button_abort">Cancel</string>
     <string name="add_lesson_command">Add a lesson!</string>
+    <string name="action_show_all_info">Info</string>
+    <string name="assignments_per_lesson_for_exam">Assignments per lessons needed:</string>
+    <string name="calculated_values">Calculated values:</string>
+    <string name="future_lessons">Future lessons:</string>
+    <string name="maximum_possible_assignments">Maximum doable assignments:</string>
+    <string name="needed_work_count">Needed assignments:</string>
+    <string name="past_lessons">Past lessons:</string>
+    <string name="remaining_needed_assignments">Remaining needed lessons:</string>
+    <string name="voted_assignments">Voted assignments:</string>
 </resources>

@@ -16,6 +16,12 @@
         android:title="@string/action_set_prespoints"
         app:showAsAction="always" />
     <item
+        android:id="@+id/action_show_all_info"
+        android:icon="@drawable/ic_action_about"
+        android:showAsAction="ifRoom"
+        android:title="@string/action_show_all_info"
+        app:showAsAction="ifRoom" />
+    <item
         android:id="@+id/action_show_diagram"
         android:icon="@drawable/ic_action_diagram"
         android:showAsAction="ifRoom"

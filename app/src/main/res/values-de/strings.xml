@@ -53,4 +53,13 @@
     <string name="subject_manage_subject_exists_already">Übung existiert schon</string>
     <string name="subject_manage_add_title_new_subject">Neue Übung erstellen</string>
     <string name="subject_manage_add_title_first_subject">Erstelle deine erste Übung</string>
+    <string name="action_show_all_info">Info</string>
+    <string name="assignments_per_lesson_for_exam">Aufgaben pro Übung für die Zulassung:</string>
+    <string name="calculated_values">Berechnete Werte:</string>
+    <string name="future_lessons">Zukünftige Übungen:</string>
+    <string name="maximum_possible_assignments">Maximal machbare Aufgaben:</string>
+    <string name="needed_work_count">Benötigte Aufgaben:</string>
+    <string name="past_lessons">Absolvierte Übungen:</string>
+    <string name="remaining_needed_assignments">Noch benötigte Aufgaben:</string>
+    <string name="voted_assignments">Votierte Aufgaben:</string>
 </resources>

@@ -80,7 +80,7 @@ public class SubjectFragment extends Fragment {
     }
 
     /* MAIN FRAGMENT BUILDING
-     * Build the main fragment containing uebung specific info, and the main listview
+     * Build the menu_main fragment containing uebung specific info, and the menu_main listview
      */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -139,11 +139,9 @@ public class SubjectFragment extends Fragment {
         //listener for long list click
         voteList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                final int translatedPosition = position + 1;
-
+            public boolean onItemLongClick(AdapterView<?> parent, final View view, int position, long id) {
                 new AlertDialog.Builder(getActivity())
-                        .setTitle((R.string.subject_fragment_delete_lesson))
+                        .setTitle(getString(R.string.subject_fragment_delete_lesson) + " (" + view.getTag() + ")")
                         .setPositiveButton(R.string.dialog_button_ok, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
                                 //change db entry
@@ -169,8 +167,8 @@ public class SubjectFragment extends Fragment {
         int minimumPresentationPoints = groupDB.getWantedPresPoints(databaseID);
 
         //set text informing of current presentation point level, handling plural by the way.
-        presentationPointsView.setText(presentationPoints + " " + R.string.main_dialog_lesson_von + " " + minimumPresentationPoints + " " +
-                (minimumPresentationPoints > 1 ? (R.string.presentation_plural) : (R.string.presentation_singular)));
+        presentationPointsView.setText(presentationPoints + " " + getString(R.string.main_dialog_lesson_von) + " " + minimumPresentationPoints + " " +
+                (minimumPresentationPoints > 1 ? getString(R.string.presentation_plural) : getString(R.string.presentation_singular)));
 
         //make view invisible if no presentations are required
         if (minimumPresentationPoints == 0)
@@ -190,15 +188,15 @@ public class SubjectFragment extends Fragment {
         float neededAssignmentsPerUebung = remainingNeededAssignments / numberOfLessonsLeft;
 
         if (numberOfLessonsLeft == 0)
-            averageNeededVotesView.setText((R.string.subject_fragment_reached_scheduled_lesson_count));
+            averageNeededVotesView.setText(getString(R.string.subject_fragment_reached_scheduled_lesson_count));
         else if (numberOfLessonsLeft < 0)
-            averageNeededVotesView.setText((R.string.subject_fragment_overshot_lesson_count));
+            averageNeededVotesView.setText(getString(R.string.subject_fragment_overshot_lesson_count));
         else
-            averageNeededVotesView.setText((R.string.subject_fragment_on_average) + " " +
-                    String.format("%.2f", neededAssignmentsPerUebung) + " " + (R.string.subject_fragment_assignments_per_lesson));
+            averageNeededVotesView.setText(getString(R.string.subject_fragment_on_average) + " " +
+                    String.format("%.2f", neededAssignmentsPerUebung) + " " + getString(R.string.subject_fragment_assignments_per_lesson));
 
         if (scheduledMaximumAssignments < 0)
-            averageVoteView.setText((R.string.subject_fragment_error_detected));
+            averageVoteView.setText(getString(R.string.subject_fragment_error_detected));
 
         //set color
         if (neededAssignmentsPerUebung > groupDB.getScheduledAssignmentsPerLesson(databaseID))
@@ -237,14 +235,14 @@ public class SubjectFragment extends Fragment {
 
         //no votes have been given
         if (entryDB.getLessonCountForSubject(databaseID) == 0)
-            averageVoteView.setText((R.string.add_lesson_command));
+            averageVoteView.setText(getString(R.string.add_lesson_command));
 
         //get minvote for section
         int minVote = groupDB.getMinVote(databaseID);
 
         //write percentage and color coding to summaryview
         if (Float.isNaN(average))
-            averageVoteView.setText(R.string.add_lesson_command);
+            averageVoteView.setText(getString(R.string.add_lesson_command));
         else
             averageVoteView.setText(String.format("%.1f", average) + "%");
 
@@ -289,8 +287,8 @@ public class SubjectFragment extends Fragment {
             view.setTag(Integer.valueOf(lessonIndex));
 
             //set texts
-            upper.setText(myVote + " " + R.string.main_dialog_lesson_von + " " + maxVote + voteString);
-            lower.setText(lessonIndex + R.string.main_x_th_lesson);
+            upper.setText(myVote + " " + context.getString(R.string.main_dialog_lesson_von) + " " + maxVote + voteString);
+            lower.setText(lessonIndex + context.getString(R.string.main_x_th_lesson));
 
             if (!savedSizeFlag) {
                 defaultTextSize = upper.getTextSize();

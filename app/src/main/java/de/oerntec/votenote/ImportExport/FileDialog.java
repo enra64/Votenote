@@ -10,7 +10,7 @@ package de.oerntec.votenote.ImportExport;
 * This License governs Your use of the Work. This License is intended to allow developers to use the Source
 * Code and Executable Files provided as part of the Work in any application in any form.
 * 
-* The main points subject to the terms of the License are:
+* The menu_main points subject to the terms of the License are:
 *    Source Code and Executable Files can be used in commercial applications;
 *    Source Code and Executable Files can be redistributed; and
 *    Source Code can be modified to create derivative works.

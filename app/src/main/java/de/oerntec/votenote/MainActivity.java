@@ -105,7 +105,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
         //keep track of what fragment is shown
         mCurrentSelectedId = groupsDB.translatePositionToID(position);
         mCurrentSelectedPosition = position;
-        // update the main content by replacing fragments
+        // update the menu_main content by replacing fragments
         Log.i("votenote main", "selected fragment " + position);
         FragmentManager fragmentManager = getFragmentManager();
         fragmentManager
@@ -151,7 +151,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
             // Only show items in the action bar relevant to this screen
             // if the drawer is not showing. Otherwise, let the drawer
             // decide what to show in the action bar.
-            getMenuInflater().inflate(R.menu.main, menu);
+            getMenuInflater().inflate(R.menu.menu_main, menu);
             restoreActionBar();
             if (groupsDB.getWantedPresPoints(mCurrentSelectedId) == 0)
                 menu.findItem(R.id.action_prespoints).setVisible(false);
@@ -164,7 +164,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        final int groupID = mCurrentSelectedId;
+        final int lessonId = mCurrentSelectedId;
 
         switch (item.getItemId()) {
             /*case R.id.action_groupmanagement:
@@ -172,23 +172,26 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
                 startActivityForResult(intent, ADD_FIRST_SUBJECT_REQUEST);
                 break;*/
             case R.id.action_add_entry:
-                MainDialogHelper.showAddLessonDialog(this, groupID);
-                break;
+                MainDialogHelper.showAddLessonDialog(this, lessonId);
+                return true;
+            case R.id.action_show_all_info:
+                MainDialogHelper.showAllInfoDialog(this, lessonId);
+                return true;
             case R.id.action_prespoints:
-                MainDialogHelper.showPresentationPointDialog(groupID, this);
-                break;
+                MainDialogHelper.showPresentationPointDialog(lessonId, this);
+                return true;
             case R.id.action_settings:
                 startActivity(new Intent(this, SettingsActivity.class));
-                break;
+                return true;
             case R.id.action_show_diagram:
                 //only show diagram if more than 0 entries exist
-                if (entryDB.getLessonCountForSubject(groupID) > 0) {
+                if (entryDB.getLessonCountForSubject(lessonId) > 0) {
                     Intent bintent = new Intent(this, DiagramActivity.class);
-                    bintent.putExtra("databaseID", groupID);
+                    bintent.putExtra("databaseID", lessonId);
                     startActivityForResult(bintent, ADD_FIRST_SUBJECT_REQUEST);
                 } else
                     Toast.makeText(getApplicationContext(), getString(R.string.main_toast_no_data), Toast.LENGTH_SHORT).show();
-                break;
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }

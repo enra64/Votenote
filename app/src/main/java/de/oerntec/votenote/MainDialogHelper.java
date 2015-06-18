@@ -71,7 +71,8 @@ public class MainDialogHelper {
         myVote.setValue(myVoteValue);
 
         //set the current values of the pickers as explanation text
-        infoView.setText(myVote.getValue() + " " + R.string.main_dialog_lesson_von + " " + maxVote.getValue() + " " + R.string.main_dialog_lesson_votes);
+        infoView.setText(myVote.getValue() + " " + mActivity.getString(R.string.main_dialog_lesson_von)
+                + " " + maxVote.getValue() + " " + mActivity.getString(R.string.main_dialog_lesson_votes));
         infoView.setTextColor(Color.argb(255, 153, 204, 0));//green
 
         //build alertdialog
@@ -89,9 +90,9 @@ public class MainDialogHelper {
                             //reload current fragment
                             mActivity.notifyCurrentFragment();
                         } else
-                            Toast.makeText(mActivity, (R.string.main_dialog_lesson_voted_too_much), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(mActivity, mActivity.getString(R.string.main_dialog_lesson_voted_too_much), Toast.LENGTH_SHORT).show();
                     }
-                }).setNegativeButton((R.string.dialog_button_abort), null).create();
+                }).setNegativeButton(mActivity.getString(R.string.dialog_button_abort), null).create();
 
         //listener for the vote picker
         NumberPicker.OnValueChangeListener votePickerListener = new NumberPicker.OnValueChangeListener() {
@@ -100,7 +101,8 @@ public class MainDialogHelper {
                 //load new values
                 int myVoteValue = myVote.getValue();
                 int maxVoteValue = maxVote.getValue();
-                infoView.setText(myVoteValue + " " + (R.string.main_dialog_lesson_von) + " " + maxVoteValue + " " + (R.string.main_dialog_lesson_votes));
+                infoView.setText(myVoteValue + " " + mActivity.getString(R.string.main_dialog_lesson_von)
+                        + " " + maxVoteValue + " " + mActivity.getString(R.string.main_dialog_lesson_votes));
                 boolean isValid = myVoteValue <= maxVoteValue;
                 dialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(isValid);
                 infoView.setTextColor(isValid ? Color.argb(255, 153, 204, 0) /*green*/ : Color.argb(255, 204, 0, 0));//red
@@ -136,15 +138,47 @@ public class MainDialogHelper {
 		 */
         AlertDialog.Builder b = new AlertDialog.Builder(activity)
                 .setView(inputView)
-                .setPositiveButton(R.string.dialog_button_ok, new DialogInterface.OnClickListener() {
+                .setPositiveButton(activity.getString(R.string.dialog_button_ok), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
                         //write new prespoint count to db
                         groupsDB.setPresPoints(dataBaseId, presPointPicker.getValue());
                         //reload fragment
                         activity.notifyCurrentFragment();
                     }
-                }).setNegativeButton(R.string.dialog_button_abort, null);
-        b.setTitle((R.string.main_dialog_pres_title));
+                }).setNegativeButton(activity.getString(R.string.dialog_button_abort), null);
+        b.setTitle(activity.getString(R.string.main_dialog_pres_title));
         b.create().show();
+    }
+
+    public static void showAllInfoDialog(MainActivity activity, int lessonId) {
+        DBLessons lessonDb = DBLessons.getInstance();
+        DBSubjects subjectDb = DBSubjects.getInstance();
+
+        int scheduledMaximumAssignments = subjectDb.getScheduledWork(lessonId);
+        float numberOfNeededAssignments = ((float) scheduledMaximumAssignments * (float) subjectDb.getMinVote(lessonId)) / (float) 100;
+        int numberOfVotedAssignments = lessonDb.getCompletedAssignmentCount(lessonId);
+        float remainingNeededAssignments = numberOfNeededAssignments - numberOfVotedAssignments;
+        int numberOfElapsedLessons = lessonDb.getLessonCountForSubject(lessonId);
+        int numberOfLessonsLeft = subjectDb.getScheduledNumberOfLessons(lessonId) - numberOfElapsedLessons;
+        float neededAssignmentsPerUebung = remainingNeededAssignments / (float) numberOfLessonsLeft;
+
+        String scheduledWork = activity.getString(R.string.maximum_possible_assignments) + " " + scheduledMaximumAssignments;
+        String numberOfNeededAssignmentsString = activity.getString(R.string.needed_work_count) + " " + numberOfNeededAssignments;
+        String numberOfVotedAssignmentsString = activity.getString(R.string.voted_assignments) + " " + numberOfVotedAssignments;
+        String remainingNeededAssignmentsString = activity.getString(R.string.remaining_needed_assignments) + " " + remainingNeededAssignments;
+        String numberOfElapsedLessonsString = activity.getString(R.string.past_lessons) + " " + numberOfElapsedLessons;
+        String numberOfLessonsLeftString = activity.getString(R.string.future_lessons) + " " + numberOfLessonsLeft;
+        String neededAssignmentsPerUebungString = activity.getString(R.string.assignments_per_lesson_for_exam) + " " + neededAssignmentsPerUebung;
+
+        AlertDialog.Builder b = new AlertDialog.Builder(activity)
+                .setPositiveButton(R.string.dialog_button_ok, null)
+                .setTitle(R.string.calculated_values);
+        b.setItems(new String[]{scheduledWork,
+                numberOfNeededAssignmentsString,
+                numberOfVotedAssignmentsString,
+                remainingNeededAssignmentsString,
+                numberOfElapsedLessonsString,
+                numberOfLessonsLeftString,
+                neededAssignmentsPerUebungString}, null).show();
     }
 }
