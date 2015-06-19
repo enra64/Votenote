@@ -49,7 +49,7 @@ public class GroupManagementActivity extends Activity {
             if (extras.getBoolean("firstGroup", false)) {
                 Builder b = new AlertDialog.Builder(this, AlertDialog.THEME_DEVICE_DEFAULT_DARK);
                 b.setTitle("Tutorial");
-                b.setView(this.getLayoutInflater().inflate(R.layout.subject_manager_dialog_tutorial, null));
+                b.setView(this.getLayoutInflater().inflate(R.layout.tutorial_subjects, null));
                 b.setPositiveButton(getString(R.string.dialog_button_ok), null);
                 b.create().show();
             }
@@ -106,7 +106,7 @@ public class GroupManagementActivity extends Activity {
     }
 
     private void showLessonDialog(final int changePosition) {
-        String nameHint = "Subject name";
+        String nameHint = getString(R.string.subject_add_hint);
         int databaseID = ADD_SUBJECT_CODE;
         int presentationPointsHint = 0;
         int minimumVotePercentageHint = 50;

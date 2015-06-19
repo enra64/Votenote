@@ -3,9 +3,10 @@ package de.oerntec.votenote;
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.FragmentManager;
 import android.content.Intent;
-import android.content.res.Configuration;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.widget.DrawerLayout;
@@ -13,8 +14,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
-
-import java.util.Locale;
 
 /*
 * VERSION HISTORY
@@ -72,12 +71,6 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
         groupsDB = DBSubjects.setupInstance(this);
         entryDB = DBLessons.setupInstance(this);
 
-        Locale locale = new Locale("en_US");
-        Locale.setDefault(locale);
-        Configuration config = new Configuration();
-        config.locale = locale;
-        getResources().updateConfiguration(config, null);
-
         //to avoid calling groupsDB before having it started, setting the view has been
         //moved here
         setContentView(R.layout.activity_main);
@@ -104,6 +97,15 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
             if (getPreference("open_drawer_on_start", false))
                 mNavigationDrawerFragment.openDrawer();
         }
+        Cursor count = entryDB.getAllData();
+        if (count.getCount() <= 0) {
+            AlertDialog.Builder b = new AlertDialog.Builder(this, AlertDialog.THEME_DEVICE_DEFAULT_DARK);
+            b.setTitle("Tutorial");
+            b.setView(this.getLayoutInflater().inflate(R.layout.tutorial_lessons, null));
+            b.setPositiveButton(getString(R.string.dialog_button_ok), null);
+            b.create().show();
+        }
+        count.close();
     }
 
     /**

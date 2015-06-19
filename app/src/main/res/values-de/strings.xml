@@ -23,7 +23,7 @@
     <string name="title_activity_diagram">Diagramm</string>
     <string name="title_activity_group_management">Übungen verwalten</string>
     <string name="title_activity_settings">Einstellungen</string>
-    <string name="tutorial_add_button">Übung oder Votierungen hinzufügen</string>
+    <string name="tutorial_add_button">Übung hinzufügen</string>
     <string name="tutorial_control_prespoints">Präsentationspunkte verwalten</string>
     <string name="tutorial_create_your_first_subject">Präsentationspunkte verwalten</string>
     <string name="add_lesson_command">Füge einen Eintrag ein.</string>
@@ -69,4 +69,14 @@
     <string name="pref_lesson_sort_title">Übungsreihenfolge</string>
     <string name="pref_xml_export">XML-Sicherung erstellen</string>
     <string name="pref_xml_import">XML-Sicherung importieren</string>
+    <string name="tutorial_import_description">XML-Backup importieren</string>
+    <string name="tutorial_lessons_about">Berechnete Werte anzeigen</string>
+    <string name="tutorial_lessons_add">Eintrag hinzufügen</string>
+    <string name="tutorial_lessons_diagram">Diagramm anzeigen</string>
+    <string name="xml_import_dialog_title">Überschreiben?</string>
+    <string name="xml_import_warning_message">Alle derzeitigen Einträge und Übungen werden gelöscht!</string>
+    <string name="xml_importer_file_not_found">File not found</string>
+    <string name="import_result_bad">Fehler</string>
+    <string name="import_result_ok">Kein Fehler</string>
+    <string name="subject_add_hint">Name der Übung</string>
 </resources>

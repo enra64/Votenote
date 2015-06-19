@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="5dp"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:drawableLeft="@drawable/ic_action_new_entry"
+        android:text="@string/tutorial_lessons_add"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="@color/primary_text_default_material_dark" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:drawableLeft="@drawable/ic_action_prespoints"
+        android:text="@string/tutorial_control_prespoints"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="@color/primary_text_default_material_dark" />
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:drawableLeft="@drawable/ic_action_about"
+        android:text="@string/tutorial_lessons_about"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="@color/primary_text_default_material_dark" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:drawableLeft="@drawable/ic_action_diagram"
+        android:text="@string/tutorial_lessons_diagram"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="@color/primary_text_default_material_dark" />
+</LinearLayout>

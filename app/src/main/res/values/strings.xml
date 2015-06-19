@@ -19,7 +19,7 @@
 
     <string name="tutorial_control_prespoints">Präsentationspunkte verwalten</string>
     <string name="tutorial_create_your_first_subject">Erstelle mit dem Plus oben rechts deine erste Übung</string>
-    <string name="tutorial_add_button">Übung oder Votierungen hinzufügen</string>
+    <string name="tutorial_add_button">Übung hinzufügen</string>
 
     <string name="subjectmanager_needed_work">Erforderliche Votierung</string>
     <string name="subjectmanager_needed_prespoints">Erforderliche Vortragspunkte</string>
@@ -37,9 +37,9 @@
     <string name="dialog_button_abort">Abbrechen</string>
     <string name="subject_manage_bad_subject_name">Dein Gruppenname enthält XML-Zeichen!</string>
     <string name="subject_manage_subject_exists_already">Übung existiert schon</string>
-    <string name="subject_manage_add_title_first_subject">Create your first subject</string>
-    <string name="subject_manage_add_title_new_subject">Create a new subject</string>
-    <string name="subject_manage_add_title_change_subject">Change</string>
+    <string name="subject_manage_add_title_first_subject">Erstelle deine erste Übung</string>
+    <string name="subject_manage_add_title_new_subject">Neue Übung erstellen</string>
+    <string name="subject_manage_add_title_change_subject">Ändere</string>
     <string name="main_add_subject_command">Übung hinzufügen!</string>
     <string name="main_toast_no_data">Diese Übung hat keine Daten!</string>
     <string name="main_dialog_pres_title">Erreichte Präsentationspunkte</string>
@@ -76,5 +76,14 @@
     <string name="pref_lesson_sort_title">Übungsreihenfolge</string>
     <string name="pref_drawer_start_title">Drawer-Start</string>
     <string name="tutorial_import_description">Übungen importieren</string>
+    <string name="tutorial_lessons_add">Eintrag hinzufügen</string>
+    <string name="tutorial_lessons_about">Berechnete Werte anzeigen</string>
+    <string name="tutorial_lessons_diagram">Diagramm anzeigen</string>
+    <string name="xml_import_warning_message">Alle derzeitigen Einträge und Übungen werden gelöscht!</string>
+    <string name="xml_import_dialog_title">Überschreiben?</string>
+    <string name="import_result_ok">Kein Fehler</string>
+    <string name="import_result_bad">Fehler</string>
+    <string name="xml_importer_file_not_found">File not found</string>
+    <string name="subject_add_hint">Name der Übung</string>
 
 </resources>

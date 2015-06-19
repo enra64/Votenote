@@ -20,6 +20,7 @@ import de.oerntec.votenote.DBLessons;
 import de.oerntec.votenote.DBSubjects;
 import de.oerntec.votenote.GroupManagementActivity;
 import de.oerntec.votenote.MainActivity;
+import de.oerntec.votenote.R;
 
 public class XmlImporter {
     public static boolean success;
@@ -28,15 +29,15 @@ public class XmlImporter {
         //if there already are subjects, ask the user whether he truly wants to delete everything
         if (DBSubjects.getInstance().getCount() > 0) {
             AlertDialog.Builder b = new AlertDialog.Builder(activity);
-            b.setTitle("Überschreiben?");
-            b.setMessage("Alle derzeitigen Einträge werden gelöscht!");
-            b.setPositiveButton("Fortfahren", new DialogInterface.OnClickListener() {
+            b.setTitle(activity.getString(R.string.xml_import_dialog_title));
+            b.setMessage(activity.getString(R.string.xml_import_warning_message));
+            b.setPositiveButton(R.string.dialog_button_ok, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     startDialog(activity);
                 }
             });
-            b.setNegativeButton("Abbrechen", null);
+            b.setNegativeButton(R.string.dialog_button_abort, null);
             b.show();
         } else
             startDialog(activity);
@@ -53,9 +54,9 @@ public class XmlImporter {
                         importXml(chosenDir);
                         //check whether an exception was catched
                         if (success)
-                            Toast.makeText(activity, "Kein Fehler", Toast.LENGTH_LONG).show();
+                            Toast.makeText(activity, activity.getString(R.string.import_result_ok), Toast.LENGTH_LONG).show();
                         else
-                            Toast.makeText(activity, "Fehler", Toast.LENGTH_LONG).show();
+                            Toast.makeText(activity, activity.getString(R.string.import_result_bad), Toast.LENGTH_LONG).show();
 
                         if (activity instanceof MainActivity) {
                             MainActivity.mNavigationDrawerFragment.reloadAdapter();
@@ -79,7 +80,7 @@ public class XmlImporter {
             inputStream = new FileInputStream(file);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-            MainActivity.toast("File not found");
+            MainActivity.toast("File not found!");
             return;
         }
         startParser(inputStream);
