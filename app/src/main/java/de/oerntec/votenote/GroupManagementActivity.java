@@ -47,7 +47,7 @@ public class GroupManagementActivity extends Activity {
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             if (extras.getBoolean("firstGroup", false)) {
-                Builder b = new AlertDialog.Builder(this);
+                Builder b = new AlertDialog.Builder(this, AlertDialog.THEME_DEVICE_DEFAULT_DARK);
                 b.setTitle("Tutorial");
                 b.setView(this.getLayoutInflater().inflate(R.layout.mainfragment_dialog_firstgroup, null));
                 b.setPositiveButton(getString(R.string.dialog_button_ok), null);

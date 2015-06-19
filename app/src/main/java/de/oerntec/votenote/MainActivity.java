@@ -5,6 +5,7 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.app.FragmentManager;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.widget.DrawerLayout;
@@ -12,6 +13,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
+
+import java.util.Locale;
 
 /*
 * VERSION HISTORY
@@ -68,6 +71,12 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
         //database access
         groupsDB = DBSubjects.setupInstance(this);
         entryDB = DBLessons.setupInstance(this);
+
+        Locale locale = new Locale("en_US");
+        Locale.setDefault(locale);
+        Configuration config = new Configuration();
+        config.locale = locale;
+        getResources().updateConfiguration(config, null);
 
         //to avoid calling groupsDB before having it started, setting the view has been
         //moved here
