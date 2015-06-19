@@ -2,12 +2,14 @@ package de.oerntec.votenote.ImportExport;
 
 import android.app.Activity;
 import android.database.Cursor;
+import android.widget.Toast;
 
 import java.io.IOException;
 
 import de.oerntec.votenote.DBLessons;
 import de.oerntec.votenote.DBSubjects;
 import de.oerntec.votenote.DatabaseCreator;
+import de.oerntec.votenote.R;
 
 /**
  * XmlBuilder is used to write XML tags (open and close, and a few attributes)
@@ -17,6 +19,7 @@ import de.oerntec.votenote.DatabaseCreator;
  */
 public class XmlExporter {
     private static XmlBuilder xmlBuilder;
+    private static boolean success;
 
     public static void exportDialog(final Activity activity) {
         FileDialog fileOpenDialog = new FileDialog(
@@ -25,7 +28,13 @@ public class XmlExporter {
                 new FileDialog.FileDialogListener() {
                     @Override
                     public void onChosenDir(String chosenDir) {
+                        success = true;
                         XmlExporter.export(chosenDir);
+                        //check whether an exception was catched
+                        if (success)
+                            Toast.makeText(activity, activity.getString(R.string.import_result_ok), Toast.LENGTH_LONG).show();
+                        else
+                            Toast.makeText(activity, activity.getString(R.string.import_result_bad), Toast.LENGTH_LONG).show();
                     }
                 }
         );
@@ -38,6 +47,7 @@ public class XmlExporter {
         try {
             xmlBuilder = new XmlBuilder();
         } catch (IOException e) {
+            success = false;
             e.printStackTrace();
         }
         xmlBuilder.start(DatabaseCreator.DATABASE_NAME);
@@ -47,6 +57,7 @@ public class XmlExporter {
             exportTable(DBLessons.getInstance().getAllData(), "entries");
             exportTable(DBSubjects.getInstance().getAllData(), "subjects");
         } catch (IOException e) {
+            success = false;
             e.printStackTrace();
         }
 
@@ -54,11 +65,13 @@ public class XmlExporter {
         try {
             xmlString = xmlBuilder.end();
         } catch (IOException e) {
+            success = false;
             e.printStackTrace();
         }
         try {
             Writer.writeToFile(xmlString, fileName);
         } catch (IOException e) {
+            success = false;
             e.printStackTrace();
         }
         xmlBuilder = null;

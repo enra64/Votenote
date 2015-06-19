@@ -2,13 +2,14 @@ package de.oerntec.votenote.ImportExport;
 
 import android.app.Activity;
 import android.database.Cursor;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.util.List;
 
 import de.oerntec.votenote.DBLessons;
 import de.oerntec.votenote.DBSubjects;
-import de.oerntec.votenote.MainActivity;
+import de.oerntec.votenote.R;
 import de.oerntec.votenote.Subject;
 
 public class CsvExporter {
@@ -19,7 +20,7 @@ public class CsvExporter {
                 new FileDialog.FileDialogListener() {
                     @Override
                     public void onChosenDir(String chosenDir) {
-                        export(chosenDir);
+                        export(chosenDir, activity);
                     }
                 }
         );
@@ -29,7 +30,7 @@ public class CsvExporter {
         return fileOpenDialog;
     }
 
-    private static void export(final String path) {
+    private static void export(final String path, final Activity activity) {
         //get database access
         final DBSubjects groupsDB = DBSubjects.getInstance();
         final DBLessons entryDB = DBLessons.getInstance();
@@ -79,9 +80,10 @@ public class CsvExporter {
         }
         try {
             Writer.writeToFile(s.toString(), path);
+            Toast.makeText(activity, activity.getString(R.string.import_result_ok), Toast.LENGTH_LONG).show();
         } catch (IOException e) {
             e.printStackTrace();
-            MainActivity.toast("Fehlschlag!");
+            Toast.makeText(activity, activity.getString(R.string.import_result_bad), Toast.LENGTH_LONG).show();
         }
     }
 }
