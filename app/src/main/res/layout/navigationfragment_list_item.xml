@@ -11,6 +11,6 @@
     android:paddingStart="?android:attr/listPreferredItemPaddingStart"
     android:text="test"
     android:textAppearance="?android:attr/textAppearanceLarge"
-    android:textSize="28sp">
+    android:textSize="28dp">
 
 </TextView>

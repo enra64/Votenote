@@ -173,6 +173,9 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
         actionBar.setDisplayShowTitleEnabled(true);
 
+        //update title
+        setTitle(mTitle);
+
         //basically calls onCreateOptionsMenu
         invalidateOptionsMenu();
     }
@@ -186,7 +189,11 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
             getMenuInflater().inflate(R.menu.menu_main, menu);
 
             //update title
-            setTitle(mTitle);
+            ActionBar actionBar = getActionBar();
+            if (actionBar != null) {
+                actionBar.setDisplayShowTitleEnabled(true);
+                actionBar.setTitle(mTitle);
+            }
 
             //update prespoint action icon
             if (groupsDB.getWantedPresPoints(mCurrentSelectedId) == 0)
