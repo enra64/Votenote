@@ -299,8 +299,9 @@ public class NavigationDrawerFragment extends Fragment {
         @Override
         public View newView(Context context, Cursor cursor, ViewGroup parent) {
             LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-            View root = inflater.inflate(R.layout.navigationfragment_list_item, parent, false);
-            TextView upper = (TextView) root.findViewById(R.id.navigationfragment_list_item_text);
+            View root = inflater.inflate(android.R.layout.simple_list_item_1, parent, false);
+            TextView upper = (TextView) root.findViewById(android.R.id.text1);
+            upper.setTextAppearance(context, android.R.style.TextAppearance_Large);
             return root;
         }
 
@@ -311,7 +312,7 @@ public class NavigationDrawerFragment extends Fragment {
         @Override
         public void bindView(View view, Context context, Cursor cursor) {
             //find textviews
-            TextView description = (TextView) view.findViewById(R.id.navigationfragment_list_item_text);
+            TextView description = (TextView) view.findViewById(android.R.id.text1);
 
             //load strings
             String subjectName = cursor.getString(1);
