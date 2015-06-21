@@ -168,7 +168,7 @@ public class SettingsActivity extends PreferenceActivity {
                 if (VersionCheckHelper.isOnline(thisRef))
                     VersionCheckHelper.checkVersion(thisRef);
                 else
-                    Toast.makeText(thisRef, "Offline", Toast.LENGTH_SHORT);
+                    Toast.makeText(thisRef, "Offline", Toast.LENGTH_SHORT).show();
                 return true;
             }
         });
