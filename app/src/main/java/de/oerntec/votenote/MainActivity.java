@@ -17,22 +17,23 @@ import android.widget.Toast;
 
 /*
 * VERSION HISTORY
-* 1.0: ka.
+* 1.0:
+* ka
 * 1.2:
 * XML import and export (with success toast)
 * CSV export (with success toast)
 * Updated looks for lollipop users
-* All-New settings activity
-* Choose the Lesson order
+* All-new settings activity
+* Choose the lesson order
 * Choose whether to start with an open drawer
 * More digits on vote percentage
 * Control of subjects now in settings activity
 * Version checking system
 * Better subject dialog
 * New lessons dialog
-* New dialog to show all calculated Values
-* New option to delete all Entries
-* */
+* New dialog to show all calculated values
+* New option to delete all entries
+*/
 
 @SuppressLint("InflateParams")
 public class MainActivity extends Activity implements NavigationDrawerFragment.NavigationDrawerCallbacks {
@@ -98,7 +99,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 
     public void onVersionResult(String result) {
         if (!"1.2".equals(result))
-            toast(getString(R.string.version_check_fail_message));
+            Toast.makeText(this, getString(R.string.main_version_check_goto_settings), Toast.LENGTH_LONG).show();
     }
 
     @Override

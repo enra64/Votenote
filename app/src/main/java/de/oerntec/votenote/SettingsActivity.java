@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.Preference;
@@ -245,12 +246,22 @@ public class SettingsActivity extends PreferenceActivity {
         AlertDialog.Builder b = new AlertDialog.Builder(this);
         b.setTitle(getString(R.string.versio_check_title));
         String message;
-        if ("1.2".equals(result))
+        boolean isNewest = "1.2".equals(result);
+        if (isNewest)
             message = getString(R.string.version_check_success_message);
         else
             message = getString(R.string.version_check_fail_message);
         b.setMessage(message);
         b.setPositiveButton(getString(R.string.dialog_button_ok), null);
+        if (!isNewest) {
+            b.setNeutralButton("Download", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.dropbox.com/s/9a4kpufy1mcalpf/VoteNote_latest.apk?dl=1"));
+                    startActivity(browserIntent);
+                }
+            });
+        }
         b.show();
     }
 
