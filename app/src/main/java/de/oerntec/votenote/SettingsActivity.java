@@ -15,6 +15,7 @@ import android.preference.PreferenceCategory;
 import android.preference.PreferenceFragment;
 import android.support.v4.app.NavUtils;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import java.util.List;
 
@@ -164,7 +165,10 @@ public class SettingsActivity extends PreferenceActivity {
         findPreference("version_check").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                VersionCheckHelper.checkVersion(thisRef);
+                if (VersionCheckHelper.isOnline(thisRef))
+                    VersionCheckHelper.checkVersion(thisRef);
+                else
+                    Toast.makeText(thisRef, "Offline", Toast.LENGTH_SHORT);
                 return true;
             }
         });

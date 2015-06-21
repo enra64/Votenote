@@ -3,6 +3,8 @@ package de.oerntec.votenote;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 
 import org.apache.http.HttpResponse;
@@ -31,6 +33,12 @@ public class VersionCheckHelper {
 
     public static void checkVersionStealth(Activity c) {
         checkVersion(c, true);
+    }
+
+    public static boolean isOnline(Activity context) {
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return netInfo != null && netInfo.isConnectedOrConnecting();
     }
 
     private static void onResult(String result) {

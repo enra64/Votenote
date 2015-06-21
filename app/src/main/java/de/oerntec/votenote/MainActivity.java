@@ -92,7 +92,8 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
                 (DrawerLayout) findViewById(R.id.drawer_layout));
 
         if (getPreference("check_version_at_start", true))
-            VersionCheckHelper.checkVersionStealth(this);
+            if (VersionCheckHelper.isOnline(this))
+                VersionCheckHelper.checkVersionStealth(this);
     }
 
     public void onVersionResult(String result) {
@@ -193,10 +194,6 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
         final int lessonId = mCurrentSelectedId;
 
         switch (item.getItemId()) {
-            /*case R.id.action_groupmanagement:
-                Intent intent = new Intent(this, GroupManagementActivity.class);
-                startActivityForResult(intent, ADD_FIRST_SUBJECT_REQUEST);
-                break;*/
             case R.id.action_add_entry:
                 MainDialogHelper.showAddLessonDialog(this, lessonId);
                 return true;
