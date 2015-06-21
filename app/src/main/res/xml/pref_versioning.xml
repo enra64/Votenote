@@ -13,6 +13,6 @@
 
     <Preference
         android:key="version_key"
-        android:title="Version 1.2" />
+        android:title="Version 1.2.1" />
 
 </PreferenceScreen>

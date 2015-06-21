@@ -246,7 +246,7 @@ public class SettingsActivity extends PreferenceActivity {
         AlertDialog.Builder b = new AlertDialog.Builder(this);
         b.setTitle(getString(R.string.versio_check_title));
         String message;
-        boolean isNewest = "1.2".equals(result);
+        boolean isNewest = "1.2.1".equals(result);
         if (isNewest)
             message = getString(R.string.version_check_success_message);
         else
