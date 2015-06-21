@@ -291,8 +291,6 @@ public class NavigationDrawerFragment extends Fragment {
 
     private class SubjectAdapter extends CursorAdapter {
         private int currentlySelectedPosition;
-        private float defaultTextSize;
-        private boolean savedSizeFlag = false;
 
         public SubjectAdapter(Context context, Cursor c, int flags) {
             super(context, c, flags);
@@ -301,7 +299,9 @@ public class NavigationDrawerFragment extends Fragment {
         @Override
         public View newView(Context context, Cursor cursor, ViewGroup parent) {
             LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-            return inflater.inflate(android.R.layout.simple_list_item_1, parent, false);
+            View root = inflater.inflate(R.layout.navigationfragment_list_item, parent, false);
+            TextView upper = (TextView) root.findViewById(R.id.navigationfragment_list_item_text);
+            return root;
         }
 
         public void setSelectedPosition(int pos) {
@@ -311,7 +311,7 @@ public class NavigationDrawerFragment extends Fragment {
         @Override
         public void bindView(View view, Context context, Cursor cursor) {
             //find textviews
-            TextView description = (TextView) view.findViewById(android.R.id.text1);
+            TextView description = (TextView) view.findViewById(R.id.navigationfragment_list_item_text);
 
             //load strings
             String subjectName = cursor.getString(1);
@@ -324,13 +324,6 @@ public class NavigationDrawerFragment extends Fragment {
                 //description.setTypeface(Typeface.DEFAULT);
                 description.setBackgroundColor(Color.argb(0, 204, 204, 204));
             }
-
-            if (!savedSizeFlag) {
-                defaultTextSize = description.getTextSize();
-                savedSizeFlag = true;
-            }
-
-            description.setTextSize(defaultTextSize + 0.065f);
 
             //set text
             description.setText(subjectName);

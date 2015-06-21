@@ -257,9 +257,6 @@ public class SubjectFragment extends Fragment {
     }
 
     private class LessonAdapter extends CursorAdapter {
-        private float defaultTextSize;
-        private boolean savedSizeFlag = false;
-
         public LessonAdapter(Context context, Cursor c, int flags) {
             super(context, c, flags);
         }
@@ -267,7 +264,10 @@ public class SubjectFragment extends Fragment {
         @Override
         public View newView(Context context, Cursor cursor, ViewGroup parent) {
             LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-            return inflater.inflate(android.R.layout.simple_list_item_2, parent, false);
+            View root = inflater.inflate(android.R.layout.simple_list_item_2, parent, false);
+            TextView upper = (TextView) root.findViewById(android.R.id.text1);
+            upper.setTextAppearance(context, android.R.style.TextAppearance_Large);
+            return root;
         }
 
         @Override
@@ -289,13 +289,6 @@ public class SubjectFragment extends Fragment {
             //set texts
             upper.setText(myVote + " " + context.getString(R.string.main_dialog_lesson_von) + " " + maxVote + voteString);
             lower.setText(lessonIndex + context.getString(R.string.main_x_th_lesson));
-
-            if (!savedSizeFlag) {
-                defaultTextSize = upper.getTextSize();
-                savedSizeFlag = true;
-            }
-
-            upper.setTextSize(defaultTextSize + 0.1f);
         }
     }
 }

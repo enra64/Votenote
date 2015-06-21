@@ -34,6 +34,9 @@ import android.widget.Toast;
 * New dialog to show all calculated values
 * New option to delete all entries
 * final commit marker
+* 1.2.1
+* fixed recursive onCreateOptionsMenu call
+* fixed text scaling
 */
 
 @SuppressLint("InflateParams")
