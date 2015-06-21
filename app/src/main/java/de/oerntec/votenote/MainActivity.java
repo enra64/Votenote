@@ -38,7 +38,6 @@ import android.widget.Toast;
 
 @SuppressLint("InflateParams")
 public class MainActivity extends Activity implements NavigationDrawerFragment.NavigationDrawerCallbacks {
-
     /**
      * Request code for getting notified when the first subject has been added
      */
@@ -58,7 +57,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
      * Used to store the last screen title. For use in
      * {@link #restoreActionBar()}.
      */
-    private CharSequence mTitle;
+    private CharSequence mTitle = "rip";
 
     public static void toast(String text) {
         Toast.makeText(me, text, Toast.LENGTH_SHORT).show();
@@ -170,7 +169,8 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
         //noinspection deprecation
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
         actionBar.setDisplayShowTitleEnabled(true);
-        actionBar.setTitle(mTitle);
+
+        //basically calls onCreateOptionsMenu
         invalidateOptionsMenu();
     }
 
@@ -181,11 +181,16 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
             // if the drawer is not showing. Otherwise, let the drawer
             // decide what to show in the action bar.
             getMenuInflater().inflate(R.menu.menu_main, menu);
-            restoreActionBar();
+
+            //update title
+            setTitle(mTitle);
+
+            //update prespoint action icon
             if (groupsDB.getWantedPresPoints(mCurrentSelectedId) == 0)
                 menu.findItem(R.id.action_prespoints).setVisible(false);
             else
                 menu.findItem(R.id.action_prespoints).setVisible(true);
+
             return true;
         }
         return super.onCreateOptionsMenu(menu);
