@@ -33,6 +33,7 @@ import android.widget.Toast;
 * New lessons dialog
 * New dialog to show all calculated values
 * New option to delete all entries
+* final commit marker
 */
 
 @SuppressLint("InflateParams")
