@@ -8,4 +8,8 @@
         android:fragment="de.oerntec.votenote.SettingsActivity$ExportPreferenceFragment"
         android:title="@string/pref_general_settings" />
 
+    <header
+        android:fragment="de.oerntec.votenote.SettingsActivity$UpdatePreferenceFragment"
+        android:title="Updates" />
+
 </preference-headers>

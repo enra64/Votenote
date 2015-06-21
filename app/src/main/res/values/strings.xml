@@ -91,5 +91,10 @@
     <string name="version_check_fail_message">Du hast nicht mehr die neueste Version!</string>
     <string name="pref_update_check_summary">Bei gesetzter Checkbox wird beim Starten die Version geprüft.</string>
     <string name="pref_update_check_title">Regelmäßig nach Updates suchen</string>
+    <string name="deletion_confirmation_title">Wirklich alle Einträge löschen?</string>
+    <string name="deletion_confirmation_message">Wenn du OK wählst, werden wirklich alle derzeitigen Datenbankeinträge entfernt!</string>
+    <string name="pref_check_updates_now">Auf Updates überprüfen</string>
+    <string name="pref_delete_all_entries">Alle Eintrage löschen</string>
+    <string name="pres_control_subjects">Übungen verwalten</string>
 
 </resources>

@@ -19,13 +19,19 @@ import android.widget.Toast;
 * VERSION HISTORY
 * 1.0: ka.
 * 1.2:
-* Export via xml, csv via filechooser,
-* import from xml.
-* updated looks to lollipop
-* settings activity for importing and exporting and reverse lesson sort and drawer start
-* added a digit behind the comma on percentage to avoid fucking up
-* moved subject control to settings activity
-* import/export success control
+* XML import and export (with success toast)
+* CSV export (with success toast)
+* Updated looks for lollipop users
+* All-New settings activity
+* Choose the Lesson order
+* Choose whether to start with an open drawer
+* More digits on vote percentage
+* Control of subjects now in settings activity
+* Version checking system
+* Better subject dialog
+* New lessons dialog
+* New dialog to show all calculated Values
+* New option to delete all Entries
 * */
 
 @SuppressLint("InflateParams")

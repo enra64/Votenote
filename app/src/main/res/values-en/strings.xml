@@ -85,4 +85,9 @@
     <string name="version_check_fail_message">You do not have the newest version anymore!</string>
     <string name="version_check_message">Checking for new version…</string>
     <string name="version_check_success_message">You have the newest Version!</string>
+    <string name="deletion_confirmation_message">If you choose OK, really all database entries will be deleted!</string>
+    <string name="deletion_confirmation_title">Do you really want to delete all entries?</string>
+    <string name="pres_control_subjects">Subject control</string>
+    <string name="pref_delete_all_entries">Delete all entries</string>
+    <string name="pref_check_updates_now">Check for updates</string>
 </resources>

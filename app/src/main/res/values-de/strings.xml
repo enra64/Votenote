@@ -85,4 +85,9 @@
     <string name="version_check_fail_message">Du hast nicht mehr die neueste Version!</string>
     <string name="version_check_message">Überprüfe auf neue Version…</string>
     <string name="version_check_success_message">Du hast die neueste Version!</string>
+    <string name="deletion_confirmation_message">Wenn du OK wählst, werden wirklich alle derzeitigen Datenbankeinträge entfernt!</string>
+    <string name="deletion_confirmation_title">Wirklich alle Einträge löschen?</string>
+    <string name="pres_control_subjects">Übungen verwalten</string>
+    <string name="pref_check_updates_now">Auf Updates überprüfen</string>
+    <string name="pref_delete_all_entries">Alle Eintrage löschen</string>
 </resources>

@@ -4,6 +4,7 @@ import android.annotation.TargetApi;
 import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Build;
@@ -139,12 +140,17 @@ public class SettingsActivity extends PreferenceActivity {
         PreferenceCategory fakeHeader = new PreferenceCategory(this);
         fakeHeader.setTitle((R.string.pref_general_settings));
         getPreferenceScreen().addPreference(fakeHeader);
-        addPreferencesFromResource(R.xml.pref_all);
+        addPreferencesFromResource(R.xml.pref_general);
 
         fakeHeader = new PreferenceCategory(this);
         fakeHeader.setTitle((R.string.pref_imexport));
         getPreferenceScreen().addPreference(fakeHeader);
         addPreferencesFromResource(R.xml.pref_import_export);
+
+        fakeHeader = new PreferenceCategory(this);
+        fakeHeader.setTitle("Updates");
+        getPreferenceScreen().addPreference(fakeHeader);
+        addPreferencesFromResource(R.xml.pref_versioning);
 
         final SettingsActivity thisRef = this;
         findPreference("csv_export").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
@@ -171,6 +177,14 @@ public class SettingsActivity extends PreferenceActivity {
             }
         });
 
+        findPreference("delete_entries").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                showDeletionConfirmationDialog();
+                return true;
+            }
+        });
+
         findPreference("subject_manage_key").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
@@ -187,6 +201,21 @@ public class SettingsActivity extends PreferenceActivity {
                 return true;
             }
         });
+    }
+
+    private void showDeletionConfirmationDialog() {
+        AlertDialog.Builder b = new AlertDialog.Builder(this);
+        b.setTitle(getString(R.string.deletion_confirmation_title));
+        b.setMessage(getString(R.string.deletion_confirmation_message));
+        b.setPositiveButton(getString(R.string.dialog_button_ok), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                DBLessons.getInstance().dropData();
+                DBSubjects.getInstance().dropData();
+            }
+        });
+        b.setNegativeButton(getString(R.string.dialog_button_abort), null);
+        b.show();
     }
 
     /**
@@ -230,7 +259,7 @@ public class SettingsActivity extends PreferenceActivity {
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
-            addPreferencesFromResource(R.xml.pref_all);
+            addPreferencesFromResource(R.xml.pref_general);
         }
     }
 
@@ -240,6 +269,15 @@ public class SettingsActivity extends PreferenceActivity {
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.pref_import_export);
+        }
+    }
+
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    public static class UpdatePreferenceFragment extends PreferenceFragment {
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            addPreferencesFromResource(R.xml.pref_versioning);
         }
     }
 }
