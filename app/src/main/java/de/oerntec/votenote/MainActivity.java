@@ -25,6 +25,7 @@ import android.widget.Toast;
 * settings activity for importing and exporting and reverse lesson sort and drawer start
 * added a digit behind the comma on percentage to avoid fucking up
 * moved subject control to settings activity
+* import/export success control
 * */
 
 @SuppressLint("InflateParams")
@@ -83,6 +84,14 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
+
+        if (getPreference("check_version_at_start", true))
+            VersionCheckHelper.checkVersionStealth(this);
+    }
+
+    public void onVersionResult(String result) {
+        if (!"1.2".equals(result))
+            toast(getString(R.string.version_check_fail_message));
     }
 
     @Override

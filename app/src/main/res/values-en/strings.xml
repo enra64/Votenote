@@ -79,4 +79,10 @@
     <string name="import_result_bad">Failure</string>
     <string name="import_result_ok">Success</string>
     <string name="subject_add_hint">Subject name</string>
+    <string name="pref_update_check_title">Check for updates regularly</string>
+    <string name="pref_update_check_summary">When set, the version will be checked upon starting the app.</string>
+    <string name="versio_check_title">Version checking</string>
+    <string name="version_check_fail_message">You do not have the newest version anymore!</string>
+    <string name="version_check_message">Checking for new version…</string>
+    <string name="version_check_success_message">You have the newest Version!</string>
 </resources>

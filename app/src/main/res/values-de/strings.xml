@@ -79,4 +79,10 @@
     <string name="import_result_bad">Fehler</string>
     <string name="import_result_ok">Kein Fehler</string>
     <string name="subject_add_hint">Name der Übung</string>
+    <string name="pref_update_check_summary">Bei gesetzter Checkbox wird beim Starten die Version geprüft.</string>
+    <string name="pref_update_check_title">Regelmäßig nach Updates suchen</string>
+    <string name="versio_check_title">Versionüberprüfung</string>
+    <string name="version_check_fail_message">Du hast nicht mehr die neueste Version!</string>
+    <string name="version_check_message">Überprüfe auf neue Version…</string>
+    <string name="version_check_success_message">Du hast die neueste Version!</string>
 </resources>

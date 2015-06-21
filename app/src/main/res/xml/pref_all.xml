@@ -15,6 +15,16 @@
         android:summary="@string/pref_drawer_start_description"
         android:title="@string/pref_drawer_start_title" />
 
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="check_version_at_start"
+        android:summary="@string/pref_update_check_summary"
+        android:title="@string/pref_update_check_title" />
+
+    <Preference
+        android:key="version_check"
+        android:title="Auf Updates überprüfen" />
+
     <Preference
         android:key="version_key"
         android:title="Version 1.2" />

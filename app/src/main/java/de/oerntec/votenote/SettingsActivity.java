@@ -2,6 +2,7 @@ package de.oerntec.votenote;
 
 import android.annotation.TargetApi;
 import android.app.ActionBar;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -154,6 +155,14 @@ public class SettingsActivity extends PreferenceActivity {
             }
         });
 
+        findPreference("version_check").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                VersionCheckHelper.checkVersion(thisRef);
+                return true;
+            }
+        });
+
         findPreference("xml_export").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
@@ -197,6 +206,19 @@ public class SettingsActivity extends PreferenceActivity {
         if (!isSimplePreferences(this)) {
             loadHeadersFromResource(R.xml.pref_headers, target);
         }
+    }
+
+    public void onVersionResult(String result) {
+        AlertDialog.Builder b = new AlertDialog.Builder(this);
+        b.setTitle(getString(R.string.versio_check_title));
+        String message;
+        if ("1.2".equals(result))
+            message = getString(R.string.version_check_success_message);
+        else
+            message = getString(R.string.version_check_fail_message);
+        b.setMessage(message);
+        b.setPositiveButton(getString(R.string.dialog_button_ok), null);
+        b.show();
     }
 
     /**
