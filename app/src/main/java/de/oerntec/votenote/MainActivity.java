@@ -110,13 +110,18 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
         super.onResume();
         if (mNavigationDrawerFragment != null) {
             mNavigationDrawerFragment.reloadAdapter();
+
             int lastSelected = getPreference("last_selected_dbid", 0);
+
+            //select the last selected item
             if (lastSelected < groupsDB.getCount())
                 mNavigationDrawerFragment.selectItem(lastSelected);
+
             //open drawer on each resume because the user may want that
             if (getPreference("open_drawer_on_start", false))
                 mNavigationDrawerFragment.openDrawer();
         }
+
         Cursor count = entryDB.getAllData();
         if (count.getCount() <= 0) {
             AlertDialog.Builder b = new AlertDialog.Builder(this, AlertDialog.THEME_DEVICE_DEFAULT_DARK);
