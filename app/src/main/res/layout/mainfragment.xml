@@ -5,16 +5,15 @@
     android:paddingBottom="2dp"
     tools:context="de.oerntec.votenote.MainActivity$PlaceholderFragment" >
 
-    <ListView
-        android:id="@+id/mainfragment_list_votelist"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/mainfragment_list_cardlist"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/mainfragment_text_averagevote"
+        android:layout_alignBottom="@+id/mainfragment_text_avg_needed_votes"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true">
-
-    </ListView>
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="2dp" />
 
     <TextView
         android:id="@+id/mainfragment_text_averagevote"

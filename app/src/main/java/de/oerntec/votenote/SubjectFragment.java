@@ -10,14 +10,15 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.CursorAdapter;
-import android.widget.ListView;
 import android.widget.TextView;
 
 /**
@@ -52,7 +53,7 @@ public class SubjectFragment extends Fragment {
     /**
      * List containing the vote data
      */
-    private ListView voteList;
+    private RecyclerView voteList;
 
     /**
      * the views of a lesson
@@ -72,7 +73,8 @@ public class SubjectFragment extends Fragment {
     }
 
     public void notifyOfChangedDataset() {
-        ((LessonAdapter) voteList.getAdapter()).changeCursor(entryDB.getAllLessonsForSubject(databaseID));
+        ((LessonAdapter) voteList.getAdapter()).getCursorAdapter().changeCursor(entryDB.getAllLessonsForSubject(databaseID));
+        voteList.getAdapter().notifyDataSetChanged();
         setAverageNeededAssignments();
         setVoteAverage();
         setCurrentPresentationPointStatus();
@@ -89,7 +91,15 @@ public class SubjectFragment extends Fragment {
 
         //find and inflate everything
         View rootView = inflater.inflate(R.layout.mainfragment, container, false);
-        voteList = (ListView) rootView.findViewById(R.id.mainfragment_list_votelist);
+        voteList = (RecyclerView) rootView.findViewById(R.id.mainfragment_list_cardlist);
+
+        //config the recyclerview
+        voteList.setHasFixedSize(true);
+
+        //give it a layoutmanage (whatever that is)
+        LinearLayoutManager manager = new LinearLayoutManager(getActivity());
+        manager.setOrientation(LinearLayoutManager.VERTICAL);
+        voteList.setLayoutManager(manager);
 
         averageVoteView = (TextView) rootView.findViewById(R.id.mainfragment_text_averagevote);
         presentationPointsView = (TextView) rootView.findViewById(R.id.mainfragment_text_prespoints);
@@ -123,23 +133,17 @@ public class SubjectFragment extends Fragment {
         if (allEntryCursor.getCount() == 0)
             Log.e("Main Listview", "Received Empty allEntryCursor for group " + currentGroupName + " with id " + databaseID);
 
-        //set custom adapter
-        voteList.setAdapter(new LessonAdapter(getActivity(), allEntryCursor, 0));
+        //set adapter
+        voteList.setAdapter(new LessonAdapter(getActivity(), allEntryCursor));
 
         final SubjectFragment thisRef = this;
 
-        //Listener for list click, change entry dialog
-        voteList.setOnItemClickListener(new OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, final long id) {
+        voteList.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), voteList, new OnItemClickListener() {
+            public void onItemClick(View view, int position) {
                 MainDialogHelper.showChangeLessonDialog((MainActivity) getActivity(), databaseID, (Integer) view.getTag());
             }
-        });
 
-        //listener for long list click
-        voteList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, final View view, int position, long id) {
+            public void onItemLongClick(final View view, int position) {
                 new AlertDialog.Builder(getActivity())
                         .setTitle(getString(R.string.subject_fragment_delete_lesson) + " (" + view.getTag() + ")")
                         .setPositiveButton(R.string.dialog_button_ok, new DialogInterface.OnClickListener() {
@@ -150,9 +154,8 @@ public class SubjectFragment extends Fragment {
                                 thisRef.notifyOfChangedDataset();
                             }
                         }).setNegativeButton(R.string.dialog_button_abort, null).show();
-                return true;
             }
-        });
+        }));
 
         //set summaryView to average
         setVoteAverage();
@@ -256,39 +259,125 @@ public class SubjectFragment extends Fragment {
         ((MainActivity) activity).onSectionAttached(getArguments().getInt(ARG_SECTION_NUMBER));
     }
 
-    private class LessonAdapter extends CursorAdapter {
-        public LessonAdapter(Context context, Cursor c, int flags) {
-            super(context, c, flags);
+    interface OnItemClickListener {
+        void onItemClick(View view, int position);
+
+        void onItemLongClick(View view, int position);
+    }
+
+    //see http://stackoverflow.com/questions/24471109/recyclerview-onclick
+    public class RecyclerItemClickListener implements RecyclerView.OnItemTouchListener {
+        private OnItemClickListener mListener;
+        private GestureDetector mGestureDetector;
+
+        public RecyclerItemClickListener(Context context, final RecyclerView recyclerView, OnItemClickListener listener) {
+            mListener = listener;
+
+            mGestureDetector = new GestureDetector(context, new GestureDetector.SimpleOnGestureListener() {
+                @Override
+                public boolean onSingleTapUp(MotionEvent e) {
+                    return true;
+                }
+
+                @Override
+                public void onLongPress(MotionEvent e) {
+                    View childView = recyclerView.findChildViewUnder(e.getX(), e.getY());
+                    if (childView != null && mListener != null)
+                        mListener.onItemLongClick(childView, recyclerView.getChildPosition(childView));
+                }
+            });
+        }
+
+
+        @Override
+        public boolean onInterceptTouchEvent(RecyclerView view, MotionEvent e) {
+            View childView = view.findChildViewUnder(e.getX(), e.getY());
+            if (childView != null && mListener != null && mGestureDetector.onTouchEvent(e))
+                mListener.onItemClick(childView, view.getChildPosition(childView));
+            return false;
         }
 
         @Override
-        public View newView(Context context, Cursor cursor, ViewGroup parent) {
-            LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-            View root = inflater.inflate(android.R.layout.simple_list_item_2, parent, false);
-            TextView upper = (TextView) root.findViewById(android.R.id.text1);
-            upper.setTextAppearance(context, android.R.style.TextAppearance_Large);
-            return root;
+        public void onTouchEvent(RecyclerView view, MotionEvent motionEvent) {
+        }
+    }
+
+    public class LessonAdapter extends RecyclerView.Adapter<LessonAdapter.LessonHolder> {
+        //see stackoverflow: http://stackoverflow.com/questions/26517855/using-the-recyclerview-with-a-database
+        // PATCH: Because RecyclerView.Adapter in its current form doesn't natively support
+        // cursors, we "wrap" a CursorAdapter that will do all teh job
+        // for us
+        private CursorAdapter mCursorAdapter;
+
+        private Context mContext;
+
+        public LessonAdapter(Context context, Cursor c) {
+
+            mContext = context;
+
+            //basically the old lesson adapter
+            mCursorAdapter = new CursorAdapter(mContext, c, 0) {
+                @Override
+                public View newView(Context context, Cursor cursor, ViewGroup parent) {
+                    LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+                    return inflater.inflate(R.layout.subject_fragment_card_thingy, parent, false);
+                }
+
+                @Override
+                public void bindView(View view, Context context, Cursor cursor) {
+                    //find textviews
+                    TextView upper = (TextView) view.findViewById(R.id.subject_fragment_card_upper);
+                    TextView lower = (TextView) view.findViewById(R.id.subject_fragment_card_lower);
+
+                    //load strings
+                    String lessonIndex = cursor.getString(0);
+                    String myVote = cursor.getString(1);
+                    String maxVote = cursor.getString(2);
+                    String voteString = " " + (Integer.valueOf(myVote) < 2 ? getString(R.string.subject_fragment_singular_vote)
+                            : getString(R.string.main_dialog_lesson_votes));
+
+                    //set tag for later identification avoiding all
+                    view.setTag(Integer.valueOf(lessonIndex));
+
+                    //set texts
+                    upper.setText(myVote + " " + context.getString(R.string.main_dialog_lesson_von) + " " + maxVote + voteString);
+                    lower.setText(lessonIndex + context.getString(R.string.main_x_th_lesson));
+                }
+            };
+        }
+
+        public CursorAdapter getCursorAdapter() {
+            return mCursorAdapter;
         }
 
         @Override
-        public void bindView(View view, Context context, Cursor cursor) {
-            //find textviews
-            TextView upper = (TextView) view.findViewById(android.R.id.text1);
-            TextView lower = (TextView) view.findViewById(android.R.id.text2);
-
-            //load strings
-            String lessonIndex = cursor.getString(0);
-            String myVote = cursor.getString(1);
-            String maxVote = cursor.getString(2);
-            String voteString = " " + (Integer.valueOf(myVote) < 2 ? getString(R.string.subject_fragment_singular_vote)
-                    : getString(R.string.main_dialog_lesson_votes));
-
-            //set tag for later identification avoiding all
-            view.setTag(Integer.valueOf(lessonIndex));
-
-            //set texts
-            upper.setText(myVote + " " + context.getString(R.string.main_dialog_lesson_von) + " " + maxVote + voteString);
-            lower.setText(lessonIndex + context.getString(R.string.main_x_th_lesson));
+        public int getItemCount() {
+            return mCursorAdapter.getCount();
         }
+
+        @Override
+        public void onBindViewHolder(LessonHolder holder, int position) {
+            //move to the correct position
+            mCursorAdapter.getCursor().moveToPosition(position);
+            // Passing the binding operation to cursor loader
+            mCursorAdapter.bindView(holder.itemView, mContext, mCursorAdapter.getCursor());
+        }
+
+        @Override
+        public LessonHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            // Passing the inflater job to the cursor-adapter
+            View v = mCursorAdapter.newView(mContext, mCursorAdapter.getCursor(), parent);
+            return new LessonHolder(v);
+        }
+
+        class LessonHolder extends RecyclerView.ViewHolder {
+            //View v1;
+
+            public LessonHolder(View itemView) {
+                super(itemView);
+                //v1 = itemView.findViewById(R.id.v1);
+            }
+        }
+
     }
 }
