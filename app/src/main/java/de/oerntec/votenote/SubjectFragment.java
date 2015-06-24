@@ -2,10 +2,8 @@ package de.oerntec.votenote;
 
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
@@ -136,7 +134,31 @@ public class SubjectFragment extends Fragment {
         //set adapter
         voteList.setAdapter(new LessonAdapter(getActivity(), allEntryCursor));
 
-        final SubjectFragment thisRef = this;
+
+        SwipeableRecyclerViewTouchListener swipeTouchListener =
+                new SwipeableRecyclerViewTouchListener(voteList,
+                        new SwipeableRecyclerViewTouchListener.SwipeListener() {
+                            @Override
+                            public boolean canSwipe(int position) {
+                                return true;
+                            }
+
+                            @Override
+                            public void onDismissedBySwipeLeft(RecyclerView recyclerView, int[] reverseSortedPositions) {
+                                for (int p : reverseSortedPositions) {
+                                    entryDB.removeEntry(databaseID, (Integer) recyclerView.getChildAt(p).getTag());
+                                    //reload list- and textview; close old cursor
+                                    SubjectFragment.this.notifyOfChangedDataset();
+                                }
+                            }
+
+                            @Override
+                            public void onDismissedBySwipeRight(RecyclerView recyclerView, int[] reverseSortedPositions) {
+                                onDismissedBySwipeLeft(recyclerView, reverseSortedPositions);
+                            }
+                        });
+
+        voteList.addOnItemTouchListener(swipeTouchListener);
 
         voteList.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), voteList, new OnItemClickListener() {
             public void onItemClick(View view, int position) {
@@ -144,16 +166,6 @@ public class SubjectFragment extends Fragment {
             }
 
             public void onItemLongClick(final View view, int position) {
-                new AlertDialog.Builder(getActivity())
-                        .setTitle(getString(R.string.subject_fragment_delete_lesson) + " (" + view.getTag() + ")")
-                        .setPositiveButton(R.string.dialog_button_ok, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int whichButton) {
-                                //change db entry
-                                entryDB.removeEntry(databaseID, (Integer) view.getTag());
-                                //reload list- and textview; close old cursor
-                                thisRef.notifyOfChangedDataset();
-                            }
-                        }).setNegativeButton(R.string.dialog_button_abort, null).show();
             }
         }));
 

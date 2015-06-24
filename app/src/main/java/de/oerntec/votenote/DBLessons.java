@@ -138,6 +138,7 @@ public class DBLessons {
      * remove the entry and decrease the uebung_nummer for all following entries
      */
     public void removeEntry(int subjectId, int lessonId) {
+        Log.i("entries", "remove " + subjectId + ":" + lessonId);
         //remove correct entry
         database.delete(DatabaseCreator.TABLE_NAME_ENTRIES, DatabaseCreator.ENTRIES_SUBJECT_ID + "=" + subjectId + " AND " + DatabaseCreator.ENTRIES_LESSON_ID + "=" + lessonId, null);
         //decrease uebungnummer for all following entries
