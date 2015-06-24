@@ -15,6 +15,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import de.oerntec.votenote.SubjectFragmentStuff.SubjectFragment;
+
 /*
 * VERSION HISTORY
 * 1.0:

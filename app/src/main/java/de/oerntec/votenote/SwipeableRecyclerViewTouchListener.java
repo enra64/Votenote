@@ -235,16 +235,7 @@ public class SwipeableRecyclerViewTouchListener implements RecyclerView.OnItemTo
                     final int downPosition = mDownPosition;
                     ++mDismissAnimationRefCount;
                     mAnimatingPosition = mDownPosition;
-                    mDownView.animate()
-                            .translationX(dismissRight ? mViewWidth : -mViewWidth)
-                            .alpha(0)
-                            .setDuration(mAnimationTime)
-                            .setListener(new AnimatorListenerAdapter() {
-                                @Override
-                                public void onAnimationEnd(Animator animation) {
-                                    performDismiss(downView, downPosition);
-                                }
-                            });
+                    showDeletionAnimation(dismissRight, downView, downPosition);
                 } else {
                     // cancel
                     mDownView.animate()
@@ -287,6 +278,25 @@ public class SwipeableRecyclerViewTouchListener implements RecyclerView.OnItemTo
         }
 
         return false;
+    }
+
+    public void deleteItem(View view) {
+        //increase because otherwise the animation end stuff will not be triggered
+        ++mDismissAnimationRefCount;
+        showDeletionAnimation(true, view, mRecyclerView.getChildPosition(view));
+    }
+
+    private void showDeletionAnimation(boolean dismissRight, final View downView, final int downPosition) {
+        downView.animate()
+                .translationX(dismissRight ? mViewWidth : -mViewWidth)
+                .alpha(0)
+                .setDuration(mAnimationTime)
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        performDismiss(downView, downPosition);
+                    }
+                });
     }
 
     private void performDismiss(final View dismissView, final int dismissPosition) {

@@ -34,7 +34,7 @@
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <ImageButton
-            android:id="@+id/imageButton"
+            android:id="@+id/subject_fragment_card_delete_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"

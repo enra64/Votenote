@@ -1,9 +1,8 @@
-package de.oerntec.votenote;
+package de.oerntec.votenote.SubjectFragmentStuff;
 
 
 import android.app.Activity;
 import android.app.Fragment;
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
@@ -11,13 +10,18 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.GestureDetector;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CursorAdapter;
 import android.widget.TextView;
+
+import de.oerntec.votenote.DBLessons;
+import de.oerntec.votenote.DBSubjects;
+import de.oerntec.votenote.GroupManagementActivity;
+import de.oerntec.votenote.MainActivity;
+import de.oerntec.votenote.MainDialogHelper;
+import de.oerntec.votenote.R;
+import de.oerntec.votenote.SwipeableRecyclerViewTouchListener;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -42,17 +46,15 @@ public class SubjectFragment extends Fragment {
      * Save the default text color, because apparently there is no constant for that.
      */
     private static int textColor;
-
+    public SwipeableRecyclerViewTouchListener swipeListener;
     /**
      * Contains the databaseID for each fragment
      */
     private int databaseID;
-
     /**
      * List containing the vote data
      */
     private RecyclerView voteList;
-
     /**
      * the views of a lesson
      */
@@ -131,11 +133,7 @@ public class SubjectFragment extends Fragment {
         if (allEntryCursor.getCount() == 0)
             Log.e("Main Listview", "Received Empty allEntryCursor for group " + currentGroupName + " with id " + databaseID);
 
-        //set adapter
-        voteList.setAdapter(new LessonAdapter(getActivity(), allEntryCursor));
-
-
-        SwipeableRecyclerViewTouchListener swipeTouchListener =
+        swipeListener =
                 new SwipeableRecyclerViewTouchListener(voteList,
                         new SwipeableRecyclerViewTouchListener.SwipeListener() {
                             @Override
@@ -158,7 +156,10 @@ public class SubjectFragment extends Fragment {
                             }
                         });
 
-        voteList.addOnItemTouchListener(swipeTouchListener);
+        //set adapter
+        voteList.setAdapter(new LessonAdapter(getActivity(), allEntryCursor, swipeListener));
+
+        voteList.addOnItemTouchListener(swipeListener);
 
         voteList.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), voteList, new OnItemClickListener() {
             public void onItemClick(View view, int position) {
@@ -269,127 +270,5 @@ public class SubjectFragment extends Fragment {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         ((MainActivity) activity).onSectionAttached(getArguments().getInt(ARG_SECTION_NUMBER));
-    }
-
-    interface OnItemClickListener {
-        void onItemClick(View view, int position);
-
-        void onItemLongClick(View view, int position);
-    }
-
-    //see http://stackoverflow.com/questions/24471109/recyclerview-onclick
-    public class RecyclerItemClickListener implements RecyclerView.OnItemTouchListener {
-        private OnItemClickListener mListener;
-        private GestureDetector mGestureDetector;
-
-        public RecyclerItemClickListener(Context context, final RecyclerView recyclerView, OnItemClickListener listener) {
-            mListener = listener;
-
-            mGestureDetector = new GestureDetector(context, new GestureDetector.SimpleOnGestureListener() {
-                @Override
-                public boolean onSingleTapUp(MotionEvent e) {
-                    return true;
-                }
-
-                @Override
-                public void onLongPress(MotionEvent e) {
-                    View childView = recyclerView.findChildViewUnder(e.getX(), e.getY());
-                    if (childView != null && mListener != null)
-                        mListener.onItemLongClick(childView, recyclerView.getChildPosition(childView));
-                }
-            });
-        }
-
-
-        @Override
-        public boolean onInterceptTouchEvent(RecyclerView view, MotionEvent e) {
-            View childView = view.findChildViewUnder(e.getX(), e.getY());
-            if (childView != null && mListener != null && mGestureDetector.onTouchEvent(e))
-                mListener.onItemClick(childView, view.getChildPosition(childView));
-            return false;
-        }
-
-        @Override
-        public void onTouchEvent(RecyclerView view, MotionEvent motionEvent) {
-        }
-    }
-
-    public class LessonAdapter extends RecyclerView.Adapter<LessonAdapter.LessonHolder> {
-        //see stackoverflow: http://stackoverflow.com/questions/26517855/using-the-recyclerview-with-a-database
-        // PATCH: Because RecyclerView.Adapter in its current form doesn't natively support
-        // cursors, we "wrap" a CursorAdapter that will do all teh job
-        // for us
-        private CursorAdapter mCursorAdapter;
-
-        private Context mContext;
-
-        public LessonAdapter(Context context, Cursor c) {
-
-            mContext = context;
-
-            //basically the old lesson adapter
-            mCursorAdapter = new CursorAdapter(mContext, c, 0) {
-                @Override
-                public View newView(Context context, Cursor cursor, ViewGroup parent) {
-                    LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-                    return inflater.inflate(R.layout.subject_fragment_card_thingy, parent, false);
-                }
-
-                @Override
-                public void bindView(View view, Context context, Cursor cursor) {
-                    //find textviews
-                    TextView upper = (TextView) view.findViewById(R.id.subject_fragment_card_upper);
-                    TextView lower = (TextView) view.findViewById(R.id.subject_fragment_card_lower);
-
-                    //load strings
-                    String lessonIndex = cursor.getString(0);
-                    String myVote = cursor.getString(1);
-                    String maxVote = cursor.getString(2);
-                    String voteString = " " + (Integer.valueOf(myVote) < 2 ? getString(R.string.subject_fragment_singular_vote)
-                            : getString(R.string.main_dialog_lesson_votes));
-
-                    //set tag for later identification avoiding all
-                    view.setTag(Integer.valueOf(lessonIndex));
-
-                    //set texts
-                    upper.setText(myVote + " " + context.getString(R.string.main_dialog_lesson_von) + " " + maxVote + voteString);
-                    lower.setText(lessonIndex + context.getString(R.string.main_x_th_lesson));
-                }
-            };
-        }
-
-        public CursorAdapter getCursorAdapter() {
-            return mCursorAdapter;
-        }
-
-        @Override
-        public int getItemCount() {
-            return mCursorAdapter.getCount();
-        }
-
-        @Override
-        public void onBindViewHolder(LessonHolder holder, int position) {
-            //move to the correct position
-            mCursorAdapter.getCursor().moveToPosition(position);
-            // Passing the binding operation to cursor loader
-            mCursorAdapter.bindView(holder.itemView, mContext, mCursorAdapter.getCursor());
-        }
-
-        @Override
-        public LessonHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            // Passing the inflater job to the cursor-adapter
-            View v = mCursorAdapter.newView(mContext, mCursorAdapter.getCursor(), parent);
-            return new LessonHolder(v);
-        }
-
-        class LessonHolder extends RecyclerView.ViewHolder {
-            //View v1;
-
-            public LessonHolder(View itemView) {
-                super(itemView);
-                //v1 = itemView.findViewById(R.id.v1);
-            }
-        }
-
     }
 }
