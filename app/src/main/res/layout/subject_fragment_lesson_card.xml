@@ -4,8 +4,14 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="5dp"
+    android:layout_marginBottom="2dp"
+    android:layout_marginTop="2dp"
     card_view:cardCornerRadius="0dp"
-    card_view:cardElevation="3dp">
+    card_view:cardElevation="0dp"
+    card_view:cardMaxElevation="0dp"
+    card_view:cardPreventCornerOverlap="false"
+    card_view:contentPaddingBottom="-3dp"
+    card_view:contentPaddingTop="-3dp">
 
     <RelativeLayout
         android:layout_width="match_parent"

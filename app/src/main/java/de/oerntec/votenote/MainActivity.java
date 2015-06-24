@@ -199,7 +199,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
             ActionBar actionBar = getActionBar();
             if (actionBar != null) {
                 actionBar.setDisplayShowTitleEnabled(true);
-                actionBar.setTitle(mTitle);
+                actionBar.setTitle("VoteNote");
             }
 
             //update prespoint action icon

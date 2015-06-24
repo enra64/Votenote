@@ -10,21 +10,27 @@ import android.widget.CursorAdapter;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import de.oerntec.votenote.DBSubjects;
 import de.oerntec.votenote.R;
 import de.oerntec.votenote.SwipeableRecyclerViewTouchListener;
 
 public class LessonAdapter extends RecyclerView.Adapter<LessonAdapter.LessonHolder> {
+    private static final int VIEW_TYPE_INFO = 0;
+    private static final int VIEW_TYPE_LESSON = 1;
+
     //see stackoverflow: http://stackoverflow.com/questions/26517855/using-the-recyclerview-with-a-database
     // PATCH: Because RecyclerView.Adapter in its current form doesn't natively support
     // cursors, we "wrap" a CursorAdapter that will do all teh job
     // for us
     private CursorAdapter mCursorAdapter;
-    private SwipeableRecyclerViewTouchListener swipeListener;
+    private SwipeableRecyclerViewTouchListener mSwipeListener;
     private Context mContext;
+    private int mSubjectId;
 
-    public LessonAdapter(Context context, Cursor c, SwipeableRecyclerViewTouchListener swipeListener) {
-        this.swipeListener = swipeListener;
+    public LessonAdapter(Context context, Cursor c, int subjectId, SwipeableRecyclerViewTouchListener SwipeListener) {
+        mSwipeListener = SwipeListener;
         mContext = context;
+        mSubjectId = subjectId;
 
         //basically the old lesson adapter
         mCursorAdapter = new CursorAdapter(mContext, c, 0) {
@@ -44,7 +50,7 @@ public class LessonAdapter extends RecyclerView.Adapter<LessonAdapter.LessonHold
                 deleteButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        LessonAdapter.this.swipeListener.deleteItem(view);
+                        LessonAdapter.this.mSwipeListener.deleteItem(view);
                     }
                 });
 
@@ -71,30 +77,66 @@ public class LessonAdapter extends RecyclerView.Adapter<LessonAdapter.LessonHold
 
     @Override
     public int getItemCount() {
-        return mCursorAdapter.getCount();
+        return mCursorAdapter.getCount() + 1;
     }
+
 
     @Override
     public void onBindViewHolder(LessonHolder holder, int position) {
+        if (position == 0) {
+            bindInfoView(holder.itemView);
+            return;
+        }
+        //reduce position, because the infoview is the first position, and everything else is
+        //zero-indexed
+        position--;
         //move to the correct position
         mCursorAdapter.getCursor().moveToPosition(position);
         // Passing the binding operation to cursor loader
         mCursorAdapter.bindView(holder.itemView, mContext, mCursorAdapter.getCursor());
     }
 
+    private void bindInfoView(View root) {
+        TextView title = (TextView) root.findViewById(R.id.subject_fragment_subject_card_title),
+                percentage = (TextView) root.findViewById(R.id.subject_fragment_subject_card_vote_percentage),
+                prespoints = (TextView) root.findViewById(R.id.subject_fragment_subject_card_prespoints),
+                avgLeft = (TextView) root.findViewById(R.id.subject_fragment_subject_card_average_assignments_left);
+
+        //calc and set values
+        title.setText(DBSubjects.getInstance().getGroupName(mSubjectId));
+        SubjectInfoCalculator.setAverageNeededAssignments(mContext, avgLeft, mSubjectId);
+        SubjectInfoCalculator.setCurrentPresentationPointStatus(mContext, prespoints, mSubjectId);
+        SubjectInfoCalculator.setVoteAverage(mContext, percentage, mSubjectId);
+    }
+
+    private View createInfoView(ViewGroup parent) {
+        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+        return inflater.inflate(R.layout.subject_fragment_subject_card, parent, false);
+    }
+
     @Override
     public LessonHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         // Passing the inflater job to the cursor-adapter
-        View v = mCursorAdapter.newView(mContext, mCursorAdapter.getCursor(), parent);
+        View v;
+        if (viewType == VIEW_TYPE_LESSON)
+            v = mCursorAdapter.newView(mContext, mCursorAdapter.getCursor(), parent);
+        else
+            v = createInfoView(parent);
         return new LessonHolder(v);
     }
 
-    class LessonHolder extends RecyclerView.ViewHolder {
-        //View v1;
+    @Override
+    public int getItemViewType(int position) {
+        return position == 0 ? VIEW_TYPE_INFO : VIEW_TYPE_LESSON;
+    }
 
+    public void refreshInfoView() {
+
+    }
+
+    class LessonHolder extends RecyclerView.ViewHolder {
         public LessonHolder(View itemView) {
             super(itemView);
-            //v1 = itemView.findViewById(R.id.v1);
         }
     }
 

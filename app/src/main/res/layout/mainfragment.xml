@@ -9,41 +9,9 @@
         android:id="@+id/mainfragment_list_cardlist"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignBottom="@+id/mainfragment_text_avg_needed_votes"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:layout_marginTop="2dp" />
-
-    <TextView
-        android:id="@+id/mainfragment_text_averagevote"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/mainfragment_text_prespoints"
-        android:layout_centerHorizontal="true"
-        android:text="avgvote"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textSize="40sp"
-        tools:ignore="HardcodedText" />
-
-    <TextView
-        android:id="@+id/mainfragment_text_avg_needed_votes"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:text="Noch durchschnttlich 1 Aufgabe pro Übung"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        tools:ignore="HardcodedText" />
-
-    <TextView
-        android:id="@+id/mainfragment_text_prespoints"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/mainfragment_text_avg_needed_votes"
-        android:layout_centerHorizontal="true"
-        android:text="0 von 2 Vorträgen"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        tools:ignore="HardcodedText" />
 
 </RelativeLayout>
