@@ -29,7 +29,7 @@ import de.oerntec.votenote.SubjectManagerStuff.SubjectManagementActivity;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class LessonFragment extends Fragment implements UndoBarController.UndoListener {
+public class LessonFragment extends Fragment implements UndoBarController.AdvancedUndoListener {
     /**
      * The fragment argument representing the section number for this
      * fragment.
@@ -129,7 +129,8 @@ public class LessonFragment extends Fragment implements UndoBarController.UndoLi
                         new SwipeableRecyclerViewTouchListener.SwipeListener() {
                             @Override
                             public boolean canSwipe(int position) {
-                                return position != 0;
+                                //nothing can swipe if there is already a lesson to be deleted
+                                return position != 0 && lessonToDelete == null;
                             }
 
                             @Override
@@ -188,5 +189,16 @@ public class LessonFragment extends Fragment implements UndoBarController.UndoLi
             notifyOfChangedDataset();
         }
         lessonToDelete = null;
+    }
+
+    @Override
+    public void onHide(Parcelable parcelable) {
+        //re-enable lesson removal
+        lessonToDelete = null;
+    }
+
+    @Override
+    public void onClear() {
+
     }
 }
