@@ -77,12 +77,9 @@ public class LessonFragment extends Fragment implements UndoBarController.Advanc
     }
 
     public void notifyOfChangedDataset() {
-        //noinspection SynchronizeOnNonFinalField
-        synchronized (mLessonList) {
-            ((LessonAdapter) mLessonList.getAdapter()).getCursorAdapter().changeCursor(entryDB.getAllLessonsForSubject(subjectId));
-            mLessonList.getAdapter().notifyDataSetChanged();
-            mLessonList.notify();
-        }
+        ((LessonAdapter) mLessonList.getAdapter()).getCursorAdapter().changeCursor(entryDB.getAllLessonsForSubject(subjectId));
+        mLessonList.getAdapter().notifyDataSetChanged();
+        mLessonList.notify();
         Log.i("subfrag", "reloaded");
     }
 
@@ -188,6 +185,8 @@ public class LessonFragment extends Fragment implements UndoBarController.Advanc
     public void onUndo(Parcelable parcelable) {
         if (lessonToDelete != null) {
             entryDB.insertLesson(lessonToDelete);
+            //this should be called in the same thread(context? i have no idea),
+            //since onUndo is called by a button
             notifyOfChangedDataset();
         }
         lessonToDelete = null;
