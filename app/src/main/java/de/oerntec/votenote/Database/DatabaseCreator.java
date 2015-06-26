@@ -1,4 +1,4 @@
-package de.oerntec.votenote;
+package de.oerntec.votenote.Database;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;

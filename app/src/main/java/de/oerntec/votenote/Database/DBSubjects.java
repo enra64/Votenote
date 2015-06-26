@@ -1,4 +1,4 @@
-package de.oerntec.votenote;
+package de.oerntec.votenote.Database;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -8,6 +8,8 @@ import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import de.oerntec.votenote.Subject;
 
 public class DBSubjects {
     public final static int NO_GROUPS_EXIST = -1;

@@ -6,6 +6,7 @@ import android.app.Fragment;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -13,23 +14,29 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import de.oerntec.votenote.DBLessons;
-import de.oerntec.votenote.DBSubjects;
-import de.oerntec.votenote.GroupManagementActivity;
+import com.cocosw.undobar.UndoBarController;
+
+import de.oerntec.votenote.CardListHelpers.OnItemClickListener;
+import de.oerntec.votenote.CardListHelpers.RecyclerItemClickListener;
+import de.oerntec.votenote.CardListHelpers.SwipeableRecyclerViewTouchListener;
+import de.oerntec.votenote.Database.DBLessons;
+import de.oerntec.votenote.Database.DBSubjects;
 import de.oerntec.votenote.MainActivity;
 import de.oerntec.votenote.MainDialogHelper;
 import de.oerntec.votenote.R;
-import de.oerntec.votenote.SwipeableRecyclerViewTouchListener;
+import de.oerntec.votenote.SubjectManagerStuff.SubjectManagementActivity;
 
 /**
  * A placeholder fragment containing a simple view.
  */
-public class SubjectFragment extends Fragment {
+public class LessonFragment extends Fragment implements UndoBarController.UndoListener {
     /**
      * The fragment argument representing the section number for this
      * fragment.
      */
     private static final String ARG_SECTION_NUMBER = "section_number";
+
+    private static DBLessons.Lesson lessonToDelete = null;
 
     /**
      * DB Singleton instance
@@ -53,15 +60,15 @@ public class SubjectFragment extends Fragment {
     /**
      * List containing the vote data
      */
-    private RecyclerView voteList;
+    private RecyclerView mLessonList;
 
     /**
      * Returns a new instance of this fragment for the given section number.
      */
 
-    public static SubjectFragment newInstance(int sectionNumber) {
+    public static LessonFragment newInstance(int sectionNumber) {
         Log.i("votenote placeholder", "newinstance");
-        SubjectFragment fragment = new SubjectFragment();
+        LessonFragment fragment = new LessonFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_SECTION_NUMBER, sectionNumber);
         fragment.setArguments(args);
@@ -69,9 +76,11 @@ public class SubjectFragment extends Fragment {
     }
 
     public void notifyOfChangedDataset() {
-        ((LessonAdapter) voteList.getAdapter()).getCursorAdapter().changeCursor(entryDB.getAllLessonsForSubject(subjectId));
-        ((LessonAdapter) voteList.getAdapter()).refreshInfoView();
-        voteList.getAdapter().notifyDataSetChanged();
+        synchronized (mLessonList) {
+            ((LessonAdapter) mLessonList.getAdapter()).getCursorAdapter().changeCursor(entryDB.getAllLessonsForSubject(subjectId));
+            mLessonList.getAdapter().notifyDataSetChanged();
+            mLessonList.notify();
+        }
         Log.i("subfrag", "reloaded");
     }
 
@@ -85,19 +94,19 @@ public class SubjectFragment extends Fragment {
 
         //find and inflate everything
         View rootView = inflater.inflate(R.layout.mainfragment, container, false);
-        voteList = (RecyclerView) rootView.findViewById(R.id.mainfragment_list_cardlist);
+        mLessonList = (RecyclerView) rootView.findViewById(R.id.mainfragment_list_cardlist);
 
         //config the recyclerview
-        voteList.setHasFixedSize(true);
+        mLessonList.setHasFixedSize(true);
 
         //give it a layoutmanage (whatever that is)
         LinearLayoutManager manager = new LinearLayoutManager(getActivity());
         manager.setOrientation(LinearLayoutManager.VERTICAL);
-        voteList.setLayoutManager(manager);
+        mLessonList.setLayoutManager(manager);
 
         //if translatedSection is -1, no group has been added yet
         if (subjectId == DBSubjects.NO_GROUPS_EXIST) {
-            Intent intent = new Intent(getActivity(), GroupManagementActivity.class);
+            Intent intent = new Intent(getActivity(), SubjectManagementActivity.class);
             intent.putExtra("firstGroup", true);
             getActivity().startActivityForResult(intent, MainActivity.ADD_FIRST_SUBJECT_REQUEST);
             return rootView;
@@ -116,7 +125,7 @@ public class SubjectFragment extends Fragment {
             Log.e("Main Listview", "Received Empty allEntryCursor for group " + currentGroupName + " with id " + subjectId);
 
         swipeListener =
-                new SwipeableRecyclerViewTouchListener(voteList,
+                new SwipeableRecyclerViewTouchListener(mLessonList,
                         new SwipeableRecyclerViewTouchListener.SwipeListener() {
                             @Override
                             public boolean canSwipe(int position) {
@@ -126,9 +135,7 @@ public class SubjectFragment extends Fragment {
                             @Override
                             public void onDismissedBySwipeLeft(RecyclerView recyclerView, int[] reverseSortedPositions) {
                                 for (int p : reverseSortedPositions) {
-                                    entryDB.removeEntry(subjectId, (Integer) recyclerView.getChildAt(p).getTag());
-                                    //reload list- and textview; close old cursor
-                                    SubjectFragment.this.notifyOfChangedDataset();
+                                    showUndoSnackBar((Integer) recyclerView.getChildAt(p).getTag());
                                 }
                             }
 
@@ -139,11 +146,11 @@ public class SubjectFragment extends Fragment {
                         });
 
         //set adapter
-        voteList.setAdapter(new LessonAdapter(getActivity(), allEntryCursor, subjectId, swipeListener));
+        mLessonList.setAdapter(new LessonAdapter(getActivity(), allEntryCursor, subjectId, swipeListener));
 
-        voteList.addOnItemTouchListener(swipeListener);
+        mLessonList.addOnItemTouchListener(swipeListener);
 
-        voteList.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), voteList, new OnItemClickListener() {
+        mLessonList.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), mLessonList, new OnItemClickListener() {
             public void onItemClick(View view, int position) {
                 MainDialogHelper.showChangeLessonDialog((MainActivity) getActivity(), subjectId, (Integer) view.getTag());
             }
@@ -155,9 +162,31 @@ public class SubjectFragment extends Fragment {
         return rootView;
     }
 
+    private void showUndoSnackBar(final int lessonId) {
+        lessonToDelete = entryDB.getLesson(subjectId, lessonId);
+        entryDB.removeEntry(subjectId, lessonId);
+        notifyOfChangedDataset();
+        new UndoBarController.UndoBar(getActivity())
+                .message("gelöscht")
+                .style(UndoBarController.UNDOSTYLE)
+                .duration(1800)
+                .listener(this)
+                .show();
+    }
+
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         ((MainActivity) activity).onSectionAttached(getArguments().getInt(ARG_SECTION_NUMBER));
+    }
+
+    //dont do anything, as we only delete the lesson when the undo bar gets hidden
+    @Override
+    public void onUndo(Parcelable parcelable) {
+        if (lessonToDelete != null) {
+            entryDB.insertLesson(lessonToDelete);
+            notifyOfChangedDataset();
+        }
+        lessonToDelete = null;
     }
 }

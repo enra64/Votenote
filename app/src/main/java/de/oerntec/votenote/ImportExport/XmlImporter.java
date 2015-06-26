@@ -16,11 +16,11 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
-import de.oerntec.votenote.DBLessons;
-import de.oerntec.votenote.DBSubjects;
-import de.oerntec.votenote.GroupManagementActivity;
+import de.oerntec.votenote.Database.DBLessons;
+import de.oerntec.votenote.Database.DBSubjects;
 import de.oerntec.votenote.MainActivity;
 import de.oerntec.votenote.R;
+import de.oerntec.votenote.SubjectManagerStuff.SubjectManagementActivity;
 
 public class XmlImporter {
     public static boolean success;
@@ -61,8 +61,8 @@ public class XmlImporter {
                         if (activity instanceof MainActivity) {
                             MainActivity.mNavigationDrawerFragment.reloadAdapter();
                             MainActivity.mNavigationDrawerFragment.selectItem(0);
-                        } else if (activity instanceof GroupManagementActivity) {
-                            ((GroupManagementActivity) activity).reloadList();
+                        } else if (activity instanceof SubjectManagementActivity) {
+                            ((SubjectManagementActivity) activity).notifyOfChangedDataset();
                         }
                     }
                 }

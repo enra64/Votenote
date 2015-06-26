@@ -7,12 +7,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CursorAdapter;
-import android.widget.ImageButton;
 import android.widget.TextView;
 
-import de.oerntec.votenote.DBSubjects;
+import de.oerntec.votenote.CardListHelpers.SwipeableRecyclerViewTouchListener;
+import de.oerntec.votenote.Database.DBSubjects;
 import de.oerntec.votenote.R;
-import de.oerntec.votenote.SwipeableRecyclerViewTouchListener;
 
 public class LessonAdapter extends RecyclerView.Adapter<LessonAdapter.LessonHolder> {
     private static final int VIEW_TYPE_INFO = 0;
@@ -23,12 +22,10 @@ public class LessonAdapter extends RecyclerView.Adapter<LessonAdapter.LessonHold
     // cursors, we "wrap" a CursorAdapter that will do all teh job
     // for us
     private CursorAdapter mCursorAdapter;
-    private SwipeableRecyclerViewTouchListener mSwipeListener;
     private Context mContext;
     private int mSubjectId;
 
     public LessonAdapter(Context context, Cursor c, int subjectId, SwipeableRecyclerViewTouchListener SwipeListener) {
-        mSwipeListener = SwipeListener;
         mContext = context;
         mSubjectId = subjectId;
 
@@ -45,14 +42,6 @@ public class LessonAdapter extends RecyclerView.Adapter<LessonAdapter.LessonHold
                 //find textviews
                 TextView upper = (TextView) view.findViewById(R.id.subject_fragment_card_upper);
                 TextView lower = (TextView) view.findViewById(R.id.subject_fragment_card_lower);
-                ImageButton deleteButton = (ImageButton) view.findViewById(R.id.subject_fragment_card_delete_button);
-
-                deleteButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        LessonAdapter.this.mSwipeListener.deleteItem(view);
-                    }
-                });
 
                 //load strings
                 String lessonIndex = cursor.getString(0);
@@ -100,13 +89,14 @@ public class LessonAdapter extends RecyclerView.Adapter<LessonAdapter.LessonHold
         TextView title = (TextView) root.findViewById(R.id.subject_fragment_subject_card_title),
                 percentage = (TextView) root.findViewById(R.id.subject_fragment_subject_card_vote_percentage),
                 prespoints = (TextView) root.findViewById(R.id.subject_fragment_subject_card_prespoints),
-                avgLeft = (TextView) root.findViewById(R.id.subject_fragment_subject_card_average_assignments_left);
+                avgLeft = (TextView) root.findViewById(R.id.subject_fragment_subject_card_average_assignments_left),
+                percentageTitle = (TextView) root.findViewById(R.id.subject_fragment_subject_card_title_percentage);
 
         //calc and set values
         title.setText(DBSubjects.getInstance().getGroupName(mSubjectId));
         SubjectInfoCalculator.setAverageNeededAssignments(mContext, avgLeft, mSubjectId);
         SubjectInfoCalculator.setCurrentPresentationPointStatus(mContext, prespoints, mSubjectId);
-        SubjectInfoCalculator.setVoteAverage(mContext, percentage, mSubjectId);
+        SubjectInfoCalculator.setVoteAverage(mContext, percentageTitle, mSubjectId);
     }
 
     private View createInfoView(ViewGroup parent) {
@@ -128,10 +118,6 @@ public class LessonAdapter extends RecyclerView.Adapter<LessonAdapter.LessonHold
     @Override
     public int getItemViewType(int position) {
         return position == 0 ? VIEW_TYPE_INFO : VIEW_TYPE_LESSON;
-    }
-
-    public void refreshInfoView() {
-
     }
 
     class LessonHolder extends RecyclerView.ViewHolder {

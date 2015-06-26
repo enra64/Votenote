@@ -25,7 +25,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".GroupManagementActivity"
+            android:name=".SubjectManagerStuff.SubjectManagementActivity"
             android:label="@string/title_activity_group_management"
             android:parentActivityName=".MainActivity" >
             <meta-data

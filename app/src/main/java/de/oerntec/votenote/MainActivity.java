@@ -15,7 +15,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import de.oerntec.votenote.SubjectFragmentStuff.SubjectFragment;
+import de.oerntec.votenote.Database.DBLessons;
+import de.oerntec.votenote.Database.DBSubjects;
+import de.oerntec.votenote.SubjectFragmentStuff.LessonFragment;
 
 /*
 * VERSION HISTORY
@@ -149,7 +151,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
         fragmentManager
                 .beginTransaction()
                 .replace(R.id.container,
-                        SubjectFragment.newInstance(position)).commit();
+                        LessonFragment.newInstance(position)).commit();
     }
 
     @Override
@@ -260,6 +262,6 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
      * Get the currently shown fragment to reload all data
      */
     public void notifyCurrentFragment() {
-        ((SubjectFragment) getFragmentManager().findFragmentById(R.id.container)).notifyOfChangedDataset();
+        ((LessonFragment) getFragmentManager().findFragmentById(R.id.container)).notifyOfChangedDataset();
     }
 }

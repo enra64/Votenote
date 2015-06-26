@@ -4,10 +4,11 @@
     android:layout_height="match_parent" >
 
     <NumberPicker
+        android:id="@+id/mainfragment_dialog_prespoints_picker"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/mainfragment_dialog_prespoints_picker"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:descendantFocusability="blocksDescendants" />
 
 </RelativeLayout>

@@ -33,6 +33,20 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@color/material_blue_grey_800" />
+
+            <TextView
+                android:id="@+id/subject_fragment_subject_card_title_percentage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentTop="true"
+                android:elevation="1dp"
+                android:paddingTop="7dp"
+                android:text="20%"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textColor="#FFF"
+                android:textSize="30sp" />
         </RelativeLayout>
 
 
@@ -42,8 +56,9 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:layout_below="@+id/subject_fragment_subject_card_vote_percentage"
+            android:layout_below="@+id/subject_fragment_subject_card_titlelayout"
             android:paddingLeft="7dp"
+            android:paddingTop="10dp"
             android:text="3 von 3 Vortragspunkten"
             android:textAppearance="?android:attr/textAppearanceLarge" />
 
@@ -57,7 +72,8 @@
             android:paddingLeft="7dp"
             android:paddingTop="10dp"
             android:text="88%"
-            android:textAppearance="?android:attr/textAppearanceLarge" />
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/subject_fragment_subject_card_average_assignments_left"

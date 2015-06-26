@@ -24,6 +24,8 @@ import android.widget.CursorAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import de.oerntec.votenote.Database.DBSubjects;
+
 /**
  * Fragment used for managing interactions for and presentation of a navigation
  * drawer. See the <a href=

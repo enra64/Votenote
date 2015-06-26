@@ -17,9 +17,9 @@
     <string name="subjectmanager_lesson_count">Anzahl Übungen</string>
     <string name="subjectmanager_needed_prespoints">Erforderliche Vortragspunkte</string>
     <string name="subjectmanager_needed_work">Erforderliche Votierung</string>
-    <string name="subjectmanager_set_prespoints">Vortragspunkte,</string>
+    <string name="subjectmanager_set_prespoints">Vortragspunkte</string>
     <string name="subjectmanager_x_assignments">Aufgaben</string>
-    <string name="subjectmanager_x_lesson_a">Übungen mit je</string>
+    <string name="subjectmanager_card_lesson_count">Übungen</string>
     <string name="title_activity_diagram">Diagramm</string>
     <string name="title_activity_group_management">Übungen verwalten</string>
     <string name="title_activity_settings">Einstellungen</string>

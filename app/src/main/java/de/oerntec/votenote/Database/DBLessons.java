@@ -1,10 +1,12 @@
-package de.oerntec.votenote;
+package de.oerntec.votenote.Database;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
+
+import de.oerntec.votenote.MainActivity;
 
 public class DBLessons {
     /**
@@ -119,6 +121,28 @@ public class DBLessons {
     }
 
     /**
+     * _not_ addlesson: this increases all lessonIds above the specified by one, and then inserts the lesson at its position
+     *
+     * @param val lesson to add
+     */
+    public void insertLesson(Lesson val) {
+        Log.i("db:entries:add", "adding entry with lastnummer" + val.lessonId + " for group " + val.subjectId);
+
+        String query = "UPDATE " + DatabaseCreator.TABLE_NAME_ENTRIES + " SET " + DatabaseCreator.ENTRIES_LESSON_ID + " = " + DatabaseCreator.ENTRIES_LESSON_ID + " + 1 " +
+                "WHERE " + DatabaseCreator.ENTRIES_SUBJECT_ID + " = ? AND " + DatabaseCreator.ENTRIES_LESSON_ID + " >= ?";
+        database.execSQL(query, new String[]{String.valueOf(val.subjectId), String.valueOf(val.lessonId)});
+
+        //create values for insert or update
+        ContentValues values = new ContentValues();
+        values.put(DatabaseCreator.ENTRIES_SUBJECT_ID, val.subjectId);
+        values.put(DatabaseCreator.ENTRIES_LESSON_ID, val.lessonId);
+        values.put(DatabaseCreator.ENTRIES_MAX_VOTES, val.maxVotes);
+        values.put(DatabaseCreator.ENTRIES_MY_VOTES, val.myVotes);
+
+        database.insert(DatabaseCreator.TABLE_NAME_ENTRIES, null, values);
+    }
+
+    /**
      * Add an entry to the respective uebung
      */
     public void addLesson(int subjectId, int maxVote, int myVote, int uebungNummer) {
@@ -146,6 +170,8 @@ public class DBLessons {
                 "WHERE " + DatabaseCreator.ENTRIES_SUBJECT_ID + " = ? AND " + DatabaseCreator.ENTRIES_LESSON_ID + " > ?";
         database.execSQL(query, new String[]{String.valueOf(subjectId), String.valueOf(lessonId)});
     }
+
+
 
     /**
      * The previously given maximum vote value, or the scheduled assignment count if no previous entry exists

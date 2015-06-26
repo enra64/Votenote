@@ -1,8 +1,8 @@
-package de.oerntec.votenote.SubjectFragmentStuff;
+package de.oerntec.votenote.CardListHelpers;
 
 import android.view.View;
 
-interface OnItemClickListener {
+public interface OnItemClickListener {
     void onItemClick(View view, int position);
 
     void onItemLongClick(View view, int position);

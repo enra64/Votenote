@@ -1,49 +1,48 @@
-package de.oerntec.votenote;
+package de.oerntec.votenote.SubjectManagerStuff;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
-import android.database.Cursor;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
-import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import de.oerntec.votenote.CardListHelpers.OnItemClickListener;
+import de.oerntec.votenote.CardListHelpers.RecyclerItemClickListener;
+import de.oerntec.votenote.CardListHelpers.SwipeableRecyclerViewTouchListener;
+import de.oerntec.votenote.Database.DBLessons;
+import de.oerntec.votenote.Database.DBSubjects;
 import de.oerntec.votenote.ImportExport.XmlImporter;
+import de.oerntec.votenote.R;
 
 @SuppressLint("InflateParams")
-public class GroupManagementActivity extends Activity {
+public class SubjectManagementActivity extends Activity {
 
     private static final int ADD_SUBJECT_CODE = -1;
     static DBSubjects groupsDB;
     static DBLessons entriesDB;
-    static SimpleCursorAdapter groupAdapter;
-    ListView mainList;
+    static SubjectAdapter mSubjectAdapter;
+    RecyclerView mSubjectList;
+    SwipeableRecyclerViewTouchListener mSwipeListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_group_management);
+        setContentView(R.layout.subject_manager_activity);
 
-		/*
-		 * handle if first group: show dialog
-		 * get savedinstance state,
-		 */
-        //safety
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             if (extras.getBoolean("firstGroup", false)) {
@@ -58,73 +57,79 @@ public class GroupManagementActivity extends Activity {
         groupsDB = DBSubjects.getInstance();
         entriesDB = DBLessons.getInstance();
 
-		/*
-		 * create listview
-		 */
-        // set up the drawer's list view with items and click listener
-        Cursor allCursor = groupsDB.getAllGroupsInfos();
-        //define wanted columns
-        String[] columns = {DatabaseCreator.SUBJECTS_NAME,
-                DatabaseCreator.SUBJECTS_MINIMUM_VOTE_PERCENTAGE,
-                DatabaseCreator.SUBJECTS_WANTED_PRESENTATION_POINTS,
-                DatabaseCreator.SUBJECTS_SCHEDULED_NUMBER_OF_LESSONS,
-                DatabaseCreator.SUBJECTS_SCHEDULED_ASSIGNMENTS_PER_LESSON};
-
-        //define id values of views to be set
-        int[] to = {R.id.groupmanager_listitem_text_groupname,
-                R.id.groupmanager_listitem_text_needed_percentage,
-                R.id.groupmanager_listitem_text_prespoints,
-                R.id.groupmanager_listitem_text_scheduled_uebungs,
-                R.id.groupmanager_listitem_text_scheduled_assignments};
-
-        // create the adapter using the cursor pointing to the desired data
-        groupAdapter = new SimpleCursorAdapter(
-                this,
-                R.layout.groupmanager_listitem,
-                allCursor,
-                columns,
-                to,
-                0);
-
         //get listview
-        mainList = (ListView) findViewById(R.id.listGroupManagement);
-        mainList.setAdapter(groupAdapter);
-        mainList.setOnItemClickListener(new OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, final long id) {
-                Log.d("gmanage", "handling listview click on " + view.toString());
-                showLessonDialog(position);
+        mSubjectList = (RecyclerView) findViewById(R.id.subject_manager_recycler_view);
+
+        //config the recyclerview
+        mSubjectList.setHasFixedSize(true);
+
+        mSwipeListener =
+                new SwipeableRecyclerViewTouchListener(mSubjectList,
+                        new SwipeableRecyclerViewTouchListener.SwipeListener() {
+                            @Override
+                            public boolean canSwipe(int position) {
+                                return true;
+                            }
+
+                            @Override
+                            public void onDismissedBySwipeLeft(RecyclerView recyclerView, int[] reverseSortedPositions) {
+                                for (int p : reverseSortedPositions) {
+                                    int subjectId = (Integer) recyclerView.getChildAt(p).getTag();
+                                    groupsDB.deleteRecord(groupsDB.getGroupName(subjectId), subjectId);
+                                    entriesDB.deleteAllEntriesForGroup(subjectId);
+                                    //reload
+                                    SubjectManagementActivity.this.notifyOfChangedDataset();
+                                }
+                            }
+
+                            @Override
+                            public void onDismissedBySwipeRight(RecyclerView recyclerView, int[] reverseSortedPositions) {
+                                onDismissedBySwipeLeft(recyclerView, reverseSortedPositions);
+                            }
+                        });
+
+        //give it a layoutmanage (whatever that is)
+        LinearLayoutManager manager = new LinearLayoutManager(this);
+        manager.setOrientation(LinearLayoutManager.VERTICAL);
+        mSubjectList.setLayoutManager(manager);
+
+        mSubjectAdapter = new SubjectAdapter(this, groupsDB.getAllGroupsInfos());
+
+        mSubjectList.setAdapter(mSubjectAdapter);
+        mSubjectList.addOnItemTouchListener(mSwipeListener);
+        mSubjectList.addOnItemTouchListener(new RecyclerItemClickListener(this, mSubjectList, new OnItemClickListener() {
+            public void onItemClick(View view, int position) {
+                showLessonDialog((Integer) view.getTag());
             }
-        });
-        mainList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                showDeleteDialog(position);
-                return true;
+
+            public void onItemLongClick(final View view, int position) {
             }
-        });
+        }));
     }
 
-    private void showLessonDialog(final int changePosition) {
+    public void notifyOfChangedDataset() {
+        mSubjectAdapter.getCursorAdapter().changeCursor(groupsDB.getAllGroupsInfos());
+        mSubjectAdapter.getCursorAdapter().notifyDataSetChanged();
+        mSubjectAdapter.notifyDataSetChanged();
+    }
+
+    private void showLessonDialog(final int databaseId) {
         String nameHint = getString(R.string.subject_add_hint);
-        int databaseID = ADD_SUBJECT_CODE;
         int presentationPointsHint = 0;
         int minimumVotePercentageHint = 50;
         int scheduledAssignmentsPerLesson = 5;
         int scheduledNumberOfLessons = 10;
 
         //if we only change the entry, get the previously set values.
-        if (changePosition != ADD_SUBJECT_CODE) {
-            databaseID = groupsDB.translatePositionToID(changePosition);
-            nameHint = groupsDB.getGroup(databaseID).subjectName;
-            presentationPointsHint = groupsDB.getWantedPresPoints(databaseID);
-            minimumVotePercentageHint = groupsDB.getMinVote(databaseID);
-            scheduledAssignmentsPerLesson = groupsDB.getScheduledAssignmentsPerLesson(databaseID);
-            scheduledNumberOfLessons = groupsDB.getScheduledNumberOfLessons(databaseID);
+        if (databaseId != ADD_SUBJECT_CODE) {
+            nameHint = groupsDB.getGroup(databaseId).subjectName;
+            presentationPointsHint = groupsDB.getWantedPresPoints(databaseId);
+            minimumVotePercentageHint = groupsDB.getMinVote(databaseId);
+            scheduledAssignmentsPerLesson = groupsDB.getScheduledAssignmentsPerLesson(databaseId);
+            scheduledNumberOfLessons = groupsDB.getScheduledNumberOfLessons(databaseId);
         }
 
         final String finalOldName = nameHint;
-        final int dbId = databaseID;
 
         //inflate view with seekbar and name
         final View input = this.getLayoutInflater().inflate(R.layout.groupmanager_dialog_groupsettings, null);
@@ -203,6 +208,7 @@ public class GroupManagementActivity extends Activity {
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
             }
+
             @Override
             public void onProgressChanged(SeekBar arg0, int progress, boolean arg2) {
                 estimatedAssignmentsHelp.setText(progress + "");
@@ -232,7 +238,7 @@ public class GroupManagementActivity extends Activity {
         });
 
         String title;
-        if (changePosition == ADD_SUBJECT_CODE) {
+        if (databaseId == ADD_SUBJECT_CODE) {
             if (groupsDB.getNumberOfSubjects() == 0)
                 title = getString(R.string.subject_manage_add_title_first_subject);
             else
@@ -252,27 +258,27 @@ public class GroupManagementActivity extends Activity {
                         int scheduledLessonCount = estimatedUebungCountSeek.getProgress();
                         int scheduledAssignmentsPerLesson = estimatedAssignmentsSeek.getProgress();
 
-                        if (changePosition == ADD_SUBJECT_CODE) {
+                        if (databaseId == ADD_SUBJECT_CODE) {
                             if (groupsDB.addGroup(newName, minimumVoteValue, minimumPresentationPoints, scheduledLessonCount, scheduledAssignmentsPerLesson) == -1)
                                 Toast.makeText(getApplicationContext(), getString(R.string.subject_manage_subject_exists_already), Toast.LENGTH_SHORT).show();
                             else
-                                reloadList();
+                                notifyOfChangedDataset();
                             setResult(RESULT_OK);
                         } else {
                             //change minimum vote, pres value
-                            if (groupsDB.setMinVote(dbId, minimumVoteValue) != 1)
+                            if (groupsDB.setMinVote(databaseId, minimumVoteValue) != 1)
                                 Log.e("groupmanager:minv", "did not update exactly one row");
-                            if (groupsDB.setMinPresPoints(dbId, minimumPresentationPoints) != 1)
+                            if (groupsDB.setMinPresPoints(databaseId, minimumPresentationPoints) != 1)
                                 Log.e("groupmanager:minpres", "did not update exactly one row");
 
-                            groupsDB.setScheduledUebungCountAndAssignments(dbId, scheduledLessonCount, scheduledAssignmentsPerLesson);
+                            groupsDB.setScheduledUebungCountAndAssignments(databaseId, scheduledLessonCount, scheduledAssignmentsPerLesson);
                             //change group NAME if it changed
                             Log.d("groupmanager", "trying to update name of " + finalOldName + " to " + newName);
 
                             if (!"".equals(newName))
-                                groupsDB.changeName(dbId, finalOldName, newName);
+                                groupsDB.changeName(databaseId, finalOldName, newName);
                         }
-                        reloadList();
+                        notifyOfChangedDataset();
                     }
                 }).setNegativeButton(getString(R.string.dialog_button_abort), null);
         final AlertDialog dialog = b.create();
@@ -298,26 +304,6 @@ public class GroupManagementActivity extends Activity {
             }
         });
         dialog.show();
-    }
-
-    protected void showDeleteDialog(final int deletePosition) {
-        //get name of the group supposed to be deleted
-        final int databaseID = groupsDB.translatePositionToID(deletePosition);
-        final String groupName = groupsDB.getGroupName(databaseID);
-        //request confirmation
-        new Builder(this)
-                .setTitle(groupName + " " + getString(R.string.group_delete_title))
-                .setPositiveButton(getString(R.string.dialog_button_ok), new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                        groupsDB.deleteRecord(groupName, databaseID);
-                        entriesDB.deleteAllEntriesForGroup(databaseID);
-                        groupAdapter.swapCursor(groupsDB.getAllGroupsInfos()).close();
-                    }
-                }).setNegativeButton(getString(R.string.dialog_button_abort), null).show();
-    }
-
-    public void reloadList() {
-        groupAdapter.changeCursor(groupsDB.getAllGroupsInfos());
     }
 
     @Override

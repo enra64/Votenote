@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package de.oerntec.votenote;
+package de.oerntec.votenote.CardListHelpers;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;

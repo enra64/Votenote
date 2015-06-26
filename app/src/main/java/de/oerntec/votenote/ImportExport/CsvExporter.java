@@ -7,8 +7,8 @@ import android.widget.Toast;
 import java.io.IOException;
 import java.util.List;
 
-import de.oerntec.votenote.DBLessons;
-import de.oerntec.votenote.DBSubjects;
+import de.oerntec.votenote.Database.DBLessons;
+import de.oerntec.votenote.Database.DBSubjects;
 import de.oerntec.votenote.R;
 import de.oerntec.votenote.Subject;
 

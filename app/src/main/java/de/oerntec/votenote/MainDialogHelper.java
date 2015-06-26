@@ -8,6 +8,9 @@ import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import de.oerntec.votenote.Database.DBLessons;
+import de.oerntec.votenote.Database.DBSubjects;
+
 public class MainDialogHelper {
     private static final int ADD_LESSON_CODE = -2;
 

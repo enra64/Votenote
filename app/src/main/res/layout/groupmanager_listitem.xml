@@ -82,7 +82,7 @@
         android:layout_alignBottom="@+id/groupmanager_listitem_text_scheduled_uebungs"
         android:layout_toEndOf="@+id/groupmanager_listitem_text_scheduled_uebungs"
         android:layout_toRightOf="@+id/groupmanager_listitem_text_scheduled_uebungs"
-        android:text="@string/subjectmanager_x_lesson_a"
+        android:text="@string/subjectmanager_card_lesson_count"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:textColor="#ff8b8b8b" />
 

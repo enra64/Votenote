@@ -25,6 +25,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
+import de.oerntec.votenote.Database.DBLessons;
+import de.oerntec.votenote.Database.DBSubjects;
+
 
 public class DiagramActivity extends Activity {
     static DBSubjects groupsDB;

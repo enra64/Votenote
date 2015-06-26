@@ -19,7 +19,8 @@
                 android:id="@+id/pickerMyVote"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="7dp" />
+                android:layout_margin="7dp"
+                android:descendantFocusability="blocksDescendants" />
         </LinearLayout>
 
         <LinearLayout
@@ -31,7 +32,8 @@
                 android:id="@+id/pickerMaxVote"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="7dp" />
+                android:layout_margin="7dp"
+                android:descendantFocusability="blocksDescendants" />
         </LinearLayout>
     </LinearLayout>
 

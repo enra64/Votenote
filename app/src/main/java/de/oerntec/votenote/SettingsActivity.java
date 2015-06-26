@@ -20,9 +20,12 @@ import android.widget.Toast;
 
 import java.util.List;
 
+import de.oerntec.votenote.Database.DBLessons;
+import de.oerntec.votenote.Database.DBSubjects;
 import de.oerntec.votenote.ImportExport.CsvExporter;
 import de.oerntec.votenote.ImportExport.XmlExporter;
 import de.oerntec.votenote.ImportExport.XmlImporter;
+import de.oerntec.votenote.SubjectManagerStuff.SubjectManagementActivity;
 
 /**
  * A {@link PreferenceActivity} that presents a set of application settings. On
@@ -193,7 +196,7 @@ public class SettingsActivity extends PreferenceActivity {
         findPreference("subject_manage_key").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                Intent intent = new Intent(thisRef, GroupManagementActivity.class);
+                Intent intent = new Intent(thisRef, SubjectManagementActivity.class);
                 startActivity(intent);
                 return true;
             }

@@ -1,4 +1,4 @@
-package de.oerntec.votenote.SubjectFragmentStuff;
+package de.oerntec.votenote.CardListHelpers;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -33,7 +33,7 @@ public class RecyclerItemClickListener implements RecyclerView.OnItemTouchListen
     @Override
     public boolean onInterceptTouchEvent(RecyclerView view, MotionEvent e) {
         View childView = view.findChildViewUnder(e.getX(), e.getY());
-        if (childView != null && mListener != null && mGestureDetector.onTouchEvent(e) && false)
+        if (childView != null && mListener != null && mGestureDetector.onTouchEvent(e))
             mListener.onItemClick(childView, view.getChildPosition(childView));
         //false -> do not want to handle
         return false;

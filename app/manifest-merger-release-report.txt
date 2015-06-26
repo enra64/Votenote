@@ -69,7 +69,7 @@ category#android.intent.category.LAUNCHER
 ADDED from AndroidManifest.xml:26:17
 	android:name
 		ADDED from AndroidManifest.xml:26:27
-activity#de.oerntec.votenote.GroupManagementActivity
+activity#de.oerntec.votenote.SubjectManagerStuff.SubjectManagementActivity
 ADDED from AndroidManifest.xml:29:9
 	android:label
 		ADDED from AndroidManifest.xml:31:13

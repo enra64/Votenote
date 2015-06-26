@@ -19,7 +19,7 @@
     <string name="subjectmanager_needed_work">Needed percentage</string>
     <string name="subjectmanager_set_prespoints"> presentation points, </string>
     <string name="subjectmanager_x_assignments"> assignments</string>
-    <string name="subjectmanager_x_lesson_a"> lessons a</string>
+    <string name="subjectmanager_card_lesson_count">lessons</string>
     <string name="title_activity_diagram">Diagram</string>
     <string name="title_activity_group_management">Control subjects</string>
     <string name="title_activity_settings">Settings</string>

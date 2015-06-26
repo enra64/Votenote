@@ -6,8 +6,8 @@ import android.graphics.Color;
 import android.view.View;
 import android.widget.TextView;
 
-import de.oerntec.votenote.DBLessons;
-import de.oerntec.votenote.DBSubjects;
+import de.oerntec.votenote.Database.DBLessons;
+import de.oerntec.votenote.Database.DBSubjects;
 import de.oerntec.votenote.R;
 
 public class SubjectInfoCalculator {
@@ -66,7 +66,7 @@ public class SubjectInfoCalculator {
      * @param forSection the subject id
      * @return the average vote
      */
-    private static float calculateAverageVotierung(int forSection) {
+    protected static float calculateAverageVotierung(int forSection) {
         //get avg cursor
         Cursor avgCursor = entryDB.getAllLessonsForSubject(forSection);
         int maxVoteCount = 0, myVoteCount = 0;
@@ -90,14 +90,14 @@ public class SubjectInfoCalculator {
 
         //no votes have been given
         if (entryDB.getLessonCountForSubject(subjectId) == 0)
-            averageVoteView.setText(context.getString(R.string.add_lesson_command));
+            averageVoteView.setText("NaN");
 
         //get minvote for section
         int minVote = groupDB.getMinVote(subjectId);
 
         //write percentage and color coding to summaryview
         if (Float.isNaN(average))
-            averageVoteView.setText(context.getString(R.string.add_lesson_command));
+            averageVoteView.setText("NaN");
         else
             averageVoteView.setText(String.format("%.1f", average) + "%");
 
