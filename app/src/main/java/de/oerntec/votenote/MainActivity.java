@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import de.oerntec.votenote.Database.DBLessons;
 import de.oerntec.votenote.Database.DBSubjects;
+import de.oerntec.votenote.Database.Subject;
 import de.oerntec.votenote.SubjectFragmentStuff.LessonFragment;
 
 /*
@@ -170,7 +171,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
      * @param section datbase index+1
      */
     public void onSectionAttached(int section) {
-        Subject sectionData = groupsDB.getGroup(groupsDB.translatePositionToID(section));
+        Subject sectionData = groupsDB.getSubject(groupsDB.translatePositionToID(section));
         mTitle = sectionData == null ? getString(R.string.main_add_subject_command) : sectionData.subjectName;
         restoreActionBar();
     }

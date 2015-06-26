@@ -6,6 +6,7 @@ import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
@@ -20,23 +21,43 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.cocosw.undobar.UndoBarController;
+
 import de.oerntec.votenote.CardListHelpers.OnItemClickListener;
 import de.oerntec.votenote.CardListHelpers.RecyclerItemClickListener;
 import de.oerntec.votenote.CardListHelpers.SwipeableRecyclerViewTouchListener;
 import de.oerntec.votenote.Database.DBLessons;
 import de.oerntec.votenote.Database.DBSubjects;
+import de.oerntec.votenote.Database.Subject;
 import de.oerntec.votenote.ImportExport.XmlImporter;
 import de.oerntec.votenote.R;
 
 @SuppressLint("InflateParams")
-public class SubjectManagementActivity extends Activity {
-
+public class SubjectManagementActivity extends Activity implements UndoBarController.AdvancedUndoListener {
+    /**
+     * Lesson should be added, not changed
+     */
     private static final int ADD_SUBJECT_CODE = -1;
-    static DBSubjects groupsDB;
-    static DBLessons entriesDB;
-    static SubjectAdapter mSubjectAdapter;
-    RecyclerView mSubjectList;
-    SwipeableRecyclerViewTouchListener mSwipeListener;
+
+    /**
+     * default db access
+     */
+    private static DBSubjects groupsDB;
+
+    /**
+     * default db access
+     */
+    private static DBLessons entriesDB;
+
+    /**
+     * the subject adapter used to fill the list
+     */
+    private static SubjectAdapter mSubjectAdapter;
+
+    /**
+     * saves the subject on delete to be able to add it again should the user demand it
+     */
+    private Subject subjectToBeDeleted;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,49 +65,44 @@ public class SubjectManagementActivity extends Activity {
         setContentView(R.layout.subject_manager_activity);
 
         Bundle extras = getIntent().getExtras();
-        if (extras != null) {
-            if (extras.getBoolean("firstGroup", false)) {
-                Builder b = new AlertDialog.Builder(this, AlertDialog.THEME_DEVICE_DEFAULT_DARK);
-                b.setTitle("Tutorial");
-                b.setView(this.getLayoutInflater().inflate(R.layout.tutorial_subjects, null));
-                b.setPositiveButton(getString(R.string.dialog_button_ok), null);
-                b.create().show();
-            }
+        if (extras != null && extras.getBoolean("firstGroup", false)) {
+            Builder b = new AlertDialog.Builder(this, AlertDialog.THEME_DEVICE_DEFAULT_DARK);
+            b.setTitle("Tutorial");
+            b.setView(this.getLayoutInflater().inflate(R.layout.tutorial_subjects, null));
+            b.setPositiveButton(getString(R.string.dialog_button_ok), null);
+            b.create().show();
         }
+
         //get db
         groupsDB = DBSubjects.getInstance();
         entriesDB = DBLessons.getInstance();
 
         //get listview
-        mSubjectList = (RecyclerView) findViewById(R.id.subject_manager_recycler_view);
+        RecyclerView mSubjectList = (RecyclerView) findViewById(R.id.subject_manager_recycler_view);
 
         //config the recyclerview
         mSubjectList.setHasFixedSize(true);
 
-        mSwipeListener =
-                new SwipeableRecyclerViewTouchListener(mSubjectList,
-                        new SwipeableRecyclerViewTouchListener.SwipeListener() {
-                            @Override
-                            public boolean canSwipe(int position) {
-                                return true;
-                            }
+        SwipeableRecyclerViewTouchListener mSwipeListener = new SwipeableRecyclerViewTouchListener(mSubjectList,
+                new SwipeableRecyclerViewTouchListener.SwipeListener() {
+                    @Override
+                    public boolean canSwipe(int position) {
+                        return true;
+                    }
 
-                            @Override
-                            public void onDismissedBySwipeLeft(RecyclerView recyclerView, int[] reverseSortedPositions) {
-                                for (int p : reverseSortedPositions) {
-                                    int subjectId = (Integer) recyclerView.getChildAt(p).getTag();
-                                    groupsDB.deleteRecord(groupsDB.getGroupName(subjectId), subjectId);
-                                    entriesDB.deleteAllEntriesForGroup(subjectId);
-                                    //reload
-                                    SubjectManagementActivity.this.notifyOfChangedDataset();
-                                }
-                            }
+                    @Override
+                    public void onDismissedBySwipeLeft(RecyclerView recyclerView, int[] reverseSortedPositions) {
+                        for (int p : reverseSortedPositions) {
+                            int subjectId = (Integer) recyclerView.getChildAt(p).getTag();
+                            showUndoSnackBar(subjectId);
+                        }
+                    }
 
-                            @Override
-                            public void onDismissedBySwipeRight(RecyclerView recyclerView, int[] reverseSortedPositions) {
-                                onDismissedBySwipeLeft(recyclerView, reverseSortedPositions);
-                            }
-                        });
+                    @Override
+                    public void onDismissedBySwipeRight(RecyclerView recyclerView, int[] reverseSortedPositions) {
+                        onDismissedBySwipeLeft(recyclerView, reverseSortedPositions);
+                    }
+                });
 
         //give it a layoutmanage (whatever that is)
         LinearLayoutManager manager = new LinearLayoutManager(this);
@@ -107,6 +123,42 @@ public class SubjectManagementActivity extends Activity {
         }));
     }
 
+    private void showUndoSnackBar(final int lessonId) {
+        subjectToBeDeleted = groupsDB.getSubject(lessonId);
+        groupsDB.deleteRecord(subjectToBeDeleted.subjectName, lessonId);
+        notifyOfChangedDataset();
+        new UndoBarController.UndoBar(this)
+                .message("Übung gelöscht")
+                .style(UndoBarController.UNDOSTYLE)
+                .duration(1800)
+                .listener(this)
+                .show();
+    }
+
+    //dont do anything, as we only delete the lesson when the undo bar gets hidden
+    @Override
+    public void onUndo(Parcelable parcelable) {
+        if (subjectToBeDeleted != null) {
+            groupsDB.addGroup(subjectToBeDeleted);
+            notifyOfChangedDataset();
+        }
+        subjectToBeDeleted = null;
+    }
+
+    @Override
+    public void onHide(Parcelable parcelable) {
+        //remove all entries of the group
+        if (subjectToBeDeleted != null)
+            entriesDB.deleteAllEntriesForGroup(Integer.valueOf(subjectToBeDeleted.id));
+        //re-enable subject removal
+        subjectToBeDeleted = null;
+    }
+
+    @Override
+    public void onClear() {
+
+    }
+
     public void notifyOfChangedDataset() {
         mSubjectAdapter.getCursorAdapter().changeCursor(groupsDB.getAllGroupsInfos());
         mSubjectAdapter.getCursorAdapter().notifyDataSetChanged();
@@ -122,7 +174,7 @@ public class SubjectManagementActivity extends Activity {
 
         //if we only change the entry, get the previously set values.
         if (databaseId != ADD_SUBJECT_CODE) {
-            nameHint = groupsDB.getGroup(databaseId).subjectName;
+            nameHint = groupsDB.getSubject(databaseId).subjectName;
             presentationPointsHint = groupsDB.getWantedPresPoints(databaseId);
             minimumVotePercentageHint = groupsDB.getMinVote(databaseId);
             scheduledAssignmentsPerLesson = groupsDB.getScheduledAssignmentsPerLesson(databaseId);

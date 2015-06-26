@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import de.oerntec.votenote.Database.DBLessons;
 import de.oerntec.votenote.Database.DBSubjects;
+import de.oerntec.votenote.Database.Lesson;
 
 public class MainDialogHelper {
     private static final int ADD_LESSON_CODE = -2;
@@ -50,7 +51,7 @@ public class MainDialogHelper {
             maxVoteValue = entryDB.getPreviousMaximumVote(groupID);
             myVoteValue = entryDB.getPreviousMyVote(groupID);
         } else {
-            DBLessons.Lesson oldValues = entryDB.getLesson(groupID, lessonID);
+            Lesson oldValues = entryDB.getLesson(groupID, lessonID);
             myVoteValue = oldValues != null ? oldValues.myVotes : 0;
             maxVoteValue = oldValues != null ? oldValues.maxVotes : 0;
         }

@@ -1,4 +1,4 @@
-package de.oerntec.votenote;
+package de.oerntec.votenote.Database;
 
 public class Subject {
     public String id,

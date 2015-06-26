@@ -9,8 +9,6 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.oerntec.votenote.Subject;
-
 public class DBSubjects {
     public final static int NO_GROUPS_EXIST = -1;
 
@@ -63,6 +61,17 @@ public class DBSubjects {
                 newScheduledUebungCount, newScheduledAssignmentsPerUebung);
     }
 
+    public int addGroup(Subject val) {
+        return addGroup(
+                Integer.valueOf(val.id),
+                val.subjectName,
+                Integer.valueOf(val.subjectMinimumVotePercentage),
+                Integer.valueOf(val.subjectWantedPresentationPoints),
+                Integer.valueOf(val.subjectCurrentPresentationPoints),
+                Integer.valueOf(val.subjectScheduledLessonCount),
+                Integer.valueOf(val.subjectScheduledAssignmentsPerLesson));
+    }
+
     /**
      * Adds a group with the given Parameters
      * @param id Id, overwrites rowid if >0
@@ -72,7 +81,7 @@ public class DBSubjects {
      * @return -1 if group exists, 1 else.
      */
     public int addGroup(int id, String groupName, int minVot, int minPres, int currentPres,
-                        int newScheduledUebungCount, int newScheduledAssignmentsPerUebung) {
+                        int newScheduledLessonCount, int newScheduledAssignmentsPerUebung) {
         //check whether group name exists; abort if it does
         String[] testColumns = new String[]{DatabaseCreator.SUBJECTS_ID, DatabaseCreator.SUBJECTS_NAME};
         Cursor testCursor = database.query(true, DatabaseCreator.TABLE_NAME_SUBJECTS, testColumns, DatabaseCreator.SUBJECTS_NAME + "=?", new String[]{groupName}, null, null, DatabaseCreator.SUBJECTS_ID + " DESC", null);
@@ -93,7 +102,7 @@ public class DBSubjects {
         if (id > 0)
             values.put(DatabaseCreator.SUBJECTS_ID, id);
         values.put(DatabaseCreator.SUBJECTS_WANTED_PRESENTATION_POINTS, minPres);
-        values.put(DatabaseCreator.SUBJECTS_SCHEDULED_NUMBER_OF_LESSONS, newScheduledUebungCount);
+        values.put(DatabaseCreator.SUBJECTS_SCHEDULED_NUMBER_OF_LESSONS, newScheduledLessonCount);
         values.put(DatabaseCreator.SUBJECTS_SCHEDULED_ASSIGNMENTS_PER_LESSON, newScheduledAssignmentsPerUebung);
 
         //insert name, because it does not exist yet
@@ -246,28 +255,12 @@ public class DBSubjects {
     }
 
     /**
-     * Returns a cursor containing only the row with the specified id
-     *
-     * @return the cursor
-     */
-    public Cursor getGroupAt(int id) {
-        String[] cols = new String[]{DatabaseCreator.SUBJECTS_ID, DatabaseCreator.SUBJECTS_NAME,
-                DatabaseCreator.SUBJECTS_SCHEDULED_NUMBER_OF_LESSONS,
-                DatabaseCreator.SUBJECTS_SCHEDULED_ASSIGNMENTS_PER_LESSON};
-        String[] whereArgs = new String[]{String.valueOf(id)};
-        Cursor mCursor = database.query(true, DatabaseCreator.TABLE_NAME_SUBJECTS, cols, DatabaseCreator.SUBJECTS_ID + "=?", whereArgs, null, null, null, null);
-        if (mCursor != null)
-            mCursor.moveToFirst();
-        return mCursor; // iterate to get each value.
-    }
-
-    /**
      * Get specific group data
      *
      * @param databaseId db id of the group
      * @return data. null when no group was found
      */
-    public Subject getGroup(int databaseId) {
+    public Subject getSubject(int databaseId) {
         String[] cols = new String[]{DatabaseCreator.SUBJECTS_ID,//0
                 DatabaseCreator.SUBJECTS_NAME,//1
                 DatabaseCreator.SUBJECTS_MINIMUM_VOTE_PERCENTAGE,//2
@@ -307,7 +300,7 @@ public class DBSubjects {
      * @return the cursor
      */
     public int getScheduledWork(int id) {
-        Subject val = getGroup(id);
+        Subject val = getSubject(id);
         return val == null ? -1 : Integer.valueOf(val.subjectScheduledLessonCount) * Integer.valueOf(val.subjectScheduledAssignmentsPerLesson);
     }
 
@@ -318,7 +311,7 @@ public class DBSubjects {
      * @return see above
      */
     public int getScheduledNumberOfLessons(int dbID) {
-        Subject val = getGroup(dbID);
+        Subject val = getSubject(dbID);
         return val == null ? -1 : Integer.valueOf(val.subjectScheduledLessonCount);
     }
 
@@ -329,7 +322,7 @@ public class DBSubjects {
      * @return see above
      */
     public int getScheduledAssignmentsPerLesson(int dbID) {
-        Subject val = getGroup(dbID);
+        Subject val = getSubject(dbID);
         return val == null ? -1 : Integer.valueOf(val.subjectScheduledAssignmentsPerLesson);
     }
 
@@ -337,7 +330,7 @@ public class DBSubjects {
      * Return the name of the group with the specified id
      */
     public String getGroupName(int dbID) {
-        Subject val = getGroup(dbID);
+        Subject val = getSubject(dbID);
         return val == null ? "null" : val.subjectName;
     }
 
@@ -364,7 +357,7 @@ public class DBSubjects {
      * @return minvote
      */
     public int getMinVote(int dbID) {
-        Subject val = getGroup(dbID);
+        Subject val = getSubject(dbID);
         return val == null ? -1 : Integer.valueOf(val.subjectMinimumVotePercentage);
     }
 
@@ -406,7 +399,7 @@ public class DBSubjects {
      * @return Prespoint number
      */
     public int getPresPoints(int dbID) {
-        Subject val = getGroup(dbID);
+        Subject val = getSubject(dbID);
         return val == null ? -1 : Integer.valueOf(val.subjectCurrentPresentationPoints);
     }
 
@@ -432,7 +425,7 @@ public class DBSubjects {
      * @return Minimum number of Prespoints needed for passing, -1 on null
      */
     public int getWantedPresPoints(int dbID) {
-        Subject val = getGroup(dbID);
+        Subject val = getSubject(dbID);
         return val == null ? -1 : Integer.valueOf(val.subjectWantedPresentationPoints);
     }
 }

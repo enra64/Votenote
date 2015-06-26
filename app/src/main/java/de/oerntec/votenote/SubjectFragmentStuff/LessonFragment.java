@@ -21,6 +21,7 @@ import de.oerntec.votenote.CardListHelpers.RecyclerItemClickListener;
 import de.oerntec.votenote.CardListHelpers.SwipeableRecyclerViewTouchListener;
 import de.oerntec.votenote.Database.DBLessons;
 import de.oerntec.votenote.Database.DBSubjects;
+import de.oerntec.votenote.Database.Lesson;
 import de.oerntec.votenote.MainActivity;
 import de.oerntec.votenote.MainDialogHelper;
 import de.oerntec.votenote.R;
@@ -36,7 +37,7 @@ public class LessonFragment extends Fragment implements UndoBarController.Advanc
      */
     private static final String ARG_SECTION_NUMBER = "section_number";
 
-    private static DBLessons.Lesson lessonToDelete = null;
+    private static Lesson lessonToDelete = null;
 
     /**
      * DB Singleton instance
@@ -76,6 +77,7 @@ public class LessonFragment extends Fragment implements UndoBarController.Advanc
     }
 
     public void notifyOfChangedDataset() {
+        //noinspection SynchronizeOnNonFinalField
         synchronized (mLessonList) {
             ((LessonAdapter) mLessonList.getAdapter()).getCursorAdapter().changeCursor(entryDB.getAllLessonsForSubject(subjectId));
             mLessonList.getAdapter().notifyDataSetChanged();

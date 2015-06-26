@@ -9,8 +9,8 @@ import java.util.List;
 
 import de.oerntec.votenote.Database.DBLessons;
 import de.oerntec.votenote.Database.DBSubjects;
+import de.oerntec.votenote.Database.Subject;
 import de.oerntec.votenote.R;
-import de.oerntec.votenote.Subject;
 
 public class CsvExporter {
     public static FileDialog exportDialog(final Activity activity) {
