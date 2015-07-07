@@ -1,5 +1,7 @@
 package de.oerntec.votenote.ImportExport;
 
+import android.os.Environment;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -32,16 +34,12 @@ public class Writer {
      */
     public static void appendLog(String text) {
         text = getDateAndTimeNow() + '\n' + text;
-        File logFile = new File("sdcard/Votenote/log.txt");
-        if (!logFile.exists()) {
-            try {
-                //noinspection ResultOfMethodCallIgnored
-                logFile.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+        File directory = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/Votenote/");
+        directory.mkdirs();
+        File logFile = new File(directory, "log.txt");
         try {
+            //noinspection ResultOfMethodCallIgnored
+            logFile.createNewFile();
             //BufferedWriter for performance, true to set append to file flag
             BufferedWriter buf = new BufferedWriter(new FileWriter(logFile, true));
             buf.append(text);

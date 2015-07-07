@@ -242,6 +242,8 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
                 return true;
             case R.id.action_show_all_info:
                 MainDialogHelper.showAllInfoDialog(this, lessonId);
+                //handy-dandy exception thrower for exception handling testing
+                //Integer.valueOf("rip");
                 return true;
             case R.id.action_prespoints:
                 MainDialogHelper.showPresentationPointDialog(lessonId, this);
