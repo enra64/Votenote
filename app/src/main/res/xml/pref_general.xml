@@ -15,6 +15,12 @@
         android:summary="@string/pref_drawer_start_description"
         android:title="@string/pref_drawer_start_title" />
 
+    <CheckBoxPreference
+        android:defaultValue="false"
+        android:key="enable_logging"
+        android:summary="@string/pref_logging_sum"
+        android:title="Logging" />
+
     <Preference
         android:key="delete_entries"
         android:title="@string/pref_delete_all_entries" />

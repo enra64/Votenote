@@ -95,13 +95,16 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
                 (NavigationDrawerFragment) getFragmentManager().findFragmentById(R.id.navigation_drawer);
         mTitle = getTitle();
 
-        //setup handler getting all exceptions to log because google play costs 25 euros
-        Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
-            @Override
-            public void uncaughtException(Thread thread, Throwable e) {
-                handleUncaughtException(thread, e);
-            }
-        });
+
+        if (getPreference("enable_logging", false)) {
+            //setup handler getting all exceptions to log because google play costs 25 euros
+            Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+                @Override
+                public void uncaughtException(Thread thread, Throwable e) {
+                    handleUncaughtException(thread, e);
+                }
+            });
+        }
 
         // Set up the drawer.
         mNavigationDrawerFragment.setUp(
