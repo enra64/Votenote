@@ -91,4 +91,5 @@
     <string name="pref_check_updates_now">Auf Updates überprüfen</string>
     <string name="pref_delete_all_entries">Alle Eintrage löschen</string>
     <string name="main_version_check_goto_settings">Alte Version! Überprüfe die Version in den Einstellungen für die neueste Version</string>
+    <string name="pref_logging_sum">Alle unerwarteten Exceptions auf der SD-Karte speichern</string>
 </resources>

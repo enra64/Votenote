@@ -20,6 +20,11 @@ import de.oerntec.votenote.Database.DBSubjects;
 import de.oerntec.votenote.Database.Subject;
 import de.oerntec.votenote.SubjectFragmentStuff.LessonFragment;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
+import de.oerntec.votenote.ImportExport.Writer;
+
 /*
 * VERSION HISTORY
 * 1.0:
@@ -95,6 +100,17 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
                 (NavigationDrawerFragment) getFragmentManager().findFragmentById(R.id.navigation_drawer);
         mTitle = getTitle();
 
+
+        if (getPreference("enable_logging", false)) {
+            //setup handler getting all exceptions to log because google play costs 25 euros
+            Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+                @Override
+                public void uncaughtException(Thread thread, Throwable e) {
+                    handleUncaughtException(thread, e);
+                }
+            });
+        }
+
         // Set up the drawer.
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
@@ -103,6 +119,16 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
         if (getPreference("check_version_at_start", true))
             if (VersionCheckHelper.isOnline(this))
                 VersionCheckHelper.checkVersionStealth(this);
+    }
+
+    //http://stackoverflow.com/a/19968400
+    public void handleUncaughtException(Thread thread, Throwable e) {
+        e.printStackTrace(); // not all Android versions will print the stack trace automatically
+        StringWriter stringWriter = new StringWriter();
+        PrintWriter printWriter = new PrintWriter(stringWriter);
+        e.printStackTrace(printWriter);
+        Writer.appendLog(stringWriter.toString());
+        System.exit(1);
     }
 
     public void onVersionResult(String result) {
@@ -226,6 +252,8 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
                 return true;
             case R.id.action_show_all_info:
                 MainDialogHelper.showAllInfoDialog(this, lessonId);
+                //handy-dandy exception thrower for exception handling testing
+                //Integer.valueOf("rip");
                 return true;
             case R.id.action_prespoints:
                 MainDialogHelper.showPresentationPointDialog(lessonId, this);

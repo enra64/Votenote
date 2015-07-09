@@ -23,7 +23,7 @@ import de.oerntec.votenote.R;
 import de.oerntec.votenote.SubjectManagerStuff.SubjectManagementActivity;
 
 public class XmlImporter {
-    public static boolean success;
+    private static boolean success;
 
     public static void importDialog(final Activity activity) {
         //if there already are subjects, ask the user whether he truly wants to delete everything
