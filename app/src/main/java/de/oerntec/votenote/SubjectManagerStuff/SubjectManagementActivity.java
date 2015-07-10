@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -194,22 +195,25 @@ public class SubjectManagementActivity extends AppCompatActivity implements Undo
 
         //inflate view with seekbar and name
         final View input = this.getLayoutInflater().inflate(R.layout.subject_manager_dialog_groupsettings, null);
-        final EditText nameInput = (EditText) input.findViewById(R.id.groupmanager_groupsettings_edit_name);
 
-        final TextView voteInfo = (TextView) input.findViewById(R.id.groupmanager_groupsettings_text_min_votierungs);
-        final SeekBar minVoteSeek = (SeekBar) input.findViewById(R.id.groupmanager_groupsettings_seek_min_votierungs);
+        final EditText nameInput = (EditText) input.findViewById(R.id.subject_manager_dialog_groupsettings_edit_name);
+        final TextInputLayout nameInputLayout = (TextInputLayout) input.findViewById(R.id.subject_manager_dialog_groupsettings_text_input_layout);
 
-        final TextView presInfo = (TextView) input.findViewById(R.id.groupmanager_groupsettings_text_prespoints);
-        final SeekBar minPresSeek = (SeekBar) input.findViewById(R.id.groupmanager_groupsettings_seek_prespoints);
+        final TextView voteInfo = (TextView) input.findViewById(R.id.subject_manager_dialog_groupsettings_text_min_votierungs);
+        final SeekBar minVoteSeek = (SeekBar) input.findViewById(R.id.subject_manager_dialog_groupsettings_seek_min_votierungs);
 
-        final TextView estimatedAssignmentsHelp = (TextView) input.findViewById(R.id.groupmanager_groupsettings_text_assignments_per_uebung);
-        final SeekBar estimatedAssignmentsSeek = (SeekBar) input.findViewById(R.id.groupmanager_groupsettings_seek_assignments_per_uebung);
+        final TextView presInfo = (TextView) input.findViewById(R.id.subject_manager_dialog_groupsettings_text_prespoints);
+        final SeekBar minPresSeek = (SeekBar) input.findViewById(R.id.subject_manager_dialog_groupsettings_seek_prespoints);
 
-        final TextView estimatedUebungCountHelp = (TextView) input.findViewById(R.id.groupmanager_groupsettings_text_estimated_uebung_count);
-        final SeekBar estimatedUebungCountSeek = (SeekBar) input.findViewById(R.id.groupmanager_groupsettings_seek_estimated_uebung_count);
+        final TextView estimatedAssignmentsHelp = (TextView) input.findViewById(R.id.subject_manager_dialog_groupsettings_text_assignments_per_uebung);
+        final SeekBar estimatedAssignmentsSeek = (SeekBar) input.findViewById(R.id.subject_manager_dialog_groupsettings_seek_assignments_per_uebung);
+
+        final TextView estimatedUebungCountHelp = (TextView) input.findViewById(R.id.subject_manager_dialog_groupsettings_text_estimated_uebung_count);
+        final SeekBar estimatedUebungCountSeek = (SeekBar) input.findViewById(R.id.subject_manager_dialog_groupsettings_seek_estimated_uebung_count);
 
         //offer hint to user
-        nameInput.setHint(nameHint);
+        //nameInput.setHint(nameHint);
+        nameInputLayout.setHint(nameHint);
 
         //minpreshelp
         presInfo.setText("" + presentationPointsHint);
@@ -287,7 +291,6 @@ public class SubjectManagementActivity extends AppCompatActivity implements Undo
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
             }
-
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
             }
