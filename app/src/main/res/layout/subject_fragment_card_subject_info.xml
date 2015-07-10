@@ -4,79 +4,70 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="3dp"
-    android:paddingBottom="4dp"
-    android:paddingTop="4dp"
     card_view:cardCornerRadius="4dp"
     card_view:cardElevation="2dp"
     card_view:cardMaxElevation="2dp">
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:padding="7dp">
 
-        <RelativeLayout
-            android:id="@+id/subject_fragment_subject_card_titlelayout"
+        <TextView
+            android:id="@+id/subject_fragment_subject_card_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:text="Modellierung"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textColor="@color/textColorPrimary"
+            android:textSize="30sp" />
+
+        <TextView
+            android:id="@+id/subject_fragment_subject_card_title_percentage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/view"
+            android:paddingTop="6dp"
+            android:text="20%"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textColor="@color/textColorPrimary" />
+
+        <View
+            android:id="@+id/view"
             android:layout_width="match_parent"
-            android:layout_height="53dp"
-            android:elevation="10dp">
-
-            <TextView
-                android:id="@+id/subject_fragment_subject_card_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:elevation="1dp"
-                android:paddingLeft="7dp"
-                android:paddingTop="7dp"
-                android:text="Modellierung"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:textColor="#FFF"
-                android:textSize="30sp" />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@color/accent" />
-
-            <TextView
-                android:id="@+id/subject_fragment_subject_card_title_percentage"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentTop="true"
-                android:elevation="1dp"
-                android:paddingTop="7dp"
-                android:text="20%"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:textColor="#FFF"
-                android:textSize="30sp" />
-        </RelativeLayout>
+            android:layout_height="2dp"
+            android:layout_alignEnd="@+id/subject_fragment_subject_card_title_percentage"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentStart="false"
+            android:layout_alignRight="@+id/subject_fragment_subject_card_title_percentage"
+            android:layout_below="@+id/subject_fragment_subject_card_title"
+            android:background="@color/accent" />
 
 
         <TextView
             android:id="@+id/subject_fragment_subject_card_prespoints"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_below="@+id/subject_fragment_subject_card_titlelayout"
-            android:paddingLeft="7dp"
-            android:paddingTop="10dp"
+            android:layout_alignLeft="@+id/subject_fragment_subject_card_completed_assignments"
+            android:layout_alignStart="@+id/subject_fragment_subject_card_completed_assignments"
+            android:layout_below="@+id/subject_fragment_subject_card_completed_assignments"
             android:text="3 von 3 Vortragspunkten"
             android:textAppearance="?android:attr/textAppearanceLarge" />
 
         <TextView
-            android:id="@+id/subject_fragment_subject_card_vote_percentage"
+            android:id="@+id/subject_fragment_subject_card_completed_assignments"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:layout_below="@+id/subject_fragment_subject_card_titlelayout"
-            android:paddingLeft="7dp"
-            android:paddingTop="10dp"
-            android:text="88%"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:visibility="gone" />
+            android:layout_below="@+id/subject_fragment_subject_card_title_percentage"
+            android:text="52 votierte Aufgaben"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
 
         <TextView
             android:id="@+id/subject_fragment_subject_card_average_assignments_left"
@@ -86,7 +77,6 @@
             android:layout_alignParentStart="true"
             android:layout_below="@+id/subject_fragment_subject_card_prespoints"
             android:layout_marginBottom="7dp"
-            android:paddingLeft="7dp"
             android:text="Noch durchschnittlich 0,40 Aufgaben pro Übung"
             android:textAppearance="?android:attr/textAppearanceLarge" />
     </RelativeLayout>

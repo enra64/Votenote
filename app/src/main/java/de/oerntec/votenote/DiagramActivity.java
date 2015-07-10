@@ -1,10 +1,10 @@
 package de.oerntec.votenote;
 
-import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
@@ -29,7 +29,7 @@ import de.oerntec.votenote.Database.DBLessons;
 import de.oerntec.votenote.Database.DBSubjects;
 
 
-public class DiagramActivity extends Activity {
+public class DiagramActivity extends AppCompatActivity {
     static DBSubjects groupsDB;
     static DBLessons entriesDB;
     static GraphView graph;

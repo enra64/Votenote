@@ -87,7 +87,6 @@ public class LessonAdapter extends RecyclerView.Adapter<LessonAdapter.LessonHold
 
     private void bindInfoView(View root) {
         TextView title = (TextView) root.findViewById(R.id.subject_fragment_subject_card_title),
-                percentage = (TextView) root.findViewById(R.id.subject_fragment_subject_card_vote_percentage),
                 prespoints = (TextView) root.findViewById(R.id.subject_fragment_subject_card_prespoints),
                 avgLeft = (TextView) root.findViewById(R.id.subject_fragment_subject_card_average_assignments_left),
                 percentageTitle = (TextView) root.findViewById(R.id.subject_fragment_subject_card_title_percentage);

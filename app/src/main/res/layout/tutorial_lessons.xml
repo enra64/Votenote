@@ -8,7 +8,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:drawableLeft="@drawable/ic_action_new_entry"
+        android:drawableLeft="@drawable/ic_button_add"
         android:text="@string/tutorial_lessons_add"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:textColor="@color/primary_text_default_material_dark" />
@@ -16,7 +16,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:drawableLeft="@drawable/ic_action_prespoints"
+        android:drawableLeft="@drawable/ic_button_presentation_points"
         android:text="@string/tutorial_control_prespoints"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:textColor="@color/primary_text_default_material_dark" />
@@ -25,7 +25,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:drawableLeft="@drawable/ic_action_about"
+        android:drawableLeft="@drawable/ic_button_info"
         android:text="@string/tutorial_lessons_about"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:textColor="@color/primary_text_default_material_dark" />
@@ -33,7 +33,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:drawableLeft="@drawable/ic_action_diagram"
+        android:drawableLeft="@drawable/ic_button_diagram"
         android:text="@string/tutorial_lessons_diagram"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:textColor="@color/primary_text_default_material_dark" />

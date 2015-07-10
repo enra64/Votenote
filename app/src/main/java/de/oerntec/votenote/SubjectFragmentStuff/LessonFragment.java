@@ -6,16 +6,14 @@ import android.app.Fragment;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
-import com.cocosw.undobar.UndoBarController;
 
 import de.oerntec.votenote.CardListHelpers.OnItemClickListener;
 import de.oerntec.votenote.CardListHelpers.RecyclerItemClickListener;
@@ -31,7 +29,7 @@ import de.oerntec.votenote.SubjectManagerStuff.SubjectManagementActivity;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class LessonFragment extends Fragment implements UndoBarController.AdvancedUndoListener {
+public class LessonFragment extends Fragment {
     /**
      * The fragment argument representing the section number for this
      * fragment.
@@ -58,6 +56,11 @@ public class LessonFragment extends Fragment implements UndoBarController.Advanc
      * Contains the database id for the displayed fragment/subject
      */
     private int mSubjectId;
+
+    /**
+     * Parent viewgroup
+     */
+    private View mRootView;
 
     /**
      * List containing the vote data
@@ -129,7 +132,7 @@ public class LessonFragment extends Fragment implements UndoBarController.Advanc
                             @Override
                             public boolean canSwipe(int position) {
                                 //nothing can swipe if there is already a lesson to be deleted
-                                return position != 0 && mLessonToDelete == null;
+                                return position != 0;
                             }
 
                             @Override
@@ -168,6 +171,8 @@ public class LessonFragment extends Fragment implements UndoBarController.Advanc
             }
         });
 
+        mRootView = rootView;
+
         return rootView;
     }
 
@@ -175,12 +180,14 @@ public class LessonFragment extends Fragment implements UndoBarController.Advanc
         mLessonToDelete = mLessonDb.getLesson(mSubjectId, lessonId);
         mLessonDb.removeEntry(mSubjectId, lessonId);
         notifyOfChangedDataset();
-        new UndoBarController.UndoBar(getActivity())
-                .message("gelöscht")
-                .style(UndoBarController.UNDOSTYLE)
-                .duration(1800)
-                .listener(this)
-                .show();
+        Snackbar
+                .make(mRootView.findViewById(R.id.subject_fragment_coordinator_layout), "Gelöscht!", Snackbar.LENGTH_LONG)
+                .setAction("UNDO", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        onUndo();
+                    }
+                }).show();
     }
 
     @Override
@@ -190,25 +197,12 @@ public class LessonFragment extends Fragment implements UndoBarController.Advanc
     }
 
     //dont do anything, as we only delete the lesson when the undo bar gets hidden
-    @Override
-    public void onUndo(Parcelable parcelable) {
+    public void onUndo() {
         if (mLessonToDelete != null) {
             mLessonDb.insertLesson(mLessonToDelete);
             //this should be called in the same thread(context? i have no idea),
             //since onUndo is called by a button
             notifyOfChangedDataset();
         }
-        mLessonToDelete = null;
-    }
-
-    @Override
-    public void onHide(Parcelable parcelable) {
-        //re-enable lesson removal
-        mLessonToDelete = null;
-    }
-
-    @Override
-    public void onClear() {
-
     }
 }

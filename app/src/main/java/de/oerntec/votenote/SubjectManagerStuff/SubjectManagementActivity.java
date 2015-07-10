@@ -5,8 +5,8 @@ import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -23,8 +23,6 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.cocosw.undobar.UndoBarController;
-
 import de.oerntec.votenote.CardListHelpers.OnItemClickListener;
 import de.oerntec.votenote.CardListHelpers.RecyclerItemClickListener;
 import de.oerntec.votenote.CardListHelpers.SwipeableRecyclerViewTouchListener;
@@ -35,7 +33,7 @@ import de.oerntec.votenote.ImportExport.XmlImporter;
 import de.oerntec.votenote.R;
 
 @SuppressLint("InflateParams")
-public class SubjectManagementActivity extends AppCompatActivity implements UndoBarController.AdvancedUndoListener {
+public class SubjectManagementActivity extends AppCompatActivity {
     /**
      * Lesson should be added, not changed
      */
@@ -106,6 +104,7 @@ public class SubjectManagementActivity extends AppCompatActivity implements Undo
                     }
                 });
 
+
         //give it a layoutmanage (whatever that is)
         LinearLayoutManager manager = new LinearLayoutManager(this);
         manager.setOrientation(LinearLayoutManager.VERTICAL);
@@ -125,7 +124,7 @@ public class SubjectManagementActivity extends AppCompatActivity implements Undo
         }));
 
         //add listener to fab
-        FloatingActionButton addFab = (FloatingActionButton) findViewById(R.id.subject_fragment_add_fab);
+        FloatingActionButton addFab = (FloatingActionButton) findViewById(R.id.subject_manager_add_fab);
         addFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -138,17 +137,18 @@ public class SubjectManagementActivity extends AppCompatActivity implements Undo
         subjectToBeDeleted = groupsDB.getSubject(lessonId);
         groupsDB.deleteRecord(subjectToBeDeleted.subjectName, lessonId);
         notifyOfChangedDataset();
-        new UndoBarController.UndoBar(this)
-                .message("Übung gelöscht")
-                .style(UndoBarController.UNDOSTYLE)
-                .duration(1800)
-                .listener(this)
-                .show();
+        Snackbar
+                .make(findViewById(R.id.subject_manager_root_layout), "Gelöscht!", Snackbar.LENGTH_LONG)
+                .setAction("UNDO", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        onUndo();
+                    }
+                }).show();
     }
 
     //dont do anything, as we only delete the lesson when the undo bar gets hidden
-    @Override
-    public void onUndo(Parcelable parcelable) {
+    public void onUndo() {
         if (subjectToBeDeleted != null) {
             groupsDB.addGroup(subjectToBeDeleted);
             notifyOfChangedDataset();
@@ -156,17 +156,12 @@ public class SubjectManagementActivity extends AppCompatActivity implements Undo
         subjectToBeDeleted = null;
     }
 
-    @Override
-    public void onHide(Parcelable parcelable) {
+    public void onHide() {
         //remove all entries of the group
         if (subjectToBeDeleted != null)
             entriesDB.deleteAllEntriesForGroup(Integer.valueOf(subjectToBeDeleted.id));
         //re-enable subject removal
         subjectToBeDeleted = null;
-    }
-
-    @Override
-    public void onClear() {
     }
 
     public void notifyOfChangedDataset() {
@@ -291,6 +286,7 @@ public class SubjectManagementActivity extends AppCompatActivity implements Undo
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
             }
+
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
             }
