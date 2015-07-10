@@ -128,7 +128,7 @@ public class SubjectManagementActivity extends Activity implements UndoBarContro
         groupsDB.deleteRecord(subjectToBeDeleted.subjectName, lessonId);
         notifyOfChangedDataset();
         new UndoBarController.UndoBar(this)
-                .message("Übung gelöscht")
+                .message("Ãœbung gelÃ¶scht")
                 .style(UndoBarController.UNDOSTYLE)
                 .duration(1800)
                 .listener(this)
@@ -184,7 +184,7 @@ public class SubjectManagementActivity extends Activity implements UndoBarContro
         final String finalOldName = nameHint;
 
         //inflate view with seekbar and name
-        final View input = this.getLayoutInflater().inflate(R.layout.groupmanager_dialog_groupsettings, null);
+        final View input = this.getLayoutInflater().inflate(R.layout.subject_manager_dialog_groupsettings, null);
         final EditText nameInput = (EditText) input.findViewById(R.id.groupmanager_groupsettings_edit_name);
 
         final TextView voteInfo = (TextView) input.findViewById(R.id.groupmanager_groupsettings_text_min_votierungs);

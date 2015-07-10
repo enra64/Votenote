@@ -79,7 +79,6 @@ public class LessonFragment extends Fragment implements UndoBarController.Advanc
     public void notifyOfChangedDataset() {
         ((LessonAdapter) mLessonList.getAdapter()).getCursorAdapter().changeCursor(entryDB.getAllLessonsForSubject(subjectId));
         mLessonList.getAdapter().notifyDataSetChanged();
-        mLessonList.notify();
         Log.i("subfrag", "reloaded");
     }
 

@@ -2,7 +2,6 @@ package de.oerntec.votenote;
 
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.FragmentManager;
 import android.content.Intent;
@@ -10,20 +9,20 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import de.oerntec.votenote.Database.DBLessons;
-import de.oerntec.votenote.Database.DBSubjects;
-import de.oerntec.votenote.Database.Subject;
-import de.oerntec.votenote.SubjectFragmentStuff.LessonFragment;
-
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
+import de.oerntec.votenote.Database.DBLessons;
+import de.oerntec.votenote.Database.DBSubjects;
+import de.oerntec.votenote.Database.Subject;
 import de.oerntec.votenote.ImportExport.Writer;
+import de.oerntec.votenote.SubjectFragmentStuff.LessonFragment;
 
 /*
 * VERSION HISTORY
@@ -50,7 +49,7 @@ import de.oerntec.votenote.ImportExport.Writer;
 */
 
 @SuppressLint("InflateParams")
-public class MainActivity extends Activity implements NavigationDrawerFragment.NavigationDrawerCallbacks {
+public class MainActivity extends AppCompatActivity implements NavigationDrawerFragment.NavigationDrawerCallbacks {
     /**
      * Request code for getting notified when the first subject has been added
      */

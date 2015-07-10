@@ -34,7 +34,7 @@ public class LessonAdapter extends RecyclerView.Adapter<LessonAdapter.LessonHold
             @Override
             public View newView(Context context, Cursor cursor, ViewGroup parent) {
                 LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-                return inflater.inflate(R.layout.subject_fragment_lesson_card, parent, false);
+                return inflater.inflate(R.layout.subject_fragment_card_lesson, parent, false);
             }
 
             @Override
@@ -101,7 +101,7 @@ public class LessonAdapter extends RecyclerView.Adapter<LessonAdapter.LessonHold
 
     private View createInfoView(ViewGroup parent) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        return inflater.inflate(R.layout.subject_fragment_subject_card, parent, false);
+        return inflater.inflate(R.layout.subject_fragment_card_subject_info, parent, false);
     }
 
     @Override

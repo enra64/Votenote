@@ -40,7 +40,7 @@
             android:layout_above="@+id/subject_manager_subject_card_needed_percentage"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
-            android:background="#CCC" />
+            android:background="@color/accent" />
 
         <TextView
             android:id="@+id/subject_manager_subject_card_needed_percentage"

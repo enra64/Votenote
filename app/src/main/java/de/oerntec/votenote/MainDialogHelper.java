@@ -57,7 +57,7 @@ public class MainDialogHelper {
         }
 
         //inflate rootView
-        final View rootView = mActivity.getLayoutInflater().inflate(R.layout.mainfragment_dialog_newentry, null);
+        final View rootView = mActivity.getLayoutInflater().inflate(R.layout.subject_fragment_dialog_newentry, null);
 
         //find all necessary views
         final TextView infoView = (TextView) rootView.findViewById(R.id.infoTextView);
@@ -130,7 +130,7 @@ public class MainDialogHelper {
         //db access
         final DBSubjects groupsDB = DBSubjects.getInstance();
 
-        final View inputView = activity.getLayoutInflater().inflate(R.layout.mainfragment_dialog_prespoints, null);
+        final View inputView = activity.getLayoutInflater().inflate(R.layout.subject_fragment_dialog_presentation_points, null);
         final NumberPicker presPointPicker = (NumberPicker) inputView.findViewById(R.id.mainfragment_dialog_prespoints_picker);
 
         presPointPicker.setMinValue(0);
