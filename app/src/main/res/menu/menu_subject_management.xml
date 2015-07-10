@@ -4,13 +4,6 @@
     tools:context="de.oerntec.votenote.SubjectManagerStuff.SubjectManagementActivity">
 
     <item
-        android:id="@+id/action_add_group"
-        android:icon="@drawable/ic_action_new_entry"
-        android:showAsAction="always"
-        android:title="@string/action_new_lesson"
-        app:showAsAction="always" />
-
-    <item
         android:id="@+id/action_read_from_storage"
         android:icon="@drawable/ic_action_import"
         android:showAsAction="ifRoom"

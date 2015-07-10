@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -37,26 +38,26 @@ public class LessonFragment extends Fragment implements UndoBarController.Advanc
      */
     private static final String ARG_SECTION_NUMBER = "section_number";
 
-    private static Lesson lessonToDelete = null;
+    private static Lesson mLessonToDelete = null;
 
     /**
      * DB Singleton instance
      */
-    private static DBSubjects groupDB = DBSubjects.getInstance();
+    private static DBSubjects mSubjectDb = DBSubjects.getInstance();
     /**
      * DB Singleton instance
      */
-    private static DBLessons entryDB = DBLessons.getInstance();
+    private static DBLessons mLessonDb = DBLessons.getInstance();
 
     /**
      * Save the default text color, because apparently there is no constant for that.
      */
-    public SwipeableRecyclerViewTouchListener swipeListener;
+    public SwipeableRecyclerViewTouchListener mSwipeListener;
 
     /**
      * Contains the database id for the displayed fragment/subject
      */
-    private int subjectId;
+    private int mSubjectId;
 
     /**
      * List containing the vote data
@@ -77,7 +78,7 @@ public class LessonFragment extends Fragment implements UndoBarController.Advanc
     }
 
     public void notifyOfChangedDataset() {
-        ((LessonAdapter) mLessonList.getAdapter()).getCursorAdapter().changeCursor(entryDB.getAllLessonsForSubject(subjectId));
+        ((LessonAdapter) mLessonList.getAdapter()).getCursorAdapter().changeCursor(mLessonDb.getAllLessonsForSubject(mSubjectId));
         mLessonList.getAdapter().notifyDataSetChanged();
         Log.i("subfrag", "reloaded");
     }
@@ -88,11 +89,11 @@ public class LessonFragment extends Fragment implements UndoBarController.Advanc
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         //translate from position in drawer to db group id
-        subjectId = groupDB.translatePositionToID(getArguments().getInt(ARG_SECTION_NUMBER));
+        mSubjectId = mSubjectDb.translatePositionToID(getArguments().getInt(ARG_SECTION_NUMBER));
 
         //find and inflate everything
-        View rootView = inflater.inflate(R.layout.mainfragment, container, false);
-        mLessonList = (RecyclerView) rootView.findViewById(R.id.mainfragment_list_cardlist);
+        View rootView = inflater.inflate(R.layout.subject_fragment, container, false);
+        mLessonList = (RecyclerView) rootView.findViewById(R.id.subject_fragment_recyclerview);
 
         //config the recyclerview
         mLessonList.setHasFixedSize(true);
@@ -103,7 +104,7 @@ public class LessonFragment extends Fragment implements UndoBarController.Advanc
         mLessonList.setLayoutManager(manager);
 
         //if translatedSection is -1, no group has been added yet
-        if (subjectId == DBSubjects.NO_GROUPS_EXIST) {
+        if (mSubjectId == DBSubjects.NO_GROUPS_EXIST) {
             Intent intent = new Intent(getActivity(), SubjectManagementActivity.class);
             intent.putExtra("firstGroup", true);
             getActivity().startActivityForResult(intent, MainActivity.ADD_FIRST_SUBJECT_REQUEST);
@@ -113,22 +114,22 @@ public class LessonFragment extends Fragment implements UndoBarController.Advanc
         /*
         DISPLAY GROUP INFO
          */
-        String currentGroupName = groupDB.getGroupName(subjectId);
-        Log.i("Main activity", "Loading Group, DB says ID" + subjectId + ", Name " + currentGroupName);
+        String currentGroupName = mSubjectDb.getGroupName(mSubjectId);
+        Log.i("Main activity", "Loading Group, DB says ID" + mSubjectId + ", Name " + currentGroupName);
 
         //LISTVIEW FOR uebung instances
-        Cursor allEntryCursor = entryDB.getAllLessonsForSubject(subjectId);
+        Cursor allEntryCursor = mLessonDb.getAllLessonsForSubject(mSubjectId);
 
         if (allEntryCursor.getCount() == 0)
-            Log.e("Main Listview", "Received Empty allEntryCursor for group " + currentGroupName + " with id " + subjectId);
+            Log.e("Main Listview", "Received Empty allEntryCursor for group " + currentGroupName + " with id " + mSubjectId);
 
-        swipeListener =
+        mSwipeListener =
                 new SwipeableRecyclerViewTouchListener(mLessonList,
                         new SwipeableRecyclerViewTouchListener.SwipeListener() {
                             @Override
                             public boolean canSwipe(int position) {
                                 //nothing can swipe if there is already a lesson to be deleted
-                                return position != 0 && lessonToDelete == null;
+                                return position != 0 && mLessonToDelete == null;
                             }
 
                             @Override
@@ -145,25 +146,34 @@ public class LessonFragment extends Fragment implements UndoBarController.Advanc
                         });
 
         //set adapter
-        mLessonList.setAdapter(new LessonAdapter(getActivity(), allEntryCursor, subjectId, swipeListener));
+        mLessonList.setAdapter(new LessonAdapter(getActivity(), allEntryCursor, mSubjectId, mSwipeListener));
 
-        mLessonList.addOnItemTouchListener(swipeListener);
+        mLessonList.addOnItemTouchListener(mSwipeListener);
 
         mLessonList.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), mLessonList, new OnItemClickListener() {
             public void onItemClick(View view, int position) {
-                MainDialogHelper.showChangeLessonDialog((MainActivity) getActivity(), subjectId, (Integer) view.getTag());
+                MainDialogHelper.showChangeLessonDialog((MainActivity) getActivity(), mSubjectId, (Integer) view.getTag());
             }
 
             public void onItemLongClick(final View view, int position) {
             }
         }));
 
+        //add listener to fab
+        FloatingActionButton addFab = (FloatingActionButton) rootView.findViewById(R.id.subject_fragment_add_fab);
+        addFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MainDialogHelper.showAddLessonDialog((MainActivity) getActivity(), mSubjectId);
+            }
+        });
+
         return rootView;
     }
 
     private void showUndoSnackBar(final int lessonId) {
-        lessonToDelete = entryDB.getLesson(subjectId, lessonId);
-        entryDB.removeEntry(subjectId, lessonId);
+        mLessonToDelete = mLessonDb.getLesson(mSubjectId, lessonId);
+        mLessonDb.removeEntry(mSubjectId, lessonId);
         notifyOfChangedDataset();
         new UndoBarController.UndoBar(getActivity())
                 .message("gelöscht")
@@ -182,19 +192,19 @@ public class LessonFragment extends Fragment implements UndoBarController.Advanc
     //dont do anything, as we only delete the lesson when the undo bar gets hidden
     @Override
     public void onUndo(Parcelable parcelable) {
-        if (lessonToDelete != null) {
-            entryDB.insertLesson(lessonToDelete);
+        if (mLessonToDelete != null) {
+            mLessonDb.insertLesson(mLessonToDelete);
             //this should be called in the same thread(context? i have no idea),
             //since onUndo is called by a button
             notifyOfChangedDataset();
         }
-        lessonToDelete = null;
+        mLessonToDelete = null;
     }
 
     @Override
     public void onHide(Parcelable parcelable) {
         //re-enable lesson removal
-        lessonToDelete = null;
+        mLessonToDelete = null;
     }
 
     @Override

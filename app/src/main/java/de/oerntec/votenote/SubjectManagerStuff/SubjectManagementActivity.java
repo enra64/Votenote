@@ -1,12 +1,13 @@
 package de.oerntec.votenote.SubjectManagerStuff;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
@@ -33,7 +34,7 @@ import de.oerntec.votenote.ImportExport.XmlImporter;
 import de.oerntec.votenote.R;
 
 @SuppressLint("InflateParams")
-public class SubjectManagementActivity extends Activity implements UndoBarController.AdvancedUndoListener {
+public class SubjectManagementActivity extends AppCompatActivity implements UndoBarController.AdvancedUndoListener {
     /**
      * Lesson should be added, not changed
      */
@@ -121,6 +122,15 @@ public class SubjectManagementActivity extends Activity implements UndoBarContro
             public void onItemLongClick(final View view, int position) {
             }
         }));
+
+        //add listener to fab
+        FloatingActionButton addFab = (FloatingActionButton) findViewById(R.id.subject_fragment_add_fab);
+        addFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showLessonDialog(ADD_SUBJECT_CODE);
+            }
+        });
     }
 
     private void showUndoSnackBar(final int lessonId) {
@@ -156,7 +166,6 @@ public class SubjectManagementActivity extends Activity implements UndoBarContro
 
     @Override
     public void onClear() {
-
     }
 
     public void notifyOfChangedDataset() {
@@ -370,9 +379,6 @@ public class SubjectManagementActivity extends Activity implements UndoBarContro
                 return true;
             case R.id.action_read_from_storage:
                 XmlImporter.importDialog(this);
-                return true;
-            case R.id.action_add_group:
-                showLessonDialog(ADD_SUBJECT_CODE);
                 return true;
         }
         return super.onOptionsItemSelected(item);

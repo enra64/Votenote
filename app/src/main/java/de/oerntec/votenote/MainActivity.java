@@ -246,9 +246,6 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         final int lessonId = mCurrentSelectedId;
 
         switch (item.getItemId()) {
-            case R.id.action_add_entry:
-                MainDialogHelper.showAddLessonDialog(this, lessonId);
-                return true;
             case R.id.action_show_all_info:
                 MainDialogHelper.showAllInfoDialog(this, lessonId);
                 //handy-dandy exception thrower for exception handling testing
