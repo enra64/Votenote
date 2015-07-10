@@ -18,6 +18,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Scanner;
 
+import de.oerntec.votenote.Preferences.PreferencesActivity;
+
 public class VersionCheckHelper {
     private static Activity mResultCall;
 
@@ -35,15 +37,15 @@ public class VersionCheckHelper {
         checkVersion(c, true);
     }
 
-    public static boolean isOnline(Activity context) {
+    public static boolean isOnline(Context context) {
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo netInfo = cm.getActiveNetworkInfo();
         return netInfo != null && netInfo.isConnectedOrConnecting();
     }
 
     private static void onResult(String result) {
-        if (mResultCall instanceof SettingsActivity)
-            ((SettingsActivity) mResultCall).onVersionResult(result);
+        if (mResultCall instanceof PreferencesActivity)
+            ((PreferencesActivity) mResultCall).onVersionResult(result);
         if (mResultCall instanceof MainActivity)
             ((MainActivity) mResultCall).onVersionResult(result);
 

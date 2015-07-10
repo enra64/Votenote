@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="@string/pref_general_settings">
+
+        <PreferenceScreen android:title="@string/pres_control_subjects">
+            <intent
+                android:targetClass="de.oerntec.votenote.SubjectManagerStuff.SubjectManagementActivity"
+                android:targetPackage="de.oerntec.votenote" />
+        </PreferenceScreen>
+
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="reverse_lesson_sort"
+            android:summary="@string/pref_lesson_sort"
+            android:title="@string/pref_lesson_sort_title" />
+
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="open_drawer_on_start"
+            android:summary="@string/pref_drawer_start_description"
+            android:title="@string/pref_drawer_start_title" />
+
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="enable_logging"
+            android:summary="@string/pref_logging_sum"
+            android:title="Logging" />
+
+        <de.oerntec.votenote.Preferences.DeletionConfirmationPreference
+            android:key="delete_entries"
+            android:title="@string/pref_delete_all_entries" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/pref_imexport">
+
+        <de.oerntec.votenote.Preferences.CustomActionPreference
+            android:key="csv_export"
+            android:title="@string/pref_csv_export" />
+        <de.oerntec.votenote.Preferences.CustomActionPreference
+            android:key="xml_export"
+            android:title="@string/pref_xml_export" />
+        <de.oerntec.votenote.Preferences.CustomActionPreference
+            android:key="xml_import"
+            android:title="@string/pref_xml_import" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/pref_updates">
+
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="check_version_at_start"
+            android:summary="@string/pref_update_check_summary"
+            android:title="@string/pref_update_check_title" />
+
+        <de.oerntec.votenote.Preferences.CustomActionPreference
+            android:key="version_check"
+            android:title="@string/pref_check_updates_now" />
+
+        <Preference
+            android:key="version_key"
+            android:title="Version 1.2.1" />
+
+    </PreferenceCategory>
+</PreferenceScreen>

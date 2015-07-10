@@ -1,0 +1,87 @@
+package de.oerntec.votenote.Preferences;
+
+import android.app.AlertDialog;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+import android.preference.PreferenceFragment;
+import android.support.v7.app.AppCompatActivity;
+
+import de.oerntec.votenote.Database.DBLessons;
+import de.oerntec.votenote.Database.DBSubjects;
+import de.oerntec.votenote.R;
+
+
+public class PreferencesActivity extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // Display the fragment as the main content.
+        FragmentManager mFragmentManager = getFragmentManager();
+        FragmentTransaction mFragmentTransaction = mFragmentManager.beginTransaction();
+        mFragmentTransaction.replace(android.R.id.content, new PrefsFragment());
+        mFragmentTransaction.commit();
+    }
+
+    public void onVersionResult(String result) {
+        AlertDialog.Builder b = new AlertDialog.Builder(this);
+        b.setTitle(this.getString(R.string.versio_check_title));
+        String message;
+        boolean isNewest = "1.2.1".equals(result);
+        if (isNewest)
+            message = this.getString(R.string.version_check_success_message);
+        else
+            message = this.getString(R.string.version_check_fail_message);
+        b.setMessage(message);
+        b.setPositiveButton(this.getString(R.string.dialog_button_ok), null);
+        if (!isNewest) {
+            b.setNeutralButton("Download", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.dropbox.com/s/9a4kpufy1mcalpf/VoteNote_latest.apk?dl=1"));
+                    startActivity(browserIntent);
+                }
+            });
+        }
+        b.show();
+    }
+
+    protected void showDeletionConfirmationDialog() {
+        AlertDialog.Builder b = new AlertDialog.Builder(this);
+        b.setTitle(getString(R.string.deletion_confirmation_title));
+        b.setMessage(getString(R.string.deletion_confirmation_message));
+        b.setPositiveButton(getString(R.string.dialog_button_ok), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                DBLessons.getInstance().dropData();
+                DBSubjects.getInstance().dropData();
+            }
+        });
+        b.setNegativeButton(getString(R.string.dialog_button_abort), null);
+        b.show();
+    }
+
+    public static class PrefsFragment extends PreferenceFragment {
+
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+
+            // Load the preferences from an XML resource
+            addPreferencesFromResource(R.xml.new_preferences);
+            /*
+            findPreference("xml_export").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    XmlExporter.exportDialog(PreferencesActivity.this);
+                    return true;
+                }
+            });
+            */
+        }
+    }
+}

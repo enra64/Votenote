@@ -1,6 +1,6 @@
 package de.oerntec.votenote.ImportExport;
 
-import android.app.Activity;
+import android.content.Context;
 import android.database.Cursor;
 import android.widget.Toast;
 
@@ -13,7 +13,7 @@ import de.oerntec.votenote.Database.Subject;
 import de.oerntec.votenote.R;
 
 public class CsvExporter {
-    public static FileDialog exportDialog(final Activity activity) {
+    public static FileDialog exportDialog(final Context activity) {
         FileDialog fileOpenDialog = new FileDialog(
                 activity,
                 "FileSave",
@@ -30,7 +30,7 @@ public class CsvExporter {
         return fileOpenDialog;
     }
 
-    private static void export(final String path, final Activity activity) {
+    private static void export(final String path, final Context activity) {
         //get database access
         final DBSubjects groupsDB = DBSubjects.getInstance();
         final DBLessons entryDB = DBLessons.getInstance();

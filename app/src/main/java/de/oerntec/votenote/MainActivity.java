@@ -22,6 +22,7 @@ import de.oerntec.votenote.Database.DBLessons;
 import de.oerntec.votenote.Database.DBSubjects;
 import de.oerntec.votenote.Database.Subject;
 import de.oerntec.votenote.ImportExport.Writer;
+import de.oerntec.votenote.Preferences.PreferencesActivity;
 import de.oerntec.votenote.SubjectFragmentStuff.LessonFragment;
 
 /*
@@ -255,7 +256,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
                 MainDialogHelper.showPresentationPointDialog(lessonId, this);
                 return true;
             case R.id.action_settings:
-                startActivity(new Intent(this, SettingsActivity.class));
+                startActivity(new Intent(this, PreferencesActivity.class));
                 return true;
             case R.id.action_show_diagram:
                 //only show diagram if more than 0 entries exist

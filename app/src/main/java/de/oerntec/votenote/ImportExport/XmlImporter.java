@@ -1,7 +1,7 @@
 package de.oerntec.votenote.ImportExport;
 
-import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.util.Log;
 import android.util.Xml;
@@ -25,7 +25,7 @@ import de.oerntec.votenote.SubjectManagerStuff.SubjectManagementActivity;
 public class XmlImporter {
     private static boolean success;
 
-    public static void importDialog(final Activity activity) {
+    public static void importDialog(final Context activity) {
         //if there already are subjects, ask the user whether he truly wants to delete everything
         if (DBSubjects.getInstance().getCount() > 0) {
             AlertDialog.Builder b = new AlertDialog.Builder(activity);
@@ -43,7 +43,7 @@ public class XmlImporter {
             startDialog(activity);
     }
 
-    private static void startDialog(final Activity activity) {
+    private static void startDialog(final Context activity) {
         FileDialog fileOpenDialog = new FileDialog(
                 activity,
                 "FileOpen..",
