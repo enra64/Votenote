@@ -5,7 +5,7 @@
 
     <item
         android:id="@+id/action_read_from_storage"
-        android:icon="@drawable/ic_action_import"
+        android:icon="@drawable/ic_button_import"
         android:showAsAction="ifRoom"
         android:title="@string/action_import"
         app:showAsAction="ifRoom" />

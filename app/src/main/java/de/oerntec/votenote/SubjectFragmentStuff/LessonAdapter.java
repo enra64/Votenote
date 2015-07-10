@@ -10,6 +10,7 @@ import android.widget.CursorAdapter;
 import android.widget.TextView;
 
 import de.oerntec.votenote.CardListHelpers.SwipeableRecyclerViewTouchListener;
+import de.oerntec.votenote.Database.DBLessons;
 import de.oerntec.votenote.Database.DBSubjects;
 import de.oerntec.votenote.R;
 
@@ -89,6 +90,7 @@ public class LessonAdapter extends RecyclerView.Adapter<LessonAdapter.LessonHold
         TextView title = (TextView) root.findViewById(R.id.subject_fragment_subject_card_title),
                 prespoints = (TextView) root.findViewById(R.id.subject_fragment_subject_card_prespoints),
                 avgLeft = (TextView) root.findViewById(R.id.subject_fragment_subject_card_average_assignments_left),
+                votedAssignment = (TextView) root.findViewById(R.id.subject_fragment_subject_card_completed_assignments),
                 percentageTitle = (TextView) root.findViewById(R.id.subject_fragment_subject_card_title_percentage);
 
         //calc and set values
@@ -96,6 +98,7 @@ public class LessonAdapter extends RecyclerView.Adapter<LessonAdapter.LessonHold
         SubjectInfoCalculator.setAverageNeededAssignments(mContext, avgLeft, mSubjectId);
         SubjectInfoCalculator.setCurrentPresentationPointStatus(mContext, prespoints, mSubjectId);
         SubjectInfoCalculator.setVoteAverage(mContext, percentageTitle, mSubjectId);
+        votedAssignment.setText(DBLessons.getInstance().getCompletedAssignmentCount(mSubjectId) + " " + mContext.getString(R.string.voted_assignments_info_card));
     }
 
     private View createInfoView(ViewGroup parent) {

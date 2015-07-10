@@ -138,7 +138,7 @@ public class SubjectManagementActivity extends AppCompatActivity {
         groupsDB.deleteRecord(subjectToBeDeleted.subjectName, lessonId);
         notifyOfChangedDataset();
         Snackbar
-                .make(findViewById(R.id.subject_manager_root_layout), "Gelöscht!", Snackbar.LENGTH_LONG)
+                .make(findViewById(R.id.subject_manager_coordinator_layout), "Gelöscht!", Snackbar.LENGTH_LONG)
                 .setAction("UNDO", new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {

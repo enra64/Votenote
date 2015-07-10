@@ -155,7 +155,8 @@ public class LessonFragment extends Fragment {
 
         mLessonList.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), mLessonList, new OnItemClickListener() {
             public void onItemClick(View view, int position) {
-                MainDialogHelper.showChangeLessonDialog((MainActivity) getActivity(), mSubjectId, (Integer) view.getTag());
+                if (position != 0)
+                    MainDialogHelper.showChangeLessonDialog((MainActivity) getActivity(), mSubjectId, (Integer) view.getTag());
             }
 
             public void onItemLongClick(final View view, int position) {

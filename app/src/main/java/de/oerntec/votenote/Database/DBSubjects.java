@@ -127,6 +127,9 @@ public class DBSubjects {
         return translatedSection;
     }
 
+    /**
+     * returns number of subjects
+     */
     public int getCount() {
         Cursor c = getAllGroupNames();
         int val = c.getCount();
