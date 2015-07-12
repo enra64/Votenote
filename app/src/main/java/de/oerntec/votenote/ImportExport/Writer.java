@@ -35,6 +35,7 @@ public class Writer {
     public static void appendLog(String text) {
         text = getDateAndTimeNow() + '\n' + text;
         File directory = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/Votenote/");
+        //noinspection ResultOfMethodCallIgnored
         directory.mkdirs();
         File logFile = new File(directory, "log.txt");
         try {

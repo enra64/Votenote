@@ -30,15 +30,16 @@ import de.oerntec.votenote.Database.DBSubjects;
 
 
 public class DiagramActivity extends AppCompatActivity {
-    static DBSubjects groupsDB;
-    static DBLessons entriesDB;
-    static GraphView graph;
-    Random r;
-    int databaseID, positionID;
-    Map<Integer, LineGraphSeries<DataPoint>> lineGraphMap;
-    int[] colorArray;
-    int colorStackPointer = 0;
-    boolean[] enabledArray;
+    private static DBSubjects groupsDB;
+    private static DBLessons entriesDB;
+    private static GraphView graph;
+    private Random r;
+    private int databaseID;
+    private int positionID;
+    private Map<Integer, LineGraphSeries<DataPoint>> lineGraphMap;
+    private int[] colorArray;
+    private int colorStackPointer = 0;
+    private boolean[] enabledArray;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

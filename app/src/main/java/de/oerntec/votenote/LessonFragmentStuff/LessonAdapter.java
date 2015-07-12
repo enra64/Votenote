@@ -1,4 +1,4 @@
-package de.oerntec.votenote.SubjectFragmentStuff;
+package de.oerntec.votenote.LessonFragmentStuff;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 import android.widget.CursorAdapter;
 import android.widget.TextView;
 
-import de.oerntec.votenote.CardListHelpers.SwipeableRecyclerViewTouchListener;
 import de.oerntec.votenote.Database.DBLessons;
 import de.oerntec.votenote.Database.DBSubjects;
 import de.oerntec.votenote.R;
@@ -24,14 +23,15 @@ public class LessonAdapter extends RecyclerView.Adapter<LessonAdapter.LessonHold
     // for us
     private CursorAdapter mCursorAdapter;
     private Context mContext;
-    private int mSubjectId;
+    private int mSubjectId, mLessonCountBeforeRefresh = -1;
+    private boolean mItemAdded = false;
 
-    public LessonAdapter(Context context, Cursor c, int subjectId, SwipeableRecyclerViewTouchListener SwipeListener) {
+    public LessonAdapter(Context context, Cursor cursor, int subjectId) {
         mContext = context;
         mSubjectId = subjectId;
 
         //basically the old lesson adapter
-        mCursorAdapter = new CursorAdapter(mContext, c, 0) {
+        mCursorAdapter = new CursorAdapter(mContext, cursor, 0) {
             @Override
             public View newView(Context context, Cursor cursor, ViewGroup parent) {
                 LayoutInflater inflater = LayoutInflater.from(parent.getContext());
@@ -51,7 +51,7 @@ public class LessonAdapter extends RecyclerView.Adapter<LessonAdapter.LessonHold
                 String voteString = " " + (Integer.valueOf(myVote) < 2 ? context.getString(R.string.subject_fragment_singular_vote)
                         : context.getString(R.string.main_dialog_lesson_votes));
 
-                //set tag for later identification avoiding all
+                //tag for identification without mistakes
                 view.setTag(Integer.valueOf(lessonIndex));
 
                 //set texts
@@ -59,17 +59,26 @@ public class LessonAdapter extends RecyclerView.Adapter<LessonAdapter.LessonHold
                 lower.setText(lessonIndex + context.getString(R.string.main_x_th_lesson));
             }
         };
+
+        mLessonCountBeforeRefresh = cursor.getCount();
     }
 
     public CursorAdapter getCursorAdapter() {
+        mLessonCountBeforeRefresh = mCursorAdapter.getCursor().getCount();
         return mCursorAdapter;
+    }
+
+    /**
+     * Opposed to getItemCount, this returns _only_ the number of lessons, ignoring the infoview
+     */
+    private int getLessonCount() {
+        return mCursorAdapter.getCount();
     }
 
     @Override
     public int getItemCount() {
         return mCursorAdapter.getCount() + 1;
     }
-
 
     @Override
     public void onBindViewHolder(LessonHolder holder, int position) {
@@ -84,6 +93,18 @@ public class LessonAdapter extends RecyclerView.Adapter<LessonAdapter.LessonHold
         mCursorAdapter.getCursor().moveToPosition(position);
         // Passing the binding operation to cursor loader
         mCursorAdapter.bindView(holder.itemView, mContext, mCursorAdapter.getCursor());
+        //setAnimation(holder.itemView, position);
+        notifyAnimator(position);
+    }
+
+    private void notifyAnimator(int position) {
+        if (mItemAdded) {
+            mItemAdded = false;
+        }
+    }
+
+    public void onNotified(boolean itemHasBeenAdded) {
+        mItemAdded = itemHasBeenAdded;
     }
 
     private void bindInfoView(View root) {

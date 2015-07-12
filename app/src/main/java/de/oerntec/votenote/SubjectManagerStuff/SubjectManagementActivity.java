@@ -148,7 +148,7 @@ public class SubjectManagementActivity extends AppCompatActivity {
     }
 
     //dont do anything, as we only delete the lesson when the undo bar gets hidden
-    public void onUndo() {
+    private void onUndo() {
         if (subjectToBeDeleted != null) {
             groupsDB.addGroup(subjectToBeDeleted);
             notifyOfChangedDataset();

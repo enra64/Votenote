@@ -1,4 +1,4 @@
-package de.oerntec.votenote.SubjectFragmentStuff;
+package de.oerntec.votenote.LessonFragmentStuff;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -10,14 +10,14 @@ import de.oerntec.votenote.Database.DBLessons;
 import de.oerntec.votenote.Database.DBSubjects;
 import de.oerntec.votenote.R;
 
-public class SubjectInfoCalculator {
+class SubjectInfoCalculator {
     private static DBSubjects groupDB = DBSubjects.getInstance();
     private static DBLessons entryDB = DBLessons.getInstance();
 
     /**
      * Write the presentation point status to the textview
      */
-    protected static void setCurrentPresentationPointStatus(Context context, TextView presentationPointsView, int subjectId) {
+    static void setCurrentPresentationPointStatus(Context context, TextView presentationPointsView, int subjectId) {
         int presentationPoints = groupDB.getPresPoints(subjectId);
         int minimumPresentationPoints = groupDB.getWantedPresPoints(subjectId);
 
@@ -33,7 +33,7 @@ public class SubjectInfoCalculator {
     /**
      * Sets how many Assignments have to be voted for to achieve the set minimum voting.
      */
-    protected static void setAverageNeededAssignments(Context context, TextView averageNeededVotesView, int subjectId) {
+    static void setAverageNeededAssignments(Context context, TextView averageNeededVotesView, int subjectId) {
         float scheduledMaximumAssignments = groupDB.getScheduledWork(subjectId);
         float numberOfNeededAssignments = (scheduledMaximumAssignments * (float) groupDB.getMinVote(subjectId)) / (float) 100;
         float numberOfVotedAssignments = entryDB.getCompletedAssignmentCount(subjectId);
@@ -66,7 +66,7 @@ public class SubjectInfoCalculator {
      * @param forSection the subject id
      * @return the average vote
      */
-    protected static float calculateAverageVotierung(int forSection) {
+    private static float calculateAverageVotierung(int forSection) {
         //get avg cursor
         Cursor avgCursor = entryDB.getAllLessonsForSubject(forSection);
         int maxVoteCount = 0, myVoteCount = 0;
@@ -85,7 +85,7 @@ public class SubjectInfoCalculator {
     /**
      * Set the current average vote
      */
-    protected static void setVoteAverage(Context context, TextView averageVoteView, int subjectId) {
+    static void setVoteAverage(Context context, TextView averageVoteView, int subjectId) {
         float average = calculateAverageVotierung(subjectId);
 
         //no votes have been given

@@ -127,7 +127,7 @@ public class SwipeableRecyclerViewTouchListener implements RecyclerView.OnItemTo
      *
      * @param enabled Whether or not to watch for gestures.
      */
-    public void setEnabled(boolean enabled) {
+    private void setEnabled(boolean enabled) {
         mPaused = !enabled;
     }
 

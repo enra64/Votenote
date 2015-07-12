@@ -88,11 +88,11 @@ public class MainDialogHelper {
                         if (myVote.getValue() <= maxVote.getValue()) {
                             //decide whether to add an entry or change an existing one
                             if (lessonID == ADD_LESSON_CODE)
-                                entryDB.addLesson(groupID, maxVote.getValue(), myVote.getValue());
+                                entryDB.addLessonAtEnd(groupID, maxVote.getValue(), myVote.getValue());
                             else
                                 entryDB.changeLesson(groupID, lessonID, maxVote.getValue(), myVote.getValue());
-                            //reload current fragment
-                            mActivity.notifyCurrentFragment();
+                            //reload current fragment. if lessonId == add_lesson_code, add parameter is true
+                            mActivity.notifyCurrentFragment(lessonID == ADD_LESSON_CODE);
                         } else
                             Toast.makeText(mActivity, mActivity.getString(R.string.main_dialog_lesson_voted_too_much), Toast.LENGTH_SHORT).show();
                     }
@@ -147,7 +147,7 @@ public class MainDialogHelper {
                         //write new prespoint count to db
                         groupsDB.setPresPoints(dataBaseId, presPointPicker.getValue());
                         //reload fragment
-                        activity.notifyCurrentFragment();
+                        activity.notifyCurrentFragment(false);
                     }
                 }).setNegativeButton(activity.getString(R.string.dialog_button_abort), null);
         b.setTitle(activity.getString(R.string.main_dialog_pres_title));

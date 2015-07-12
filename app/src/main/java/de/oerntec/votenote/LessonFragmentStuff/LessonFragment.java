@@ -1,4 +1,4 @@
-package de.oerntec.votenote.SubjectFragmentStuff;
+package de.oerntec.votenote.LessonFragmentStuff;
 
 
 import android.app.Activity;
@@ -25,6 +25,7 @@ import de.oerntec.votenote.MainActivity;
 import de.oerntec.votenote.MainDialogHelper;
 import de.oerntec.votenote.R;
 import de.oerntec.votenote.SubjectManagerStuff.SubjectManagementActivity;
+import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -50,7 +51,7 @@ public class LessonFragment extends Fragment {
     /**
      * Save the default text color, because apparently there is no constant for that.
      */
-    public SwipeableRecyclerViewTouchListener mSwipeListener;
+    private SwipeableRecyclerViewTouchListener mSwipeListener;
 
     /**
      * Contains the database id for the displayed fragment/subject
@@ -80,7 +81,8 @@ public class LessonFragment extends Fragment {
         return fragment;
     }
 
-    public void notifyOfChangedDataset() {
+    public void notifyOfChangedDataset(boolean add) {
+        ((LessonAdapter) mLessonList.getAdapter()).onNotified(add);
         ((LessonAdapter) mLessonList.getAdapter()).getCursorAdapter().changeCursor(mLessonDb.getAllLessonsForSubject(mSubjectId));
         mLessonList.getAdapter().notifyDataSetChanged();
         Log.i("subfrag", "reloaded");
@@ -101,10 +103,12 @@ public class LessonFragment extends Fragment {
         //config the recyclerview
         mLessonList.setHasFixedSize(true);
 
-        //give it a layoutmanage (whatever that is)
+
+        //give it a layout manager (whatever that is)
         LinearLayoutManager manager = new LinearLayoutManager(getActivity());
         manager.setOrientation(LinearLayoutManager.VERTICAL);
         mLessonList.setLayoutManager(manager);
+
 
         //if translatedSection is -1, no group has been added yet
         if (mSubjectId == DBSubjects.NO_GROUPS_EXIST) {
@@ -149,7 +153,7 @@ public class LessonFragment extends Fragment {
                         });
 
         //set adapter
-        mLessonList.setAdapter(new LessonAdapter(getActivity(), allEntryCursor, mSubjectId, mSwipeListener));
+        mLessonList.setAdapter(new LessonAdapter(getActivity(), allEntryCursor, mSubjectId));
 
         mLessonList.addOnItemTouchListener(mSwipeListener);
 
@@ -172,6 +176,9 @@ public class LessonFragment extends Fragment {
             }
         });
 
+        //add animator
+        mLessonList.setItemAnimator(new SlideInLeftAnimator());
+
         mRootView = rootView;
 
         return rootView;
@@ -180,7 +187,7 @@ public class LessonFragment extends Fragment {
     private void showUndoSnackBar(final int lessonId) {
         mLessonToDelete = mLessonDb.getLesson(mSubjectId, lessonId);
         mLessonDb.removeEntry(mSubjectId, lessonId);
-        notifyOfChangedDataset();
+        notifyOfChangedDataset(false);
         Snackbar
                 .make(mRootView.findViewById(R.id.subject_fragment_coordinator_layout), "Gelöscht!", Snackbar.LENGTH_LONG)
                 .setAction("UNDO", new View.OnClickListener() {
@@ -198,12 +205,12 @@ public class LessonFragment extends Fragment {
     }
 
     //dont do anything, as we only delete the lesson when the undo bar gets hidden
-    public void onUndo() {
+    private void onUndo() {
         if (mLessonToDelete != null) {
             mLessonDb.insertLesson(mLessonToDelete);
             //this should be called in the same thread(context? i have no idea),
             //since onUndo is called by a button
-            notifyOfChangedDataset();
+            notifyOfChangedDataset(true);
         }
     }
 }

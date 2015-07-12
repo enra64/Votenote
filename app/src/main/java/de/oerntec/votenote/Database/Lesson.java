@@ -1,7 +1,17 @@
 package de.oerntec.votenote.Database;
 
 public class Lesson {
-    public int lessonId, myVotes, maxVotes, id, subjectId;
+    /**
+     * instance number of the lesson
+     */
+    public int lessonId;
+    public int myVotes;
+    public int maxVotes;
+    /**
+     * database id
+     */
+    public int id;
+    public int subjectId;
 
     public Lesson(int lessonId, int myVotes, int maxVotes, int id, int subjectId) {
         this.lessonId = lessonId;

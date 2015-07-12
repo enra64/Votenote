@@ -25,7 +25,7 @@
     <string name="title_activity_settings">Einstellungen</string>
     <string name="tutorial_add_button">Übung hinzufügen</string>
     <string name="tutorial_control_prespoints">Präsentationspunkte verwalten</string>
-    <string name="tutorial_create_your_first_subject">Präsentationspunkte verwalten</string>
+    <string name="tutorial_create_your_first_subject">Erstelle mit dem Plus unten rechts deine erste Übung</string>
     <string name="add_lesson_command">Füge einen Eintrag ein.</string>
     <string name="dialog_button_abort">Abbrechen</string>
     <string name="dialog_button_ok">OK</string>

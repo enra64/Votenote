@@ -23,7 +23,7 @@ import de.oerntec.votenote.Preferences.PreferencesActivity;
 public class VersionCheckHelper {
     private static Activity mResultCall;
 
-    public static void checkVersion(Activity c, boolean stealth) {
+    private static void checkVersion(Activity c, boolean stealth) {
         VersionCheckTask task = new VersionCheckTask(c, stealth);
         mResultCall = c;
         task.execute("");
@@ -95,7 +95,7 @@ public class VersionCheckHelper {
         }
     }
 
-    static class MyResponseHandler extends BasicResponseHandler {
+    private static class MyResponseHandler extends BasicResponseHandler {
         @Override
         public String handleResponse(HttpResponse response) throws IOException {
             InputStream in = response.getEntity().getContent();

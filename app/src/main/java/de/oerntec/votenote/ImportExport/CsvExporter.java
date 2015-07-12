@@ -36,7 +36,7 @@ public class CsvExporter {
         final DBLessons entryDB = DBLessons.getInstance();
 
         StringBuilder s = new StringBuilder();
-        //seperator for excel
+        //separator for excel
         s.append("sep=;");
         s.append("\r\n");
 

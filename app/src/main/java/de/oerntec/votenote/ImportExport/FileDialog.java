@@ -124,7 +124,7 @@ public class FileDialog {
     // chooseFile_or_Dir(String dir) - load directory chooser dialog for initial
     // input 'dir' directory
     ////////////////////////////////////////////////////////////////////////////////
-    public void chooseFile_or_Dir(String dir) {
+    private void chooseFile_or_Dir(String dir) {
         File dirFile = new File(dir);
         while (!dirFile.exists() || !dirFile.isDirectory()) {
             dir = dirFile.getParent();

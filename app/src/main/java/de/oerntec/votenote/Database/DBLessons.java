@@ -17,7 +17,7 @@ public class DBLessons {
     /**
      * Database object used for accessing the database
      */
-    private SQLiteDatabase database;
+    private final SQLiteDatabase database;
 
     /**
      * Private constructor for singleton
@@ -63,6 +63,10 @@ public class DBLessons {
         return database.rawQuery("SELECT * FROM " + DatabaseCreator.TABLE_NAME_ENTRIES, new String[0]);
     }
 
+    public void changeLesson(Lesson oldLesson, Lesson newLesson) {
+        changeLesson(oldLesson.subjectId, oldLesson.lessonId, newLesson.maxVotes, newLesson.myVotes);
+    }
+
     /**
      * Change the values of a lesson
      */
@@ -106,7 +110,7 @@ public class DBLessons {
     /**
      * Add an entry to the respective uebung
      */
-    public void addLesson(int subjectId, int maxVote, int myVote) {
+    public void addLessonAtEnd(int subjectId, int maxVote, int myVote) {
         String[] cols = new String[]{DatabaseCreator.ENTRIES_LESSON_ID};
         Cursor lastEntryNummerCursor = database.query(true, DatabaseCreator.TABLE_NAME_ENTRIES, cols,
                 DatabaseCreator.ENTRIES_SUBJECT_ID + "=" + subjectId, null,
@@ -158,6 +162,10 @@ public class DBLessons {
         database.insert(DatabaseCreator.TABLE_NAME_ENTRIES, null, values);
     }
 
+    public void addLesson(Lesson lesson) {
+        addLesson(lesson.subjectId, lesson.maxVotes, lesson.myVotes, lesson.lessonId);
+    }
+
     /**
      * remove the entry and decrease the uebung_nummer for all following entries
      */
@@ -169,6 +177,10 @@ public class DBLessons {
         String query = "UPDATE " + DatabaseCreator.TABLE_NAME_ENTRIES + " SET " + DatabaseCreator.ENTRIES_LESSON_ID + " = " + DatabaseCreator.ENTRIES_LESSON_ID + " - 1 " +
                 "WHERE " + DatabaseCreator.ENTRIES_SUBJECT_ID + " = ? AND " + DatabaseCreator.ENTRIES_LESSON_ID + " > ?";
         database.execSQL(query, new String[]{String.valueOf(subjectId), String.valueOf(lessonId)});
+    }
+
+    public void removeEntry(Lesson lesson) {
+        removeEntry(lesson.subjectId, lesson.lessonId);
     }
 
 

@@ -22,8 +22,8 @@ import de.oerntec.votenote.Database.DBLessons;
 import de.oerntec.votenote.Database.DBSubjects;
 import de.oerntec.votenote.Database.Subject;
 import de.oerntec.votenote.ImportExport.Writer;
+import de.oerntec.votenote.LessonFragmentStuff.LessonFragment;
 import de.oerntec.votenote.Preferences.PreferencesActivity;
-import de.oerntec.votenote.SubjectFragmentStuff.LessonFragment;
 
 /*
 * VERSION HISTORY
@@ -80,7 +80,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         return PreferenceManager.getDefaultSharedPreferences(me).getBoolean(key, def);
     }
 
-    public static int getPreference(String key, int def) {
+    private static int getPreference(String key, int def) {
         return PreferenceManager.getDefaultSharedPreferences(me).getInt(key, def);
     }
 
@@ -122,7 +122,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
     }
 
     //http://stackoverflow.com/a/19968400
-    public void handleUncaughtException(Thread thread, Throwable e) {
+    private void handleUncaughtException(Thread thread, Throwable e) {
         e.printStackTrace(); // not all Android versions will print the stack trace automatically
         StringWriter stringWriter = new StringWriter();
         PrintWriter printWriter = new PrintWriter(stringWriter);
@@ -202,7 +202,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         restoreActionBar();
     }
 
-    public void restoreActionBar() {
+    private void restoreActionBar() {
         ActionBar actionBar = getActionBar();
         if (actionBar == null) return;
         //noinspection deprecation
@@ -280,14 +280,14 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
             super.onActivityResult(requestCode, resultCode, data);
     }
 
-    public void setPreference(String key, int val) {
+    private void setPreference(String key, int val) {
         PreferenceManager.getDefaultSharedPreferences(this).edit().putInt(key, val).apply();
     }
 
     /**
      * Get the currently shown fragment to reload all data
      */
-    public void notifyCurrentFragment() {
-        ((LessonFragment) getFragmentManager().findFragmentById(R.id.container)).notifyOfChangedDataset();
+    public void notifyCurrentFragment(boolean add) {
+        ((LessonFragment) getFragmentManager().findFragmentById(R.id.container)).notifyOfChangedDataset(add);
     }
 }
