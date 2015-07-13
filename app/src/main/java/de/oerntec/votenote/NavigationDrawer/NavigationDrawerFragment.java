@@ -1,12 +1,9 @@
-package de.oerntec.votenote;
+package de.oerntec.votenote.NavigationDrawer;
 
 import android.app.Activity;
 import android.app.Fragment;
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.database.Cursor;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.view.GravityCompat;
@@ -14,18 +11,16 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.CursorAdapter;
-import android.widget.ListView;
-import android.widget.TextView;
 
 import de.oerntec.votenote.Database.DBSubjects;
+import de.oerntec.votenote.R;
 
 /**
  * Fragment used for managing interactions for and presentation of a navigation
@@ -34,7 +29,7 @@ import de.oerntec.votenote.Database.DBSubjects;
  * > design guidelines</a> for a complete explanation of the behaviors
  * implemented here.
  */
-public class NavigationDrawerFragment extends Fragment {
+public class NavigationDrawerFragment extends Fragment implements SelectionCallback {
 
     /**
      * Remember the position of the selected item.
@@ -59,15 +54,15 @@ public class NavigationDrawerFragment extends Fragment {
     private ActionBarDrawerToggle mDrawerToggle;
 
     private DrawerLayout mDrawerLayout;
-    private ListView mDrawerListView;
+    private RecyclerView mSubjectList;
     private View mFragmentContainerView;
 
     private int mCurrentSelectedPosition = 0;
     private boolean mUserLearnedDrawer;
 
-    private SubjectAdapter groupAdapter;
+    private NavigationAdapter mAdapter;
 
-    private DBSubjects groupsDB;
+    private DBSubjects mSubjectDb;
 
     public NavigationDrawerFragment() {
     }
@@ -77,18 +72,16 @@ public class NavigationDrawerFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         //get database
-        groupsDB = DBSubjects.getInstance();
+        mSubjectDb = DBSubjects.getInstance();
 
         // Read in the flag indicating whether or not the user has demonstrated
         // awareness of the
         // drawer. See PREF_USER_LEARNED_DRAWER for details.
-        SharedPreferences sp = PreferenceManager
-                .getDefaultSharedPreferences(getActivity());
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
         mUserLearnedDrawer = sp.getBoolean(PREF_USER_LEARNED_DRAWER, false);
 
-        if (savedInstanceState != null) {
+        if (savedInstanceState != null)
             mCurrentSelectedPosition = savedInstanceState.getInt(STATE_SELECTED_POSITION);
-        }
 
         // Select either the default item (0) or the last selected item.
         selectItem(mCurrentSelectedPosition);
@@ -104,14 +97,8 @@ public class NavigationDrawerFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        mDrawerListView = (ListView) inflater.inflate(R.layout.navigation_fragment, container, false);
-        mDrawerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                selectItem(position);
-            }
-        });
-        return mDrawerListView;
+        mSubjectList = (RecyclerView) inflater.inflate(R.layout.navigation_fragment, container, false);
+        return mSubjectList;
     }
 
     public boolean isDrawerOpen() {
@@ -129,16 +116,16 @@ public class NavigationDrawerFragment extends Fragment {
         mFragmentContainerView = getActivity().findViewById(fragmentId);
         mDrawerLayout = drawerLayout;
 
-        // set a custom shadow that overlays the menu_main content when the drawer
-        // opens
+        // set a custom shadow that overlays the menu_main content when the drawer opens
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
 
-        // set up the drawer's list view with items and click listener
-        Cursor allEntryCursor = groupsDB.getAllGroupNames();
+        mAdapter = new NavigationAdapter(getActivity(), this);
 
-        // create the adapter using the cursor pointing to the desired data
-        //as well as the layout information
-        groupAdapter = new SubjectAdapter(getActivity(), allEntryCursor, 0);
+        //give it a layoutmanager (whatever that is)
+        LinearLayoutManager manager = new LinearLayoutManager(getActivity());
+        manager.setOrientation(LinearLayoutManager.VERTICAL);
+        mSubjectList.setLayoutManager(manager);
+        mSubjectList.setAdapter(mAdapter);
 
         final ActionBar actionBar = getActionBar();
         if (actionBar != null) {
@@ -166,6 +153,8 @@ public class NavigationDrawerFragment extends Fragment {
                 if (!isAdded())
                     return;
 
+                mAdapter.drawerClosed();
+
                 getActivity().invalidateOptionsMenu(); // calls
             }
 
@@ -176,18 +165,11 @@ public class NavigationDrawerFragment extends Fragment {
                     return;
                 }
 
-                Log.i("drawer", "opened");
                 if (actionBar != null)
                     actionBar.setTitle("VoteNote");
 
-                mDrawerListView.setAdapter(groupAdapter);
-                mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
-
-                //end reload
+                //prevent auto showing drawer
                 if (!mUserLearnedDrawer) {
-                    // The user manually opened the drawer; store this flag to
-                    // prevent auto-showing
-                    // the navigation drawer automatically in the future.
                     mUserLearnedDrawer = true;
                     SharedPreferences sp = PreferenceManager
                             .getDefaultSharedPreferences(getActivity());
@@ -210,28 +192,25 @@ public class NavigationDrawerFragment extends Fragment {
         mDrawerToggle.syncState();
     }
 
+
     private ActionBar getActionBar() {
         return ((AppCompatActivity) getActivity()).getSupportActionBar();
     }
 
     public void selectItem(int position) {
         mCurrentSelectedPosition = position;
-        if (groupAdapter != null)
-            groupAdapter.setSelectedPosition(position);
+        if (mAdapter != null)
+            mAdapter.setCurrentSelection(position);
 
-        if (mDrawerListView != null) {
-            mDrawerListView.setItemChecked(position, true);
-        }
-        if (mDrawerLayout != null) {
+        if (mDrawerLayout != null)
             mDrawerLayout.closeDrawer(mFragmentContainerView);
-        }
-        if (mCallbacks != null) {
+
+        if (mCallbacks != null)
             mCallbacks.onNavigationDrawerItemSelected(position);
-        }
     }
 
     public void reloadAdapter() {
-        groupAdapter.changeCursor(groupsDB.getAllGroupNames());
+        mAdapter.notifyForReload();
     }
 
     @Override
@@ -275,16 +254,11 @@ public class NavigationDrawerFragment extends Fragment {
     }
 
     /**
-     * Returns the name of the group at the position according to the db
-     *
-     * @param position the position in drawer
-     * @return A string containing the name
+     * called when an item in the navigation list is clicked
      */
-    @SuppressWarnings("unused")
-    private String getGroupNameAtPosition(int position) {
-        Cursor allNames = groupsDB.getAllGroupNames();
-        allNames.moveToPosition(position);
-        return allNames.getString(1);
+    @Override
+    public void onItemClick(int position) {
+        selectItem(position);
     }
 
     /**
@@ -298,45 +272,5 @@ public class NavigationDrawerFragment extends Fragment {
         void onNavigationDrawerItemSelected(int position);
     }
 
-    private class SubjectAdapter extends CursorAdapter {
-        private int currentlySelectedPosition;
 
-        public SubjectAdapter(Context context, Cursor c, int flags) {
-            super(context, c, flags);
-        }
-
-        @Override
-        public View newView(Context context, Cursor cursor, ViewGroup parent) {
-            LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-            View root = inflater.inflate(android.R.layout.simple_list_item_1, parent, false);
-            TextView upper = (TextView) root.findViewById(android.R.id.text1);
-            upper.setTextAppearance(context, android.R.style.TextAppearance_Large);
-            return root;
-        }
-
-        public void setSelectedPosition(int pos) {
-            currentlySelectedPosition = pos;
-        }
-
-        @Override
-        public void bindView(View view, Context context, Cursor cursor) {
-            //find textviews
-            TextView description = (TextView) view.findViewById(android.R.id.text1);
-
-            //load strings
-            String subjectName = cursor.getString(1);
-
-            //check whether the requested view is the currently selected view
-            if (cursor.getPosition() == currentlySelectedPosition) {
-                //description.setTypeface(Typeface.DEFAULT_BOLD);
-                description.setBackgroundColor(Color.parseColor("#FFCCCCCC"));
-            } else {
-                //description.setTypeface(Typeface.DEFAULT);
-                description.setBackgroundColor(Color.argb(0, 204, 204, 204));
-            }
-
-            //set text
-            description.setText(subjectName);
-        }
-    }
 }

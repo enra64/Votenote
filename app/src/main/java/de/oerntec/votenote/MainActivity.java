@@ -14,6 +14,10 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Toast;
 
 import java.io.PrintWriter;
@@ -24,6 +28,7 @@ import de.oerntec.votenote.Database.DBSubjects;
 import de.oerntec.votenote.Database.Subject;
 import de.oerntec.votenote.ImportExport.Writer;
 import de.oerntec.votenote.LessonFragmentStuff.LessonFragment;
+import de.oerntec.votenote.NavigationDrawer.NavigationDrawerFragment;
 import de.oerntec.votenote.Preferences.PreferencesActivity;
 
 /*
@@ -94,8 +99,6 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         groupsDB = DBSubjects.setupInstance(this);
         entryDB = DBLessons.setupInstance(this);
 
-        //to avoid calling groupsDB before having it started, setting the view has been
-        //moved here
         setContentView(R.layout.activity_main);
 
         //set toolbar as support actionbar
@@ -226,29 +229,82 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        if (!mNavigationDrawerFragment.isDrawerOpen()) {
-            // Only show items in the action bar relevant to this screen
-            // if the drawer is not showing. Otherwise, let the drawer
-            // decide what to show in the action bar.
-            getMenuInflater().inflate(R.menu.menu_main, menu);
+        getMenuInflater().inflate(R.menu.menu_main, menu);
 
-            //update title
-            ActionBar actionBar = getActionBar();
-            if (actionBar != null) {
-                actionBar.setDisplayShowTitleEnabled(true);
-                actionBar.setTitle("VoteNote");
+        //update title
+        ActionBar actionBar = getActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayShowTitleEnabled(true);
+            actionBar.setTitle("VoteNote");
+        }
+
+        //prepare animations
+        menu.findItem(R.id.action_prespoints).setActionView(R.layout.subject_fragment_action_presentation_points);
+        menu.findItem(R.id.action_show_diagram).setActionView(R.layout.subject_fragment_action_info);
+        menu.findItem(R.id.action_show_all_info).setActionView(R.layout.subject_fragment_action_diagram);
+
+        //update prespoint action icon
+        if (groupsDB.getWantedPresPoints(mCurrentSelectedId) == 0)
+            menu.findItem(R.id.action_prespoints).setVisible(false);
+        else
+            menu.findItem(R.id.action_prespoints).setVisible(true);
+
+        return true;
+    }
+
+    /* Called whenever we call invalidateOptionsMenu() */
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        // If the nav drawer is open, hide action items related to the content view
+        boolean drawerOpen = mNavigationDrawerFragment.isDrawerOpen();
+
+        final MenuItem presPointItem = menu.findItem(R.id.action_prespoints);
+        final MenuItem diagramItem = menu.findItem(R.id.action_show_diagram);
+        final MenuItem infoItem = menu.findItem(R.id.action_show_all_info);
+
+        View presPoints = presPointItem.getActionView();
+        View diagram = diagramItem.getActionView();
+        View info = infoItem.getActionView();
+
+        Animation fade;
+        final boolean isVisibleAtEnd;
+
+        if (!drawerOpen) {
+            fade = AnimationUtils.loadAnimation(this, android.R.anim.fade_in);
+            isVisibleAtEnd = true;
+        } else {
+            fade = AnimationUtils.loadAnimation(this, android.R.anim.fade_out);
+            isVisibleAtEnd = false;
+        }
+
+        fade.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
             }
 
-            //update prespoint action icon
-            if (groupsDB.getWantedPresPoints(mCurrentSelectedId) == 0)
-                menu.findItem(R.id.action_prespoints).setVisible(false);
-            else
-                menu.findItem(R.id.action_prespoints).setVisible(true);
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                presPointItem.setVisible(isVisibleAtEnd);
+                diagramItem.setVisible(isVisibleAtEnd);
+                infoItem.setVisible(isVisibleAtEnd);
+            }
 
-            return true;
-        }
-        return super.onCreateOptionsMenu(menu);
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+            }
+        });
+
+        fade.setInterpolator(new AccelerateInterpolator());
+        fade.setDuration(200);
+
+        presPoints.startAnimation(fade);
+        diagram.startAnimation(fade);
+        info.startAnimation(fade);
+
+        return super.onPrepareOptionsMenu(menu);
     }
+
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

@@ -4,18 +4,21 @@
     tools:context=".MainActivity">
     <item
         android:id="@+id/action_prespoints"
+        android:actionLayout="@layout/subject_fragment_action_presentation_points"
         android:icon="@drawable/ic_button_presentation_points"
         android:showAsAction="always"
         android:title="@string/action_set_prespoints"
         app:showAsAction="always" />
     <item
         android:id="@+id/action_show_all_info"
+        android:actionLayout="@layout/subject_fragment_action_info"
         android:icon="@drawable/ic_button_info"
         android:showAsAction="ifRoom"
         android:title="@string/action_show_all_info"
         app:showAsAction="ifRoom" />
     <item
         android:id="@+id/action_show_diagram"
+        android:actionLayout="@layout/subject_fragment_action_diagram"
         android:icon="@drawable/ic_button_diagram"
         android:showAsAction="ifRoom"
         android:title="@string/action_show_diagram"
