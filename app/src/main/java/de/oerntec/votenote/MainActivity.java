@@ -284,10 +284,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         PreferenceManager.getDefaultSharedPreferences(this).edit().putInt(key, val).apply();
     }
 
-    /**
-     * Get the currently shown fragment to reload all data
-     */
-    public void notifyCurrentFragment(boolean add) {
-        ((LessonFragment) getFragmentManager().findFragmentById(R.id.container)).notifyOfChangedDataset(add);
+    public LessonFragment getCurrentFragment() {
+        return (LessonFragment) getFragmentManager().findFragmentById(R.id.container);
     }
 }

@@ -6,6 +6,9 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import de.oerntec.votenote.MainActivity;
 
 public class DBLessons {
@@ -108,9 +111,15 @@ public class DBLessons {
     }
 
     /**
-     * Add an entry to the respective uebung
+     * Add an entry to the respective uebung, returns the lesson id
      */
-    public void addLessonAtEnd(int subjectId, int maxVote, int myVote) {
+    public int addLessonAtEnd(int subjectId, int maxVote, int myVote) {
+        int lastEntryLessonId = getNewLessonId(subjectId);
+        addLesson(subjectId, maxVote, myVote, lastEntryLessonId);
+        return lastEntryLessonId;
+    }
+
+    private int getNewLessonId(int subjectId) {
         String[] cols = new String[]{DatabaseCreator.ENTRIES_LESSON_ID};
         Cursor lastEntryNummerCursor = database.query(true, DatabaseCreator.TABLE_NAME_ENTRIES, cols,
                 DatabaseCreator.ENTRIES_SUBJECT_ID + "=" + subjectId, null,
@@ -121,7 +130,7 @@ public class DBLessons {
         if (lastEntryNummerCursor.moveToFirst())
             lastEntryLessonId = lastEntryNummerCursor.getInt(0) + 1;
         lastEntryNummerCursor.close();
-        addLesson(subjectId, maxVote, myVote, lastEntryLessonId);
+        return lastEntryLessonId;
     }
 
     /**
@@ -162,8 +171,11 @@ public class DBLessons {
         database.insert(DatabaseCreator.TABLE_NAME_ENTRIES, null, values);
     }
 
-    public void addLesson(Lesson lesson) {
-        addLesson(lesson.subjectId, lesson.maxVotes, lesson.myVotes, lesson.lessonId);
+    /**
+     * returns the instert lesson id
+     */
+    public int addLessonAtEnd(Lesson lesson) {
+        return addLessonAtEnd(lesson.subjectId, lesson.maxVotes, lesson.myVotes);
     }
 
     /**
@@ -259,6 +271,19 @@ public class DBLessons {
             mCursor = database.query(true, DatabaseCreator.TABLE_NAME_ENTRIES, cols, DatabaseCreator.ENTRIES_SUBJECT_ID + "=?", whereArgs, null, null, DatabaseCreator.ENTRIES_LESSON_ID + " DESC", null);
         mCursor.moveToFirst();
         return mCursor; // iterate to get each value.
+    }
+
+    public List<Lesson> getLessonsForSubject(int subjectId) {
+        Cursor lessonCursor = getAllLessonsForSubject(subjectId);
+        List<Lesson> lessonList = new ArrayList<>(lessonCursor.getCount());
+        lessonCursor.moveToPrevious();
+        while (lessonCursor.moveToNext())
+            lessonList.add(new Lesson(lessonCursor.getInt(0),
+                    lessonCursor.getInt(1),
+                    lessonCursor.getInt(2),
+                    lessonCursor.getInt(3),
+                    subjectId));
+        return lessonList;
     }
 
     /**

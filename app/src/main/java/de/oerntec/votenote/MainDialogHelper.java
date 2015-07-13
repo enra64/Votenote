@@ -39,19 +39,20 @@ public class MainDialogHelper {
     /**
      * Shows a dialog to edit or add a lesson
      */
-    private static void showLessonDialog(final MainActivity mActivity, final int groupID, final int lessonID) {
+    private static void showLessonDialog(final MainActivity mActivity, final int subjectId, final int lessonID) {
         //db access
         final DBLessons entryDB = DBLessons.getInstance();
 
         int maxVoteValue;
-        int myVoteValue;
+        final int myVoteValue;
 
+        Lesson oldValues = null;
         //set values according to usage (add or change)
         if (lessonID == ADD_LESSON_CODE) {
-            maxVoteValue = entryDB.getPreviousMaximumVote(groupID);
-            myVoteValue = entryDB.getPreviousMyVote(groupID);
+            maxVoteValue = entryDB.getPreviousMaximumVote(subjectId);
+            myVoteValue = entryDB.getPreviousMyVote(subjectId);
         } else {
-            Lesson oldValues = entryDB.getLesson(groupID, lessonID);
+            oldValues = entryDB.getLesson(subjectId, lessonID);
             myVoteValue = oldValues != null ? oldValues.myVotes : 0;
             maxVoteValue = oldValues != null ? oldValues.maxVotes : 0;
         }
@@ -80,19 +81,19 @@ public class MainDialogHelper {
         infoView.setTextColor(Color.argb(255, 153, 204, 0));//green
 
         //build alertdialog
+        final Lesson finalOldValues = oldValues;
+
         final AlertDialog dialog = new AlertDialog.Builder(mActivity)
                 .setTitle(lessonID == ADD_LESSON_CODE ? mActivity.getString(R.string.main_dialog_lesson_new_lesson_title) : "Übung " + lessonID + " " + "ändern?")
                 .setView(rootView)
                 .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
                         if (myVote.getValue() <= maxVote.getValue()) {
-                            //decide whether to add an entry or change an existing one
+                            Lesson val = new Lesson(-1, myVote.getValue(), maxVote.getValue(), -1, subjectId);
                             if (lessonID == ADD_LESSON_CODE)
-                                entryDB.addLessonAtEnd(groupID, maxVote.getValue(), myVote.getValue());
+                                mActivity.getCurrentFragment().mAdapter.addLesson(val);
                             else
-                                entryDB.changeLesson(groupID, lessonID, maxVote.getValue(), myVote.getValue());
-                            //reload current fragment. if lessonId == add_lesson_code, add parameter is true
-                            mActivity.notifyCurrentFragment(lessonID == ADD_LESSON_CODE);
+                                mActivity.getCurrentFragment().mAdapter.changeLesson(finalOldValues, val);
                         } else
                             Toast.makeText(mActivity, mActivity.getString(R.string.main_dialog_lesson_voted_too_much), Toast.LENGTH_SHORT).show();
                     }
@@ -123,10 +124,10 @@ public class MainDialogHelper {
     /**
      * shows the dialog to change the presentation points
      *
-     * @param dataBaseId ID of the group in the database
+     * @param subjectId ID of the group in the database
      * @param activity   reference for various stuff
      */
-    public static void showPresentationPointDialog(final int dataBaseId, final MainActivity activity) {
+    public static void showPresentationPointDialog(final int subjectId, final MainActivity activity) {
         //db access
         final DBSubjects groupsDB = DBSubjects.getInstance();
 
@@ -134,8 +135,8 @@ public class MainDialogHelper {
         final NumberPicker presPointPicker = (NumberPicker) inputView.findViewById(R.id.mainfragment_dialog_prespoints_picker);
 
         presPointPicker.setMinValue(0);
-        presPointPicker.setMaxValue(groupsDB.getWantedPresPoints(dataBaseId));
-        presPointPicker.setValue(groupsDB.getPresPoints(dataBaseId));
+        presPointPicker.setMaxValue(groupsDB.getWantedPresPoints(subjectId));
+        presPointPicker.setValue(groupsDB.getPresPoints(subjectId));
 
 		/*
          * PRESPOINT ALERTDIALOG
@@ -145,9 +146,9 @@ public class MainDialogHelper {
                 .setPositiveButton(activity.getString(R.string.dialog_button_ok), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
                         //write new prespoint count to db
-                        groupsDB.setPresPoints(dataBaseId, presPointPicker.getValue());
+                        groupsDB.setPresPoints(subjectId, presPointPicker.getValue());
                         //reload fragment
-                        activity.notifyCurrentFragment(false);
+                        activity.getCurrentFragment().reloadInfo();
                     }
                 }).setNegativeButton(activity.getString(R.string.dialog_button_abort), null);
         b.setTitle(activity.getString(R.string.main_dialog_pres_title));

@@ -10,6 +10,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,7 +26,6 @@ import de.oerntec.votenote.MainActivity;
 import de.oerntec.votenote.MainDialogHelper;
 import de.oerntec.votenote.R;
 import de.oerntec.votenote.SubjectManagerStuff.SubjectManagementActivity;
-import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -47,22 +47,15 @@ public class LessonFragment extends Fragment {
      * DB Singleton instance
      */
     private static DBLessons mLessonDb = DBLessons.getInstance();
-
-    /**
-     * Save the default text color, because apparently there is no constant for that.
-     */
-    private SwipeableRecyclerViewTouchListener mSwipeListener;
-
+    public NewDatabaseLessonAdapter mAdapter;
     /**
      * Contains the database id for the displayed fragment/subject
      */
     private int mSubjectId;
-
     /**
      * Parent viewgroup
      */
     private View mRootView;
-
     /**
      * List containing the vote data
      */
@@ -81,7 +74,7 @@ public class LessonFragment extends Fragment {
         return fragment;
     }
 
-    public void notifyOfChangedDataset(boolean add) {
+    public void notifyOfChangedDatasetDeprecated(boolean add) {
         ((LessonAdapter) mLessonList.getAdapter()).onNotified(add);
         ((LessonAdapter) mLessonList.getAdapter()).getCursorAdapter().changeCursor(mLessonDb.getAllLessonsForSubject(mSubjectId));
         mLessonList.getAdapter().notifyDataSetChanged();
@@ -130,32 +123,60 @@ public class LessonFragment extends Fragment {
         if (allEntryCursor.getCount() == 0)
             Log.e("Main Listview", "Received Empty allEntryCursor for group " + currentGroupName + " with id " + mSubjectId);
 
-        mSwipeListener =
-                new SwipeableRecyclerViewTouchListener(mLessonList,
-                        new SwipeableRecyclerViewTouchListener.SwipeListener() {
-                            @Override
-                            public boolean canSwipe(int position) {
-                                //nothing can swipe if there is already a lesson to be deleted
-                                return position != 0;
-                            }
-
-                            @Override
-                            public void onDismissedBySwipeLeft(RecyclerView recyclerView, int[] reverseSortedPositions) {
-                                for (int p : reverseSortedPositions) {
-                                    showUndoSnackBar((Integer) recyclerView.getChildAt(p).getTag());
-                                }
-                            }
-
-                            @Override
-                            public void onDismissedBySwipeRight(RecyclerView recyclerView, int[] reverseSortedPositions) {
-                                onDismissedBySwipeLeft(recyclerView, reverseSortedPositions);
-                            }
-                        });
-
         //set adapter
-        mLessonList.setAdapter(new LessonAdapter(getActivity(), allEntryCursor, mSubjectId));
+        mAdapter = new NewDatabaseLessonAdapter(getActivity(), mSubjectId);
+        mLessonList.setAdapter(mAdapter);
 
-        mLessonList.addOnItemTouchListener(mSwipeListener);
+        SwipeableRecyclerViewTouchListener mSwipeListener = new SwipeableRecyclerViewTouchListener(mLessonList,
+                new SwipeableRecyclerViewTouchListener.SwipeListener() {
+                    @Override
+                    public boolean canSwipe(int position) {
+                        return position != 0;
+                    }
+
+                    @Override
+                    public void onDismissedBySwipeLeft(RecyclerView recyclerView, int[] reverseSortedPositions) {
+                        for (int p : reverseSortedPositions) {
+                            showUndoSnackBar((Integer) recyclerView.getChildAt(p).getTag());
+                        }
+                    }
+
+                    @Override
+                    public void onDismissedBySwipeRight(RecyclerView recyclerView, int[] reverseSortedPositions) {
+                        onDismissedBySwipeLeft(recyclerView, reverseSortedPositions);
+                    }
+                });
+
+        ItemTouchHelper.SimpleCallback swipeCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public int getSwipeDirs(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
+                //no swipey swipey for info view
+                if (viewHolder instanceof NewDatabaseLessonAdapter.InfoHolder)
+                    return 0;
+                return super.getSwipeDirs(recyclerView, viewHolder);
+            }
+
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+                //info view has no tag
+                Object viewTag = viewHolder.itemView.getTag();
+                if (viewTag != null) {
+                    int lessonId = (Integer) viewTag;
+                    if (lessonId != 0)
+                        showUndoSnackBar(lessonId);
+                }
+            }
+        };
+
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(swipeCallback);
+        itemTouchHelper.attachToRecyclerView(mLessonList);
+
+        //mLessonList.addOnItemTouchListener(mSwipeListener);
 
         mLessonList.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), mLessonList, new OnItemClickListener() {
             public void onItemClick(View view, int position) {
@@ -177,17 +198,19 @@ public class LessonFragment extends Fragment {
         });
 
         //add animator
-        mLessonList.setItemAnimator(new SlideInLeftAnimator());
+        //mLessonList.setItemAnimator(new SlideInLeftAnimator());
 
         mRootView = rootView;
 
         return rootView;
     }
 
+    public void reloadInfo() {
+
+    }
+
     private void showUndoSnackBar(final int lessonId) {
-        mLessonToDelete = mLessonDb.getLesson(mSubjectId, lessonId);
-        mLessonDb.removeEntry(mSubjectId, lessonId);
-        notifyOfChangedDataset(false);
+        mLessonToDelete = mAdapter.removeLesson(lessonId);
         Snackbar
                 .make(mRootView.findViewById(R.id.subject_fragment_coordinator_layout), "Gelöscht!", Snackbar.LENGTH_LONG)
                 .setAction("UNDO", new View.OnClickListener() {
@@ -207,10 +230,7 @@ public class LessonFragment extends Fragment {
     //dont do anything, as we only delete the lesson when the undo bar gets hidden
     private void onUndo() {
         if (mLessonToDelete != null) {
-            mLessonDb.insertLesson(mLessonToDelete);
-            //this should be called in the same thread(context? i have no idea),
-            //since onUndo is called by a button
-            notifyOfChangedDataset(true);
+            mAdapter.addLesson(mLessonToDelete);
         }
     }
 }
