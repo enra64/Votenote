@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -88,6 +89,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         me = this;
+
         //database access
         groupsDB = DBSubjects.setupInstance(this);
         entryDB = DBLessons.setupInstance(this);
@@ -95,6 +97,11 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         //to avoid calling groupsDB before having it started, setting the view has been
         //moved here
         setContentView(R.layout.activity_main);
+
+        //set toolbar as support actionbar
+        Toolbar toolbar = (Toolbar) findViewById(R.id.main_toolbar);
+        //if we can not get our toolbar, its rip time anyways
+        setSupportActionBar(toolbar);
 
         mNavigationDrawerFragment =
                 (NavigationDrawerFragment) getFragmentManager().findFragmentById(R.id.navigation_drawer);
@@ -110,6 +117,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
                 }
             });
         }
+
 
         // Set up the drawer.
         mNavigationDrawerFragment.setUp(
