@@ -18,7 +18,6 @@ import android.view.ViewGroup;
 
 import de.oerntec.votenote.CardListHelpers.OnItemClickListener;
 import de.oerntec.votenote.CardListHelpers.RecyclerItemClickListener;
-import de.oerntec.votenote.CardListHelpers.SwipeableRecyclerViewTouchListener;
 import de.oerntec.votenote.Database.DBLessons;
 import de.oerntec.votenote.Database.DBSubjects;
 import de.oerntec.votenote.Database.Lesson;
@@ -47,7 +46,7 @@ public class LessonFragment extends Fragment {
      * DB Singleton instance
      */
     private static DBLessons mLessonDb = DBLessons.getInstance();
-    public NewDatabaseLessonAdapter mAdapter;
+    public LessonAdapter mAdapter;
     /**
      * Contains the database id for the displayed fragment/subject
      */
@@ -72,13 +71,6 @@ public class LessonFragment extends Fragment {
         args.putInt(ARG_SECTION_NUMBER, sectionNumber);
         fragment.setArguments(args);
         return fragment;
-    }
-
-    public void notifyOfChangedDatasetDeprecated(boolean add) {
-        ((LessonAdapter) mLessonList.getAdapter()).onNotified(add);
-        ((LessonAdapter) mLessonList.getAdapter()).getCursorAdapter().changeCursor(mLessonDb.getAllLessonsForSubject(mSubjectId));
-        mLessonList.getAdapter().notifyDataSetChanged();
-        Log.i("subfrag", "reloaded");
     }
 
     /* MAIN FRAGMENT BUILDING
@@ -124,28 +116,8 @@ public class LessonFragment extends Fragment {
             Log.e("Main Listview", "Received Empty allEntryCursor for group " + currentGroupName + " with id " + mSubjectId);
 
         //set adapter
-        mAdapter = new NewDatabaseLessonAdapter(getActivity(), mSubjectId);
+        mAdapter = new LessonAdapter(getActivity(), mSubjectId);
         mLessonList.setAdapter(mAdapter);
-
-        SwipeableRecyclerViewTouchListener mSwipeListener = new SwipeableRecyclerViewTouchListener(mLessonList,
-                new SwipeableRecyclerViewTouchListener.SwipeListener() {
-                    @Override
-                    public boolean canSwipe(int position) {
-                        return position != 0;
-                    }
-
-                    @Override
-                    public void onDismissedBySwipeLeft(RecyclerView recyclerView, int[] reverseSortedPositions) {
-                        for (int p : reverseSortedPositions) {
-                            showUndoSnackBar((Integer) recyclerView.getChildAt(p).getTag());
-                        }
-                    }
-
-                    @Override
-                    public void onDismissedBySwipeRight(RecyclerView recyclerView, int[] reverseSortedPositions) {
-                        onDismissedBySwipeLeft(recyclerView, reverseSortedPositions);
-                    }
-                });
 
         ItemTouchHelper.SimpleCallback swipeCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
             @Override
@@ -156,7 +128,7 @@ public class LessonFragment extends Fragment {
             @Override
             public int getSwipeDirs(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
                 //no swipey swipey for info view
-                if (viewHolder instanceof NewDatabaseLessonAdapter.InfoHolder)
+                if (viewHolder instanceof LessonAdapter.InfoHolder)
                     return 0;
                 return super.getSwipeDirs(recyclerView, viewHolder);
             }

@@ -40,7 +40,7 @@ public class CsvExporter {
         s.append("sep=;");
         s.append("\r\n");
 
-        List<Subject> subjectList = groupsDB.getAllLessons();
+        List<Subject> subjectList = groupsDB.getAllSubjects();
 
         for (Subject subject : subjectList) {
             String groupName = subject.subjectName;

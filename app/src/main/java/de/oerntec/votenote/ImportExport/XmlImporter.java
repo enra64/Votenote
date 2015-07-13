@@ -62,7 +62,7 @@ public class XmlImporter {
                             MainActivity.mNavigationDrawerFragment.reloadAdapter();
                             MainActivity.mNavigationDrawerFragment.selectItem(0);
                         } else if (activity instanceof SubjectManagementActivity) {
-                            ((SubjectManagementActivity) activity).notifyOfChangedDataset();
+                            ((SubjectManagementActivity) activity).onImport();
                         }
                     }
                 }

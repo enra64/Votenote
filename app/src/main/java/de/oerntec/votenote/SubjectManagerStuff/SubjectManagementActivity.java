@@ -7,13 +7,12 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,8 +24,6 @@ import android.widget.Toast;
 
 import de.oerntec.votenote.CardListHelpers.OnItemClickListener;
 import de.oerntec.votenote.CardListHelpers.RecyclerItemClickListener;
-import de.oerntec.votenote.CardListHelpers.SwipeableRecyclerViewTouchListener;
-import de.oerntec.votenote.Database.DBLessons;
 import de.oerntec.votenote.Database.DBSubjects;
 import de.oerntec.votenote.Database.Subject;
 import de.oerntec.votenote.ImportExport.XmlImporter;
@@ -42,12 +39,7 @@ public class SubjectManagementActivity extends AppCompatActivity {
     /**
      * default db access
      */
-    private static DBSubjects groupsDB;
-
-    /**
-     * default db access
-     */
-    private static DBLessons entriesDB;
+    private static DBSubjects mSubjectDb;
 
     /**
      * the subject adapter used to fill the list
@@ -58,6 +50,9 @@ public class SubjectManagementActivity extends AppCompatActivity {
      * saves the subject on delete to be able to add it again should the user demand it
      */
     private Subject subjectToBeDeleted;
+    private int positionOfSubjectToBeDeleted;
+
+    private RecyclerView mSubjectList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,49 +69,46 @@ public class SubjectManagementActivity extends AppCompatActivity {
         }
 
         //get db
-        groupsDB = DBSubjects.getInstance();
-        entriesDB = DBLessons.getInstance();
+        mSubjectDb = DBSubjects.getInstance();
 
         //get listview
-        RecyclerView mSubjectList = (RecyclerView) findViewById(R.id.subject_manager_recycler_view);
+        mSubjectList = (RecyclerView) findViewById(R.id.subject_manager_recycler_view);
 
         //config the recyclerview
         mSubjectList.setHasFixedSize(true);
 
-        SwipeableRecyclerViewTouchListener mSwipeListener = new SwipeableRecyclerViewTouchListener(mSubjectList,
-                new SwipeableRecyclerViewTouchListener.SwipeListener() {
-                    @Override
-                    public boolean canSwipe(int position) {
-                        return true;
-                    }
+        ItemTouchHelper.SimpleCallback swipeCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                return false;
+            }
 
-                    @Override
-                    public void onDismissedBySwipeLeft(RecyclerView recyclerView, int[] reverseSortedPositions) {
-                        for (int p : reverseSortedPositions) {
-                            int subjectId = (Integer) recyclerView.getChildAt(p).getTag();
-                            showUndoSnackBar(subjectId);
-                        }
-                    }
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+                //info view has no tag
+                Object viewTag = viewHolder.itemView.getTag();
+                if (viewTag != null) {
+                    int subjectId = (Integer) viewTag;
+                    if (subjectId != 0)
+                        showUndoSnackBar(subjectId, mSubjectList.getChildAdapterPosition(viewHolder.itemView));
+                }
+            }
+        };
 
-                    @Override
-                    public void onDismissedBySwipeRight(RecyclerView recyclerView, int[] reverseSortedPositions) {
-                        onDismissedBySwipeLeft(recyclerView, reverseSortedPositions);
-                    }
-                });
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(swipeCallback);
+        itemTouchHelper.attachToRecyclerView(mSubjectList);
 
-
-        //give it a layoutmanage (whatever that is)
+        //give it a layoutmanager (whatever that is)
         LinearLayoutManager manager = new LinearLayoutManager(this);
         manager.setOrientation(LinearLayoutManager.VERTICAL);
         mSubjectList.setLayoutManager(manager);
 
-        mSubjectAdapter = new SubjectAdapter(this, groupsDB.getAllGroupsInfos());
+        mSubjectAdapter = new SubjectAdapter(this);
 
         mSubjectList.setAdapter(mSubjectAdapter);
-        mSubjectList.addOnItemTouchListener(mSwipeListener);
         mSubjectList.addOnItemTouchListener(new RecyclerItemClickListener(this, mSubjectList, new OnItemClickListener() {
             public void onItemClick(View view, int position) {
-                showLessonDialog((Integer) view.getTag());
+                showSubjectDialog((Integer) view.getTag(), position);
             }
 
             public void onItemLongClick(final View view, int position) {
@@ -128,15 +120,14 @@ public class SubjectManagementActivity extends AppCompatActivity {
         addFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showLessonDialog(ADD_SUBJECT_CODE);
+                showSubjectDialog(ADD_SUBJECT_CODE, -1);
             }
         });
     }
 
-    private void showUndoSnackBar(final int lessonId) {
-        subjectToBeDeleted = groupsDB.getSubject(lessonId);
-        groupsDB.deleteRecord(subjectToBeDeleted.subjectName, lessonId);
-        notifyOfChangedDataset();
+    private void showUndoSnackBar(final int subjectId, int recyclerViewPosition) {
+        positionOfSubjectToBeDeleted = recyclerViewPosition;
+        subjectToBeDeleted = mSubjectAdapter.removeSubject(subjectId, recyclerViewPosition);
         Snackbar
                 .make(findViewById(R.id.subject_manager_coordinator_layout), "Gelöscht!", Snackbar.LENGTH_LONG)
                 .setAction("UNDO", new View.OnClickListener() {
@@ -150,55 +141,40 @@ public class SubjectManagementActivity extends AppCompatActivity {
     //dont do anything, as we only delete the lesson when the undo bar gets hidden
     private void onUndo() {
         if (subjectToBeDeleted != null) {
-            groupsDB.addGroup(subjectToBeDeleted);
-            notifyOfChangedDataset();
+            mSubjectAdapter.addSubject(subjectToBeDeleted, positionOfSubjectToBeDeleted);
         }
         subjectToBeDeleted = null;
+        positionOfSubjectToBeDeleted = -1;
     }
 
-    public void onHide() {
-        //remove all entries of the group
-        if (subjectToBeDeleted != null)
-            entriesDB.deleteAllEntriesForGroup(Integer.valueOf(subjectToBeDeleted.id));
-        //re-enable subject removal
-        subjectToBeDeleted = null;
-    }
-
-    public void notifyOfChangedDataset() {
-        mSubjectAdapter.getCursorAdapter().changeCursor(groupsDB.getAllGroupsInfos());
-        mSubjectAdapter.getCursorAdapter().notifyDataSetChanged();
-        mSubjectAdapter.notifyDataSetChanged();
-    }
-
-    private void showLessonDialog(final int databaseId) {
+    private void showSubjectDialog(final int databaseId, final int recyclerViewPosition) {
         String nameHint = getString(R.string.subject_add_hint);
         int presentationPointsHint = 0;
         int minimumVotePercentageHint = 50;
         int scheduledAssignmentsPerLesson = 5;
         int scheduledNumberOfLessons = 10;
 
+        Subject oldSubject = null;
         //if we only change the entry, get the previously set values.
         if (databaseId != ADD_SUBJECT_CODE) {
-            nameHint = groupsDB.getSubject(databaseId).subjectName;
-            presentationPointsHint = groupsDB.getWantedPresPoints(databaseId);
-            minimumVotePercentageHint = groupsDB.getMinVote(databaseId);
-            scheduledAssignmentsPerLesson = groupsDB.getScheduledAssignmentsPerLesson(databaseId);
-            scheduledNumberOfLessons = groupsDB.getScheduledNumberOfLessons(databaseId);
+            oldSubject = mSubjectDb.getSubject(databaseId);
+            nameHint = oldSubject.subjectName;
+            presentationPointsHint = Integer.parseInt(oldSubject.subjectWantedPresentationPoints);
+            minimumVotePercentageHint = Integer.parseInt(oldSubject.subjectMinimumVotePercentage);
+            scheduledAssignmentsPerLesson = Integer.parseInt(oldSubject.subjectScheduledAssignmentsPerLesson);
+            scheduledNumberOfLessons = Integer.parseInt(oldSubject.subjectScheduledLessonCount);
         }
-
-        final String finalOldName = nameHint;
 
         //inflate view with seekbar and name
         final View input = this.getLayoutInflater().inflate(R.layout.subject_manager_dialog_groupsettings, null);
 
         final EditText nameInput = (EditText) input.findViewById(R.id.subject_manager_dialog_groupsettings_edit_name);
-        final TextInputLayout nameInputLayout = (TextInputLayout) input.findViewById(R.id.subject_manager_dialog_groupsettings_text_input_layout);
 
         final TextView voteInfo = (TextView) input.findViewById(R.id.subject_manager_dialog_groupsettings_text_min_votierungs);
         final SeekBar minVoteSeek = (SeekBar) input.findViewById(R.id.subject_manager_dialog_groupsettings_seek_min_votierungs);
 
         final TextView presInfo = (TextView) input.findViewById(R.id.subject_manager_dialog_groupsettings_text_prespoints);
-        final SeekBar minPresSeek = (SeekBar) input.findViewById(R.id.subject_manager_dialog_groupsettings_seek_prespoints);
+        final SeekBar wantedPresentationPointsSeekbar = (SeekBar) input.findViewById(R.id.subject_manager_dialog_groupsettings_seek_prespoints);
 
         final TextView estimatedAssignmentsHelp = (TextView) input.findViewById(R.id.subject_manager_dialog_groupsettings_text_assignments_per_uebung);
         final SeekBar estimatedAssignmentsSeek = (SeekBar) input.findViewById(R.id.subject_manager_dialog_groupsettings_seek_assignments_per_uebung);
@@ -207,29 +183,19 @@ public class SubjectManagementActivity extends AppCompatActivity {
         final SeekBar estimatedUebungCountSeek = (SeekBar) input.findViewById(R.id.subject_manager_dialog_groupsettings_seek_estimated_uebung_count);
 
         //offer hint to user
-        //nameInput.setHint(nameHint);
-        nameInputLayout.setHint(nameHint);
+        nameInput.setHint(nameHint);
+        nameInput.setText(nameHint);
+
+        //avoid keyboard popup
+        voteInfo.requestFocus();
 
         //minpreshelp
         presInfo.setText("" + presentationPointsHint);
 
         //minpres seek
-        minPresSeek.setProgress(presentationPointsHint);
-        minPresSeek.setMax(5);
-        minPresSeek.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-            }
-
-            @Override
-            public void onProgressChanged(SeekBar arg0, int progress, boolean arg2) {
-                presInfo.setText(String.valueOf(progress));
-            }
-        });
+        wantedPresentationPointsSeekbar.setProgress(presentationPointsHint);
+        wantedPresentationPointsSeekbar.setMax(5);
+        wantedPresentationPointsSeekbar.setOnSeekBarChangeListener(new SeekerListener(presInfo));
 
         //minvotehelp
         //initialize seekbar and seekbar info text
@@ -238,20 +204,7 @@ public class SubjectManagementActivity extends AppCompatActivity {
         //minvoteseek
         minVoteSeek.setMax(100);
         minVoteSeek.setProgress(minimumVotePercentageHint);
-        minVoteSeek.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-            }
-
-            @Override
-            public void onProgressChanged(SeekBar arg0, int progress, boolean arg2) {
-                voteInfo.setText(progress + "%");
-            }
-        });
+        minVoteSeek.setOnSeekBarChangeListener(new SeekerListener(voteInfo, "%"));
 
         //assignments per uebung help
         estimatedAssignmentsHelp.setText(scheduledAssignmentsPerLesson + "");
@@ -259,21 +212,7 @@ public class SubjectManagementActivity extends AppCompatActivity {
         //assignments per uebung seek
         estimatedAssignmentsSeek.setMax(20);
         estimatedAssignmentsSeek.setProgress(scheduledAssignmentsPerLesson);
-
-        estimatedAssignmentsSeek.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-            }
-
-            @Override
-            public void onProgressChanged(SeekBar arg0, int progress, boolean arg2) {
-                estimatedAssignmentsHelp.setText(progress + "");
-            }
-        });
+        estimatedAssignmentsSeek.setOnSeekBarChangeListener(new SeekerListener(estimatedAssignmentsHelp));
 
         //uebung instances help
         estimatedUebungCountHelp.setText(scheduledNumberOfLessons + "");
@@ -281,25 +220,11 @@ public class SubjectManagementActivity extends AppCompatActivity {
         //ubeung instances seek
         estimatedUebungCountSeek.setMax(20);
         estimatedUebungCountSeek.setProgress(scheduledNumberOfLessons);
-
-        estimatedUebungCountSeek.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-            }
-
-            @Override
-            public void onProgressChanged(SeekBar arg0, int progress, boolean arg2) {
-                estimatedUebungCountHelp.setText(progress + "");
-            }
-        });
+        estimatedUebungCountSeek.setOnSeekBarChangeListener(new SeekerListener(estimatedUebungCountHelp));
 
         String title;
         if (databaseId == ADD_SUBJECT_CODE) {
-            if (groupsDB.getNumberOfSubjects() == 0)
+            if (mSubjectDb.getNumberOfSubjects() == 0)
                 title = getString(R.string.subject_manage_add_title_first_subject);
             else
                 title = getString(R.string.subject_manage_add_title_new_subject);
@@ -307,40 +232,36 @@ public class SubjectManagementActivity extends AppCompatActivity {
             title = getString(R.string.subject_manage_add_title_change_subject) + " " + nameHint;
 
         //build alertdialog
+        final Subject finalOldSubject = oldSubject;
         Builder b = new Builder(this)
                 .setView(input)
                 .setTitle(title)
                 .setPositiveButton(getString(R.string.dialog_button_ok), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
-                        String newName = nameInput.getText().toString();
-                        int minimumVoteValue = minVoteSeek.getProgress();
-                        int minimumPresentationPoints = minPresSeek.getProgress();
-                        int scheduledLessonCount = estimatedUebungCountSeek.getProgress();
-                        int scheduledAssignmentsPerLesson = estimatedAssignmentsSeek.getProgress();
+                        String name = nameInput.getText().toString();
+                        Subject newSubject = new Subject(String.valueOf(databaseId),
+                                String.valueOf("".equals(name) ? finalOldSubject.subjectName : name),
+                                String.valueOf(minVoteSeek.getProgress()),
+                                "0",
+                                String.valueOf(estimatedUebungCountSeek.getProgress()),
+                                String.valueOf(estimatedAssignmentsSeek.getProgress()),
+                                String.valueOf(wantedPresentationPointsSeekbar.getProgress()));
 
                         if (databaseId == ADD_SUBJECT_CODE) {
-                            if (groupsDB.addGroup(newName, minimumVoteValue, minimumPresentationPoints, scheduledLessonCount, scheduledAssignmentsPerLesson) == -1)
+                            if (mSubjectAdapter.addSubject(newSubject, SubjectAdapter.NEW_SUJBECT_CODE) == -1)
                                 Toast.makeText(getApplicationContext(), getString(R.string.subject_manage_subject_exists_already), Toast.LENGTH_SHORT).show();
-                            else
-                                notifyOfChangedDataset();
                             setResult(RESULT_OK);
                         } else {
-                            //change minimum vote, pres value
-                            if (groupsDB.setMinVote(databaseId, minimumVoteValue) != 1)
-                                Log.e("groupmanager:minv", "did not update exactly one row");
-                            if (groupsDB.setMinPresPoints(databaseId, minimumPresentationPoints) != 1)
-                                Log.e("groupmanager:minpres", "did not update exactly one row");
-
-                            groupsDB.setScheduledUebungCountAndAssignments(databaseId, scheduledLessonCount, scheduledAssignmentsPerLesson);
-                            //change group NAME if it changed
-                            Log.d("groupmanager", "trying to update name of " + finalOldName + " to " + newName);
-
-                            if (!"".equals(newName))
-                                groupsDB.changeName(databaseId, finalOldName, newName);
+                            if ("".equals(newSubject.subjectName))
+                                newSubject.subjectName = "empty";
+                            mSubjectAdapter.changeSubject(finalOldSubject, newSubject, recyclerViewPosition);
                         }
-                        notifyOfChangedDataset();
                     }
-                }).setNegativeButton(getString(R.string.dialog_button_abort), null);
+                }).setNegativeButton(getString(R.string.dialog_button_abort), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                    }
+                });
         final AlertDialog dialog = b.create();
 
         //check for bad characters
@@ -388,5 +309,41 @@ public class SubjectManagementActivity extends AppCompatActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_subject_management, menu);
         return true;
+    }
+
+    /**
+     * fuck it recreate dat adapter
+     */
+    public void onImport() {
+        mSubjectList.swapAdapter(new SubjectAdapter(this), false);
+    }
+
+    class SeekerListener implements OnSeekBarChangeListener {
+        TextView mAffected;
+        String mEndingAddition;
+
+        public SeekerListener(TextView affected, String endingAddition) {
+            mAffected = affected;
+            mEndingAddition = endingAddition;
+        }
+
+        public SeekerListener(TextView affected) {
+            this(affected, "");
+        }
+
+        @Override
+        public void onProgressChanged(SeekBar seekBar, int progress, boolean b) {
+            mAffected.setText(progress + mEndingAddition);
+        }
+
+        @Override
+        public void onStartTrackingTouch(SeekBar seekBar) {
+
+        }
+
+        @Override
+        public void onStopTrackingTouch(SeekBar seekBar) {
+
+        }
     }
 }

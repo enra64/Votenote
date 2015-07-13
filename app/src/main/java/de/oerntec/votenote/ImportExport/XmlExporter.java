@@ -55,7 +55,7 @@ public class XmlExporter {
         try {
             //export both tables
             exportTable(DBLessons.getInstance().getAllData(), "entries");
-            exportTable(DBSubjects.getInstance().getAllData(), "subjects");
+            exportTable(DBSubjects.getInstance().getDataDump(), "subjects");
         } catch (IOException e) {
             success = false;
             e.printStackTrace();

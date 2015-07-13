@@ -31,20 +31,18 @@ public class DBSubjects {
         return mInstance;
     }
 
-    public Cursor getAllData() {
+    public Cursor getDataDump() {
         return database.rawQuery("SELECT * FROM " + DatabaseCreator.TABLE_NAME_SUBJECTS, new String[0]);
     }
 
     /**
      * Delete the group with the given name AND the given id
-     *
-     * @param groupName Name of the group to delete
      * @return Number of affected rows.
      */
-    public int deleteRecord(String groupName, int groupId) {
-        Log.i("dbgroups:delete", "deleted " + groupName + " at " + groupId);
+    public int deleteSubject(Subject delete) {
+        Log.i("dbgroups:delete", "deleted " + delete.subjectName + " at " + delete.id);
         String whereClause = DatabaseCreator.SUBJECTS_NAME + "=?" + " AND " + DatabaseCreator.SUBJECTS_ID + "=?";
-        String[] whereArgs = new String[]{groupName, String.valueOf(groupId)};
+        String[] whereArgs = new String[]{delete.subjectName, String.valueOf(delete.id)};
         return database.delete(DatabaseCreator.TABLE_NAME_SUBJECTS, whereClause, whereArgs);
     }
 
@@ -136,7 +134,6 @@ public class DBSubjects {
         c.close();
         return val;
     }
-
 
     public int translatePositionToIDExclusive(int drawerSelection, int excludedID) {
         Cursor groups = getAllButOneGroupNames(excludedID);
@@ -234,7 +231,7 @@ public class DBSubjects {
         return mCursor; // iterate to get each value.
     }
 
-    public List<Subject> getAllLessons() {
+    public List<Subject> getAllSubjects() {
         String[] cols = new String[]{DatabaseCreator.SUBJECTS_ID,//0
                 DatabaseCreator.SUBJECTS_NAME,//1
                 DatabaseCreator.SUBJECTS_MINIMUM_VOTE_PERCENTAGE,//2
@@ -288,15 +285,6 @@ public class DBSubjects {
         return returnValue;
     }
 
-    public void setScheduledUebungCountAndAssignments(int groupID, int newScheduledUebungCount, int newScheduledAssignmentsPerUebung) {
-        Log.i("DBSubjects", "changing uebung schedule");
-        ContentValues values = new ContentValues();
-        values.put(DatabaseCreator.SUBJECTS_SCHEDULED_NUMBER_OF_LESSONS, newScheduledUebungCount);
-        values.put(DatabaseCreator.SUBJECTS_SCHEDULED_ASSIGNMENTS_PER_LESSON, newScheduledAssignmentsPerUebung);
-
-        database.update(DatabaseCreator.TABLE_NAME_SUBJECTS, values, DatabaseCreator.SUBJECTS_ID + "=?", new String[]{String.valueOf(groupID)});
-    }
-
     /**
      * Returns the amount of assignments you could go to at maximum
      *
@@ -337,21 +325,6 @@ public class DBSubjects {
         return val == null ? "null" : val.subjectName;
     }
 
-    /**
-     * Change oldName with database ID dbId to newName
-     *
-     * @param dbID    database id concerned
-     * @param oldName old name for security
-     * @param newName new name
-     * @return num of affected rows
-     */
-    public int changeName(int dbID, String oldName, String newName) {
-        String[] whereArgs = new String[]{String.valueOf(dbID), oldName};
-        ContentValues values = new ContentValues();
-        values.put(DatabaseCreator.SUBJECTS_NAME, newName);
-        return database.update(DatabaseCreator.TABLE_NAME_SUBJECTS, values, DatabaseCreator.SUBJECTS_ID + "=? AND " + DatabaseCreator.SUBJECTS_NAME + "=?", whereArgs);
-    }
-
 
     /**
      * Returns the minimum Vote needed for passing from db
@@ -362,23 +335,6 @@ public class DBSubjects {
     public int getMinVote(int dbID) {
         Subject val = getSubject(dbID);
         return val == null ? -1 : Integer.valueOf(val.subjectMinimumVotePercentage);
-    }
-
-    /**
-     * Set the minimum amount of votes needed for passing class
-     *
-     * @param databaseID ID of the group concerned
-     * @param minValue   Minimum votes
-     * @return Affected row count
-     */
-    public int setMinVote(int databaseID, int minValue) {
-        Log.i("DBSubjects", "changing minvalue");
-        //create values for insert or update
-        ContentValues values = new ContentValues();
-        values.put(DatabaseCreator.SUBJECTS_MINIMUM_VOTE_PERCENTAGE, minValue);
-
-        String[] whereArgs = {String.valueOf(databaseID)};
-        return database.update(DatabaseCreator.TABLE_NAME_SUBJECTS, values, DatabaseCreator.SUBJECTS_ID + "=?", whereArgs);
     }
 
     /**
@@ -406,18 +362,14 @@ public class DBSubjects {
         return val == null ? -1 : Integer.valueOf(val.subjectCurrentPresentationPoints);
     }
 
-    /**
-     * set the minimum amount of presentation points needed for passing
-     *
-     * @param dbID          Database id of group to change
-     * @param minPresPoints presentation points the user has
-     * @return The amount of rows updated, should be one
-     */
-    public int setMinPresPoints(int dbID, int minPresPoints) {
-        Log.i("dbgroups", "setting min pres points");
-        String[] whereArgs = {String.valueOf(dbID)};
+    public int changeSubject(Subject oldSubject, Subject newSubject) {
+        String[] whereArgs = {String.valueOf(oldSubject.id)};
         ContentValues values = new ContentValues();
-        values.put(DatabaseCreator.SUBJECTS_WANTED_PRESENTATION_POINTS, minPresPoints);
+        values.put(DatabaseCreator.SUBJECTS_NAME, newSubject.subjectName);
+        values.put(DatabaseCreator.SUBJECTS_MINIMUM_VOTE_PERCENTAGE, newSubject.subjectMinimumVotePercentage);
+        values.put(DatabaseCreator.SUBJECTS_WANTED_PRESENTATION_POINTS, newSubject.subjectWantedPresentationPoints);
+        values.put(DatabaseCreator.SUBJECTS_SCHEDULED_NUMBER_OF_LESSONS, newSubject.subjectScheduledLessonCount);
+        values.put(DatabaseCreator.SUBJECTS_SCHEDULED_ASSIGNMENTS_PER_LESSON, newSubject.subjectScheduledAssignmentsPerLesson);
         return database.update(DatabaseCreator.TABLE_NAME_SUBJECTS, values, DatabaseCreator.SUBJECTS_ID + "=?", whereArgs);
     }
 

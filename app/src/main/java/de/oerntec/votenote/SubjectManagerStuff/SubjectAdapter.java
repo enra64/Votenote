@@ -3,97 +3,119 @@ package de.oerntec.votenote.SubjectManagerStuff;
 import android.content.Context;
 import android.database.Cursor;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CursorAdapter;
 import android.widget.TextView;
 
+import de.oerntec.votenote.Database.DBSubjects;
+import de.oerntec.votenote.Database.Subject;
 import de.oerntec.votenote.R;
 
-public class SubjectAdapter extends RecyclerView.Adapter<SubjectAdapter.LessonHolder> {
-    //see stackoverflow: http://stackoverflow.com/questions/26517855/using-the-recyclerview-with-a-database
-    // PATCH: Because RecyclerView.Adapter in its current form doesn't natively support
-    // cursors, we "wrap" a CursorAdapter that will do all teh job
-    // for us
-    private CursorAdapter mCursorAdapter;
+public class SubjectAdapter extends RecyclerView.Adapter<SubjectAdapter.SubjectHolder> {
+    public static final int NEW_SUJBECT_CODE = -1;
+
+    private DBSubjects mSubjectDb = DBSubjects.getInstance();
+
     private Context mContext;
+    private Cursor mCursor;
 
-    public SubjectAdapter(Context context, Cursor c) {
+    public SubjectAdapter(Context context) {
         mContext = context;
-
-        //basically the old lesson adapter
-        mCursorAdapter = new CursorAdapter(mContext, c, 0) {
-            @Override
-            public View newView(Context context, Cursor cursor, ViewGroup parent) {
-                LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-                return inflater.inflate(R.layout.subject_manager_subject_card, parent, false);
-            }
-
-            @Override
-            public void bindView(final View view, final Context context, Cursor cursor) {
-                //find textviews
-                TextView title = (TextView) view.findViewById(R.id.subject_manager_subject_card_title),
-                        scheduledPercentage = (TextView) view.findViewById(R.id.subject_manager_subject_card_needed_percentage),
-                        scheduledPresentationPoints = (TextView) view.findViewById(R.id.subject_manager_subject_card_presentation_points),
-                        scheduledLessons = (TextView) view.findViewById(R.id.subject_manager_subject_card_scheduled_lesson_count),
-                        scheduledAssignmentsPerLesson = (TextView) view.findViewById(R.id.subject_manager_subject_card_assignments_per_lesson);
-
-                //load strings
-                int subjectId = cursor.getInt(0);
-                String name = cursor.getString(1);
-                String votePercentage = cursor.getString(2);
-                String presPoints = cursor.getString(3);
-                String lessonCount = cursor.getString(4);
-                String assignmentsPerLesson = cursor.getString(5);
-
-                //set tag for later identification avoiding all
-                view.setTag(subjectId);
-
-                //set texts
-                title.setText(name);
-                scheduledPercentage.setText(votePercentage + "%");
-                scheduledPresentationPoints.setText(presPoints + " " + context.getString(R.string.subjectmanager_set_prespoints));
-                scheduledLessons.setText(lessonCount + " " + context.getString(R.string.subjectmanager_card_lesson_count));
-                scheduledAssignmentsPerLesson.setText(assignmentsPerLesson + " " + context.getString(R.string.subjectmanager_assignments_per_lesson));
-            }
-        };
+        requery();
     }
 
-    public CursorAdapter getCursorAdapter() {
-        return mCursorAdapter;
+    public int addSubject(Subject subject, int position) {
+        //add to database
+        int result = mSubjectDb.addGroup(subject);
+        requery();
+        //the new lesson should be the first, because the cursor is desc sorted by id
+        if (result != -1)
+            notifyItemInserted(position == NEW_SUJBECT_CODE ? 0 : position);
+        return result;
+    }
+
+    /**
+     * change in db
+     * requery
+     * notify of single changed item
+     */
+    public void changeSubject(Subject oldSubject, Subject newSubject, int recyclerViewPosition) {
+        if (!oldSubject.id.equals(newSubject.id))
+            throw new IllegalArgumentException("Old and new lesson must have the same lesson ID!");
+        mSubjectDb.changeSubject(oldSubject, newSubject);
+        requery();
+        notifyItemChanged(recyclerViewPosition);
+    }
+
+    public Subject removeSubject(int subjectId, int recyclerViewPosition) {
+        Subject bkp = mSubjectDb.getSubject(subjectId);
+        Log.i("subject adapter", "attempting to remove " + subjectId + " " + bkp.subjectName);
+        notifyItemRemoved(recyclerViewPosition);
+        mSubjectDb.deleteSubject(bkp);
+        requery();
+        return bkp;
+    }
+
+    private void requery() {
+        if (mCursor != null)
+            mCursor.close();
+        mCursor = null;
+        //should be done asynchronously, but i guess that does not matter for 20 entries...
+        mCursor = mSubjectDb.getAllGroupsInfos();
+    }
+
+    @Override
+    public SubjectHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        //inflate layout
+        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+        View root = inflater.inflate(R.layout.subject_manager_subject_card, parent, false);
+        //create holder for the views
+        SubjectHolder holder = new SubjectHolder(root);
+        //set view ids
+        holder.title = (TextView) root.findViewById(R.id.subject_manager_subject_card_title);
+        holder.scheduledPercentage = (TextView) root.findViewById(R.id.subject_manager_subject_card_needed_percentage);
+        holder.scheduledPresentationPoints = (TextView) root.findViewById(R.id.subject_manager_subject_card_presentation_points);
+        holder.scheduledLessons = (TextView) root.findViewById(R.id.subject_manager_subject_card_scheduled_lesson_count);
+        holder.scheduledAssignmentsPerLesson = (TextView) root.findViewById(R.id.subject_manager_subject_card_assignments_per_lesson);
+        //return the created holder
+        return holder;
+    }
+
+    @Override
+    public void onBindViewHolder(SubjectHolder holder, int position) {
+        mCursor.moveToPosition(position);
+
+        //load strings
+        int subjectId = mCursor.getInt(0);
+        String name = mCursor.getString(1);
+        String votePercentage = mCursor.getString(2);
+        String presPoints = mCursor.getString(3);
+        String lessonCount = mCursor.getString(4);
+        String assignmentsPerLesson = mCursor.getString(5);
+
+        //set tag for later identification avoiding all
+        holder.itemView.setTag(subjectId);
+
+        //set texts
+        holder.title.setText(name);
+        holder.scheduledPercentage.setText(votePercentage + "%");
+        holder.scheduledPresentationPoints.setText(presPoints + " " + mContext.getString(R.string.subjectmanager_set_prespoints));
+        holder.scheduledLessons.setText(lessonCount + " " + mContext.getString(R.string.subjectmanager_card_lesson_count));
+        holder.scheduledAssignmentsPerLesson.setText(assignmentsPerLesson + " " + mContext.getString(R.string.subjectmanager_assignments_per_lesson));
     }
 
     @Override
     public int getItemCount() {
-        return mCursorAdapter.getCount();
+        return mCursor.getCount();
     }
 
+    static class SubjectHolder extends RecyclerView.ViewHolder {
+        TextView title, scheduledPercentage, scheduledPresentationPoints, scheduledLessons, scheduledAssignmentsPerLesson;
 
-    @Override
-    public void onBindViewHolder(LessonHolder holder, int position) {
-        //move to the correct position
-        mCursorAdapter.getCursor().moveToPosition(position);
-        // Passing the binding operation to cursor loader
-        mCursorAdapter.bindView(holder.itemView, mContext, mCursorAdapter.getCursor());
-    }
-
-    @Override
-    public LessonHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        // Passing the inflater job to the cursor-adapter
-        View v = mCursorAdapter.newView(mContext, mCursorAdapter.getCursor(), parent);
-        return new LessonHolder(v);
-    }
-
-    @Override
-    public int getItemViewType(int position) {
-        return 0;
-    }
-
-    class LessonHolder extends RecyclerView.ViewHolder {
-        public LessonHolder(View itemView) {
+        public SubjectHolder(View itemView) {
             super(itemView);
         }
     }
-
 }
