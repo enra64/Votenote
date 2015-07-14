@@ -19,7 +19,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import de.oerntec.votenote.Database.DBSubjects;
 import de.oerntec.votenote.R;
 
 /**
@@ -62,17 +61,9 @@ public class NavigationDrawerFragment extends Fragment implements SelectionCallb
 
     private NavigationAdapter mAdapter;
 
-    private DBSubjects mSubjectDb;
-
-    public NavigationDrawerFragment() {
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        //get database
-        mSubjectDb = DBSubjects.getInstance();
 
         // Read in the flag indicating whether or not the user has demonstrated
         // awareness of the
@@ -131,6 +122,7 @@ public class NavigationDrawerFragment extends Fragment implements SelectionCallb
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setHomeButtonEnabled(true);
+            actionBar.setTitle("VoteNote");
         }
 
         // ActionBarDrawerToggle ties together the the proper interactions
@@ -165,9 +157,6 @@ public class NavigationDrawerFragment extends Fragment implements SelectionCallb
                     return;
                 }
 
-                if (actionBar != null)
-                    actionBar.setTitle("VoteNote");
-
                 //prevent auto showing drawer
                 if (!mUserLearnedDrawer) {
                     mUserLearnedDrawer = true;
@@ -177,7 +166,7 @@ public class NavigationDrawerFragment extends Fragment implements SelectionCallb
                             .apply();
                 }
 
-                getActivity().invalidateOptionsMenu(); // calls
+                getActivity().invalidateOptionsMenu(); // calls mainactivity onprepare
             }
         };
 

@@ -7,6 +7,7 @@ import android.app.FragmentManager;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -53,6 +54,20 @@ import de.oerntec.votenote.Preferences.PreferencesActivity;
 * 1.2.1
 * fixed recursive onCreateOptionsMenu call
 * fixed text scaling
+* 1.2.2
+* applying material looks
+* - cards & recyclerviews instead of the old listviews
+* - redid the action bar icons
+* - switched to toolbar
+* - rewrote adapters for the lists
+* - settings activty no longer uses deprecated API calls
+* - added floating action buttons for adding lessons/subjects
+* - undo bars instead of warning dialogs
+* fixed drawer start preference
+* added logging system. does not work consistently with no reason
+* no more differences between API 15 and API 22
+* diagram view now uses percentages for easier comparison
+*
 */
 
 @SuppressLint("InflateParams")
@@ -71,12 +86,6 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
     private static DBLessons mLessonDb;
     private static int mCurrentSelectedId, mCurrentSelectedPosition;
     private static MainActivity me;
-
-    /**
-     * Used to store the last screen title. For use in
-     * {@link #restoreActionBar()}.
-     */
-    private CharSequence mTitle = "rip";
 
     public static void toast(String text) {
         Toast.makeText(me, text, Toast.LENGTH_SHORT).show();
@@ -108,8 +117,6 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
 
         mNavigationDrawerFragment =
                 (NavigationDrawerFragment) getFragmentManager().findFragmentById(R.id.navigation_drawer);
-        mTitle = getTitle();
-
 
         if (getPreference("enable_logging", false)) {
             //setup handler getting all exceptions to log because google play costs 25 euros
@@ -217,9 +224,6 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
         actionBar.setDisplayShowTitleEnabled(true);
 
-        //update title
-        setTitle(mTitle);
-
         //basically calls onCreateOptionsMenu
         invalidateOptionsMenu();
     }
@@ -232,7 +236,6 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         ActionBar actionBar = getActionBar();
         if (actionBar != null) {
             actionBar.setDisplayShowTitleEnabled(true);
-            actionBar.setTitle("VoteNote");
         }
 
         //prepare animations
@@ -266,7 +269,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         final MenuItem infoItem = menu.findItem(R.id.action_show_all_info);
 
         View presPoints = presPointItem.getActionView();
-        View info = infoItem.getActionView();
+        final View info = infoItem.getActionView();
 
         Animation fade;
         final boolean isVisibleAtEnd;
@@ -286,8 +289,12 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
 
             @Override
             public void onAnimationEnd(Animation animation) {
-                presPointItem.setVisible(isVisibleAtEnd);
-                infoItem.setVisible(isVisibleAtEnd);
+                new Handler().post(new Runnable() {
+                    public void run() {
+                        infoItem.setVisible(isVisibleAtEnd);
+                        presPointItem.setVisible(isVisibleAtEnd);
+                    }
+                });
             }
 
             @Override
@@ -301,7 +308,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         presPoints.startAnimation(fade);
         info.startAnimation(fade);
 
-        return super.onPrepareOptionsMenu(menu);
+        return true;
     }
 
 
