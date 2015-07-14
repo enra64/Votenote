@@ -69,6 +69,9 @@ public class NavigationAdapter extends RecyclerView.Adapter<NavigationAdapter.Su
         if (position == mCurrentSelection) {
             holder.selectionIndicator.setImageResource(R.drawable.selection_indicator_activated);
             holder.title.setTextColor(mContext.getResources().getColor(R.color.colorControlHighlight));
+        } else {
+            holder.selectionIndicator.setImageResource(R.drawable.selection_indicator);
+            holder.title.setTextColor(mContext.getResources().getColor(R.color.textColorPrimary));
         }
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
