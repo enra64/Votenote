@@ -56,7 +56,7 @@ import de.oerntec.votenote.Preferences.PreferencesActivity;
 */
 
 @SuppressLint("InflateParams")
-public class MainActivity extends AppCompatActivity implements NavigationDrawerFragment.NavigationDrawerCallbacks {
+public class MainActivity extends AppCompatActivity implements NavigationDrawerFragment.NavigationDrawerCallbacks, View.OnClickListener {
     /**
      * Request code for getting notified when the first subject has been added
      */
@@ -239,9 +239,20 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         }
 
         //prepare animations
-        menu.findItem(R.id.action_prespoints).setActionView(R.layout.subject_fragment_action_presentation_points);
-        menu.findItem(R.id.action_show_diagram).setActionView(R.layout.subject_fragment_action_info);
-        menu.findItem(R.id.action_show_all_info).setActionView(R.layout.subject_fragment_action_diagram);
+        final MenuItem presPointItem = menu.findItem(R.id.action_prespoints);
+        final MenuItem diagramItem = menu.findItem(R.id.action_show_diagram);
+        final MenuItem infoItem = menu.findItem(R.id.action_show_all_info);
+
+        presPointItem.setActionView(R.layout.subject_fragment_action_presentation_points);
+        diagramItem.setActionView(R.layout.subject_fragment_action_info);
+        infoItem.setActionView(R.layout.subject_fragment_action_diagram);
+
+        presPointItem.getActionView().setOnClickListener(this);
+        presPointItem.getActionView().setTag(R.id.action_prespoints);
+        diagramItem.getActionView().setOnClickListener(this);
+        diagramItem.getActionView().setTag(R.id.action_show_diagram);
+        infoItem.getActionView().setOnClickListener(this);
+        infoItem.getActionView().setTag(R.id.action_show_all_info);
 
         //update prespoint action icon
         if (groupsDB.getWantedPresPoints(mCurrentSelectedId) == 0)
@@ -305,34 +316,43 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
     }
 
 
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        final int lessonId = mCurrentSelectedId;
-
         switch (item.getItemId()) {
             case R.id.action_show_all_info:
-                MainDialogHelper.showAllInfoDialog(this, lessonId);
-                //handy-dandy exception thrower for exception handling testing
-                //Integer.valueOf("rip");
+                onInfoClick();
                 return true;
             case R.id.action_prespoints:
-                MainDialogHelper.showPresentationPointDialog(lessonId, this);
+                onPrespointsClick();
                 return true;
             case R.id.action_settings:
                 startActivity(new Intent(this, PreferencesActivity.class));
                 return true;
             case R.id.action_show_diagram:
-                //only show diagram if more than 0 entries exist
-                if (entryDB.getLessonCountForSubject(lessonId) > 0) {
-                    Intent bintent = new Intent(this, DiagramActivity.class);
-                    bintent.putExtra("databaseID", lessonId);
-                    startActivityForResult(bintent, ADD_FIRST_SUBJECT_REQUEST);
-                } else
-                    Toast.makeText(getApplicationContext(), getString(R.string.main_toast_no_data), Toast.LENGTH_SHORT).show();
+                onDiagramClick();
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void onDiagramClick() {
+        //only show diagram if more than 0 entries exist
+        if (entryDB.getLessonCountForSubject(mCurrentSelectedId) > 0) {
+            Intent bintent = new Intent(this, DiagramActivity.class);
+            bintent.putExtra("databaseID", mCurrentSelectedId);
+            startActivityForResult(bintent, ADD_FIRST_SUBJECT_REQUEST);
+        } else
+            Toast.makeText(getApplicationContext(), getString(R.string.main_toast_no_data), Toast.LENGTH_SHORT).show();
+    }
+
+    private void onPrespointsClick() {
+        MainDialogHelper.showPresentationPointDialog(mCurrentSelectedId, this);
+    }
+
+    private void onInfoClick() {
+        MainDialogHelper.showAllInfoDialog(this, mCurrentSelectedId);
+        //handy-dandy exception thrower for exception handling testing
+        //Integer.valueOf("rip");
     }
 
     @Override
@@ -350,5 +370,16 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
 
     public LessonFragment getCurrentFragment() {
         return (LessonFragment) getFragmentManager().findFragmentById(R.id.container);
+    }
+
+    @Override
+    public void onClick(View view) {
+        int id = (int) view.getTag();
+        if (id == R.id.action_show_diagram)
+            onDiagramClick();
+        if (id == R.id.action_show_all_info)
+            onInfoClick();
+        if (id == R.id.action_prespoints)
+            onPrespointsClick();
     }
 }
