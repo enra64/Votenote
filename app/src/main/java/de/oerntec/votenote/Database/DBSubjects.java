@@ -135,45 +135,6 @@ public class DBSubjects {
         return val;
     }
 
-    public int translatePositionToIDExclusive(int drawerSelection, int excludedID) {
-        Cursor groups = getAllButOneGroupNames(excludedID);
-        if (groups.getCount() == 0)
-            return NO_GROUPS_EXIST;
-        groups.moveToPosition(drawerSelection);
-        int translatedSection = groups.getInt(0);
-        groups.close();
-        return translatedSection;
-    }
-
-
-    public int translateIDtoPosition(int dbID) {
-        Cursor groups = getAllGroupNames();
-        if (groups.getCount() == 0)
-            return NO_GROUPS_EXIST;
-        int counter = 0;
-        while (groups.moveToNext()) {
-            if (groups.getInt(0) == dbID)
-                break;
-            counter++;
-        }
-        groups.close();
-        return counter;
-    }
-
-    public int translateIDtoPositionExclusive(int dbID, int excludedID) {
-        Cursor groups = getAllButOneGroupNames(excludedID);
-        if (groups.getCount() == 0)
-            return NO_GROUPS_EXIST;
-        int counter = 0;
-        while (groups.moveToNext()) {
-            if (groups.getInt(0) == dbID)
-                break;
-            counter++;
-        }
-        groups.close();
-        return counter;
-    }
-
     /**
      * Return a cursor containing all Groups sorted by id desc;
      * sequence: ID, NAME, MINVOTE, MINPRES

@@ -83,7 +83,7 @@ ADDED from AndroidManifest.xml:33:13
 		ADDED from AndroidManifest.xml:35:17
 	android:name
 		ADDED from AndroidManifest.xml:34:17
-activity#de.oerntec.votenote.DiagramActivity
+activity#de.oerntec.votenote.Diagram.DiagramActivity
 ADDED from AndroidManifest.xml:37:9
 	android:label
 		ADDED from AndroidManifest.xml:39:13

@@ -34,7 +34,7 @@
                 android:value="de.oerntec.votenote.Preferences.PreferencesActivity" />
         </activity>
         <activity
-            android:name=".DiagramActivity"
+            android:name=".Diagram.DiagramActivity"
             android:label="@string/title_activity_diagram"
             android:parentActivityName=".MainActivity" >
             <meta-data

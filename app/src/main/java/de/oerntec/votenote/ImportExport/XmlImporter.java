@@ -58,10 +58,7 @@ public class XmlImporter {
                         else
                             Toast.makeText(activity, activity.getString(R.string.import_result_bad), Toast.LENGTH_LONG).show();
 
-                        if (activity instanceof MainActivity) {
-                            MainActivity.mNavigationDrawerFragment.reloadAdapter();
-                            MainActivity.mNavigationDrawerFragment.selectItem(0);
-                        } else if (activity instanceof SubjectManagementActivity) {
+                        if (activity instanceof SubjectManagementActivity) {
                             ((SubjectManagementActivity) activity).onImport();
                         }
                     }

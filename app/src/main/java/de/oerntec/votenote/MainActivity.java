@@ -25,7 +25,7 @@ import java.io.StringWriter;
 
 import de.oerntec.votenote.Database.DBLessons;
 import de.oerntec.votenote.Database.DBSubjects;
-import de.oerntec.votenote.Database.Subject;
+import de.oerntec.votenote.Diagram.DiagramActivity;
 import de.oerntec.votenote.ImportExport.Writer;
 import de.oerntec.votenote.LessonFragmentStuff.LessonFragment;
 import de.oerntec.votenote.NavigationDrawer.NavigationDrawerFragment;
@@ -67,8 +67,8 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
      */
     public static NavigationDrawerFragment mNavigationDrawerFragment;
     //database connection
-    private static DBSubjects groupsDB;
-    private static DBLessons entryDB;
+    private static DBSubjects mSubjectDb;
+    private static DBLessons mLessonDb;
     private static int mCurrentSelectedId, mCurrentSelectedPosition;
     private static MainActivity me;
 
@@ -96,8 +96,8 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         me = this;
 
         //database access
-        groupsDB = DBSubjects.setupInstance(this);
-        entryDB = DBLessons.setupInstance(this);
+        mSubjectDb = DBSubjects.setupInstance(this);
+        mLessonDb = DBLessons.setupInstance(this);
 
         setContentView(R.layout.activity_main);
 
@@ -156,7 +156,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
             int lastSelected = getPreference("last_selected_dbid", 0);
 
             //select the last selected item
-            if (lastSelected < groupsDB.getCount())
+            if (lastSelected < mSubjectDb.getCount())
                 mNavigationDrawerFragment.selectItem(lastSelected);
 
             //open drawer on each resume because the user may want that
@@ -164,7 +164,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
                 mNavigationDrawerFragment.openDrawer();
         }
 
-        Cursor count = entryDB.getAllData();
+        Cursor count = mLessonDb.getAllData();
         if (count.getCount() <= 0) {
             AlertDialog.Builder b = new AlertDialog.Builder(this, AlertDialog.THEME_DEVICE_DEFAULT_DARK);
             b.setTitle("Tutorial");
@@ -181,7 +181,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
     @Override
     public void onNavigationDrawerItemSelected(int position) {
         //keep track of what fragment is shown
-        mCurrentSelectedId = groupsDB.translatePositionToID(position);
+        mCurrentSelectedId = mSubjectDb.translatePositionToID(position);
         mCurrentSelectedPosition = position;
         // update the menu_main content by replacing fragments
         Log.i("votenote main", "selected fragment " + position);
@@ -204,12 +204,9 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
 
     /**
      * Gets the current section name from the database, and adds it to the view
-     *
-     * @param section datbase index+1
+     *     * @param section datbase index+1
      */
     public void onSectionAttached(int section) {
-        Subject sectionData = groupsDB.getSubject(groupsDB.translatePositionToID(section));
-        mTitle = sectionData == null ? getString(R.string.main_add_subject_command) : sectionData.subjectName;
         restoreActionBar();
     }
 
@@ -240,22 +237,18 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
 
         //prepare animations
         final MenuItem presPointItem = menu.findItem(R.id.action_prespoints);
-        final MenuItem diagramItem = menu.findItem(R.id.action_show_diagram);
         final MenuItem infoItem = menu.findItem(R.id.action_show_all_info);
 
         presPointItem.setActionView(R.layout.subject_fragment_action_presentation_points);
-        diagramItem.setActionView(R.layout.subject_fragment_action_info);
-        infoItem.setActionView(R.layout.subject_fragment_action_diagram);
+        infoItem.setActionView(R.layout.subject_fragment_action_info);
 
         presPointItem.getActionView().setOnClickListener(this);
         presPointItem.getActionView().setTag(R.id.action_prespoints);
-        diagramItem.getActionView().setOnClickListener(this);
-        diagramItem.getActionView().setTag(R.id.action_show_diagram);
         infoItem.getActionView().setOnClickListener(this);
         infoItem.getActionView().setTag(R.id.action_show_all_info);
 
         //update prespoint action icon
-        if (groupsDB.getWantedPresPoints(mCurrentSelectedId) == 0)
+        if (mSubjectDb.getWantedPresPoints(mCurrentSelectedId) == 0)
             menu.findItem(R.id.action_prespoints).setVisible(false);
         else
             menu.findItem(R.id.action_prespoints).setVisible(true);
@@ -270,11 +263,9 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         boolean drawerOpen = mNavigationDrawerFragment.isDrawerOpen();
 
         final MenuItem presPointItem = menu.findItem(R.id.action_prespoints);
-        final MenuItem diagramItem = menu.findItem(R.id.action_show_diagram);
         final MenuItem infoItem = menu.findItem(R.id.action_show_all_info);
 
         View presPoints = presPointItem.getActionView();
-        View diagram = diagramItem.getActionView();
         View info = infoItem.getActionView();
 
         Animation fade;
@@ -296,7 +287,6 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
             @Override
             public void onAnimationEnd(Animation animation) {
                 presPointItem.setVisible(isVisibleAtEnd);
-                diagramItem.setVisible(isVisibleAtEnd);
                 infoItem.setVisible(isVisibleAtEnd);
             }
 
@@ -309,7 +299,6 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         fade.setDuration(200);
 
         presPoints.startAnimation(fade);
-        diagram.startAnimation(fade);
         info.startAnimation(fade);
 
         return super.onPrepareOptionsMenu(menu);
@@ -336,13 +325,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
     }
 
     private void onDiagramClick() {
-        //only show diagram if more than 0 entries exist
-        if (entryDB.getLessonCountForSubject(mCurrentSelectedId) > 0) {
-            Intent bintent = new Intent(this, DiagramActivity.class);
-            bintent.putExtra("databaseID", mCurrentSelectedId);
-            startActivityForResult(bintent, ADD_FIRST_SUBJECT_REQUEST);
-        } else
-            Toast.makeText(getApplicationContext(), getString(R.string.main_toast_no_data), Toast.LENGTH_SHORT).show();
+        startActivity(new Intent(this, DiagramActivity.class));
     }
 
     private void onPrespointsClick() {
@@ -375,8 +358,6 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
     @Override
     public void onClick(View view) {
         int id = (int) view.getTag();
-        if (id == R.id.action_show_diagram)
-            onDiagramClick();
         if (id == R.id.action_show_all_info)
             onInfoClick();
         if (id == R.id.action_prespoints)
