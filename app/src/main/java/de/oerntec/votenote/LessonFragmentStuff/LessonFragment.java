@@ -88,7 +88,6 @@ public class LessonFragment extends Fragment {
         //config the recyclerview
         mLessonList.setHasFixedSize(true);
 
-
         //give it a layout manager (whatever that is)
         LinearLayoutManager manager = new LinearLayoutManager(getActivity());
         manager.setOrientation(LinearLayoutManager.VERTICAL);

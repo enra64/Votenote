@@ -4,8 +4,8 @@ import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.app.FragmentManager;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
@@ -31,6 +31,7 @@ import de.oerntec.votenote.ImportExport.Writer;
 import de.oerntec.votenote.LessonFragmentStuff.LessonFragment;
 import de.oerntec.votenote.NavigationDrawer.NavigationDrawerFragment;
 import de.oerntec.votenote.Preferences.PreferencesActivity;
+import de.oerntec.votenote.SubjectManagerStuff.SubjectManagementActivity;
 
 /*
 * VERSION HISTORY
@@ -175,15 +176,28 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
                 mNavigationDrawerFragment.openDrawer();
         }
 
-        Cursor count = mLessonDb.getAllData();
-        if (count.getCount() <= 0) {
+        int lessonCount = mLessonDb.getCount();
+        int subjectCount = mSubjectDb.getCount();
+
+        if (lessonCount <= 0 && subjectCount > 0) {
             AlertDialog.Builder b = new AlertDialog.Builder(this, AlertDialog.THEME_DEVICE_DEFAULT_DARK);
             b.setTitle("Tutorial");
             b.setView(this.getLayoutInflater().inflate(R.layout.tutorial_lessons, null));
             b.setPositiveButton(getString(R.string.dialog_button_ok), null);
             b.create().show();
+        } else if (subjectCount == 0) {
+            AlertDialog.Builder b = new AlertDialog.Builder(this, AlertDialog.THEME_DEVICE_DEFAULT_DARK);
+            b.setTitle("Tutorial");
+            b.setMessage(getString(R.string.create_new_subject_command));
+            b.setPositiveButton(getString(R.string.dialog_button_ok), null);
+            b.setNeutralButton("Shortcut", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    startActivity(new Intent(MainActivity.this, SubjectManagementActivity.class));
+                }
+            });
+            b.create().show();
         }
-        count.close();
     }
 
     /**
@@ -322,7 +336,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
                 onInfoClick();
                 return true;
             case R.id.action_prespoints:
-                onPrespointsClick();
+                onPresentationPointsClick();
                 return true;
             case R.id.action_settings:
                 startActivity(new Intent(this, PreferencesActivity.class));
@@ -338,7 +352,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         startActivity(new Intent(this, DiagramActivity.class));
     }
 
-    private void onPrespointsClick() {
+    private void onPresentationPointsClick() {
         MainDialogHelper.showPresentationPointDialog(mCurrentSelectedId, this);
     }
 
@@ -346,15 +360,6 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         MainDialogHelper.showAllInfoDialog(this, mCurrentSelectedId);
         //handy-dandy exception thrower for exception handling testing
         //Integer.valueOf("rip");
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == ADD_FIRST_SUBJECT_REQUEST) {
-            mNavigationDrawerFragment.selectItem(0);
-            Log.i("on result", "trying to reload fragment");
-        } else
-            super.onActivityResult(requestCode, resultCode, data);
     }
 
     private void setPreference(String key, int val) {
@@ -371,6 +376,6 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         if (id == R.id.action_show_all_info)
             onInfoClick();
         if (id == R.id.action_prespoints)
-            onPrespointsClick();
+            onPresentationPointsClick();
     }
 }

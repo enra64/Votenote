@@ -6,9 +6,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import de.oerntec.votenote.MainActivity;
 
 public class DBLessons {
@@ -267,17 +264,11 @@ public class DBLessons {
         return mCursor; // iterate to get each value.
     }
 
-    public List<Lesson> getLessonsForSubject(int subjectId) {
-        Cursor lessonCursor = getAllLessonsForSubject(subjectId);
-        List<Lesson> lessonList = new ArrayList<>(lessonCursor.getCount());
-        lessonCursor.moveToPrevious();
-        while (lessonCursor.moveToNext())
-            lessonList.add(new Lesson(lessonCursor.getInt(0),
-                    lessonCursor.getInt(1),
-                    lessonCursor.getInt(2),
-                    lessonCursor.getInt(3),
-                    subjectId));
-        return lessonList;
+    public int getCount() {
+        Cursor c = getAllData();
+        int result = c.getCount();
+        c.close();
+        return result;
     }
 
     /**

@@ -66,18 +66,17 @@ public class SubjectManagementActivity extends AppCompatActivity {
         if (actionBar != null)
             actionBar.setDisplayHomeAsUpEnabled(true);
 
+        //get db
+        mSubjectDb = DBSubjects.getInstance();
+
         //tutorial?
-        Bundle extras = getIntent().getExtras();
-        if (extras != null && extras.getBoolean("firstGroup", false)) {
+        if (mSubjectDb.getCount() == 0) {
             Builder b = new AlertDialog.Builder(this, AlertDialog.THEME_DEVICE_DEFAULT_DARK);
             b.setTitle("Tutorial");
             b.setView(this.getLayoutInflater().inflate(R.layout.tutorial_subjects, null));
             b.setPositiveButton(getString(R.string.dialog_button_ok), null);
             b.create().show();
         }
-
-        //get db
-        mSubjectDb = DBSubjects.getInstance();
 
         //get listview
         mSubjectList = (RecyclerView) findViewById(R.id.subject_manager_recycler_view);
@@ -246,9 +245,10 @@ public class SubjectManagementActivity extends AppCompatActivity {
                 .setTitle(title)
                 .setPositiveButton(getString(R.string.dialog_button_ok), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
-                        String name = nameInput.getText().toString();
+                        String newName = nameInput.getText().toString();
+                        String oldName = finalOldSubject == null ? "_" : finalOldSubject.subjectName;
                         Subject newSubject = new Subject(String.valueOf(databaseId),
-                                String.valueOf("".equals(name) ? finalOldSubject.subjectName : name),
+                                String.valueOf("".equals(newName) ? oldName : newName),
                                 String.valueOf(minVoteSeek.getProgress()),
                                 "0",
                                 String.valueOf(estimatedUebungCountSeek.getProgress()),
@@ -258,7 +258,6 @@ public class SubjectManagementActivity extends AppCompatActivity {
                         if (databaseId == ADD_SUBJECT_CODE) {
                             if (mSubjectAdapter.addSubject(newSubject, SubjectAdapter.NEW_SUJBECT_CODE) == -1)
                                 Toast.makeText(getApplicationContext(), getString(R.string.subject_manage_subject_exists_already), Toast.LENGTH_SHORT).show();
-                            setResult(RESULT_OK);
                         } else {
                             if ("".equals(newSubject.subjectName))
                                 newSubject.subjectName = "empty";
@@ -297,14 +296,7 @@ public class SubjectManagementActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         switch (item.getItemId()) {
-            case android.R.id.home:
-                setResult(RESULT_OK);
-                finish();
-                return true;
             case R.id.action_read_from_storage:
                 XmlImporter.importDialog(this);
                 return true;
