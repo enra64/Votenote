@@ -66,8 +66,7 @@ import de.oerntec.votenote.Preferences.PreferencesActivity;
 * fixed drawer start preference
 * added logging system. does not work consistently with no reason
 * no more differences between API 15 and API 22
-* diagram view now uses percentages for easier comparison
-*
+* diagram view now uses percentages for better comparison
 */
 
 @SuppressLint("InflateParams")
@@ -151,7 +150,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
     }
 
     public void onVersionResult(String result) {
-        if (!"1.2.1".equals(result))
+        if (!"1.2.2".equals(result))
             Toast.makeText(this, getString(R.string.main_version_check_goto_settings), Toast.LENGTH_LONG).show();
     }
 
