@@ -154,7 +154,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
     }
 
     public void onVersionResult(String result) {
-        if (!"1.2.2".equals(result))
+        if (!"1.2.3".equals(result))
             Toast.makeText(this, getString(R.string.main_version_check_goto_settings), Toast.LENGTH_LONG).show();
     }
 
