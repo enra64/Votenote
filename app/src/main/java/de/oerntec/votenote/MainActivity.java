@@ -78,6 +78,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
      * Request code for getting notified when the first subject has been added
      */
     public static final int ADD_FIRST_SUBJECT_REQUEST = 0;
+
     /**
      * Fragment managing the behaviors, interactions and presentation of the
      * navigation drawer.
