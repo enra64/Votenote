@@ -60,7 +60,7 @@
 
         <Preference
             android:key="version_key"
-            android:title="Version 1.2.3" />
+            android:title="Version 1.2.4" />
 
     </PreferenceCategory>
 </PreferenceScreen>

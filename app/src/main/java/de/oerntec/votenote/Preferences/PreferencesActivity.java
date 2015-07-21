@@ -39,7 +39,7 @@ public class PreferencesActivity extends AppCompatActivity {
         AlertDialog.Builder b = new AlertDialog.Builder(this);
         b.setTitle(this.getString(R.string.versio_check_title));
         String message;
-        boolean isNewest = "1.2.3".equals(result);
+        boolean isNewest = "1.2.4".equals(result);
         if (isNewest)
             message = this.getString(R.string.version_check_success_message);
         else
