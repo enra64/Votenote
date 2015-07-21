@@ -1,5 +1,6 @@
 package de.oerntec.votenote.Diagram;
 
+import android.content.Context;
 import android.database.Cursor;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -8,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import de.oerntec.votenote.Database.DBLessons;
 import de.oerntec.votenote.Database.DBSubjects;
@@ -19,10 +21,12 @@ public class DiagramSubjectAdapter extends RecyclerView.Adapter<DiagramSubjectAd
     private AdapterListener mAdapterListener;
     private Cursor mCursor;
     private int[] mColorArray;
+    private Context mContext;
 
-    public DiagramSubjectAdapter(AdapterListener listener, int[] colorArray) {
-        mAdapterListener = listener;
+    public DiagramSubjectAdapter(Context context, int[] colorArray) {
+        mAdapterListener = (AdapterListener) context;
         mColorArray = colorArray;
+        mContext = context;
         requery();
     }
 
@@ -60,17 +64,21 @@ public class DiagramSubjectAdapter extends RecyclerView.Adapter<DiagramSubjectAd
         //set tag for later identification avoiding all
         holder.itemView.setTag(subjectId);
 
-        if (DBLessons.getInstance().getLessonCountForSubject(subjectId) <= 0) {
-            holder.itemView.setEnabled(false);
-            holder.checkBox.setEnabled(false);
-        } else {
-            holder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
+        final boolean enoughLessons = DBLessons.getInstance().getLessonCountForSubject(subjectId) > 1;
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (enoughLessons) {
                     holder.checkBox.setChecked(!holder.checkBox.isChecked());
                     mAdapterListener.onClick(subjectId, holder.checkBox.isChecked(), mColorArray[position]);
-                }
-            });
+                } else
+                    Toast.makeText(mContext, mContext.getString(R.string.diagram_not_enough_entries), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        if (!enoughLessons) {
+            holder.checkBox.setEnabled(false);
         }
 
         holder.checkBox.setHighlightColor(mColorArray[position]);

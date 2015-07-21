@@ -67,6 +67,9 @@ import de.oerntec.votenote.Preferences.PreferencesActivity;
 * added logging system. does not work consistently with no reason
 * no more differences between API 15 and API 22
 * diagram view now uses percentages for better comparison
+* 1.2.3
+* added draiochta-level fix to the problem suggested by daniel that
+* a subject with one entry could not be displayed
 */
 
 @SuppressLint("InflateParams")
