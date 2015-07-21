@@ -75,7 +75,7 @@ public class NavigationDrawerFragment extends Fragment implements SelectionCallb
             mCurrentSelectedPosition = savedInstanceState.getInt(STATE_SELECTED_POSITION);
 
         // Select either the default item (0) or the last selected item.
-        selectItem(mCurrentSelectedPosition);
+        //selectItem(mCurrentSelectedPosition);
     }
 
     @Override
@@ -144,8 +144,6 @@ public class NavigationDrawerFragment extends Fragment implements SelectionCallb
                 super.onDrawerClosed(drawerView);
                 if (!isAdded())
                     return;
-
-                mAdapter.drawerClosed();
 
                 getActivity().invalidateOptionsMenu(); // calls
             }

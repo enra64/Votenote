@@ -89,7 +89,7 @@ public class MainDialogHelper {
                 .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
                         if (myVote.getValue() <= maxVote.getValue()) {
-                            Lesson val = new Lesson(-1, myVote.getValue(), maxVote.getValue(), -1, subjectId);
+                            Lesson val = new Lesson(finalOldValues == null ? -1 : finalOldValues.lessonId, myVote.getValue(), maxVote.getValue(), -1, subjectId);
                             if (lessonID == ADD_LESSON_CODE)
                                 mActivity.getCurrentFragment().mAdapter.addLesson(val);
                             else

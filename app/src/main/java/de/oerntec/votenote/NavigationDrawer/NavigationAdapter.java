@@ -27,11 +27,17 @@ public class NavigationAdapter extends RecyclerView.Adapter<NavigationAdapter.Su
         reQuery();
     }
 
+    /**
+     * Requery cursor and reload everything
+     */
     public void notifyForReload() {
         reQuery();
         notifyItemRangeChanged(0, mCursor.getCount());
     }
 
+    /**
+     * give the cursor to the gc, and create a new one.
+     */
     private void reQuery() {
         if (mCursor != null)
             mCursor.close();
@@ -90,20 +96,14 @@ public class NavigationAdapter extends RecyclerView.Adapter<NavigationAdapter.Su
         return mCursor.getCount();
     }
 
+    /**
+     * Set the current selection and notify the recycler view
+     */
     public void setCurrentSelection(int position) {
-        mSelectionApplied = false;
-        mOldSelection = mCurrentSelection;
+        notifyItemChanged(mCurrentSelection);
+        notifyItemChanged(position);
         mCurrentSelection = position;
     }
-
-    public void drawerClosed() {
-        if (mSelectionApplied)
-            return;
-        mSelectionApplied = true;
-        notifyItemChanged(mOldSelection);
-        notifyItemChanged(mCurrentSelection);
-    }
-
     static class SubjectHolder extends RecyclerView.ViewHolder {
         TextView title;
         ImageView selectionIndicator;

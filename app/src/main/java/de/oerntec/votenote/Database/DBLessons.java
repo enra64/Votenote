@@ -66,24 +66,18 @@ public class DBLessons {
         return database.rawQuery("SELECT * FROM " + DatabaseCreator.TABLE_NAME_ENTRIES, new String[0]);
     }
 
-    public void changeLesson(Lesson oldLesson, Lesson newLesson) {
-        changeLesson(oldLesson.subjectId, oldLesson.lessonId, newLesson.maxVotes, newLesson.myVotes);
-    }
-
     /**
-     * Change the values of a lesson
+     * change the values of oldlesson to newlesson. database id is ignored.
      */
-    public void changeLesson(int subjectId, int lessonId, int maxVote, int myVote) {
-        //create values for insert or update
+    public void changeLesson(Lesson oldLesson, Lesson newLesson) {
         ContentValues values = new ContentValues();
-        values.put(DatabaseCreator.ENTRIES_MAX_VOTES, maxVote);
-        values.put(DatabaseCreator.ENTRIES_MY_VOTES, myVote);
+        values.put(DatabaseCreator.ENTRIES_MAX_VOTES, newLesson.maxVotes);
+        values.put(DatabaseCreator.ENTRIES_MY_VOTES, newLesson.myVotes);
 
-        String[] whereArgs = {String.valueOf(subjectId), String.valueOf(lessonId)};
+        String[] whereArgs = {String.valueOf(oldLesson.subjectId), String.valueOf(oldLesson.lessonId)};
         int affectedRows = database.update(DatabaseCreator.TABLE_NAME_ENTRIES, values, DatabaseCreator.ENTRIES_SUBJECT_ID + "=?" + " AND " + DatabaseCreator.ENTRIES_LESSON_ID + "=?", whereArgs);
         Log.i("dbentries:changeentry", "changed " + affectedRows + " entries");
     }
-
     /**
      * Get a lesson corresponding to that subject and lesson id
      *

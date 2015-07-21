@@ -86,6 +86,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
     private static DBLessons mLessonDb;
     private static int mCurrentSelectedId, mCurrentSelectedPosition;
     private static MainActivity me;
+    private boolean mCurrentFragmentHasPrespoints;
 
     public static void toast(String text) {
         Toast.makeText(me, text, Toast.LENGTH_SHORT).show();
@@ -190,6 +191,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         //keep track of what fragment is shown
         mCurrentSelectedId = mSubjectDb.translatePositionToID(position);
         mCurrentSelectedPosition = position;
+        mCurrentFragmentHasPrespoints = mSubjectDb.getWantedPresPoints(mCurrentSelectedId) > 0;
         // update the menu_main content by replacing fragments
         Log.i("votenote main", "selected fragment " + position);
         FragmentManager fragmentManager = getFragmentManager();
@@ -249,13 +251,6 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         presPointItem.getActionView().setTag(R.id.action_prespoints);
         infoItem.getActionView().setOnClickListener(this);
         infoItem.getActionView().setTag(R.id.action_show_all_info);
-
-        //update prespoint action icon
-        if (mSubjectDb.getWantedPresPoints(mCurrentSelectedId) == 0)
-            menu.findItem(R.id.action_prespoints).setVisible(false);
-        else
-            menu.findItem(R.id.action_prespoints).setVisible(true);
-
         return true;
     }
 
@@ -282,6 +277,9 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
             isVisibleAtEnd = false;
         }
 
+        if (!mCurrentFragmentHasPrespoints)
+            presPointItem.setVisible(false);
+
         fade.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
@@ -292,7 +290,8 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
                 new Handler().post(new Runnable() {
                     public void run() {
                         infoItem.setVisible(isVisibleAtEnd);
-                        presPointItem.setVisible(isVisibleAtEnd);
+                        if (mCurrentFragmentHasPrespoints)
+                            presPointItem.setVisible(isVisibleAtEnd);
                     }
                 });
             }
@@ -303,9 +302,10 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         });
 
         fade.setInterpolator(new AccelerateInterpolator());
-        fade.setDuration(200);
+        fade.setDuration(350);
 
-        presPoints.startAnimation(fade);
+        if (mCurrentFragmentHasPrespoints)
+            presPoints.startAnimation(fade);
         info.startAnimation(fade);
 
         return true;

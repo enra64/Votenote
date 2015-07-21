@@ -29,7 +29,7 @@ public class LessonAdapter extends RecyclerView.Adapter<LessonAdapter.Holder> {
         mContext = context;
         mSubjectId = subjectId;
         mLatestLessonFirst = MainActivity.getPreference("reverse_lesson_sort", false);
-        mCursor = mLessonDb.getAllLessonsForSubject(mSubjectId);
+        requery();
     }
 
     /**
@@ -63,6 +63,8 @@ public class LessonAdapter extends RecyclerView.Adapter<LessonAdapter.Holder> {
         mLessonDb.changeLesson(oldLesson, newLesson);
         requery();
         notifyItemChanged(getRecyclerViewPosition(oldLesson.lessonId));
+        //update infoview
+        notifyItemChanged(0);
     }
 
     /**
@@ -70,12 +72,12 @@ public class LessonAdapter extends RecyclerView.Adapter<LessonAdapter.Holder> {
      * requery
      * notify
      */
-    public Lesson removeLesson(int lessonId) {
+    public Lesson removeLesson(final int lessonId) {
         Lesson bkp = mLessonDb.getLesson(mSubjectId, lessonId);
-        int listPosition = getRecyclerViewPosition(lessonId);
-        notifyItemRemoved(listPosition);
+        final int listPosition = getRecyclerViewPosition(lessonId);
         mLessonDb.removeEntry(mSubjectId, lessonId);
         requery();
+        notifyItemRemoved(listPosition);
         notifyChangedLessonRange(listPosition);
         return bkp;
     }
@@ -182,7 +184,7 @@ public class LessonAdapter extends RecyclerView.Adapter<LessonAdapter.Holder> {
 
     @Override
     public int getItemCount() {
-        return mCursor.getCount() + 1;//+1 for infoview
+        return mCursor == null ? 0 : mCursor.getCount() + 1;//+1 for infoview
     }
 
     @Override
