@@ -80,28 +80,22 @@
     <string name="tutorial_lessons_about">Berechnete Werte anzeigen</string>
     <string name="tutorial_lessons_diagram">Diagramm anzeigen</string>
     <string name="xml_import_warning_message">Alle derzeitigen Einträge und Übungen werden gelöscht!</string>
-    <string name="xml_import_dialog_title">Überschreiben?</string>
+    <string name="xml_import_dialog_title">Import</string>
     <string name="import_result_ok">Kein Fehler</string>
     <string name="import_result_bad">Fehler</string>
     <string name="xml_importer_file_not_found">File not found</string>
     <string name="subject_add_hint">Name der Übung</string>
-    <string name="version_check_message">Überprüfe auf neue Version…</string>
-    <string name="versio_check_title">Versionüberprüfung</string>
-    <string name="version_check_success_message">Du hast die neueste Version!</string>
-    <string name="version_check_fail_message">Du hast nicht mehr die neueste Version!</string>
-    <string name="pref_update_check_summary">Bei gesetzter Checkbox wird beim Starten die Version geprüft.</string>
-    <string name="pref_update_check_title">Regelmäßig nach Updates suchen</string>
     <string name="deletion_confirmation_title">Wirklich alle Einträge löschen?</string>
     <string name="deletion_confirmation_message">Wenn du OK wählst, werden wirklich alle derzeitigen Datenbankeinträge entfernt!</string>
     <string name="pref_check_updates_now">Auf Updates überprüfen</string>
     <string name="pref_delete_all_entries">Alle Eintrage löschen</string>
     <string name="pres_control_subjects">Übungen verwalten</string>
-    <string name="main_version_check_goto_settings">Du hast nicht mehr die neueste Version! Überprüfe die Version in den Einstellungen, um die neueste Version herunterzuladen!</string>
     <string name="pref_logging_sum">Alle unerwarteten Exceptions auf der SD-Karte speichern</string>
     <string name="voted_assignments_info_card"> votierte Aufgaben</string>
-    <string name="pref_updates">Updates</string>
+    <string name="pref_updates">Allgemeine Informationen</string>
     <string name="diagram_not_enough_entries">Nicht genug Einträge!</string>
     <string name="create_new_subject_command">Unter "Einstellungen/Übungen" verwalten kannst du deine erste Übung hinzufügen</string>
     <string name="undobar_deleted">Gelöscht!</string>
+    <string name="infoview_vote_average_no_data">Keine Einträge</string>
 
 </resources>

@@ -177,7 +177,7 @@ public class LessonFragment extends Fragment {
     }
 
     public void reloadInfo() {
-
+        mAdapter.notifyItemChanged(0);
     }
 
     private void showUndoSnackBar(final int lessonId) {

@@ -50,6 +50,8 @@ public class LessonAdapter extends RecyclerView.Adapter<LessonAdapter.Holder> {
         notifyItemInserted(getRecyclerViewPosition(lessonId));
         if (lessonId != -1)
             notifyChangedLessonRange(getRecyclerViewPosition(lessonId));
+        else
+            notifyItemChanged(0);
     }
 
     /**
@@ -106,8 +108,10 @@ public class LessonAdapter extends RecyclerView.Adapter<LessonAdapter.Holder> {
     private void notifyChangedLessonRange(int changedPosition) {
         if (mLatestLessonFirst)
             notifyItemRangeChanged(0, changedPosition);
-        else
+        else {
             notifyItemRangeChanged(changedPosition, getItemCount() - 1);
+            notifyItemChanged(0);
+        }
     }
 
     @Override

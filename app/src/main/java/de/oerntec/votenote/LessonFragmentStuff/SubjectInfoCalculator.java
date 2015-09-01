@@ -90,14 +90,14 @@ class SubjectInfoCalculator {
 
         //no votes have been given
         if (entryDB.getLessonCountForSubject(subjectId) == 0)
-            averageVoteView.setText("NaN");
+            averageVoteView.setText(context.getString(R.string.infoview_vote_average_no_data));
 
         //get minvote for section
         int minVote = groupDB.getMinVote(subjectId);
 
         //write percentage and color coding to summaryview
         if (Float.isNaN(average))
-            averageVoteView.setText("NaN");
+            averageVoteView.setText(context.getString(R.string.infoview_vote_average_no_data));
         else
             averageVoteView.setText(String.format("%.1f", average) + "%");
 
