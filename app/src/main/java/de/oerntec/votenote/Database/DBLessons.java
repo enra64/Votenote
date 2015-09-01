@@ -73,7 +73,8 @@ public class DBLessons {
 
         String[] whereArgs = {String.valueOf(oldLesson.subjectId), String.valueOf(oldLesson.lessonId)};
         int affectedRows = database.update(DatabaseCreator.TABLE_NAME_ENTRIES, values, DatabaseCreator.ENTRIES_SUBJECT_ID + "=?" + " AND " + DatabaseCreator.ENTRIES_LESSON_ID + "=?", whereArgs);
-        Log.i("dbentries:changeentry", "changed " + affectedRows + " entries");
+        if (MainActivity.ENABLE_LOG_CALLS)
+            Log.i("dbentries:changeentry", "changed " + affectedRows + " entries");
     }
     /**
      * Get a lesson corresponding to that subject and lesson id
@@ -98,7 +99,8 @@ public class DBLessons {
         int checkValue =
                 database.delete(DatabaseCreator.TABLE_NAME_ENTRIES,
                         DatabaseCreator.ENTRIES_SUBJECT_ID + "=?", whereArgs);
-        Log.i("dbgroups:delete", "deleting all " + checkValue + " entries of type " + subjectId);
+        if (MainActivity.ENABLE_LOG_CALLS)
+            Log.i("dbgroups:delete", "deleting all " + checkValue + " entries of type " + subjectId);
     }
 
     /**
@@ -130,7 +132,8 @@ public class DBLessons {
      * @param val lesson to add
      */
     public void insertLesson(Lesson val) {
-        Log.i("db:entries:add", "adding entry with lastnummer" + val.lessonId + " for group " + val.subjectId);
+        if (MainActivity.ENABLE_LOG_CALLS)
+            Log.i("db:entries:add", "adding entry with lastnummer" + val.lessonId + " for group " + val.subjectId);
 
         String query = "UPDATE " + DatabaseCreator.TABLE_NAME_ENTRIES + " SET " + DatabaseCreator.ENTRIES_LESSON_ID + " = " + DatabaseCreator.ENTRIES_LESSON_ID + " + 1 " +
                 "WHERE " + DatabaseCreator.ENTRIES_SUBJECT_ID + " = ? AND " + DatabaseCreator.ENTRIES_LESSON_ID + " >= ?";
@@ -150,7 +153,8 @@ public class DBLessons {
      * Add an entry to the respective uebung
      */
     public void addLesson(int subjectId, int maxVote, int myVote, int uebungNummer) {
-        Log.i("db:entries:add", "adding entry with lastnummer" + uebungNummer + " for group " + subjectId);
+        if (MainActivity.ENABLE_LOG_CALLS)
+            Log.i("db:entries:add", "adding entry with lastnummer" + uebungNummer + " for group " + subjectId);
 
         //create values for insert or update
         ContentValues values = new ContentValues();
@@ -173,7 +177,8 @@ public class DBLessons {
      * remove the entry and decrease the uebung_nummer for all following entries
      */
     public void removeEntry(int subjectId, int lessonId) {
-        Log.i("entries", "remove " + subjectId + ":" + lessonId);
+        if (MainActivity.ENABLE_LOG_CALLS)
+            Log.i("entries", "remove " + subjectId + ":" + lessonId);
         //remove correct entry
         database.delete(DatabaseCreator.TABLE_NAME_ENTRIES, DatabaseCreator.ENTRIES_SUBJECT_ID + "=" + subjectId + " AND " + DatabaseCreator.ENTRIES_LESSON_ID + "=" + lessonId, null);
         //decrease uebungnummer for all following entries

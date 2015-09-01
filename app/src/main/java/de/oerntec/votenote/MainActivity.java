@@ -87,6 +87,11 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
     public static final int ADD_FIRST_SUBJECT_REQUEST = 0;
 
     /**
+     * enable or disable log calls for release
+     */
+    public static final boolean ENABLE_LOG_CALLS = false;
+
+    /**
      * Fragment managing the behaviors, interactions and presentation of the
      * navigation drawer.
      */
@@ -207,7 +212,8 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         mCurrentSelectedPosition = position;
         mCurrentFragmentHasPrespoints = mSubjectDb.getWantedPresPoints(mCurrentSelectedId) > 0;
         // update the menu_main content by replacing fragments
-        Log.i("votenote main", "selected fragment " + position);
+        if (ENABLE_LOG_CALLS)
+            Log.i("votenote main", "selected fragment " + position);
         FragmentManager fragmentManager = getFragmentManager();
         fragmentManager
                 .beginTransaction()
@@ -221,7 +227,8 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         //save where the user left
         if (mCurrentSelectedId != -1) {
             setPreference("last_selected_dbid", mCurrentSelectedPosition);
-            Log.i("last selected", "" + mCurrentSelectedPosition);
+            if (ENABLE_LOG_CALLS)
+                Log.i("last selected", "" + mCurrentSelectedPosition);
         }
     }
 

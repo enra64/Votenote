@@ -9,6 +9,8 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.oerntec.votenote.MainActivity;
+
 public class DBSubjects {
     public final static int NO_GROUPS_EXIST = -1;
 
@@ -40,7 +42,8 @@ public class DBSubjects {
      * @return Number of affected rows.
      */
     public int deleteSubject(Subject delete) {
-        Log.i("dbgroups:delete", "deleted " + delete.subjectName + " at " + delete.id);
+        if (MainActivity.ENABLE_LOG_CALLS)
+            Log.i("dbgroups:delete", "deleted " + delete.subjectName + " at " + delete.id);
         String whereClause = DatabaseCreator.SUBJECTS_NAME + "=?" + " AND " + DatabaseCreator.SUBJECTS_ID + "=?";
         String[] whereArgs = new String[]{delete.subjectName, String.valueOf(delete.id)};
         return database.delete(DatabaseCreator.TABLE_NAME_SUBJECTS, whereClause, whereArgs);
@@ -104,7 +107,8 @@ public class DBSubjects {
         values.put(DatabaseCreator.SUBJECTS_SCHEDULED_ASSIGNMENTS_PER_LESSON, newScheduledAssignmentsPerUebung);
 
         //insert name, because it does not exist yet
-        Log.i("DBSubjects", "adding group");
+        if (MainActivity.ENABLE_LOG_CALLS)
+            Log.i("DBSubjects", "adding group");
         database.insert(DatabaseCreator.TABLE_NAME_SUBJECTS, null, values);
         return 1;
     }

@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import de.oerntec.votenote.Database.DBSubjects;
 import de.oerntec.votenote.Database.Subject;
+import de.oerntec.votenote.MainActivity;
 import de.oerntec.votenote.R;
 
 public class SubjectAdapter extends RecyclerView.Adapter<SubjectAdapter.SubjectHolder> {
@@ -51,7 +52,8 @@ public class SubjectAdapter extends RecyclerView.Adapter<SubjectAdapter.SubjectH
 
     public Subject removeSubject(int subjectId, int recyclerViewPosition) {
         Subject bkp = mSubjectDb.getSubject(subjectId);
-        Log.i("subject adapter", "attempting to remove " + subjectId + " " + bkp.subjectName);
+        if (MainActivity.ENABLE_LOG_CALLS)
+            Log.i("subject adapter", "attempting to remove " + subjectId + " " + bkp.subjectName);
         notifyItemRemoved(recyclerViewPosition);
         mSubjectDb.deleteSubject(bkp);
         requery();

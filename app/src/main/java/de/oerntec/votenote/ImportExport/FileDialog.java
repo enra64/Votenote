@@ -52,6 +52,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import de.oerntec.votenote.MainActivity;
 import de.oerntec.votenote.R;
 
 public class FileDialog {
@@ -129,9 +130,11 @@ public class FileDialog {
         while (!dirFile.exists() || !dirFile.isDirectory()) {
             dir = dirFile.getParent();
             dirFile = new File(dir);
-            Log.d("~~~~~", "dir=" + dir);
+            if (MainActivity.ENABLE_LOG_CALLS)
+                Log.d("~~~~~", "dir=" + dir);
         }
-        Log.d("~~~~~", "dir=" + dir);
+        if (MainActivity.ENABLE_LOG_CALLS)
+            Log.d("~~~~~", "dir=" + dir);
         //mSdcardDirectory
         try {
             dir = new File(dir).getCanonicalPath();
@@ -165,7 +168,8 @@ public class FileDialog {
             public boolean onKey(DialogInterface arg0, int keyCode, KeyEvent event) {
                 if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN) {
                     goToUpperLevel();
-                    Log.i("keylistener", "back");
+                    if (MainActivity.ENABLE_LOG_CALLS)
+                        Log.i("keylistener", "back");
                     return true;
                 }
                 return false;
@@ -194,7 +198,8 @@ public class FileDialog {
                     ) {
                 dirs.add("..");
             }
-            Log.d("~~~~", "m_dir=" + m_dir);
+            if (MainActivity.ENABLE_LOG_CALLS)
+                Log.d("~~~~", "m_dir=" + m_dir);
             if (!dirFile.exists() || !dirFile.isDirectory()) {
                 return dirs;
             }

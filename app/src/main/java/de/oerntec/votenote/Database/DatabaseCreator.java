@@ -5,6 +5,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import de.oerntec.votenote.MainActivity;
+
 public class DatabaseCreator extends SQLiteOpenHelper {
     public static final String DATABASE_NAME = "uebungen";
 
@@ -59,11 +61,13 @@ public class DatabaseCreator extends SQLiteOpenHelper {
     // Method is called during an upgrade of the database,
     @Override
     public void onUpgrade(SQLiteDatabase database, int oldVersion, int newVersion) {
-        Log.w(DatabaseCreator.class.getName(),
+        if (MainActivity.ENABLE_LOG_CALLS)
+            Log.w(DatabaseCreator.class.getName(),
                 "Upgrading database from version " + oldVersion + " to "
                         + newVersion + ", which will destroy all old data");
         if (newVersion == 12) {
-            Log.i("database:creator", "changed to " + newVersion + " from " + oldVersion);
+            if (MainActivity.ENABLE_LOG_CALLS)
+                Log.i("database:creator", "changed to " + newVersion + " from " + oldVersion);
             database.execSQL("ALTER TABLE " + TABLE_NAME_SUBJECTS + " ADD " + DatabaseCreator.SUBJECTS_WANTED_PRESENTATION_POINTS + " INTEGER DEFAULT 2");
         }
         if (oldVersion == 12) {

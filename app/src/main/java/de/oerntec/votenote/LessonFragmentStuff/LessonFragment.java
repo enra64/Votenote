@@ -65,7 +65,8 @@ public class LessonFragment extends Fragment {
      */
 
     public static LessonFragment newInstance(int sectionNumber) {
-        Log.i("votenote placeholder", "newinstance");
+        if (MainActivity.ENABLE_LOG_CALLS)
+            Log.i("votenote placeholder", "newinstance");
         LessonFragment fragment = new LessonFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_SECTION_NUMBER, sectionNumber);
@@ -106,13 +107,15 @@ public class LessonFragment extends Fragment {
         DISPLAY GROUP INFO
          */
         String currentGroupName = mSubjectDb.getGroupName(mSubjectId);
-        Log.i("Main activity", "Loading Group, DB says ID" + mSubjectId + ", Name " + currentGroupName);
+        if (MainActivity.ENABLE_LOG_CALLS)
+            Log.i("Main activity", "Loading Group, DB says ID" + mSubjectId + ", Name " + currentGroupName);
 
         //LISTVIEW FOR uebung instances
         Cursor allEntryCursor = mLessonDb.getAllLessonsForSubject(mSubjectId);
 
         if (allEntryCursor.getCount() == 0)
-            Log.e("Main Listview", "Received Empty allEntryCursor for group " + currentGroupName + " with id " + mSubjectId);
+            if (MainActivity.ENABLE_LOG_CALLS)
+                Log.e("Main Listview", "Received Empty allEntryCursor for group " + currentGroupName + " with id " + mSubjectId);
 
         //set adapter
         mAdapter = new LessonAdapter(getActivity(), mSubjectId);
