@@ -198,6 +198,21 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         int lessonCount = mLessonDb.getCount();
         int subjectCount = mSubjectDb.getCount();
 
+        if (!getPreference("eula_agreed", false)) {
+            AlertDialog.Builder eulaBuilder = new AlertDialog.Builder(this);
+            eulaBuilder.setCancelable(false);
+            eulaBuilder.setTitle("Disclaimer of Warranties");
+            eulaBuilder.setPositiveButton("OK", null);
+            eulaBuilder.setView(R.layout.preferences_eula);
+            eulaBuilder.setPositiveButton(getString(R.string.dialog_button_ok), new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    setPreference("eula_agreed", true);
+                }
+            });
+            eulaBuilder.show();
+        }
+
         if (lessonCount <= 0 && subjectCount > 0) {
             AlertDialog.Builder b = new AlertDialog.Builder(this, AlertDialog.THEME_DEVICE_DEFAULT_DARK);
             b.setTitle("Tutorial");
@@ -385,6 +400,10 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
 
     private void setPreference(String key, int val) {
         PreferenceManager.getDefaultSharedPreferences(this).edit().putInt(key, val).apply();
+    }
+
+    private void setPreference(String key, boolean val) {
+        PreferenceManager.getDefaultSharedPreferences(this).edit().putBoolean(key, val).apply();
     }
 
     public LessonFragment getCurrentFragment() {

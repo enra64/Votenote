@@ -25,7 +25,7 @@
     <string name="title_activity_settings">Settings</string>
     <string name="tutorial_add_button">Add a subject</string>
     <string name="tutorial_control_prespoints">Control presentation points</string>
-    <string name="tutorial_create_your_first_subject">Create your first lesson with the floating action button!</string>
+    <string name="tutorial_create_your_first_subject">Create your first subject with the floating action button!</string>
     <string name="subject_manage_add_title_change_subject">Change</string>
     <string name="subject_manage_add_title_first_subject">Create your first subject</string>
     <string name="subject_manage_add_title_new_subject">Create a new subject</string>
@@ -91,4 +91,6 @@
     <string name="create_new_subject_command">Go to "Settings/Subject control" to create your first subject!</string>
     <string name="undobar_deleted">Removed!</string>
     <string name="infoview_vote_average_no_data">No data</string>
+    <string name="eula">The Software is provided to you on an "AS IS" basis, without any technical support or warranty of any kind including, without limitation, any warranty or condition of merchantability, fitness for a particular purpose and non-infringement.</string>
+    <string name="eula_header">Disclaimer of Warranties and Technical Support</string>
 </resources>

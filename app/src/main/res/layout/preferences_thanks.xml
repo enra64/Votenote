@@ -5,7 +5,7 @@
     android:padding="24dp">
 
     <TextView
-        android:id="@+id/preferences_thanks_jjoe_description"
+        android:id="@+id/EULA"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
@@ -20,7 +20,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/preferences_thanks_jjoe_description"
+        android:layout_below="@+id/EULA"
         android:autoLink="web"
         android:linksClickable="true"
         android:text="https://github.com/jjoe64/GraphView"

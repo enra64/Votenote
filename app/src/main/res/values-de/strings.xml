@@ -91,4 +91,6 @@
     <string name="create_new_subject_command">Unter "Einstellungen/Übungen" verwalten kannst du deine erste Übung hinzufügen</string>
     <string name="undobar_deleted">Gelöscht!</string>
     <string name="infoview_vote_average_no_data">Keine Einträge</string>
+    <string name="eula">The Software is provided to you on an "AS IS" basis, without any technical support or warranty of any kind including, without limitation, any warranty or condition of merchantability, fitness for a particular purpose and non-infringement.</string>
+    <string name="eula_header">Disclaimer of Warranties and Technical Support</string>
 </resources>

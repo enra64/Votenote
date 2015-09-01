@@ -53,6 +53,9 @@
         <de.oerntec.votenote.Preferences.CustomActionPreference
             android:key="used_libraries"
             android:title="@string/pref_used_libraries" />
+        <de.oerntec.votenote.Preferences.CustomActionPreference
+            android:key="warranty_waiver"
+            android:title="Haftungsausschluss" />
         <Preference
             android:key="version_key"
             android:title="Version 1.2.5" />
