@@ -136,7 +136,7 @@ public class SubjectManagementActivity extends AppCompatActivity {
         positionOfSubjectToBeDeleted = recyclerViewPosition;
         subjectToBeDeleted = mSubjectAdapter.removeSubject(subjectId, recyclerViewPosition);
         Snackbar
-                .make(findViewById(R.id.subject_manager_coordinator_layout), "Gelöscht!", Snackbar.LENGTH_LONG)
+                .make(findViewById(R.id.subject_manager_coordinator_layout), getString(R.string.undobar_deleted), Snackbar.LENGTH_LONG)
                 .setAction("UNDO", new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -191,7 +191,9 @@ public class SubjectManagementActivity extends AppCompatActivity {
 
         //offer hint to user
         nameInput.setHint(nameHint);
-        nameInput.setText(nameHint);
+        //only set the old name as text if it is not "subject name", so the user can correct his value
+        if (databaseId != ADD_SUBJECT_CODE)
+            nameInput.setText(nameHint);
 
         //avoid keyboard popup
         voteInfo.requestFocus();

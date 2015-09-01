@@ -47,17 +47,6 @@
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/pref_updates">
-
-        <CheckBoxPreference
-            android:defaultValue="true"
-            android:key="check_version_at_start"
-            android:summary="@string/pref_update_check_summary"
-            android:title="@string/pref_update_check_title" />
-
-        <de.oerntec.votenote.Preferences.CustomActionPreference
-            android:key="version_check"
-            android:title="@string/pref_check_updates_now" />
-
         <Preference
             android:key="version_key"
             android:title="Version 1.2.4" />

@@ -3,12 +3,10 @@ package de.oerntec.votenote.Preferences;
 import android.content.Context;
 import android.preference.Preference;
 import android.util.AttributeSet;
-import android.widget.Toast;
 
 import de.oerntec.votenote.ImportExport.CsvExporter;
 import de.oerntec.votenote.ImportExport.XmlExporter;
 import de.oerntec.votenote.ImportExport.XmlImporter;
-import de.oerntec.votenote.VersionCheckHelper;
 
 public class CustomActionPreference extends Preference {
     String mActionKey;
@@ -23,12 +21,6 @@ public class CustomActionPreference extends Preference {
         switch (mActionKey) {
             case "csv_export":
                 CsvExporter.exportDialog(getContext());
-                break;
-            case "version_check":
-                if (VersionCheckHelper.isOnline(getContext()))
-                    VersionCheckHelper.checkVersion((PreferencesActivity) getContext());
-                else
-                    Toast.makeText(getContext(), "Offline", Toast.LENGTH_SHORT).show();
                 break;
             case "xml_export":
                 XmlExporter.exportDialog(getContext());

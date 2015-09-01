@@ -141,10 +141,6 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
-
-        if (getPreference("check_version_at_start", true))
-            if (VersionCheckHelper.isOnline(this))
-                VersionCheckHelper.checkVersionStealth(this);
     }
 
     //http://stackoverflow.com/a/19968400
@@ -155,11 +151,6 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         e.printStackTrace(printWriter);
         Writer.appendLog(stringWriter.toString());
         System.exit(1);
-    }
-
-    public void onVersionResult(String result) {
-        if (!"1.2.4".equals(result))
-            Toast.makeText(this, getString(R.string.main_version_check_goto_settings), Toast.LENGTH_LONG).show();
     }
 
     @Override

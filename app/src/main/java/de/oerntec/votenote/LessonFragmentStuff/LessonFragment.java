@@ -183,7 +183,7 @@ public class LessonFragment extends Fragment {
     private void showUndoSnackBar(final int lessonId) {
         mLessonToDelete = mAdapter.removeLesson(lessonId);
         Snackbar
-                .make(mRootView.findViewById(R.id.subject_fragment_coordinator_layout), "Gelöscht!", Snackbar.LENGTH_LONG)
+                .make(mRootView.findViewById(R.id.subject_fragment_coordinator_layout), getActivity().getString(R.string.undobar_deleted), Snackbar.LENGTH_LONG)
                 .setAction("UNDO", new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
