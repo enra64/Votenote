@@ -49,7 +49,7 @@
     <PreferenceCategory android:title="@string/pref_updates">
         <Preference
             android:key="version_key"
-            android:title="Version 1.2.4" />
+            android:title="Version 1.2.5" />
 
     </PreferenceCategory>
 </PreferenceScreen>

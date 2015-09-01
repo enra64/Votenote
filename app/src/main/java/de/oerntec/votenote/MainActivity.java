@@ -74,6 +74,9 @@ import de.oerntec.votenote.SubjectManagerStuff.SubjectManagementActivity;
 * 1.2.4
 * fixed tutorial system
 * fixed possible bug when creating a new subject
+* 1.2.5
+* removed version check system prior to upload to google play
+* fixed a bug when sorting by oldest lesson first
 */
 
 @SuppressLint("InflateParams")
