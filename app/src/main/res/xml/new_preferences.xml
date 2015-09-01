@@ -48,8 +48,13 @@
 
     <PreferenceCategory android:title="@string/pref_updates">
         <Preference
+            android:key="source_link"
+            android:title="@string/pref_git_repo_link" />
+        <de.oerntec.votenote.Preferences.CustomActionPreference
+            android:key="used_libraries"
+            android:title="@string/pref_used_libraries" />
+        <Preference
             android:key="version_key"
             android:title="Version 1.2.5" />
-
     </PreferenceCategory>
 </PreferenceScreen>
