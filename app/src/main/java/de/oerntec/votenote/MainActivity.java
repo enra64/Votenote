@@ -89,7 +89,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
     /**
      * enable or disable log calls for release
      */
-    public static final boolean ENABLE_LOG_CALLS = false;
+    public static final boolean ENABLE_LOG_CALLS = BuildConfig.DEBUG;
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the
