@@ -79,7 +79,7 @@
     <string name="import_result_bad">Failure</string>
     <string name="import_result_ok">Success</string>
     <string name="subject_add_hint">Subject name - Must not be empty</string>
-    <string name="deletion_confirmation_message">If you choose OK, really all database content will be removed!</string>
+    <string name="deletion_confirmation_message">If you choose OK, all database content will be removed!</string>
     <string name="deletion_confirmation_title">Do you really want to delete all entries?</string>
     <string name="pres_control_subjects">Subject control</string>
     <string name="pref_delete_all_entries">Delete all entries</string>

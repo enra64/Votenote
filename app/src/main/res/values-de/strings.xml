@@ -79,7 +79,7 @@
     <string name="import_result_bad">Fehler</string>
     <string name="import_result_ok">Kein Fehler</string>
     <string name="subject_add_hint">Name der Übung - Darf nicht leer sein</string>
-    <string name="deletion_confirmation_message">Wenn du OK wählst, werden wirklich alle derzeitigen Datenbankeinträge entfernt!</string>
+    <string name="deletion_confirmation_message">Wenn du OK wählst, werden alle derzeitigen Datenbankeinträge entfernt!</string>
     <string name="deletion_confirmation_title">Wirklich alle Einträge löschen?</string>
     <string name="pres_control_subjects">Übungen verwalten</string>
     <string name="pref_check_updates_now">Auf Updates überprüfen</string>
