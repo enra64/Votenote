@@ -69,7 +69,7 @@ public class SubjectAdapter extends RecyclerView.Adapter<SubjectAdapter.SubjectH
 
     public Subject removeSubject(int subjectId, int recyclerViewPosition) {
         Subject bkp = mSubjectDb.getSubject(subjectId);
-        if (MainActivity.ENABLE_LOG_CALLS)
+        if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
             Log.i("subject adapter", "attempting to remove " + subjectId + " " + bkp.subjectName);
         notifyItemRemoved(recyclerViewPosition);
         mSubjectDb.deleteSubject(bkp);

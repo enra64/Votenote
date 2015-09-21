@@ -75,10 +75,10 @@
     <string name="tutorial_lessons_diagram">Diagramm anzeigen</string>
     <string name="xml_import_dialog_title">Import</string>
     <string name="xml_import_warning_message">Alle derzeitigen Einträge und Übungen werden gelöscht!</string>
-    <string name="xml_importer_file_not_found">File not found</string>
+    <string name="xml_importer_file_not_found">Datei nicht gefunden!</string>
     <string name="import_result_bad">Fehler</string>
     <string name="import_result_ok">Kein Fehler</string>
-    <string name="subject_add_hint">Name der Übung</string>
+    <string name="subject_add_hint">Name der Übung - Darf nicht leer sein</string>
     <string name="deletion_confirmation_message">Wenn du OK wählst, werden wirklich alle derzeitigen Datenbankeinträge entfernt!</string>
     <string name="deletion_confirmation_title">Wirklich alle Einträge löschen?</string>
     <string name="pres_control_subjects">Übungen verwalten</string>
@@ -93,4 +93,7 @@
     <string name="infoview_vote_average_no_data">Keine Einträge</string>
     <string name="eula">The Software is provided to you on an "AS IS" basis, without any technical support or warranty of any kind including, without limitation, any warranty or condition of merchantability, fitness for a particular purpose and non-infringement.</string>
     <string name="eula_header">Disclaimer of Warranties and Technical Support</string>
+    <string name="pref_git_repo_link">Git Repo</string>
+    <string name="pref_help_graphview_description">GraphView von JJoe64</string>
+    <string name="pref_used_libraries">Genutzte Bibliotheken</string>
 </resources>

@@ -165,7 +165,7 @@ public class XmlImporter {
             if (name.equals("row")) {
                 parseEntry(parser);
             } else {
-                if (MainActivity.ENABLE_LOG_CALLS)
+                if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
                     Log.i("parser entry", "skip");
                 skip(parser);
             }

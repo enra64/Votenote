@@ -59,7 +59,7 @@ public class DBSubjects {
      * @return Number of affected rows.
      */
     public int deleteSubject(Subject delete) {
-        if (MainActivity.ENABLE_LOG_CALLS)
+        if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
             Log.i("dbgroups:delete", "deleted " + delete.subjectName + " at " + delete.id);
         String whereClause = DatabaseCreator.SUBJECTS_NAME + "=?" + " AND " + DatabaseCreator.SUBJECTS_ID + "=?";
         String[] whereArgs = new String[]{delete.subjectName, String.valueOf(delete.id)};
@@ -124,7 +124,7 @@ public class DBSubjects {
         values.put(DatabaseCreator.SUBJECTS_SCHEDULED_ASSIGNMENTS_PER_LESSON, newScheduledAssignmentsPerUebung);
 
         //insert name, because it does not exist yet
-        if (MainActivity.ENABLE_LOG_CALLS)
+        if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
             Log.i("DBSubjects", "adding group");
         database.insert(DatabaseCreator.TABLE_NAME_SUBJECTS, null, values);
         return 1;

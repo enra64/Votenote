@@ -106,7 +106,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
     /**
      * enable or disable log calls for release
      */
-    public static final boolean ENABLE_LOG_CALLS = BuildConfig.DEBUG;
+    public static final boolean ENABLE_DEBUG_LOG_CALLS = BuildConfig.DEBUG;
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the
@@ -244,7 +244,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         mCurrentSelectedPosition = position;
         mCurrentFragmentHasPrespoints = mSubjectDb.getWantedPresPoints(mCurrentSelectedId) > 0;
         // update the menu_main content by replacing fragments
-        if (ENABLE_LOG_CALLS)
+        if (ENABLE_DEBUG_LOG_CALLS)
             Log.i("votenote main", "selected fragment " + position);
         FragmentManager fragmentManager = getFragmentManager();
         fragmentManager
@@ -259,7 +259,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         //save where the user left
         if (mCurrentSelectedId != -1) {
             setPreference("last_selected_dbid", mCurrentSelectedPosition);
-            if (ENABLE_LOG_CALLS)
+            if (ENABLE_DEBUG_LOG_CALLS)
                 Log.i("last selected", "" + mCurrentSelectedPosition);
         }
     }

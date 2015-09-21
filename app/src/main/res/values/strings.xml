@@ -83,7 +83,7 @@
     <string name="xml_import_dialog_title">Import</string>
     <string name="import_result_ok">Kein Fehler</string>
     <string name="import_result_bad">Fehler</string>
-    <string name="xml_importer_file_not_found">File not found</string>
+    <string name="xml_importer_file_not_found">Datei nicht gefunden!</string>
     <string name="subject_add_hint">Name der Übung</string>
     <string name="deletion_confirmation_title">Wirklich alle Einträge löschen?</string>
     <string name="deletion_confirmation_message">Wenn du OK wählst, werden wirklich alle derzeitigen Datenbankeinträge entfernt!</string>

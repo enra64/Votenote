@@ -20,6 +20,7 @@ package de.oerntec.votenote.SubjectManagerStuff;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -35,6 +36,7 @@ import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
@@ -219,9 +221,6 @@ public class SubjectManagementActivity extends AppCompatActivity {
         if (isOldSubject)
             nameInput.setText(nameHint);
 
-        //avoid keyboard popup
-        voteInfo.requestFocus();
-
         //minpreshelp
         presInfo.setText("" + presentationPointsHint);
 
@@ -288,14 +287,21 @@ public class SubjectManagementActivity extends AppCompatActivity {
                             mSubjectAdapter.changeSubject(knownSubjectData, newSubject, recyclerViewPosition);
                         }
                     }
-                }).setNegativeButton(getString(R.string.dialog_button_abort), new DialogInterface.OnClickListener() {
+                }).setNegativeButton(getString(R.string.dialog_button_abort), null)
+                .setOnDismissListener(new DialogInterface.OnDismissListener() {
                     @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
+                    public void onDismiss(DialogInterface dialogInterface) {
+                        //hide the bloody keyboard
+                        View view = getCurrentFocus();
+                        if (view != null) {
+                            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                        }
                     }
                 });
 
         final AlertDialog dialog = b.create();
-        dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+
         //check for bad characters
         nameInput.addTextChangedListener(new TextWatcher() {
             @Override
@@ -325,6 +331,9 @@ public class SubjectManagementActivity extends AppCompatActivity {
             }
         });
         dialog.show();
+
+        //disable ok button if new subject until a name is entered
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(isOldSubject);
     }
 
     @Override

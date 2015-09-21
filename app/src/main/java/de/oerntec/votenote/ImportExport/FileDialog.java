@@ -130,10 +130,10 @@ public class FileDialog {
         while (!dirFile.exists() || !dirFile.isDirectory()) {
             dir = dirFile.getParent();
             dirFile = new File(dir);
-            if (MainActivity.ENABLE_LOG_CALLS)
+            if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
                 Log.d("~~~~~", "dir=" + dir);
         }
-        if (MainActivity.ENABLE_LOG_CALLS)
+        if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
             Log.d("~~~~~", "dir=" + dir);
         //mSdcardDirectory
         try {
@@ -168,7 +168,7 @@ public class FileDialog {
             public boolean onKey(DialogInterface arg0, int keyCode, KeyEvent event) {
                 if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN) {
                     goToUpperLevel();
-                    if (MainActivity.ENABLE_LOG_CALLS)
+                    if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
                         Log.i("keylistener", "back");
                     return true;
                 }
@@ -198,7 +198,7 @@ public class FileDialog {
                     ) {
                 dirs.add("..");
             }
-            if (MainActivity.ENABLE_LOG_CALLS)
+            if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
                 Log.d("~~~~", "m_dir=" + m_dir);
             if (!dirFile.exists() || !dirFile.isDirectory()) {
                 return dirs;

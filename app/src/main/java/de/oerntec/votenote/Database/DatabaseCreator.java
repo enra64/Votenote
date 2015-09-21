@@ -78,12 +78,12 @@ public class DatabaseCreator extends SQLiteOpenHelper {
     // Method is called during an upgrade of the database,
     @Override
     public void onUpgrade(SQLiteDatabase database, int oldVersion, int newVersion) {
-        if (MainActivity.ENABLE_LOG_CALLS)
+        if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
             Log.w(DatabaseCreator.class.getName(),
                 "Upgrading database from version " + oldVersion + " to "
                         + newVersion + ", which will destroy all old data");
         if (newVersion == 12) {
-            if (MainActivity.ENABLE_LOG_CALLS)
+            if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
                 Log.i("database:creator", "changed to " + newVersion + " from " + oldVersion);
             database.execSQL("ALTER TABLE " + TABLE_NAME_SUBJECTS + " ADD " + DatabaseCreator.SUBJECTS_WANTED_PRESENTATION_POINTS + " INTEGER DEFAULT 2");
         }

@@ -90,7 +90,7 @@ public class DBLessons {
 
         String[] whereArgs = {String.valueOf(oldLesson.subjectId), String.valueOf(oldLesson.lessonId)};
         int affectedRows = database.update(DatabaseCreator.TABLE_NAME_ENTRIES, values, DatabaseCreator.ENTRIES_SUBJECT_ID + "=?" + " AND " + DatabaseCreator.ENTRIES_LESSON_ID + "=?", whereArgs);
-        if (MainActivity.ENABLE_LOG_CALLS)
+        if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
             Log.i("dbentries:changeentry", "changed " + affectedRows + " entries");
     }
     /**
@@ -116,7 +116,7 @@ public class DBLessons {
         int checkValue =
                 database.delete(DatabaseCreator.TABLE_NAME_ENTRIES,
                         DatabaseCreator.ENTRIES_SUBJECT_ID + "=?", whereArgs);
-        if (MainActivity.ENABLE_LOG_CALLS)
+        if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
             Log.i("dbgroups:delete", "deleting all " + checkValue + " entries of type " + subjectId);
     }
 
@@ -149,7 +149,7 @@ public class DBLessons {
      * @param val lesson to add
      */
     public void insertLesson(Lesson val) {
-        if (MainActivity.ENABLE_LOG_CALLS)
+        if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
             Log.i("db:entries:add", "adding entry with lastnummer" + val.lessonId + " for group " + val.subjectId);
 
         String query = "UPDATE " + DatabaseCreator.TABLE_NAME_ENTRIES + " SET " + DatabaseCreator.ENTRIES_LESSON_ID + " = " + DatabaseCreator.ENTRIES_LESSON_ID + " + 1 " +
@@ -170,7 +170,7 @@ public class DBLessons {
      * Add an entry to the respective uebung
      */
     public void addLesson(int subjectId, int maxVote, int myVote, int uebungNummer) {
-        if (MainActivity.ENABLE_LOG_CALLS)
+        if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
             Log.i("db:entries:add", "adding entry with lastnummer" + uebungNummer + " for group " + subjectId);
 
         //create values for insert or update
@@ -194,7 +194,7 @@ public class DBLessons {
      * remove the entry and decrease the uebung_nummer for all following entries
      */
     public void removeEntry(int subjectId, int lessonId) {
-        if (MainActivity.ENABLE_LOG_CALLS)
+        if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
             Log.i("entries", "remove " + subjectId + ":" + lessonId);
         //remove correct entry
         database.delete(DatabaseCreator.TABLE_NAME_ENTRIES, DatabaseCreator.ENTRIES_SUBJECT_ID + "=" + subjectId + " AND " + DatabaseCreator.ENTRIES_LESSON_ID + "=" + lessonId, null);
