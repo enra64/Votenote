@@ -172,21 +172,28 @@ public class SubjectManagementActivity extends AppCompatActivity {
     }
 
     private void showSubjectDialog(final int databaseId, final int recyclerViewPosition) {
+        //default values
         String nameHint = getString(R.string.subject_add_hint);
         int presentationPointsHint = 0;
         int minimumVotePercentageHint = 50;
         int scheduledAssignmentsPerLesson = 5;
         int scheduledNumberOfLessons = 10;
 
-        Subject oldSubject = null;
+        //try to get old subject data; returns null if no subject is found
+        final Subject knownSubjectData = mSubjectDb.getSubject(databaseId);
+
+        //create a boolean containing whether we create a new subject to ease understanding
+        final boolean isNewSubject = databaseId == ADD_SUBJECT_CODE;
+        final boolean isOldSubject = !isNewSubject;
+
         //if we only change the entry, get the previously set values.
-        if (databaseId != ADD_SUBJECT_CODE) {
-            oldSubject = mSubjectDb.getSubject(databaseId);
-            nameHint = oldSubject.subjectName;
-            presentationPointsHint = Integer.parseInt(oldSubject.subjectWantedPresentationPoints);
-            minimumVotePercentageHint = Integer.parseInt(oldSubject.subjectMinimumVotePercentage);
-            scheduledAssignmentsPerLesson = Integer.parseInt(oldSubject.subjectScheduledAssignmentsPerLesson);
-            scheduledNumberOfLessons = Integer.parseInt(oldSubject.subjectScheduledLessonCount);
+        if (isOldSubject) {
+            //extract subject data
+            nameHint = knownSubjectData.subjectName;
+            presentationPointsHint = Integer.parseInt(knownSubjectData.subjectWantedPresentationPoints);
+            minimumVotePercentageHint = Integer.parseInt(knownSubjectData.subjectMinimumVotePercentage);
+            scheduledAssignmentsPerLesson = Integer.parseInt(knownSubjectData.subjectScheduledAssignmentsPerLesson);
+            scheduledNumberOfLessons = Integer.parseInt(knownSubjectData.subjectScheduledLessonCount);
         }
 
         //inflate view with seekbar and name
@@ -209,7 +216,7 @@ public class SubjectManagementActivity extends AppCompatActivity {
         //offer hint to user
         nameInput.setHint(nameHint);
         //only set the old name as text if it is not "subject name", so the user can correct his value
-        if (databaseId != ADD_SUBJECT_CODE)
+        if (isOldSubject)
             nameInput.setText(nameHint);
 
         //avoid keyboard popup
@@ -249,38 +256,36 @@ public class SubjectManagementActivity extends AppCompatActivity {
         estimatedUebungCountSeek.setOnSeekBarChangeListener(new SeekerListener(estimatedUebungCountHelp));
 
         String title;
-        if (databaseId == ADD_SUBJECT_CODE) {
+        if (isNewSubject) {
             if (mSubjectDb.getNumberOfSubjects() == 0)
                 title = getString(R.string.subject_manage_add_title_first_subject);
             else
                 title = getString(R.string.subject_manage_add_title_new_subject);
-        } else
+        } else//if old subject
             title = getString(R.string.subject_manage_add_title_change_subject) + " " + nameHint;
 
         //build alertdialog
-        final Subject finalOldSubject = oldSubject;
         Builder b = new Builder(this)
                 .setView(input)
                 .setTitle(title)
                 .setPositiveButton(getString(R.string.dialog_button_ok), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
-                        String newName = nameInput.getText().toString();
-                        String oldName = finalOldSubject == null ? "_" : finalOldSubject.subjectName;
+                        //create a new subject containing all known values
                         Subject newSubject = new Subject(String.valueOf(databaseId),
-                                String.valueOf("".equals(newName) ? oldName : newName),
+                                String.valueOf(nameInput.getText().toString()),
                                 String.valueOf(minVoteSeek.getProgress()),
                                 "0",
                                 String.valueOf(estimatedUebungCountSeek.getProgress()),
                                 String.valueOf(estimatedAssignmentsSeek.getProgress()),
                                 String.valueOf(wantedPresentationPointsSeekbar.getProgress()));
 
-                        if (databaseId == ADD_SUBJECT_CODE) {
+                        if (isNewSubject) {
                             if (mSubjectAdapter.addSubject(newSubject, SubjectAdapter.NEW_SUJBECT_CODE) == -1)
                                 Toast.makeText(getApplicationContext(), getString(R.string.subject_manage_subject_exists_already), Toast.LENGTH_SHORT).show();
                         } else {
                             if ("".equals(newSubject.subjectName))
                                 newSubject.subjectName = "empty";
-                            mSubjectAdapter.changeSubject(finalOldSubject, newSubject, recyclerViewPosition);
+                            mSubjectAdapter.changeSubject(knownSubjectData, newSubject, recyclerViewPosition);
                         }
                     }
                 }).setNegativeButton(getString(R.string.dialog_button_abort), new DialogInterface.OnClickListener() {
@@ -288,8 +293,9 @@ public class SubjectManagementActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialogInterface, int i) {
                     }
                 });
-        final AlertDialog dialog = b.create();
 
+        final AlertDialog dialog = b.create();
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE);
         //check for bad characters
         nameInput.addTextChangedListener(new TextWatcher() {
             @Override
@@ -299,11 +305,19 @@ public class SubjectManagementActivity extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 String value = String.valueOf(s);
+                //deny saving a string breaking the xml backups
                 if (value.contains("<") || value.contains(">") || value.contains("/'")) {
                     Toast.makeText(getApplication(), getString(R.string.subject_manage_bad_subject_name), Toast.LENGTH_SHORT).show();
                     dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
-                } else
+                }
+                //deny saving an empty name
+                else if (value.equals("")) {
+                    dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
+                }
+                //no bad names detected; allow saving
+                else {
                     dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
+                }
             }
 
             @Override
