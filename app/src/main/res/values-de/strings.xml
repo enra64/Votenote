@@ -96,4 +96,7 @@
     <string name="pref_git_repo_link">Git Repo</string>
     <string name="pref_help_graphview_description">GraphView von JJoe64</string>
     <string name="pref_used_libraries">Genutzte Bibliotheken</string>
+    <string name="delete_button_text">Löschen</string>
+    <string name="preference_auto_set_max_assignments">Wird eines der beiden Zahlenräder für die Übungen auf einen unmöglichen Wert gestellt, so wird das andere verschoben um einen validen Wert zu erreichen.</string>
+    <string name="preference_auto_set_max_assignments_title">Invalide Werte der Zahlenräder vermeiden</string>
 </resources>

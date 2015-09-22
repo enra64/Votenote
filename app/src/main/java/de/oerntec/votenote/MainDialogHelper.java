@@ -134,26 +134,49 @@ public class MainDialogHelper {
         //create dialog from builder
         final AlertDialog dialog = builder.create();
 
-        //listener for the vote picker
-        NumberPicker.OnValueChangeListener votePickerListener = new NumberPicker.OnValueChangeListener() {
-            @Override
-            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-                //load new values
-                int myVoteValue = myVote.getValue();
-                int maxVoteValue = maxVote.getValue();
-                infoView.setText(myVoteValue + " " + mActivity.getString(R.string.main_dialog_lesson_von)
-                        + " " + maxVoteValue + " " + mActivity.getString(R.string.main_dialog_lesson_votes));
-                boolean isValid = myVoteValue <= maxVoteValue;
-                dialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(isValid);
-                infoView.setTextColor(isValid ?
-                        Color.argb(255, 153, 204, 0) /*green*/ :
-                        mActivity.getResources().getColor(R.color.warning_red));
-            }
-        };
-
-        //add change listener to update dialog explanation if pickers changed
-        myVote.setOnValueChangedListener(votePickerListener);
-        maxVote.setOnValueChangedListener(votePickerListener);
+        //try to fix invalid number of done assignments
+        if (MainActivity.getPreference("move_max_assignments_picker", true)) {
+            myVote.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+                @Override
+                public void onValueChange(NumberPicker numberPicker, int i, int i1) {
+                    //load new values
+                    int myVoteValue = myVote.getValue(), maxVoteValue = maxVote.getValue();
+                    if (myVoteValue > maxVoteValue)
+                        maxVote.setValue(myVoteValue);
+                }
+            });
+            maxVote.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+                @Override
+                public void onValueChange(NumberPicker numberPicker, int i, int i1) {
+                    //load new values
+                    int myVoteValue = myVote.getValue(), maxVoteValue = maxVote.getValue();
+                    if (myVoteValue > maxVoteValue)
+                        myVote.setValue(maxVoteValue);
+                }
+            });
+        }
+        //fallback behaviour if the setting is disabled
+        else {
+            //listener for the vote picker
+            NumberPicker.OnValueChangeListener votePickerListener = new NumberPicker.OnValueChangeListener() {
+                @Override
+                public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+                    //load new values
+                    int myVoteValue = myVote.getValue();
+                    int maxVoteValue = maxVote.getValue();
+                    infoView.setText(myVoteValue + " " + mActivity.getString(R.string.main_dialog_lesson_von)
+                            + " " + maxVoteValue + " " + mActivity.getString(R.string.main_dialog_lesson_votes));
+                    boolean isValid = myVoteValue <= maxVoteValue;
+                    dialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(isValid);
+                    infoView.setTextColor(isValid ?
+                            Color.argb(255, 153, 204, 0) /*green*/ :
+                            mActivity.getResources().getColor(R.color.warning_red));
+                }
+            };
+            //add change listener to update dialog explanation if pickers changed
+            maxVote.setOnValueChangedListener(votePickerListener);
+            myVote.setOnValueChangedListener(votePickerListener);
+        }
 
         dialog.show();
 
