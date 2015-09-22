@@ -108,8 +108,16 @@ public class MainDialogHelper {
         //build alertdialog
         final Lesson finalOldValues = oldValues;
 
+        String changeTitle;
+
+        if (mActivity.getResources().getConfiguration().locale.getLanguage().equals("de"))
+            changeTitle = "Übung " + lessonID + " ändern?";
+        else
+            changeTitle = "Change lesson " + lessonID + "?";
+
+
         final AlertDialog.Builder builder = new AlertDialog.Builder(mActivity)
-                .setTitle(isNewLesson ? mActivity.getString(R.string.main_dialog_lesson_new_lesson_title) : "Übung " + lessonID + " " + "ändern?")
+                .setTitle(isNewLesson ? mActivity.getString(R.string.main_dialog_lesson_new_lesson_title) : changeTitle)
                 .setView(rootView)
                 .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
