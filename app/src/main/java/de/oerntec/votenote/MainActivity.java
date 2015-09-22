@@ -215,7 +215,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
 
         if (lessonCount == 0 && subjectCount > 0) {
             if (!getPreference("tutorial_lessons_read", false)) {
-                AlertDialog.Builder b = new AlertDialog.Builder(this, AlertDialog.THEME_DEVICE_DEFAULT_DARK);
+                AlertDialog.Builder b = new AlertDialog.Builder(this, AlertDialog.THEME_DEVICE_DEFAULT_LIGHT);
                 b.setTitle("Tutorial");
                 b.setView(this.getLayoutInflater().inflate(R.layout.tutorial_lessons, null));
                 b.setPositiveButton(getString(R.string.dialog_button_ok), null);
@@ -223,7 +223,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
                 setPreference("tutorial_lessons_read", true);
             }
         } else if (subjectCount == 0) {
-            AlertDialog.Builder b = new AlertDialog.Builder(this, AlertDialog.THEME_DEVICE_DEFAULT_DARK);
+            AlertDialog.Builder b = new AlertDialog.Builder(this, AlertDialog.THEME_DEVICE_DEFAULT_LIGHT);
             b.setTitle("Tutorial");
             b.setMessage(getString(R.string.create_new_subject_command));
             b.setPositiveButton(getString(R.string.dialog_button_ok), null);
