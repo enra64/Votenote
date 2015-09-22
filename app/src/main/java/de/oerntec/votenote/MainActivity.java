@@ -183,11 +183,19 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
             });
         }
 
-
         // Set up the drawer.
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
+
+        if (ENABLE_DEBUG_LOG_CALLS)
+            Log.i("state info", "oncreate");
+
+        int lastSelected = getPreference("last_selected_dbid", 0);
+
+        //select the last selected item
+        if (lastSelected < mSubjectDb.getCount())
+            mNavigationDrawerFragment.selectItem(lastSelected);
     }
 
     //http://stackoverflow.com/a/19968400
@@ -203,18 +211,24 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
     @Override
     public void onResume() {
         super.onResume();
+
         if (mNavigationDrawerFragment != null) {
             mNavigationDrawerFragment.reloadAdapter();
 
-            int lastSelected = getPreference("last_selected_dbid", 0);
-
-            //select the last selected item
-            if (lastSelected < mSubjectDb.getCount())
-                mNavigationDrawerFragment.selectItem(lastSelected);
+            //if(ENABLE_DEBUG_LOG_CALLS)
+            //    Log.i("state info", "onresume");
 
             //open drawer on each resume because the user may want that
-            if (getPreference("open_drawer_on_start", false))
-                mNavigationDrawerFragment.openDrawer();
+            if (getPreference("open_drawer_on_start", false)) {
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (ENABLE_DEBUG_LOG_CALLS)
+                            Log.i("autodrawer", "opening");
+                        mNavigationDrawerFragment.openDrawer();
+                    }
+                }, 200);
+            }
         }
 
         int lessonCount = mLessonDb.getCount();

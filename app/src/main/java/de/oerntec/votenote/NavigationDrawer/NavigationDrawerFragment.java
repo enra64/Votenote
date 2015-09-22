@@ -113,6 +113,10 @@ public class NavigationDrawerFragment extends Fragment implements SelectionCallb
         return mDrawerLayout != null && mDrawerLayout.isDrawerOpen(mFragmentContainerView);
     }
 
+    public DrawerLayout getDrawerLayout() {
+        return mDrawerLayout;
+    }
+
     /**
      * Users of this fragment must call this method to set up the navigation
      * drawer interactions.

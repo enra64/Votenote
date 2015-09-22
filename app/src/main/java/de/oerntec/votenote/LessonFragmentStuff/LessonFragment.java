@@ -126,7 +126,7 @@ public class LessonFragment extends Fragment implements SwipeDeletion.UndoSnackB
          */
         String currentGroupName = mSubjectDb.getGroupName(mSubjectId);
         if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
-            Log.i("Main activity", "Loading Group, DB says ID" + mSubjectId + ", Name " + currentGroupName);
+            Log.i("lesson fragment", "Loading Group, DB says ID" + mSubjectId + ", Name " + currentGroupName);
 
         //LISTVIEW FOR uebung instances
         Cursor allEntryCursor = mLessonDb.getAllLessonsForSubject(mSubjectId);
