@@ -227,7 +227,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
                             Log.i("autodrawer", "opening");
                         mNavigationDrawerFragment.openDrawer();
                     }
-                }, 2000);
+                }, 900);
             }
         }
 
