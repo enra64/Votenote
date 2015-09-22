@@ -152,6 +152,7 @@ public class LessonAdapter extends RecyclerView.Adapter<LessonAdapter.Holder> {
             View root = inflater.inflate(R.layout.subject_fragment_card_lesson, parent, false);
             //create lesson holder
             LessonHolder lessonHolder = new LessonHolder(root);
+            //try to save the holder in the view to enable programatically deleting entries
             //save references
             lessonHolder.vote = (TextView) root.findViewById(R.id.subject_fragment_card_upper);
             lessonHolder.lessonId = (TextView) root.findViewById(R.id.subject_fragment_card_lower);
@@ -186,6 +187,9 @@ public class LessonAdapter extends RecyclerView.Adapter<LessonAdapter.Holder> {
 
             //tag for identification without mistakes
             lessonHolder.itemView.setTag(currentLesson.lessonId);
+
+            //set visible, because the programmatic swipe sets views invisible to avoid flickering
+            lessonHolder.itemView.setVisibility(View.VISIBLE);
 
             //set texts
             lessonHolder.vote.setText(myVote + " " + mContext.getString(R.string.main_dialog_lesson_von) + " " + maxVote + voteString);

@@ -102,5 +102,6 @@
     <string name="pref_help_graphview_description">GraphView von JJoe64</string>
     <string name="eula">The Software is provided to you on an "AS IS" basis, without any technical support or warranty of any kind including, without limitation, any warranty or condition of merchantability, fitness for a particular purpose and non-infringement.</string>
     <string name="eula_header">Disclaimer of Warranties and Technical Support</string>
+    <string name="delete_button_text">Löschen</string>
 
 </resources>

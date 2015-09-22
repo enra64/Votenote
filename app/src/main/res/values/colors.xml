@@ -7,4 +7,5 @@
     <color name="textColorPrimary">#000</color>
     <color name="fabColor">#8bc34a</color>
     <color name="textColorActionBar">#FFF</color>
+    <color name="warning_red">#D50000</color>
 </resources>

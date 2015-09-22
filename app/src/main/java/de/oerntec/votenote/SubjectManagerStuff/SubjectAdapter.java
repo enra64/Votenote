@@ -35,7 +35,6 @@ public class SubjectAdapter extends RecyclerView.Adapter<SubjectAdapter.SubjectH
     public static final int NEW_SUJBECT_CODE = -1;
 
     private DBSubjects mSubjectDb = DBSubjects.getInstance();
-
     private Context mContext;
     private Cursor mCursor;
 
@@ -67,10 +66,18 @@ public class SubjectAdapter extends RecyclerView.Adapter<SubjectAdapter.SubjectH
         notifyItemChanged(recyclerViewPosition);
     }
 
+    /**
+     * save subject, delete, return backup
+     *
+     * @param subjectId            id in db
+     * @param recyclerViewPosition position in recyclerview
+     * @return subject backup
+     */
     public Subject removeSubject(int subjectId, int recyclerViewPosition) {
         Subject bkp = mSubjectDb.getSubject(subjectId);
         if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
             Log.i("subject adapter", "attempting to remove " + subjectId + " " + bkp.subjectName);
+
         notifyItemRemoved(recyclerViewPosition);
         mSubjectDb.deleteSubject(bkp);
         requery();
@@ -105,6 +112,9 @@ public class SubjectAdapter extends RecyclerView.Adapter<SubjectAdapter.SubjectH
     @Override
     public void onBindViewHolder(SubjectHolder holder, int position) {
         mCursor.moveToPosition(position);
+
+        //set view visible to avoid using invisible views
+        holder.itemView.setVisibility(View.VISIBLE);
 
         //load strings
         int subjectId = mCursor.getInt(0);

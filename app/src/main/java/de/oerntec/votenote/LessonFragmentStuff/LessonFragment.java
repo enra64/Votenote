@@ -35,6 +35,7 @@ import android.view.ViewGroup;
 
 import de.oerntec.votenote.CardListHelpers.OnItemClickListener;
 import de.oerntec.votenote.CardListHelpers.RecyclerItemClickListener;
+import de.oerntec.votenote.CardListHelpers.SwipeDeletion;
 import de.oerntec.votenote.Database.DBLessons;
 import de.oerntec.votenote.Database.DBSubjects;
 import de.oerntec.votenote.Database.Lesson;
@@ -46,7 +47,7 @@ import de.oerntec.votenote.SubjectManagerStuff.SubjectManagementActivity;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class LessonFragment extends Fragment {
+public class LessonFragment extends Fragment implements SwipeDeletion.UndoSnackBarHost {
     /**
      * The fragment argument representing the section number for this
      * fragment.
@@ -164,15 +165,14 @@ public class LessonFragment extends Fragment {
             }
         };
 
-        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(swipeCallback);
+        final ItemTouchHelper itemTouchHelper = new ItemTouchHelper(swipeCallback);
         itemTouchHelper.attachToRecyclerView(mLessonList);
-
-        //mLessonList.addOnItemTouchListener(mSwipeListener);
 
         mLessonList.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), mLessonList, new OnItemClickListener() {
             public void onItemClick(View view, int position) {
                 if (position != 0)
-                    MainDialogHelper.showChangeLessonDialog((MainActivity) getActivity(), mSubjectId, (Integer) view.getTag());
+                    MainDialogHelper.showChangeLessonDialog((MainActivity) getActivity(), LessonFragment.this, view, mSubjectId, (Integer) view.getTag());
+                //show undo bar, check whether everything necessary is called, change button color
             }
 
             public void onItemLongClick(final View view, int position) {
@@ -188,11 +188,7 @@ public class LessonFragment extends Fragment {
             }
         });
 
-        //add animator
-        //mLessonList.setItemAnimator(new SlideInLeftAnimator());
-
         mRootView = rootView;
-
         return rootView;
     }
 
@@ -200,7 +196,7 @@ public class LessonFragment extends Fragment {
         mAdapter.notifyItemChanged(0);
     }
 
-    private void showUndoSnackBar(final int lessonId) {
+    public void showUndoSnackBar(final int lessonId) {
         mLessonToDelete = mAdapter.removeLesson(lessonId);
         Snackbar
                 .make(mRootView.findViewById(R.id.subject_fragment_coordinator_layout), getActivity().getString(R.string.undobar_deleted), Snackbar.LENGTH_LONG)

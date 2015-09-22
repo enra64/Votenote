@@ -45,28 +45,32 @@ import android.widget.Toast;
 
 import de.oerntec.votenote.CardListHelpers.OnItemClickListener;
 import de.oerntec.votenote.CardListHelpers.RecyclerItemClickListener;
+import de.oerntec.votenote.CardListHelpers.SwipeDeletion;
 import de.oerntec.votenote.Database.DBSubjects;
 import de.oerntec.votenote.Database.Subject;
 import de.oerntec.votenote.ImportExport.XmlImporter;
 import de.oerntec.votenote.R;
 
 @SuppressLint("InflateParams")
-public class SubjectManagementActivity extends AppCompatActivity {
+public class SubjectManagementActivity extends AppCompatActivity implements SwipeDeletion.UndoSnackBarHost {
     /**
      * Lesson should be added, not changed
      */
     private static final int ADD_SUBJECT_CODE = -1;
-
     /**
      * default db access
      */
     private static DBSubjects mSubjectDb;
-
     /**
      * the subject adapter used to fill the list
      */
     private static SubjectAdapter mSubjectAdapter;
-
+    /**
+     * whenever a dialog is opened, we save its position in the recyclerview in here. while it is
+     * quite ugly, it should work without problems since the only use is from the delete button in
+     * the change dialog.
+     */
+    private int undoBarRecyclerViewPosition = -1;
     /**
      * saves the subject on delete to be able to add it again should the user demand it
      */
@@ -115,8 +119,11 @@ public class SubjectManagementActivity extends AppCompatActivity {
                 Object viewTag = viewHolder.itemView.getTag();
                 if (viewTag != null) {
                     int subjectId = (Integer) viewTag;
-                    if (subjectId != 0)
-                        showUndoSnackBar(subjectId, mSubjectList.getChildAdapterPosition(viewHolder.itemView));
+                    if (subjectId != 0) {
+                        //i hope i never have to touch this again
+                        undoBarRecyclerViewPosition = mSubjectList.getChildAdapterPosition(viewHolder.itemView);
+                        showUndoSnackBar(subjectId);
+                    }
                 }
             }
         };
@@ -134,7 +141,7 @@ public class SubjectManagementActivity extends AppCompatActivity {
         mSubjectList.setAdapter(mSubjectAdapter);
         mSubjectList.addOnItemTouchListener(new RecyclerItemClickListener(this, mSubjectList, new OnItemClickListener() {
             public void onItemClick(View view, int position) {
-                showSubjectDialog((Integer) view.getTag(), position);
+                showSubjectDialog((Integer) view.getTag(), position, view);
             }
 
             public void onItemLongClick(final View view, int position) {
@@ -146,14 +153,18 @@ public class SubjectManagementActivity extends AppCompatActivity {
         addFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showSubjectDialog(ADD_SUBJECT_CODE, -1);
+                showSubjectDialog(ADD_SUBJECT_CODE, -1, null);
             }
         });
     }
 
-    private void showUndoSnackBar(final int subjectId, int recyclerViewPosition) {
-        positionOfSubjectToBeDeleted = recyclerViewPosition;
-        subjectToBeDeleted = mSubjectAdapter.removeSubject(subjectId, recyclerViewPosition);
+    public void showUndoSnackBar(final int subjectId) {
+        //delete subject, get backup
+        subjectToBeDeleted = mSubjectAdapter.removeSubject(subjectId, undoBarRecyclerViewPosition);
+        //save the old position
+        positionOfSubjectToBeDeleted = undoBarRecyclerViewPosition;
+        //TODO: less fucked up way to save the positions in the recyclerview; currently done via 2 class variables :/
+        //make snackbar
         Snackbar
                 .make(findViewById(R.id.subject_manager_coordinator_layout), getString(R.string.undobar_deleted), Snackbar.LENGTH_LONG)
                 .setAction("UNDO", new View.OnClickListener() {
@@ -166,14 +177,16 @@ public class SubjectManagementActivity extends AppCompatActivity {
 
     //dont do anything, as we only delete the lesson when the undo bar gets hidden
     private void onUndo() {
-        if (subjectToBeDeleted != null) {
+        if (subjectToBeDeleted != null)
             mSubjectAdapter.addSubject(subjectToBeDeleted, positionOfSubjectToBeDeleted);
-        }
         subjectToBeDeleted = null;
         positionOfSubjectToBeDeleted = -1;
     }
 
-    private void showSubjectDialog(final int databaseId, final int recyclerViewPosition) {
+    private void showSubjectDialog(final int databaseId, final int recyclerViewPosition, final View animatedView) {
+        //save open rv position
+        undoBarRecyclerViewPosition = recyclerViewPosition;
+
         //default values
         String nameHint = getString(R.string.subject_add_hint);
         int presentationPointsHint = 0;
@@ -264,7 +277,7 @@ public class SubjectManagementActivity extends AppCompatActivity {
             title = getString(R.string.subject_manage_add_title_change_subject) + " " + nameHint;
 
         //build alertdialog
-        Builder b = new Builder(this)
+        Builder builder = new Builder(this)
                 .setView(input)
                 .setTitle(title)
                 .setPositiveButton(getString(R.string.dialog_button_ok), new DialogInterface.OnClickListener() {
@@ -300,7 +313,16 @@ public class SubjectManagementActivity extends AppCompatActivity {
                     }
                 });
 
-        final AlertDialog dialog = b.create();
+        if (isOldSubject) {
+            builder.setNeutralButton(R.string.delete_button_text, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    SwipeDeletion.executeProgrammaticSwipeDeletion(SubjectManagementActivity.this, SubjectManagementActivity.this, animatedView);
+                }
+            });
+        }
+
+        final AlertDialog dialog = builder.create();
 
         //check for bad characters
         nameInput.addTextChangedListener(new TextWatcher() {
@@ -331,6 +353,10 @@ public class SubjectManagementActivity extends AppCompatActivity {
             }
         });
         dialog.show();
+
+        //change delete button text color to red
+        if (isOldSubject)
+            dialog.getButton(DialogInterface.BUTTON_NEUTRAL).setTextColor(getResources().getColor(R.color.warning_red));
 
         //disable ok button if new subject until a name is entered
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(isOldSubject);

@@ -25,9 +25,11 @@ import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import de.oerntec.votenote.CardListHelpers.SwipeDeletion;
 import de.oerntec.votenote.Database.DBLessons;
 import de.oerntec.votenote.Database.DBSubjects;
 import de.oerntec.votenote.Database.Lesson;
+import de.oerntec.votenote.LessonFragmentStuff.LessonFragment;
 
 public class MainDialogHelper {
     private static final int ADD_LESSON_CODE = -2;
@@ -39,7 +41,7 @@ public class MainDialogHelper {
      * @param groupID   id of the group to add a lesson to
      */
     public static void showAddLessonDialog(final MainActivity mActivity, final int groupID) {
-        showLessonDialog(mActivity, groupID, ADD_LESSON_CODE);
+        showLessonDialog(mActivity, null, null, groupID, ADD_LESSON_CODE);
     }
 
     /**
@@ -49,14 +51,15 @@ public class MainDialogHelper {
      * @param groupID                  the id of the subject
      * @param translatedLessonPosition the id of the lesson, translated (+1) from listview
      */
-    public static void showChangeLessonDialog(final MainActivity mActivity, final int groupID, final int translatedLessonPosition) {
-        showLessonDialog(mActivity, groupID, translatedLessonPosition);
+    public static void showChangeLessonDialog(final MainActivity mActivity, LessonFragment lessonFragment, View lessonView, final int groupID, final int translatedLessonPosition) {
+        showLessonDialog(mActivity, lessonFragment, lessonView, groupID, translatedLessonPosition);
     }
+
 
     /**
      * Shows a dialog to edit or add a lesson
      */
-    private static void showLessonDialog(final MainActivity mActivity, final int subjectId, final int lessonID) {
+    private static void showLessonDialog(final MainActivity mActivity, final LessonFragment lessonFragment, final View lessonView, final int subjectId, final int lessonID) {
         //db access
         final DBLessons entryDB = DBLessons.getInstance();
 
@@ -64,8 +67,9 @@ public class MainDialogHelper {
         final int myVoteValue;
 
         Lesson oldValues = null;
+        final boolean isNewLesson = lessonID == ADD_LESSON_CODE;
         //set values according to usage (add or change)
-        if (lessonID == ADD_LESSON_CODE) {
+        if (isNewLesson) {
             maxVoteValue = entryDB.getPreviousMaximumVote(subjectId);
             myVoteValue = entryDB.getPreviousMyVote(subjectId);
         } else {
@@ -100,8 +104,8 @@ public class MainDialogHelper {
         //build alertdialog
         final Lesson finalOldValues = oldValues;
 
-        final AlertDialog dialog = new AlertDialog.Builder(mActivity)
-                .setTitle(lessonID == ADD_LESSON_CODE ? mActivity.getString(R.string.main_dialog_lesson_new_lesson_title) : "Übung " + lessonID + " " + "ändern?")
+        final AlertDialog.Builder builder = new AlertDialog.Builder(mActivity)
+                .setTitle(isNewLesson ? mActivity.getString(R.string.main_dialog_lesson_new_lesson_title) : "Übung " + lessonID + " " + "ändern?")
                 .setView(rootView)
                 .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
@@ -114,7 +118,21 @@ public class MainDialogHelper {
                         } else
                             Toast.makeText(mActivity, mActivity.getString(R.string.main_dialog_lesson_voted_too_much), Toast.LENGTH_SHORT).show();
                     }
-                }).setNegativeButton(mActivity.getString(R.string.dialog_button_abort), null).create();
+                })
+                .setNegativeButton(mActivity.getString(R.string.dialog_button_abort), null);
+
+        //enable deleting old lessons
+        if (!isNewLesson) {
+            builder.setNeutralButton(R.string.delete_button_text, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    SwipeDeletion.executeProgrammaticSwipeDeletion(mActivity, lessonFragment, lessonView);
+                }
+            });
+        }
+
+        //create dialog from builder
+        final AlertDialog dialog = builder.create();
 
         //listener for the vote picker
         NumberPicker.OnValueChangeListener votePickerListener = new NumberPicker.OnValueChangeListener() {
@@ -127,7 +145,9 @@ public class MainDialogHelper {
                         + " " + maxVoteValue + " " + mActivity.getString(R.string.main_dialog_lesson_votes));
                 boolean isValid = myVoteValue <= maxVoteValue;
                 dialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(isValid);
-                infoView.setTextColor(isValid ? Color.argb(255, 153, 204, 0) /*green*/ : Color.argb(255, 204, 0, 0));//red
+                infoView.setTextColor(isValid ?
+                        Color.argb(255, 153, 204, 0) /*green*/ :
+                        mActivity.getResources().getColor(R.color.warning_red));
             }
         };
 
@@ -136,7 +156,12 @@ public class MainDialogHelper {
         maxVote.setOnValueChangedListener(votePickerListener);
 
         dialog.show();
+
+        //change delete button text color to red
+        if (!isNewLesson)
+            dialog.getButton(DialogInterface.BUTTON_NEUTRAL).setTextColor(mActivity.getResources().getColor(R.color.warning_red));
     }
+
 
     /**
      * shows the dialog to change the presentation points
