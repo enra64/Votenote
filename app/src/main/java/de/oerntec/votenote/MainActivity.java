@@ -272,6 +272,8 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
             });
             eulaBuilder.show();
         }
+        //avoid showing the presentation points icon when no longer necessary
+        invalidateOptionsMenu();
     }
 
     /**
