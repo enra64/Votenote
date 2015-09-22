@@ -67,7 +67,7 @@
     <string name="pref_drawer_start_description">Bei gesetzter Checkbox wird der Drawer beim Starten angezeigt.</string>
     <string name="pref_lesson_sort">Bei gesetzter Checkbox wird die neueste Übung zuerst angezeigt.</string>
     <string name="pref_lesson_sort_title">Übungsreihenfolge</string>
-    <string name="pref_xml_export">XML-Sicherung erstellen</string>
+    <string name="pref_xml_export">XML-Sicherung exportieren</string>
     <string name="pref_xml_import">XML-Sicherung importieren</string>
     <string name="tutorial_import_description">XML-Backup importieren</string>
     <string name="tutorial_lessons_about">Berechnete Werte anzeigen</string>

@@ -62,7 +62,7 @@
     <string name="past_lessons">Past lessons:</string>
     <string name="remaining_needed_assignments">Remaining needed lessons:</string>
     <string name="voted_assignments">Voted assignments:</string>
-    <string name="pref_xml_import">Import XML save</string>
+    <string name="pref_xml_import">Import XML backup</string>
     <string name="pref_xml_export">Export XML backup</string>
     <string name="pref_lesson_sort_title">Lesson order</string>
     <string name="pref_lesson_sort">When the box is checked, the newest lesson will be shown first.</string>

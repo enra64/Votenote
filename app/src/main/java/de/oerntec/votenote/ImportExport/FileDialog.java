@@ -65,6 +65,7 @@ public class FileDialog {
     private Context mContext;
     private String selectedFileName = defaultFileName;
     private EditText inputText;
+    private TextView breadcrumbsText;
 
     private String m_dir = "";
     private List<String> mSubdirs = null;
@@ -194,12 +195,12 @@ public class FileDialog {
 
             // if directory is not the base sd card directory add ".." for going up one directory
             if ((mGoToUpper || !m_dir.equals(mSdcardDirectory))
-                    && !"/".equals(m_dir)
-                    ) {
+                    && !"/".equals(m_dir)) {
                 dirs.add("..");
             }
             if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
                 Log.d("~~~~", "m_dir=" + m_dir);
+
             if (!dirFile.exists() || !dirFile.isDirectory()) {
                 return dirs;
             }
@@ -258,6 +259,7 @@ public class FileDialog {
                 builder.setTitle("Folder Select:");
         }
 
+        breadcrumbsText = (TextView) root.findViewById(R.id.dialog_file_chooser_breadcrumbs);
         Button newDirButton = (Button) root.findViewById(R.id.dialog_file_chooser_new_directory_button);
         ListView fileList = (ListView) root.findViewById(R.id.dialog_file_chooser_list);
         EditText fileNameEdit = (EditText) root.findViewById(R.id.dialog_file_chooser_file_name_edit);
@@ -350,6 +352,7 @@ public class FileDialog {
     private void updateDirectory() {
         mSubdirs.clear();
         mSubdirs.addAll(getDirectories(m_dir));
+        breadcrumbsText.setText(m_dir);
         mListAdapter.notifyDataSetChanged();
         //#scorch
         if (Select_type == FileSave || Select_type == FileOpen) {
