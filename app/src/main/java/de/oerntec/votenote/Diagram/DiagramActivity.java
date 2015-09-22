@@ -17,14 +17,17 @@
 * */
 package de.oerntec.votenote.Diagram;
 
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.DisplayMetrics;
 import android.view.MenuItem;
 
 import com.jjoe64.graphview.GraphView;
@@ -37,6 +40,7 @@ import com.jjoe64.graphview.series.Series;
 import java.text.NumberFormat;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 
@@ -55,6 +59,22 @@ public class DiagramActivity extends AppCompatActivity implements DiagramSubject
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //wanted behaviour: if no preference is set, use system default
+        String languagePreference = getPreference("language", "default");
+
+        //no preference given
+        if ("default".equals(languagePreference))
+            languagePreference = getResources().getConfiguration().locale.getLanguage();
+
+        //language switch
+        Resources res = getResources();
+        // Change locale settings in the app.
+        DisplayMetrics dm = res.getDisplayMetrics();
+        android.content.res.Configuration conf = res.getConfiguration();
+        conf.locale = new Locale(languagePreference.toLowerCase());
+        res.updateConfiguration(conf, dm);
+
         setContentView(R.layout.diagramactivity);
 
         //handle action bar
@@ -190,5 +210,9 @@ public class DiagramActivity extends AppCompatActivity implements DiagramSubject
                 return (true);
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public String getPreference(String key, String def) {
+        return PreferenceManager.getDefaultSharedPreferences(this).getString(key, def);
     }
 }

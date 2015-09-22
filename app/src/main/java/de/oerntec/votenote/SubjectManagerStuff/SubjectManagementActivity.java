@@ -22,6 +22,7 @@ import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
@@ -34,6 +35,7 @@ import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -43,6 +45,8 @@ import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.util.Locale;
 
 import de.oerntec.votenote.CardListHelpers.OnItemClickListener;
 import de.oerntec.votenote.CardListHelpers.RecyclerItemClickListener;
@@ -92,6 +96,21 @@ public class SubjectManagementActivity extends AppCompatActivity implements Swip
 
         //get db
         mSubjectDb = DBSubjects.getInstance();
+
+        //wanted behaviour: if no preference is set, use system default
+        String languagePreference = getPreference("language", "default");
+
+        //no preference given
+        if ("default".equals(languagePreference))
+            languagePreference = getResources().getConfiguration().locale.getLanguage();
+
+        //language switch
+        Resources res = getResources();
+        // Change locale settings in the app.
+        DisplayMetrics dm = res.getDisplayMetrics();
+        android.content.res.Configuration conf = res.getConfiguration();
+        conf.locale = new Locale(languagePreference.toLowerCase());
+        res.updateConfiguration(conf, dm);
 
         //tutorial?
         if (!getPreference("tutorial_subjects_read", false)) {
@@ -394,6 +413,10 @@ public class SubjectManagementActivity extends AppCompatActivity implements Swip
 
     public boolean getPreference(String key, boolean def) {
         return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(key, def);
+    }
+
+    public String getPreference(String key, String def) {
+        return PreferenceManager.getDefaultSharedPreferences(this).getString(key, def);
     }
 
     public void setPreference(String key, boolean newValue) {

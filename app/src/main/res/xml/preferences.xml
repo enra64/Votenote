@@ -32,6 +32,12 @@
             android:summary="@string/pref_logging_sum"
             android:title="Logging" />
 
+        <ListPreference
+            android:entries="@array/language_names"
+            android:entryValues="@array/language_codes"
+            android:key="language"
+            android:title="@string/preferences_language" />
+
         <de.oerntec.votenote.Preferences.DeletionConfirmationPreference
             android:key="delete_entries"
             android:title="@string/pref_delete_all_entries" />

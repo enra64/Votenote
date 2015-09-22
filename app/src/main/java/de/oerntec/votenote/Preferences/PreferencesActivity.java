@@ -20,13 +20,18 @@ package de.oerntec.votenote.Preferences;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
+import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.DisplayMetrics;
+
+import java.util.Locale;
 
 import de.oerntec.votenote.R;
 
@@ -58,7 +63,7 @@ public class PreferencesActivity extends AppCompatActivity {
             super.onCreate(savedInstanceState);
 
             // Load the preferences from an XML resource
-            addPreferencesFromResource(R.xml.new_preferences);
+            addPreferencesFromResource(R.xml.preferences);
             findPreference("source_link").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
                 public boolean onPreferenceClick(Preference preference) {
@@ -66,6 +71,36 @@ public class PreferencesActivity extends AppCompatActivity {
                     return true;
                 }
             });
+
+            //try to load already saved language choice
+            String languagePreference = PreferenceManager.getDefaultSharedPreferences(getActivity()).getString("language", "default");
+
+            //no preference given yet; fall back to default
+            if ("default".equals(languagePreference))
+                languagePreference = getResources().getConfiguration().locale.getLanguage();
+
+            //set description according to current locale
+            if ("de".equals(languagePreference))
+                findPreference("language").setSummary("Deutsch");
+            else
+                findPreference("language").setSummary("English");
+
+            //reload activity after changing the language
+            findPreference("language").setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object o) {
+                    getActivity().recreate();
+                    return true;
+                }
+            });
+
+            //apply language in "languagePrefrence"
+            Resources res = getResources();
+            // Change locale settings in the app.
+            DisplayMetrics dm = res.getDisplayMetrics();
+            android.content.res.Configuration conf = res.getConfiguration();
+            conf.locale = new Locale(languagePreference.toLowerCase());
+            res.updateConfiguration(conf, dm);
         }
     }
 }
