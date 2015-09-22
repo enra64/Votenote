@@ -23,6 +23,7 @@ import android.app.AlertDialog.Builder;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
@@ -93,11 +94,16 @@ public class SubjectManagementActivity extends AppCompatActivity implements Swip
         mSubjectDb = DBSubjects.getInstance();
 
         //tutorial?
-        if (mSubjectDb.getCount() == 0) {
-            Builder b = new AlertDialog.Builder(this, AlertDialog.THEME_DEVICE_DEFAULT_DARK);
+        if (!getPreference("tutorial_subjects_read", false)) {
+            Builder b = new AlertDialog.Builder(this, AlertDialog.THEME_DEVICE_DEFAULT_LIGHT);
             b.setTitle("Tutorial");
             b.setView(this.getLayoutInflater().inflate(R.layout.tutorial_subjects, null));
-            b.setPositiveButton(getString(R.string.dialog_button_ok), null);
+            b.setPositiveButton(getString(R.string.dialog_button_ok), new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    setPreference("tutorial_subjects_read", true);
+                }
+            });
             b.create().show();
         }
 
@@ -384,6 +390,14 @@ public class SubjectManagementActivity extends AppCompatActivity implements Swip
      */
     public void onImport() {
         mSubjectList.swapAdapter(new SubjectAdapter(this), false);
+    }
+
+    public boolean getPreference(String key, boolean def) {
+        return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(key, def);
+    }
+
+    public void setPreference(String key, boolean newValue) {
+        PreferenceManager.getDefaultSharedPreferences(this).edit().putBoolean(key, newValue).apply();
     }
 
     class SeekerListener implements OnSeekBarChangeListener {

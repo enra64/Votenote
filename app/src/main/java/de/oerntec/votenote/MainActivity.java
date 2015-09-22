@@ -213,12 +213,15 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
             eulaBuilder.show();
         }
 
-        if (lessonCount <= 0 && subjectCount > 0) {
-            AlertDialog.Builder b = new AlertDialog.Builder(this, AlertDialog.THEME_DEVICE_DEFAULT_DARK);
-            b.setTitle("Tutorial");
-            b.setView(this.getLayoutInflater().inflate(R.layout.tutorial_lessons, null));
-            b.setPositiveButton(getString(R.string.dialog_button_ok), null);
-            b.create().show();
+        if (lessonCount == 0 && subjectCount > 0) {
+            if (!getPreference("tutorial_lessons_read", false)) {
+                AlertDialog.Builder b = new AlertDialog.Builder(this, AlertDialog.THEME_DEVICE_DEFAULT_DARK);
+                b.setTitle("Tutorial");
+                b.setView(this.getLayoutInflater().inflate(R.layout.tutorial_lessons, null));
+                b.setPositiveButton(getString(R.string.dialog_button_ok), null);
+                b.create().show();
+                setPreference("tutorial_lessons_read", true);
+            }
         } else if (subjectCount == 0) {
             AlertDialog.Builder b = new AlertDialog.Builder(this, AlertDialog.THEME_DEVICE_DEFAULT_DARK);
             b.setTitle("Tutorial");
