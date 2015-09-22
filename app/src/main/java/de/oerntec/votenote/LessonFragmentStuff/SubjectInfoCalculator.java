@@ -65,7 +65,7 @@ class SubjectInfoCalculator {
             averageNeededVotesView.setText(context.getString(R.string.subject_fragment_overshot_lesson_count));
         else
             averageNeededVotesView.setText(context.getString(R.string.subject_fragment_on_average) + " " +
-                    String.format("%.2f", neededAssignmentsPerUebung) + " " + context.getString(R.string.subject_fragment_assignments_per_lesson));
+                    String.format("%.2f", neededAssignmentsPerUebung) + " " + context.getString(R.string.lesson_fragment_info_card_assignments_per_lesson_description));
 
         if (scheduledMaximumAssignments < 0)
             averageNeededVotesView.setText(context.getString(R.string.subject_fragment_error_detected));

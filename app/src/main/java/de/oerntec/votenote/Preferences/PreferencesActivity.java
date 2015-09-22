@@ -30,6 +30,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
+import android.widget.Toast;
 
 import java.util.Locale;
 
@@ -89,7 +90,7 @@ public class PreferencesActivity extends AppCompatActivity {
             findPreference("language").setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object o) {
-                    getActivity().recreate();
+                    Toast.makeText(getActivity(), R.string.preferences_language_please_restart, Toast.LENGTH_SHORT).show();
                     return true;
                 }
             });

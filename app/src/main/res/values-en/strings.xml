@@ -34,7 +34,7 @@
     <string name="subject_fragment_singular_vote">Vote</string>
     <string name="subject_fragment_reached_scheduled_lesson_count">All scheduled lessons have been entered.</string>
     <string name="subject_fragment_overshot_lesson_count">More lessons than scheduled</string>
-    <string name="subject_fragment_on_average">On average</string>
+    <string name="subject_fragment_on_average">About</string>
     <string name="subject_fragment_error_detected">Error: Incorrect values.</string>
     <string name="subject_fragment_assignments_per_lesson">Assignments per Lesson</string>
     <string name="subject_fragment_delete_lesson">Remove lesson?</string>
@@ -104,4 +104,6 @@
     <string name="tutorial_dismiss">Dismiss</string>
     <string name="tutorial_shortcut">Shortcut</string>
     <string name="preferences_language">Language</string>
+    <string name="lesson_fragment_info_card_assignments_per_lesson_description">assignments required per lesson</string>
+    <string name="preferences_language_please_restart">Please restart Votenote!</string>
 </resources>
