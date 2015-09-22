@@ -212,7 +212,7 @@ public class SubjectManagementActivity extends AppCompatActivity implements Swip
         }
 
         //inflate view with seekbar and name
-        final View input = this.getLayoutInflater().inflate(R.layout.subject_manager_dialog_groupsettings, null);
+        final View input = getLayoutInflater().inflate(R.layout.subject_manager_dialog_groupsettings, null);
 
         final EditText nameInput = (EditText) input.findViewById(R.id.subject_manager_dialog_groupsettings_edit_name);
 
@@ -239,7 +239,7 @@ public class SubjectManagementActivity extends AppCompatActivity implements Swip
 
         //minpres seek
         wantedPresentationPointsSeekbar.setProgress(presentationPointsHint);
-        wantedPresentationPointsSeekbar.setMax(5);
+        wantedPresentationPointsSeekbar.setMax(30);
         wantedPresentationPointsSeekbar.setOnSeekBarChangeListener(new SeekerListener(presInfo));
 
         //minvotehelp
@@ -255,7 +255,7 @@ public class SubjectManagementActivity extends AppCompatActivity implements Swip
         estimatedAssignmentsHelp.setText(scheduledAssignmentsPerLesson + "");
 
         //assignments per uebung seek
-        estimatedAssignmentsSeek.setMax(20);
+        estimatedAssignmentsSeek.setMax(50);
         estimatedAssignmentsSeek.setProgress(scheduledAssignmentsPerLesson);
         estimatedAssignmentsSeek.setOnSeekBarChangeListener(new SeekerListener(estimatedAssignmentsHelp));
 
@@ -263,7 +263,7 @@ public class SubjectManagementActivity extends AppCompatActivity implements Swip
         estimatedUebungCountHelp.setText(scheduledNumberOfLessons + "");
 
         //ubeung instances seek
-        estimatedUebungCountSeek.setMax(20);
+        estimatedUebungCountSeek.setMax(50);
         estimatedUebungCountSeek.setProgress(scheduledNumberOfLessons);
         estimatedUebungCountSeek.setOnSeekBarChangeListener(new SeekerListener(estimatedUebungCountHelp));
 
