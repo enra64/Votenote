@@ -46,7 +46,7 @@
     <string name="subject_fragment_error_detected">Fehler erkannt. Werte unbrauchbar.</string>
     <string name="subject_fragment_on_average">Noch durchschnittlich</string>
     <string name="subject_fragment_overshot_lesson_count">Mehr Übungen eingetragen als eingestellt!</string>
-    <string name="subject_fragment_reached_scheduled_lesson_count">Angegebene Übungsanzahl erreicht.</string>
+    <string name="subject_fragment_reached_scheduled_lesson_count">Alle vorgegebenen Übungen wurden eingetragen.</string>
     <string name="subject_fragment_singular_vote">Votierung</string>
     <string name="subject_manage_add_title_change_subject">Change</string>
     <string name="subject_manage_bad_subject_name">Dein Gruppenname enthält XML-Zeichen!</string>
@@ -57,7 +57,7 @@
     <string name="assignments_per_lesson_for_exam">Aufgaben pro Übung für die Zulassung:</string>
     <string name="calculated_values">Berechnete Werte:</string>
     <string name="future_lessons">Zukünftige Übungen:</string>
-    <string name="maximum_possible_assignments">Maximal machbare Aufgaben:</string>
+    <string name="maximum_possible_assignments">Anzahl noch lösbarer Aufgaben:</string>
     <string name="needed_work_count">Benötigte Aufgaben:</string>
     <string name="past_lessons">Absolvierte Übungen:</string>
     <string name="remaining_needed_assignments">Noch benötigte Aufgaben:</string>
