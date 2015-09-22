@@ -105,5 +105,9 @@
     <string name="delete_button_text">Löschen</string>
     <string name="preference_auto_set_max_assignments">Wird eines der beiden Zahlenräder für die Übungen auf einen unmöglichen Wert gestellt, so wird das andere verschoben um einen validen Wert zu erreichen.</string>
     <string name="preference_auto_set_max_assignments_title">Invalide Werte der Zahlenräder vermeiden</string>
+    <string name="eula_accept">Ich stimme zu</string>
+    <string name="eula_do_not_accept">Ich stimme nicht zu</string>
+    <string name="tutorial_dismiss">Ausblenden</string>
+    <string name="tutorial_shortcut">Abkürzung</string>
 
 </resources>

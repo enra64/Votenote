@@ -99,4 +99,8 @@
     <string name="delete_button_text">Delete</string>
     <string name="preference_auto_set_max_assignments">Tries to fix invalid lesson number picker values by changing the unaltered picker to a valid value</string>
     <string name="preference_auto_set_max_assignments_title">Avoid invalid lesson number picker values</string>
+    <string name="eula_accept">I accept</string>
+    <string name="eula_do_not_accept">I do not accept</string>
+    <string name="tutorial_dismiss">Dismiss</string>
+    <string name="tutorial_shortcut">Shortcut</string>
 </resources>

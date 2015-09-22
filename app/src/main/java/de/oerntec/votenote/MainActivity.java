@@ -198,21 +198,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         int lessonCount = mLessonDb.getCount();
         int subjectCount = mSubjectDb.getCount();
 
-        if (!getPreference("eula_agreed", false)) {
-            AlertDialog.Builder eulaBuilder = new AlertDialog.Builder(this);
-            eulaBuilder.setCancelable(false);
-            eulaBuilder.setTitle("Disclaimer of Warranties");
-            eulaBuilder.setPositiveButton("OK", null);
-            eulaBuilder.setView(R.layout.preferences_eula);
-            eulaBuilder.setPositiveButton(getString(R.string.dialog_button_ok), new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    setPreference("eula_agreed", true);
-                }
-            });
-            eulaBuilder.show();
-        }
-
+        //tutorials
         if (lessonCount == 0 && subjectCount > 0) {
             if (!getPreference("tutorial_lessons_read", false)) {
                 AlertDialog.Builder b = new AlertDialog.Builder(this, AlertDialog.THEME_DEVICE_DEFAULT_LIGHT);
@@ -223,17 +209,46 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
                 setPreference("tutorial_lessons_read", true);
             }
         } else if (subjectCount == 0) {
-            AlertDialog.Builder b = new AlertDialog.Builder(this, AlertDialog.THEME_DEVICE_DEFAULT_LIGHT);
-            b.setTitle("Tutorial");
-            b.setMessage(getString(R.string.create_new_subject_command));
-            b.setPositiveButton(getString(R.string.dialog_button_ok), null);
-            b.setNeutralButton("Shortcut", new DialogInterface.OnClickListener() {
+            if (!getPreference("tutorial_base_read", false)) {
+                AlertDialog.Builder b = new AlertDialog.Builder(this, AlertDialog.THEME_DEVICE_DEFAULT_LIGHT);
+                b.setTitle("Tutorial");
+                b.setMessage(getString(R.string.create_new_subject_command));
+                b.setNegativeButton(R.string.tutorial_dismiss, null);
+                b.setPositiveButton(R.string.tutorial_shortcut, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        startActivity(new Intent(MainActivity.this, SubjectManagementActivity.class));
+                    }
+                });
+                b.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                    @Override
+                    public void onDismiss(DialogInterface dialogInterface) {
+                        setPreference("tutorial_base_read", true);
+                    }
+                });
+                b.create().show();
+            }
+        }
+
+        //eula
+        if (!getPreference("eula_agreed", false)) {
+            AlertDialog.Builder eulaBuilder = new AlertDialog.Builder(this);
+            eulaBuilder.setCancelable(false);
+            eulaBuilder.setTitle("End-User License Agreement for Votenote");
+            eulaBuilder.setNegativeButton(R.string.eula_do_not_accept, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
-                    startActivity(new Intent(MainActivity.this, SubjectManagementActivity.class));
+                    finish();
                 }
             });
-            b.create().show();
+            eulaBuilder.setView(R.layout.preferences_eula);
+            eulaBuilder.setPositiveButton(R.string.eula_accept, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    setPreference("eula_agreed", true);
+                }
+            });
+            eulaBuilder.show();
         }
     }
 
