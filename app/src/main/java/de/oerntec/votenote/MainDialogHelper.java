@@ -63,8 +63,11 @@ public class MainDialogHelper {
         //db access
         final DBLessons entryDB = DBLessons.getInstance();
 
-        int maxVoteValue;
+        final int maxVoteValue;
         final int myVoteValue;
+
+        //whether or not to try automatically fixing invalid choices
+        boolean autoNumberPickerFixEnabled = MainActivity.getPreference("move_max_assignments_picker", true);
 
         Lesson oldValues = null;
         final boolean isNewLesson = lessonID == ADD_LESSON_CODE;
@@ -99,6 +102,7 @@ public class MainDialogHelper {
         //set the current values of the pickers as explanation text
         infoView.setText(myVote.getValue() + " " + mActivity.getString(R.string.main_dialog_lesson_von)
                 + " " + maxVote.getValue() + " " + mActivity.getString(R.string.main_dialog_lesson_votes));
+
         infoView.setTextColor(Color.argb(255, 153, 204, 0));//green
 
         //build alertdialog
@@ -135,7 +139,7 @@ public class MainDialogHelper {
         final AlertDialog dialog = builder.create();
 
         //try to fix invalid number of done assignments
-        if (MainActivity.getPreference("move_max_assignments_picker", true)) {
+        if (autoNumberPickerFixEnabled) {
             myVote.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
                 @Override
                 public void onValueChange(NumberPicker numberPicker, int i, int i1) {
@@ -143,6 +147,9 @@ public class MainDialogHelper {
                     int myVoteValue = myVote.getValue(), maxVoteValue = maxVote.getValue();
                     if (myVoteValue > maxVoteValue)
                         maxVote.setValue(myVoteValue);
+                    //update info text
+                    infoView.setText(myVote.getValue() + " " + mActivity.getString(R.string.main_dialog_lesson_von)
+                            + " " + maxVote.getValue() + " " + mActivity.getString(R.string.main_dialog_lesson_votes));
                 }
             });
             maxVote.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
@@ -152,6 +159,9 @@ public class MainDialogHelper {
                     int myVoteValue = myVote.getValue(), maxVoteValue = maxVote.getValue();
                     if (myVoteValue > maxVoteValue)
                         myVote.setValue(maxVoteValue);
+                    //update info text
+                    infoView.setText(myVote.getValue() + " " + mActivity.getString(R.string.main_dialog_lesson_von)
+                            + " " + maxVote.getValue() + " " + mActivity.getString(R.string.main_dialog_lesson_votes));
                 }
             });
         }
