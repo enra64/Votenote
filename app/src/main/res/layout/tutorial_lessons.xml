@@ -20,7 +20,7 @@
             android:layout_centerVertical="true"
             android:layout_toEndOf="@+id/relativeLayout3"
             android:layout_toRightOf="@+id/relativeLayout3"
-            android:text="@string/tutorial_add_button"
+            android:text="Übung hinzufügen"
             android:textAppearance="?android:attr/textAppearanceLarge" />
 
         <RelativeLayout

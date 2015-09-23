@@ -60,7 +60,7 @@
     <string name="maximum_possible_assignments">Assignments available for solving:</string>
     <string name="needed_work_count">Required assignments:</string>
     <string name="past_lessons">Past lessons:</string>
-    <string name="remaining_needed_assignments">Remaining required lessons:</string>
+    <string name="remaining_needed_assignments">Remaining required exercises:</string>
     <string name="voted_assignments">Voted assignments:</string>
     <string name="pref_xml_import">Import XML backup</string>
     <string name="pref_xml_export">Export XML backup</string>
@@ -107,4 +107,5 @@
     <string name="lesson_fragment_info_card_assignments_per_lesson_description">assignments required per lesson</string>
     <string name="preferences_language_please_restart">Please restart Votenote!</string>
     <string name="preferences_eula">EULA</string>
+    <string name="tutorial_lessons_add_lesson">Add lesson</string>
 </resources>
