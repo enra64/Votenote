@@ -142,9 +142,16 @@ public class DiagramActivity extends AppCompatActivity implements DiagramSubject
         }
         //determine the graph width
         int maxWidth = 0;
+        //get all series
         List<Series> list = mGraph.getSeries();
+        //iterate through series
         for (int i = 0; i < list.size(); i++) {
-            int newValue = (int) list.get(i).getHighestValueX();
+            //get largest value
+            int highestValue = (int) list.get(i).getHighestValueX();
+            int lowestValue = (int) list.get(i).getLowestValueX();
+            //which is bigger depends on the lesson sort b/c the database gets that by itself;
+            //just take the bigger one
+            int newValue = highestValue > lowestValue ? highestValue : lowestValue;
             //take bigger value
             maxWidth = maxWidth > newValue ? maxWidth : newValue;
         }

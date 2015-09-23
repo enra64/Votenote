@@ -94,6 +94,16 @@ import de.oerntec.votenote.SubjectManagerStuff.SubjectManagementActivity;
 * 1.2.5
 * removed version check system prior to upload to google play
 * fixed a bug when sorting by oldest lesson first
+* 1.3
+* a lot of translation improvements (partially courtesy of my brother)
+* improved handling of error conditions in subject dialog
+* added delete button in lesson and subject dialogs
+* added possibility to automatically repair erroneous lesson conditions in dialog, made default
+* improved tutorial system
+* improved eula system
+* added file dialog breadcrumbs
+* added ability to choose eng/de
+* added choice to view chart with percentages on x axis
 */
 
 @SuppressLint("InflateParams")
