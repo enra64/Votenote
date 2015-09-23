@@ -349,9 +349,6 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
     /* Called whenever we call invalidateOptionsMenu() */
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        // If the nav drawer is open, hide action items related to the content view
-        boolean drawerOpen = mNavigationDrawerFragment.isDrawerOpen();
-
         final MenuItem presPointItem = menu.findItem(R.id.action_prespoints);
         final MenuItem infoItem = menu.findItem(R.id.action_show_all_info);
 
@@ -361,40 +358,26 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         Animation fade;
         final boolean isVisibleAtEnd;
 
-        if (!drawerOpen) {
-            fade = AnimationUtils.loadAnimation(this, android.R.anim.fade_in);
-            isVisibleAtEnd = true;
-        } else {
+        if (mNavigationDrawerFragment.isDrawerOpen()) {
             fade = AnimationUtils.loadAnimation(this, android.R.anim.fade_out);
             isVisibleAtEnd = false;
+        } else {
+            fade = AnimationUtils.loadAnimation(this, android.R.anim.fade_in);
+            isVisibleAtEnd = true;
         }
 
-        if (!mCurrentFragmentHasPrespoints)
-            presPointItem.setVisible(false);
-
-        fade.setAnimationListener(new Animation.AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {
-            }
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                new Handler().post(new Runnable() {
-                    public void run() {
-                        infoItem.setVisible(isVisibleAtEnd);
-                        if (mCurrentFragmentHasPrespoints)
-                            presPointItem.setVisible(isVisibleAtEnd);
-                    }
-                });
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-            }
-        });
+        presPointItem.setVisible(mCurrentFragmentHasPrespoints);
 
         fade.setInterpolator(new AccelerateInterpolator());
         fade.setDuration(350);
+
+        new Handler().postDelayed(new Runnable() {
+            public void run() {
+                infoItem.setVisible(isVisibleAtEnd);
+                if (mCurrentFragmentHasPrespoints)
+                    presPointItem.setVisible(isVisibleAtEnd);
+            }
+        }, fade.getDuration() - 10);
 
         if (mCurrentFragmentHasPrespoints)
             presPoints.startAnimation(fade);
