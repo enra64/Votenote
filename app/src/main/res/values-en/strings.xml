@@ -106,4 +106,5 @@
     <string name="preferences_language">Language</string>
     <string name="lesson_fragment_info_card_assignments_per_lesson_description">assignments required per lesson</string>
     <string name="preferences_language_please_restart">Please restart Votenote!</string>
+    <string name="preferences_eula">EULA</string>
 </resources>

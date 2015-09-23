@@ -55,6 +55,14 @@ public class CustomActionPreference extends Preference {
                 b.setView(R.layout.preferences_thanks);
                 b.show();
                 break;
+            case "show_eula":
+                AlertDialog.Builder eulaBuilder = new AlertDialog.Builder(getContext());
+                eulaBuilder.setCancelable(false);
+                eulaBuilder.setTitle("End-User License Agreement for Votenote");
+                eulaBuilder.setView(R.layout.preferences_eula);
+                eulaBuilder.setPositiveButton("OK", null);
+                eulaBuilder.show();
+                break;
             default:
                 super.onClick();
         }
