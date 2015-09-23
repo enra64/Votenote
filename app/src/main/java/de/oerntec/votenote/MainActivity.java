@@ -167,9 +167,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         }
 
         // Set up the drawer.
-        mNavigationDrawerFragment.setUp(
-                R.id.navigation_drawer,
-                (DrawerLayout) findViewById(R.id.drawer_layout));
+        mNavigationDrawerFragment.setUp(R.id.navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout));
 
         if (ENABLE_DEBUG_LOG_CALLS)
             Log.i("state info", "oncreate");

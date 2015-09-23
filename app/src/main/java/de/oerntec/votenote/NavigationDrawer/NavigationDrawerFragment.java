@@ -36,6 +36,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import de.oerntec.votenote.Database.DBSubjects;
@@ -76,6 +77,7 @@ public class NavigationDrawerFragment extends Fragment implements SelectionCallb
     private DrawerLayout mDrawerLayout;
     private RecyclerView mSubjectList;
     private View mFragmentContainerView;
+    private TextView settingsDescriptionText, editDescriptionText;
     private int currentSelectionMode = DRAWER_SELECTION_MODE_SWITCH_SUBJECT;
 
     private int mCurrentSelectedPosition = 0;
@@ -109,6 +111,11 @@ public class NavigationDrawerFragment extends Fragment implements SelectionCallb
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.navigation_fragment, container, false);
         mSubjectList = (RecyclerView) root.findViewById(R.id.navigation_drawer_list);
+
+        //save references to be able to update the text
+        editDescriptionText = (TextView) root.findViewById(R.id.navigation_drawer_edit_description);
+        settingsDescriptionText = (TextView) root.findViewById(R.id.navigation_drawer_settings_description);
+
         //attach listener to settings text
         root.findViewById(R.id.navigation_drawer_bottom_layout).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -242,6 +249,14 @@ public class NavigationDrawerFragment extends Fragment implements SelectionCallb
         } catch (ClassCastException e) {
             throw new ClassCastException("Activity must implement NavigationDrawerCallbacks.");
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        //update texts to force translation update
+        editDescriptionText.setText(getActivity().getString(R.string.drawer_edit));
+        settingsDescriptionText.setText(getActivity().getString(R.string.action_show_settings));
     }
 
     @Override

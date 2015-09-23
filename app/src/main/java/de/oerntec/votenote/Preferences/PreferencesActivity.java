@@ -87,6 +87,8 @@ public class PreferencesActivity extends AppCompatActivity {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object o) {
                     Toast.makeText(getActivity(), R.string.preferences_language_please_restart, Toast.LENGTH_SHORT).show();
+                    //load translation change
+                    getActivity().recreate();
                     return true;
                 }
             });
