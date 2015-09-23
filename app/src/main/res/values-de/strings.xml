@@ -108,4 +108,6 @@
     <string name="preferences_language_please_restart">Bitte starte Votenote neu!</string>
     <string name="preferences_eula">EULA</string>
     <string name="tutorial_lessons_add_lesson">Übung hinzufügen</string>
+    <string name="drawer_edit">Übung bearbeiten</string>
+    <string name="drawer_choose_subject_to_edit">Wähle die Übung aus die du bearbeiten möchtest</string>
 </resources>

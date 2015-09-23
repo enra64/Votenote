@@ -108,4 +108,6 @@
     <string name="preferences_language_please_restart">Please restart Votenote!</string>
     <string name="preferences_eula">EULA</string>
     <string name="tutorial_lessons_add_lesson">Add lesson</string>
+    <string name="drawer_choose_subject_to_edit">Choose the subject you want to edit</string>
+    <string name="drawer_edit">Edit subject</string>
 </resources>

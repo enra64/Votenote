@@ -29,7 +29,7 @@ import android.widget.TextView;
 import de.oerntec.votenote.Database.DBSubjects;
 import de.oerntec.votenote.R;
 
-public class NavigationAdapter extends RecyclerView.Adapter<NavigationAdapter.SubjectHolder> {
+public class NavigationDrawerAdapter extends RecyclerView.Adapter<NavigationDrawerAdapter.SubjectHolder> {
     private DBSubjects mSubjectDb = DBSubjects.getInstance();
 
     private SelectionCallback mOnClickCallback;
@@ -37,29 +37,22 @@ public class NavigationAdapter extends RecyclerView.Adapter<NavigationAdapter.Su
     private int mCurrentSelection;
     private Context mContext;
 
-    public NavigationAdapter(Context context, SelectionCallback callbacks) {
+    public NavigationDrawerAdapter(Context context, SelectionCallback callbacks) {
         mOnClickCallback = callbacks;
         mContext = context;
-        reQuery();
+        requeryAndReload();
     }
 
     /**
      * Requery cursor and reload everything
      */
-    public void notifyForReload() {
-        reQuery();
-        notifyItemRangeChanged(0, mCursor.getCount());
-    }
-
-    /**
-     * give the cursor to the gc, and create a new one.
-     */
-    private void reQuery() {
+    public void requeryAndReload() {
         if (mCursor != null)
             mCursor.close();
         mCursor = null;
         //should be done asynchronously, but i guess that does not matter for 20 entries...
         mCursor = mSubjectDb.getAllGroupNames();
+        notifyItemRangeChanged(0, mCursor.getCount());
     }
 
     @Override

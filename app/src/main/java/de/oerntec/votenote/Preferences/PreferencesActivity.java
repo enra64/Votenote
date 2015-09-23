@@ -20,21 +20,17 @@ package de.oerntec.votenote.Preferences;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
-import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.DisplayMetrics;
 import android.widget.Toast;
 
-import java.util.Locale;
-
 import de.oerntec.votenote.R;
+import de.oerntec.votenote.TranslationHelper;
 
 
 public class PreferencesActivity extends AppCompatActivity {
@@ -74,7 +70,7 @@ public class PreferencesActivity extends AppCompatActivity {
             });
 
             //try to load already saved language choice
-            String languagePreference = PreferenceManager.getDefaultSharedPreferences(getActivity()).getString("language", "default");
+            String languagePreference = TranslationHelper.adjustLanguage(getActivity());
 
             //no preference given yet; fall back to default
             if ("default".equals(languagePreference))
@@ -94,14 +90,6 @@ public class PreferencesActivity extends AppCompatActivity {
                     return true;
                 }
             });
-
-            //apply language in "languagePrefrence"
-            Resources res = getResources();
-            // Change locale settings in the app.
-            DisplayMetrics dm = res.getDisplayMetrics();
-            android.content.res.Configuration conf = res.getConfiguration();
-            conf.locale = new Locale(languagePreference.toLowerCase());
-            res.updateConfiguration(conf, dm);
         }
     }
 }

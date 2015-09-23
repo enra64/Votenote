@@ -23,14 +23,12 @@ import android.app.AlertDialog;
 import android.app.FragmentManager;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -42,7 +40,6 @@ import android.widget.Toast;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.Locale;
 
 import de.oerntec.votenote.Database.DBLessons;
 import de.oerntec.votenote.Database.DBSubjects;
@@ -154,20 +151,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         //if we can not get our toolbar, its rip time anyways
         setSupportActionBar(toolbar);
 
-        //wanted behaviour: if no preference is set, use system default
-        String languagePreference = getPreference("language", "default");
-
-        //no preference given
-        if ("default".equals(languagePreference))
-            languagePreference = getResources().getConfiguration().locale.getLanguage();
-
-        //language switch
-        Resources res = getResources();
-        // Change locale settings in the app.
-        DisplayMetrics dm = res.getDisplayMetrics();
-        android.content.res.Configuration conf = res.getConfiguration();
-        conf.locale = new Locale(languagePreference.toLowerCase());
-        res.updateConfiguration(conf, dm);
+        TranslationHelper.adjustLanguage(this);
 
         mNavigationDrawerFragment =
                 (NavigationDrawerFragment) getFragmentManager().findFragmentById(R.id.navigation_drawer);

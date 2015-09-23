@@ -36,7 +36,10 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
+import de.oerntec.votenote.Database.DBSubjects;
+import de.oerntec.votenote.Dialogs.SubjectDialogs;
 import de.oerntec.votenote.Preferences.PreferencesActivity;
 import de.oerntec.votenote.R;
 
@@ -59,26 +62,26 @@ public class NavigationDrawerFragment extends Fragment implements SelectionCallb
      * user manually expands it. This shared preference tracks this.
      */
     private static final String PREF_USER_LEARNED_DRAWER = "navigation_drawer_learned";
-
+    private static final int DRAWER_SELECTION_MODE_EDIT_SUBJECT = 0;
+    private static final int DRAWER_SELECTION_MODE_SWITCH_SUBJECT = 1;
     /**
      * A pointer to the current callbacks instance (the Activity).
      */
     private NavigationDrawerCallbacks mCallbacks;
-
     /**
      * Helper component that ties the action bar to the navigation drawer.
      */
     @SuppressWarnings("deprecation")
     private ActionBarDrawerToggle mDrawerToggle;
-
     private DrawerLayout mDrawerLayout;
     private RecyclerView mSubjectList;
     private View mFragmentContainerView;
+    private int currentSelectionMode = DRAWER_SELECTION_MODE_SWITCH_SUBJECT;
 
     private int mCurrentSelectedPosition = 0;
     private boolean mUserLearnedDrawer;
 
-    private NavigationAdapter mAdapter;
+    private NavigationDrawerAdapter mAdapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -113,15 +116,18 @@ public class NavigationDrawerFragment extends Fragment implements SelectionCallb
                 startActivity(new Intent(getActivity(), PreferencesActivity.class));
             }
         });
+        root.findViewById(R.id.navigation_drawer_edit).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(getActivity(), R.string.drawer_choose_subject_to_edit, Toast.LENGTH_LONG).show();
+                currentSelectionMode = DRAWER_SELECTION_MODE_EDIT_SUBJECT;
+            }
+        });
         return root;
     }
 
     public boolean isDrawerOpen() {
         return mDrawerLayout != null && mDrawerLayout.isDrawerOpen(mFragmentContainerView);
-    }
-
-    public DrawerLayout getDrawerLayout() {
-        return mDrawerLayout;
     }
 
     /**
@@ -138,7 +144,7 @@ public class NavigationDrawerFragment extends Fragment implements SelectionCallb
         // set a custom shadow that overlays the menu_main content when the drawer opens
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
 
-        mAdapter = new NavigationAdapter(getActivity(), this);
+        mAdapter = new NavigationDrawerAdapter(getActivity(), this);
 
         //give it a layoutmanager (whatever that is)
         LinearLayoutManager manager = new LinearLayoutManager(getActivity());
@@ -225,7 +231,7 @@ public class NavigationDrawerFragment extends Fragment implements SelectionCallb
     }
 
     public void reloadAdapter() {
-        mAdapter.notifyForReload();
+        mAdapter.requeryAndReload();
     }
 
     @Override
@@ -273,7 +279,13 @@ public class NavigationDrawerFragment extends Fragment implements SelectionCallb
      */
     @Override
     public void onItemClick(int position) {
-        selectItem(position);
+        if (currentSelectionMode == DRAWER_SELECTION_MODE_SWITCH_SUBJECT)
+            selectItem(position);
+        else if (currentSelectionMode == DRAWER_SELECTION_MODE_EDIT_SUBJECT) {
+            SubjectDialogs.showSubjectDialog(getActivity(), this, DBSubjects.getInstance().translatePositionToID(position));
+            currentSelectionMode = DRAWER_SELECTION_MODE_SWITCH_SUBJECT;
+        }
+
     }
 
     /**
