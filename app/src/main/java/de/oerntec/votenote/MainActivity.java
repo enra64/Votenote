@@ -44,6 +44,7 @@ import java.io.StringWriter;
 import de.oerntec.votenote.Database.DBLessons;
 import de.oerntec.votenote.Database.DBSubjects;
 import de.oerntec.votenote.Diagram.DiagramActivity;
+import de.oerntec.votenote.Dialogs.MainDialogHelper;
 import de.oerntec.votenote.ImportExport.Writer;
 import de.oerntec.votenote.LessonFragmentStuff.LessonFragment;
 import de.oerntec.votenote.NavigationDrawer.NavigationDrawerFragment;

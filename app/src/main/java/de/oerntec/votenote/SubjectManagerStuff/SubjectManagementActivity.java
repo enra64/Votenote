@@ -23,6 +23,7 @@ import android.app.AlertDialog.Builder;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -47,6 +48,7 @@ import android.widget.Toast;
 import de.oerntec.votenote.CardListHelpers.OnItemClickListener;
 import de.oerntec.votenote.CardListHelpers.RecyclerItemClickListener;
 import de.oerntec.votenote.CardListHelpers.SwipeDeletion;
+import de.oerntec.votenote.Database.DBLessons;
 import de.oerntec.votenote.Database.DBSubjects;
 import de.oerntec.votenote.Database.Subject;
 import de.oerntec.votenote.ImportExport.XmlImporter;
@@ -182,6 +184,14 @@ public class SubjectManagementActivity extends AppCompatActivity implements Swip
                         onUndo();
                     }
                 }).show();
+
+        //delete lessons too after snackbar delay to avoid them popping up later
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                DBLessons.getInstance().deleteAllEntriesForGroup(subjectId);
+            }
+        }, Snackbar.LENGTH_LONG + 50);
     }
 
     //dont do anything, as we only delete the lesson when the undo bar gets hidden

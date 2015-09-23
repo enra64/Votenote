@@ -15,7 +15,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 * */
-package de.oerntec.votenote;
+package de.oerntec.votenote.Dialogs;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -30,6 +30,8 @@ import de.oerntec.votenote.Database.DBLessons;
 import de.oerntec.votenote.Database.DBSubjects;
 import de.oerntec.votenote.Database.Lesson;
 import de.oerntec.votenote.LessonFragmentStuff.LessonFragment;
+import de.oerntec.votenote.MainActivity;
+import de.oerntec.votenote.R;
 
 public class MainDialogHelper {
     private static final int ADD_LESSON_CODE = -2;

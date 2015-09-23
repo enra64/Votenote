@@ -37,12 +37,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import de.oerntec.votenote.Database.DBSubjects;
-import de.oerntec.votenote.Dialogs.SubjectDialogs;
 import de.oerntec.votenote.Preferences.PreferencesActivity;
 import de.oerntec.votenote.R;
+import de.oerntec.votenote.SubjectManagerStuff.SubjectManagementActivity;
 
 /**
  * Fragment used for managing interactions for and presentation of a navigation
@@ -63,8 +61,7 @@ public class NavigationDrawerFragment extends Fragment implements SelectionCallb
      * user manually expands it. This shared preference tracks this.
      */
     private static final String PREF_USER_LEARNED_DRAWER = "navigation_drawer_learned";
-    private static final int DRAWER_SELECTION_MODE_EDIT_SUBJECT = 0;
-    private static final int DRAWER_SELECTION_MODE_SWITCH_SUBJECT = 1;
+
     /**
      * A pointer to the current callbacks instance (the Activity).
      */
@@ -78,7 +75,6 @@ public class NavigationDrawerFragment extends Fragment implements SelectionCallb
     private RecyclerView mSubjectList;
     private View mFragmentContainerView;
     private TextView settingsDescriptionText, editDescriptionText;
-    private int currentSelectionMode = DRAWER_SELECTION_MODE_SWITCH_SUBJECT;
 
     private int mCurrentSelectedPosition = 0;
     private boolean mUserLearnedDrawer;
@@ -126,8 +122,7 @@ public class NavigationDrawerFragment extends Fragment implements SelectionCallb
         root.findViewById(R.id.navigation_drawer_edit).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getActivity(), R.string.drawer_choose_subject_to_edit, Toast.LENGTH_LONG).show();
-                currentSelectionMode = DRAWER_SELECTION_MODE_EDIT_SUBJECT;
+                startActivity(new Intent(getActivity(), SubjectManagementActivity.class));
             }
         });
         return root;
@@ -255,7 +250,7 @@ public class NavigationDrawerFragment extends Fragment implements SelectionCallb
     public void onResume() {
         super.onResume();
         //update texts to force translation update
-        editDescriptionText.setText(getActivity().getString(R.string.drawer_edit));
+        editDescriptionText.setText(getActivity().getString(R.string.action_control_subjects));
         settingsDescriptionText.setText(getActivity().getString(R.string.action_show_settings));
     }
 
@@ -294,13 +289,7 @@ public class NavigationDrawerFragment extends Fragment implements SelectionCallb
      */
     @Override
     public void onItemClick(int position) {
-        if (currentSelectionMode == DRAWER_SELECTION_MODE_SWITCH_SUBJECT)
             selectItem(position);
-        else if (currentSelectionMode == DRAWER_SELECTION_MODE_EDIT_SUBJECT) {
-            SubjectDialogs.showSubjectDialog(getActivity(), this, DBSubjects.getInstance().translatePositionToID(position));
-            currentSelectionMode = DRAWER_SELECTION_MODE_SWITCH_SUBJECT;
-        }
-
     }
 
     /**
