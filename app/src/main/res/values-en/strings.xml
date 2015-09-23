@@ -110,4 +110,5 @@
     <string name="tutorial_lessons_add_lesson">Add lesson</string>
     <string name="drawer_choose_subject_to_edit">Choose the subject you want to edit</string>
     <string name="drawer_edit">Edit subject</string>
+    <string name="diagram_show_x_axis_as_percentage">Use percentages for x axis</string>
 </resources>

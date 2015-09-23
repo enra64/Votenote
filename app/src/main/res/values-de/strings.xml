@@ -110,4 +110,5 @@
     <string name="tutorial_lessons_add_lesson">Übung hinzufügen</string>
     <string name="drawer_edit">Übung bearbeiten</string>
     <string name="drawer_choose_subject_to_edit">Wähle die Übung aus die du bearbeiten möchtest</string>
+    <string name="diagram_show_x_axis_as_percentage">X-Achse als Prozentwert</string>
 </resources>

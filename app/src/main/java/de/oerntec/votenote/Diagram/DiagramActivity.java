@@ -27,6 +27,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.widget.CompoundButton;
+import android.widget.Switch;
 
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.GridLabelRenderer;
@@ -53,6 +55,7 @@ public class DiagramActivity extends AppCompatActivity implements DiagramSubject
     private static GraphView mGraph;
     private Random r;
     private Map<Integer, LineGraphSeries<DataPoint>> lineGraphMap;
+    private boolean usePercentageForXAxis = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,6 +92,19 @@ public class DiagramActivity extends AppCompatActivity implements DiagramSubject
         LinearLayoutManager manager = new LinearLayoutManager(this);
         manager.setOrientation(LinearLayoutManager.VERTICAL);
         subjectList.setLayoutManager(manager);
+
+        //initialize the x axis caption switch
+        ((Switch) findViewById(R.id.diagramactivity_xaxis_switch)).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                usePercentageForXAxis = isChecked;
+                //clear old data
+                mGraph.removeAllSeries();
+                lineGraphMap.clear();
+                //"uncheck" all subjects
+                subjectList.swapAdapter(new DiagramSubjectAdapter(DiagramActivity.this, generateGoldenRatioColors()), true);
+            }
+        });
     }
 
     private int[] generateGoldenRatioColors() {
@@ -111,18 +127,24 @@ public class DiagramActivity extends AppCompatActivity implements DiagramSubject
         if (enabled) {
             //create new if not already created
             if (!lineGraphMap.containsKey(subjectId)) {
-                LineGraphSeries<DataPoint> newLine = getGroupLineGraph(subjectId, color);
-                lineGraphMap.put(subjectId, newLine);
+                LineGraphSeries<DataPoint> newGraphLine = getGroupLineGraph(subjectId, color);
+                lineGraphMap.put(subjectId, newGraphLine);
             }
             mGraph.addSeries(lineGraphMap.get(subjectId));
         } else
             mGraph.removeSeries(lineGraphMap.get(subjectId));
 
+        if (usePercentageForXAxis) {
+            mGraph.getGridLabelRenderer().setNumHorizontalLabels(5);
+            mGraph.getViewport().setMaxX(100);
+            return;
+        }
         //determine the graph width
         int maxWidth = 0;
         List<Series> list = mGraph.getSeries();
         for (int i = 0; i < list.size(); i++) {
-            int newValue = (int) list.get(i).getLowestValueX();
+            int newValue = (int) list.get(i).getHighestValueX();
+            //take bigger value
             maxWidth = maxWidth > newValue ? maxWidth : newValue;
         }
 
@@ -130,22 +152,29 @@ public class DiagramActivity extends AppCompatActivity implements DiagramSubject
         mGraph.getViewport().setMaxX(maxWidth);
     }
 
+    /**
+     * Creates a LineGraphSeries object containing the data points of the specified subject
+     */
     private LineGraphSeries<DataPoint> getGroupLineGraph(int subjectId, int color) {
         //get cursor
-        Cursor all = mLessonDb.getAllLessonsForSubject(subjectId);
+        Cursor allLessonsForSubject = mLessonDb.getAllLessonsForSubject(subjectId);
 
         //add uebung data to graph
-        DataPoint[] dataPointArray = new DataPoint[all.getCount()];
+        DataPoint[] dataPointArray = new DataPoint[allLessonsForSubject.getCount()];
         int arrayCounter = 0;
-        float votePercentage = 100 * ((float) all.getInt(1) / (float) all.getInt(2));
-        //do first point seperately
-        dataPointArray[arrayCounter++] = new DataPoint(all.getInt(0), votePercentage);
-        //step over the rest
-        while (all.moveToNext())
-            dataPointArray[arrayCounter++] = new DataPoint(all.getInt(0), 100 * ((float) all.getInt(1) / (float) all.getInt(2)));
+
+        //go back one so the loop works; the cursor gets moved to first position in getallLessons
+        allLessonsForSubject.moveToPrevious();
+
+        if (usePercentageForXAxis)
+            while (allLessonsForSubject.moveToNext())
+                dataPointArray[arrayCounter++] = new DataPoint(100f * ((float) (allLessonsForSubject.getInt(0) - 1) / (float) (dataPointArray.length - 1)), 100 * ((float) allLessonsForSubject.getInt(1) / (float) allLessonsForSubject.getInt(2)));
+        else
+            while (allLessonsForSubject.moveToNext())
+                dataPointArray[arrayCounter++] = new DataPoint(allLessonsForSubject.getInt(0), 100 * ((float) allLessonsForSubject.getInt(1) / (float) allLessonsForSubject.getInt(2)));
 
         //close cursor
-        all.close();
+        allLessonsForSubject.close();
 
         LineGraphSeries<DataPoint> answer = new LineGraphSeries<>(dataPointArray);
 
@@ -181,9 +210,6 @@ public class DiagramActivity extends AppCompatActivity implements DiagramSubject
         viewport.setMinX(1);
         viewport.setMinY(0);
         viewport.setMaxY(100);
-
-        mGraph.getLegendRenderer().setVisible(true);
-        mGraph.getLegendRenderer().setMargin(100);
     }
 
     //avoid losing view states when going back

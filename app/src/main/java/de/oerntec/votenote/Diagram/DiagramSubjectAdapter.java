@@ -98,6 +98,8 @@ public class DiagramSubjectAdapter extends RecyclerView.Adapter<DiagramSubjectAd
             holder.checkBox.setEnabled(false);
         }
 
+        holder.checkBox.setChecked(false);
+
         holder.checkBox.setHighlightColor(mColorArray[position]);
 
         //set texts
@@ -110,6 +112,7 @@ public class DiagramSubjectAdapter extends RecyclerView.Adapter<DiagramSubjectAd
     public int getItemCount() {
         return mCursor.getCount();
     }
+
 
     public interface AdapterListener {
         void onClick(int subjectId, boolean enabled, int color);
