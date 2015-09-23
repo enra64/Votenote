@@ -50,7 +50,6 @@ import de.oerntec.votenote.Diagram.DiagramActivity;
 import de.oerntec.votenote.ImportExport.Writer;
 import de.oerntec.votenote.LessonFragmentStuff.LessonFragment;
 import de.oerntec.votenote.NavigationDrawer.NavigationDrawerFragment;
-import de.oerntec.votenote.Preferences.PreferencesActivity;
 import de.oerntec.votenote.SubjectManagerStuff.SubjectManagementActivity;
 
 /*
@@ -429,9 +428,6 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
                 return true;
             case R.id.action_prespoints:
                 onPresentationPointsClick();
-                return true;
-            case R.id.action_settings:
-                startActivity(new Intent(this, PreferencesActivity.class));
                 return true;
             case R.id.action_show_diagram:
                 onDiagramClick();

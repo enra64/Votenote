@@ -65,9 +65,9 @@
     <string name="pref_xml_import">Import XML backup</string>
     <string name="pref_xml_export">Export XML backup</string>
     <string name="pref_lesson_sort_title">Lesson order</string>
-    <string name="pref_lesson_sort">When the box is checked, the newest lesson will be shown first.</string>
+    <string name="pref_lesson_sort">Show the most recent lesson first</string>
     <string name="pref_drawer_start_title">Drawer start</string>
-    <string name="pref_drawer_start_description">When the box is checked, the drawer will be opened on each resume.</string>
+    <string name="pref_drawer_start_description">Open the drawer whenever the app resumes.</string>
     <string name="pref_csv_export">Create CSV export</string>
     <string name="tutorial_lessons_diagram">Show a diagram</string>
     <string name="tutorial_lessons_add">Add a lesson</string>

@@ -19,6 +19,7 @@ package de.oerntec.votenote.NavigationDrawer;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -36,6 +37,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import de.oerntec.votenote.Preferences.PreferencesActivity;
 import de.oerntec.votenote.R;
 
 /**
@@ -90,9 +92,6 @@ public class NavigationDrawerFragment extends Fragment implements SelectionCallb
 
         if (savedInstanceState != null)
             mCurrentSelectedPosition = savedInstanceState.getInt(STATE_SELECTED_POSITION);
-
-        // Select either the default item (0) or the last selected item.
-        //selectItem(mCurrentSelectedPosition);
     }
 
     @Override
@@ -105,8 +104,16 @@ public class NavigationDrawerFragment extends Fragment implements SelectionCallb
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        mSubjectList = (RecyclerView) inflater.inflate(R.layout.navigation_fragment, container, false);
-        return mSubjectList;
+        View root = inflater.inflate(R.layout.navigation_fragment, container, false);
+        mSubjectList = (RecyclerView) root.findViewById(R.id.navigation_drawer_list);
+        //attach listener to settings text
+        root.findViewById(R.id.navigation_drawer_bottom_layout).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(getActivity(), PreferencesActivity.class));
+            }
+        });
+        return root;
     }
 
     public boolean isDrawerOpen() {

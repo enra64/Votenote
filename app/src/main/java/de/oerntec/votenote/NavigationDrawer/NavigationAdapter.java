@@ -34,8 +34,7 @@ public class NavigationAdapter extends RecyclerView.Adapter<NavigationAdapter.Su
 
     private SelectionCallback mOnClickCallback;
     private Cursor mCursor;
-    private int mCurrentSelection, mOldSelection;
-    private boolean mSelectionApplied;
+    private int mCurrentSelection;
     private Context mContext;
 
     public NavigationAdapter(Context context, SelectionCallback callbacks) {
