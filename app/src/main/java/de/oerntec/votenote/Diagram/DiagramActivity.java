@@ -137,6 +137,7 @@ public class DiagramActivity extends AppCompatActivity implements DiagramSubject
         if (usePercentageForXAxis) {
             mGraph.getGridLabelRenderer().setNumHorizontalLabels(5);
             mGraph.getViewport().setMaxX(100);
+            mGraph.getViewport().setMinX(0);
             return;
         }
         //determine the graph width
@@ -150,6 +151,7 @@ public class DiagramActivity extends AppCompatActivity implements DiagramSubject
 
         mGraph.getGridLabelRenderer().setNumHorizontalLabels(maxWidth);
         mGraph.getViewport().setMaxX(maxWidth);
+        mGraph.getViewport().setMinX(1);
     }
 
     /**
@@ -207,7 +209,6 @@ public class DiagramActivity extends AppCompatActivity implements DiagramSubject
         //change y scaling
         viewport.setYAxisBoundsManual(true);
         viewport.setXAxisBoundsManual(true);
-        viewport.setMinX(1);
         viewport.setMinY(0);
         viewport.setMaxY(100);
     }
