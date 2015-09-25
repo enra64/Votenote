@@ -270,7 +270,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
                     finish();
                 }
             });
-            eulaBuilder.setView(R.layout.preferences_eula);
+            eulaBuilder.setView(this.getLayoutInflater().inflate(R.layout.preferences_eula, null));
             eulaBuilder.setPositiveButton(R.string.eula_accept, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
