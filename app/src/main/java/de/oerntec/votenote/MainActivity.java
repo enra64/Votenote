@@ -248,13 +248,14 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
                         startActivity(new Intent(MainActivity.this, SubjectManagementActivity.class));
                     }
                 });
-                b.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                AlertDialog dialog = b.create();
+                dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
                     @Override
                     public void onDismiss(DialogInterface dialogInterface) {
                         setPreference("tutorial_base_read", true);
                     }
                 });
-                b.create().show();
+                dialog.show();
             }
         }
 

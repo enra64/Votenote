@@ -319,18 +319,8 @@ public class SubjectManagementActivity extends AppCompatActivity implements Swip
                             mSubjectAdapter.changeSubject(knownSubjectData, newSubject, recyclerViewPosition);
                         }
                     }
-                }).setNegativeButton(getString(R.string.dialog_button_abort), null)
-                .setOnDismissListener(new DialogInterface.OnDismissListener() {
-                    @Override
-                    public void onDismiss(DialogInterface dialogInterface) {
-                        //hide the bloody keyboard
-                        View view = getCurrentFocus();
-                        if (view != null) {
-                            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-                        }
-                    }
-                });
+                }).setNegativeButton(getString(R.string.dialog_button_abort), null);
+
 
         if (isOldSubject) {
             builder.setNeutralButton(R.string.delete_button_text, new DialogInterface.OnClickListener() {
@@ -342,6 +332,18 @@ public class SubjectManagementActivity extends AppCompatActivity implements Swip
         }
 
         final AlertDialog dialog = builder.create();
+
+        dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialogInterface) {
+                //hide the bloody keyboard
+                View view = getCurrentFocus();
+                if (view != null) {
+                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                }
+            }
+        });
 
         //check for bad characters
         nameInput.addTextChangedListener(new TextWatcher() {
