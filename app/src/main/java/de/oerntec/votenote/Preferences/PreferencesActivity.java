@@ -108,7 +108,7 @@ public class PreferencesActivity extends AppCompatActivity {
                 }
             });
 
-            findPreference("used_libraries").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            findPreference("show_eula").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
                 public boolean onPreferenceClick(Preference preference) {
                     //show a dialog with graphview and stackoverflow

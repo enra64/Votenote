@@ -45,9 +45,6 @@ public class CustomActionPreference extends Preference {
             case "xml_import":
                 XmlImporter.importDialog(getContext());
                 break;
-            case "show_eula":
-
-                break;
             default:
                 super.onClick();
         }
