@@ -17,6 +17,7 @@
 * */
 package de.oerntec.votenote.Preferences;
 
+import android.app.AlertDialog;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
@@ -89,6 +90,34 @@ public class PreferencesActivity extends AppCompatActivity {
                     Toast.makeText(getActivity(), R.string.preferences_language_please_restart, Toast.LENGTH_SHORT).show();
                     //load translation change
                     getActivity().recreate();
+                    return true;
+                }
+            });
+
+            //build dialogs here because we have no acess to a layoutinflater on api<21
+            findPreference("used_libraries").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    //show a dialog with graphview and stackoverflow
+                    AlertDialog.Builder b = new AlertDialog.Builder(getActivity());
+                    b.setTitle("Hilfen");
+                    b.setPositiveButton("OK", null);
+                    b.setView(getActivity().getLayoutInflater().inflate(R.layout.preferences_thanks, null));
+                    b.show();
+                    return true;
+                }
+            });
+
+            findPreference("used_libraries").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    //show a dialog with graphview and stackoverflow
+                    AlertDialog.Builder eulaBuilder = new AlertDialog.Builder(getActivity());
+                    eulaBuilder.setCancelable(false);
+                    eulaBuilder.setTitle("End-User License Agreement for Votenote");
+                    eulaBuilder.setView(getActivity().getLayoutInflater().inflate(R.layout.preferences_eula, null));
+                    eulaBuilder.setPositiveButton("OK", null);
+                    eulaBuilder.show();
                     return true;
                 }
             });
