@@ -20,6 +20,7 @@ package de.oerntec.votenote;
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.AlertDialog;
+import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -225,6 +226,21 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
 
         int lessonCount = mLessonDb.getCount();
         int subjectCount = mSubjectDb.getCount();
+
+        //check whether we possibly have subjects, but none is loaded for some reason
+        int lastSelected = getPreference("last_selected_dbid", -1);
+        boolean hasValidLastSelected = lastSelected != -1 && lastSelected < subjectCount;
+
+        Fragment checkFragment = getFragmentManager().findFragmentById(R.id.container);
+        //check whether we have a fragment loaded
+        if (!(checkFragment != null && checkFragment instanceof LessonFragment)) {
+            //no! try to load a fragment
+            if (hasValidLastSelected)
+                mNavigationDrawerFragment.selectItem(lastSelected);
+                //we dont have a valid last selected point.. maybe we can at least load something?
+            else if (subjectCount > 0)
+                mNavigationDrawerFragment.selectItem(0);
+        }
 
         //tutorials
         if (lessonCount == 0 && subjectCount > 0) {
