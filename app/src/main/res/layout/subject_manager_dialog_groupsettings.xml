@@ -17,18 +17,8 @@
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         android:ems="10"
-        android:inputType="textNoSuggestions" />
-
-    <TextView
-        android:id="@+id/subject_manager_dialog_groupsettings_min_votes"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/subject_manager_dialog_groupsettings_edit_name"
-        android:layout_alignStart="@+id/subject_manager_dialog_groupsettings_edit_name"
-        android:layout_below="@+id/subject_manager_dialog_groupsettings_edit_name"
-        android:layout_marginTop="10dp"
-        android:text="@string/subjectmanager_needed_work"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
+        android:inputType="textNoSuggestions"
+        android:textSize="20sp" />
 
 
     <RelativeLayout
@@ -36,7 +26,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_below="@+id/subject_manager_dialog_groupsettings_min_votes">
+        android:layout_below="@+id/subject_manager_dialog_groupsettings_min_votes_scrollview">
 
         <SeekBar
             android:id="@+id/subject_manager_dialog_groupsettings_seek_min_votierungs"
@@ -50,25 +40,14 @@
 
     </RelativeLayout>
 
-    <TextView
-        android:id="@+id/subject_manager_dialog_groupsettings_prespoints"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/subject_manager_dialog_groupsettings_min_votes"
-        android:layout_alignStart="@+id/subject_manager_dialog_groupsettings_min_votes"
-        android:layout_below="@+id/subject_manager_sublayout_votes"
-        android:layout_marginTop="10dp"
-        android:text="@string/subjectmanager_needed_prespoints"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
-
     <RelativeLayout
         android:id="@+id/subject_manager_sublayout_presentation_points"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/subject_manager_dialog_groupsettings_min_votes"
+        android:layout_alignLeft="@+id/subject_manager_dialog_groupsettings_min_votes_scrollview"
         android:layout_alignParentLeft="true"
-        android:layout_alignStart="@+id/subject_manager_dialog_groupsettings_min_votes"
-        android:layout_below="@+id/subject_manager_dialog_groupsettings_prespoints">
+        android:layout_alignStart="@+id/subject_manager_dialog_groupsettings_min_votes_scrollview"
+        android:layout_below="@+id/subject_manager_dialog_groupsettings_prespoints_scrollview">
 
         <SeekBar
             android:id="@+id/subject_manager_dialog_groupsettings_seek_prespoints"
@@ -86,20 +65,21 @@
         android:id="@+id/subject_manager_dialog_groupsettings_estimated_assignments_per_uebung"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/subject_manager_dialog_groupsettings_prespoints"
-        android:layout_alignStart="@+id/subject_manager_dialog_groupsettings_prespoints"
+        android:layout_alignLeft="@+id/subject_manager_dialog_groupsettings_prespoints_scrollview"
+        android:layout_alignStart="@+id/subject_manager_dialog_groupsettings_prespoints_scrollview"
         android:layout_below="@+id/subject_manager_sublayout_presentation_points"
         android:layout_marginTop="10dp"
         android:text="@string/subjectmanager_assignments_per_lesson"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textSize="20sp" />
 
     <RelativeLayout
         android:id="@+id/subject_manager_sublayout_assignments_per_exercise"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/subject_manager_dialog_groupsettings_min_votes"
+        android:layout_alignLeft="@+id/subject_manager_dialog_groupsettings_min_votes_scrollview"
         android:layout_alignParentLeft="true"
-        android:layout_alignStart="@+id/subject_manager_dialog_groupsettings_min_votes"
+        android:layout_alignStart="@+id/subject_manager_dialog_groupsettings_min_votes_scrollview"
         android:layout_below="@+id/subject_manager_dialog_groupsettings_estimated_assignments_per_uebung">
 
         <SeekBar
@@ -123,15 +103,16 @@
         android:layout_below="@+id/subject_manager_sublayout_assignments_per_exercise"
         android:layout_marginTop="10dp"
         android:text="@string/subjectmanager_lesson_count"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textSize="20sp" />
 
     <RelativeLayout
         android:id="@+id/subject_manager_sublayout_exercise_count"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/subject_manager_dialog_groupsettings_min_votes"
+        android:layout_alignLeft="@+id/subject_manager_dialog_groupsettings_min_votes_scrollview"
         android:layout_alignParentLeft="true"
-        android:layout_alignStart="@+id/subject_manager_dialog_groupsettings_min_votes"
+        android:layout_alignStart="@+id/subject_manager_dialog_groupsettings_min_votes_scrollview"
         android:layout_below="@+id/subject_manager_dialog_groupsettings_est_ueb_count">
 
         <SeekBar
@@ -152,23 +133,25 @@
         android:id="@+id/subject_manager_dialog_groupsettings_text_min_votierungs"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/subject_manager_dialog_groupsettings_min_votes"
+        android:layout_alignBottom="@+id/subject_manager_dialog_groupsettings_min_votes_scrollview"
         android:layout_alignEnd="@+id/subject_manager_dialog_groupsettings_edit_name"
         android:layout_alignRight="@+id/subject_manager_dialog_groupsettings_edit_name"
         android:text="100%"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textColor="@android:color/secondary_text_dark" />
+        android:textColor="@android:color/secondary_text_dark"
+        android:textSize="20sp" />
 
     <TextView
         android:id="@+id/subject_manager_dialog_groupsettings_text_prespoints"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/subject_manager_dialog_groupsettings_prespoints"
+        android:layout_alignBottom="@+id/subject_manager_dialog_groupsettings_prespoints_scrollview"
         android:layout_alignEnd="@+id/subject_manager_dialog_groupsettings_text_min_votierungs"
         android:layout_alignRight="@+id/subject_manager_dialog_groupsettings_text_min_votierungs"
         android:text="50"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textColor="@android:color/secondary_text_dark" />
+        android:textColor="@android:color/secondary_text_dark"
+        android:textSize="20sp" />
 
     <TextView
         android:id="@+id/subject_manager_dialog_groupsettings_text_assignments_per_uebung"
@@ -179,7 +162,8 @@
         android:layout_alignRight="@+id/subject_manager_dialog_groupsettings_text_min_votierungs"
         android:text="50"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textColor="@android:color/secondary_text_dark" />
+        android:textColor="@android:color/secondary_text_dark"
+        android:textSize="20sp" />
 
     <TextView
         android:id="@+id/subject_manager_dialog_groupsettings_text_estimated_uebung_count"
@@ -190,6 +174,43 @@
         android:layout_alignRight="@+id/subject_manager_dialog_groupsettings_text_min_votierungs"
         android:text="50"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textColor="@android:color/secondary_text_dark" />
+        android:textColor="@android:color/secondary_text_dark"
+        android:textSize="20sp" />
+
+    <HorizontalScrollView
+        android:id="@+id/subject_manager_dialog_groupsettings_prespoints_scrollview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/subject_manager_dialog_groupsettings_min_votes_scrollview"
+        android:layout_alignStart="@+id/subject_manager_dialog_groupsettings_min_votes_scrollview"
+        android:layout_below="@+id/subject_manager_sublayout_votes"
+        android:layout_marginTop="10dp">
+
+        <TextView
+            android:id="@+id/subject_manager_dialog_groupsettings_prespoints"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/subjectmanager_needed_prespoints"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textSize="20sp" />
+    </HorizontalScrollView>
+
+    <HorizontalScrollView
+        android:id="@+id/subject_manager_dialog_groupsettings_min_votes_scrollview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/subject_manager_dialog_groupsettings_edit_name"
+        android:layout_alignStart="@+id/subject_manager_dialog_groupsettings_edit_name"
+        android:layout_below="@+id/subject_manager_dialog_groupsettings_edit_name"
+        android:layout_marginTop="10dp">
+
+        <TextView
+            android:id="@+id/subject_manager_dialog_groupsettings_min_votes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/subjectmanager_needed_work"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textSize="20sp" />
+    </HorizontalScrollView>
 
 </RelativeLayout>
