@@ -184,7 +184,9 @@
         android:layout_alignLeft="@+id/subject_manager_dialog_groupsettings_min_votes_scrollview"
         android:layout_alignStart="@+id/subject_manager_dialog_groupsettings_min_votes_scrollview"
         android:layout_below="@+id/subject_manager_sublayout_votes"
-        android:layout_marginTop="10dp">
+        android:layout_marginTop="10dp"
+        android:layout_toLeftOf="@+id/subject_manager_dialog_groupsettings_text_prespoints"
+        android:layout_toStartOf="@+id/subject_manager_dialog_groupsettings_text_prespoints">
 
         <TextView
             android:id="@+id/subject_manager_dialog_groupsettings_prespoints"
@@ -202,7 +204,9 @@
         android:layout_alignLeft="@+id/subject_manager_dialog_groupsettings_edit_name"
         android:layout_alignStart="@+id/subject_manager_dialog_groupsettings_edit_name"
         android:layout_below="@+id/subject_manager_dialog_groupsettings_edit_name"
-        android:layout_marginTop="10dp">
+        android:layout_marginTop="10dp"
+        android:layout_toLeftOf="@+id/subject_manager_dialog_groupsettings_text_min_votierungs"
+        android:layout_toStartOf="@+id/subject_manager_dialog_groupsettings_text_min_votierungs">
 
         <TextView
             android:id="@+id/subject_manager_dialog_groupsettings_min_votes"
