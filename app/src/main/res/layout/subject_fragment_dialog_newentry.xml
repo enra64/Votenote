@@ -32,7 +32,8 @@
                 android:layout_centerVertical="true"
                 android:layout_marginLeft="5dp"
                 android:layout_marginRight="5dp"
-                android:singleLine="true"
+                android:maxLines="1"
+                android:minWidth="44dp"
                 android:text="@string/main_dialog_lesson_von"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
         </RelativeLayout>
