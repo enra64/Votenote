@@ -69,7 +69,9 @@ public class SubjectManagementActivity extends AppCompatActivity implements Swip
      * the subject adapter used to fill the list
      */
     private static SubjectAdapter mSubjectAdapter;
-    public boolean abortLessonDelete = false;
+
+    Handler deletionHandler;
+    Runnable deletionRunnable;
     /**
      * whenever a dialog is opened, we save its position in the recyclerview in here. while it is
      * quite ugly, it should work without problems since the only use is from the delete button in
@@ -176,8 +178,6 @@ public class SubjectManagementActivity extends AppCompatActivity implements Swip
         //save the old position
         positionOfSubjectToBeDeleted = undoBarRecyclerViewPosition;
         //TODO: less fucked up way to save the positions in the recyclerview; currently done via 2 class variables :/
-        //reset deletion abort bool so its deleted if no action is taken
-        abortLessonDelete = false;
         //make snackbar
         Snackbar
                 .make(findViewById(R.id.subject_manager_coordinator_layout), getString(R.string.undobar_deleted), Snackbar.LENGTH_LONG)
@@ -189,21 +189,23 @@ public class SubjectManagementActivity extends AppCompatActivity implements Swip
                 }).show();
 
         //delete lessons too after snackbar delay to avoid them popping up later
-        new Handler().postDelayed(new Runnable() {
+        deletionHandler = new Handler();
+        deletionRunnable = new Runnable() {
             @Override
             public void run() {
                 //check whether "undo" was tapped
-                if (!abortLessonDelete)
-                    DBLessons.getInstance().deleteAllEntriesForGroup(subjectId);
+                DBLessons.getInstance().deleteAllEntriesForGroup(subjectId);
             }
-        }, Snackbar.LENGTH_LONG + 50);
+        };
+        deletionHandler.postDelayed(deletionRunnable, 3000);
     }
 
     //dont do anything, as we only delete the lesson when the undo bar gets hidden
     private void onUndo() {
         if (subjectToBeDeleted != null)
             mSubjectAdapter.addSubject(subjectToBeDeleted, positionOfSubjectToBeDeleted);
-        abortLessonDelete = true;
+        if (deletionHandler != null)
+            deletionHandler.removeCallbacks(deletionRunnable);
         subjectToBeDeleted = null;
         positionOfSubjectToBeDeleted = -1;
     }

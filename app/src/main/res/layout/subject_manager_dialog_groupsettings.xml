@@ -9,15 +9,21 @@
         android:id="@+id/subject_manager_dialog_groupsettings_edit_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
+        android:layout_alignLeft="@+id/subject_manager_dialog_name_description"
+        android:layout_alignStart="@+id/subject_manager_dialog_name_description"
+        android:layout_below="@+id/subject_manager_dialog_name_description"
         android:ems="10"
         android:inputType="textNoSuggestions"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/subject_manager_dialog_name_description"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="5dp"
+        android:text="@string/subject_manager_dialog_subject_name"
+        android:textAppearance="?android:attr/textAppearanceLarge"
         android:textSize="20sp" />
 
 

@@ -78,7 +78,7 @@
     <string name="xml_importer_file_not_found">Datei nicht gefunden!</string>
     <string name="import_result_bad">Fehler</string>
     <string name="import_result_ok">Kein Fehler</string>
-    <string name="subject_add_hint">Name der Übung - Darf nicht leer sein</string>
+    <string name="subject_add_hint">Darf nicht leer sein</string>
     <string name="deletion_confirmation_message">Wenn du OK wählst, werden alle derzeitigen Datenbankeinträge entfernt!</string>
     <string name="deletion_confirmation_title">Wirklich alle Einträge löschen?</string>
     <string name="pres_control_subjects">Übungen verwalten</string>
@@ -111,4 +111,5 @@
     <string name="drawer_edit">Übung bearbeiten</string>
     <string name="drawer_choose_subject_to_edit">Wähle die Übung aus die du bearbeiten möchtest</string>
     <string name="diagram_show_x_axis_as_percentage">X-Achse als Prozentwert</string>
+    <string name="subject_manager_dialog_subject_name">Name der Übung</string>
 </resources>
