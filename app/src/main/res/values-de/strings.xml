@@ -48,7 +48,7 @@
     <string name="subject_fragment_overshot_lesson_count">Mehr Übungen eingetragen als eingestellt!</string>
     <string name="subject_fragment_reached_scheduled_lesson_count">Alle vorgegebenen Übungen wurden eingetragen.</string>
     <string name="subject_fragment_singular_vote">Votierung</string>
-    <string name="subject_manage_add_title_change_subject">Change</string>
+    <string name="subject_manage_add_title_change_subject">Ändere</string>
     <string name="subject_manage_bad_subject_name">Dein Gruppenname enthält XML-Zeichen!</string>
     <string name="subject_manage_subject_exists_already">Übung existiert schon</string>
     <string name="subject_manage_add_title_new_subject">Neue Übung erstellen</string>
