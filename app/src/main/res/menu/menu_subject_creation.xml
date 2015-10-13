@@ -1,0 +1,19 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="de.oerntec.votenote.SubjectManagerStuff.SubjectCreationActivity">
+    <item
+        android:id="@+id/action_save"
+        android:orderInCategory="100"
+        android:showAsAction="ifRoom"
+        android:title="Speichern" />
+    <item
+        android:id="@+id/action_abort"
+        android:orderInCategory="100"
+        android:showAsAction="ifRoom"
+        android:title="Abbrechen" />
+    <item
+        android:id="@+id/action_delete"
+        android:orderInCategory="100"
+        android:showAsAction="ifRoom"
+        android:title="Löschen" />
+</menu>

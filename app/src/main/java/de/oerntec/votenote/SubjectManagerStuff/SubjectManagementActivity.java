@@ -22,6 +22,7 @@ import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
@@ -155,7 +156,10 @@ public class SubjectManagementActivity extends AppCompatActivity implements Swip
         mSubjectList.setAdapter(mSubjectAdapter);
         mSubjectList.addOnItemTouchListener(new RecyclerItemClickListener(this, mSubjectList, new OnItemClickListener() {
             public void onItemClick(View view, int position) {
-                showSubjectDialog((Integer) view.getTag(), position, view);
+                //showSubjectDialog((Integer) view.getTag(), position, view);
+                Intent subjectManagerIntent = new Intent(SubjectManagementActivity.this, SubjectCreationActivity.class);
+                subjectManagerIntent.putExtra(SubjectCreationActivity.SUBJECT_CREATOR_SUBJECT_ID_ARGUMENT_NAME, (Integer) view.getTag());
+                startActivity(subjectManagerIntent);
             }
 
             public void onItemLongClick(final View view, int position) {

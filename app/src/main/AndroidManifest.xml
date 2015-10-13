@@ -46,6 +46,14 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="de.oerntec.votenote.MainActivity" />
         </activity>
+        <activity
+            android:name=".SubjectManagerStuff.SubjectCreationActivity"
+            android:label="@string/title_activity_subject_creation"
+            android:parentActivityName=".SubjectManagerStuff.SubjectManagementActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="de.oerntec.votenote.SubjectManagerStuff.SubjectManagementActivity" />
+        </activity>
     </application>
 
 </manifest>

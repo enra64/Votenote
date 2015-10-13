@@ -118,5 +118,7 @@
     <string name="drawer_choose_subject_to_edit">Wähle die Übung aus die du bearbeiten möchtest</string>
     <string name="diagram_show_x_axis_as_percentage">X-Achse als Prozentwert</string>
     <string name="subject_manager_dialog_subject_name">Name der Übung</string>
+    <string name="title_activity_subject_creation">SubjectCreationActivity</string>
+    <string name="action_settings">Settings</string>
 
 </resources>
