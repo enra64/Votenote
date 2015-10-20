@@ -75,6 +75,7 @@ public class SubjectAdapter extends RecyclerView.Adapter<SubjectAdapter.SubjectH
             Log.i("subject adapter", "attempting to remove " + subjectId + " " + bkp.subjectName);
 
         notifyItemRemoved(recyclerViewPosition);
+        notifyItemRangeChanged(recyclerViewPosition, getItemCount() - 1);
         mSubjectDb.deleteSubject(bkp);
         requery();
         return bkp;
