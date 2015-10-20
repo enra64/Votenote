@@ -54,14 +54,10 @@ public class SubjectAdapter extends RecyclerView.Adapter<SubjectAdapter.SubjectH
     }
 
     /**
-     * change in db
      * requery
      * notify of single changed item
      */
-    public void changeSubject(Subject oldSubject, Subject newSubject, int recyclerViewPosition) {
-        if (!oldSubject.id.equals(newSubject.id))
-            throw new IllegalArgumentException("Old and new lesson must have the same lesson ID!");
-        mSubjectDb.changeSubject(oldSubject, newSubject);
+    public void notifyOfChangedSubject(int recyclerViewPosition) {
         requery();
         notifyItemChanged(recyclerViewPosition);
     }
@@ -88,7 +84,7 @@ public class SubjectAdapter extends RecyclerView.Adapter<SubjectAdapter.SubjectH
         if (mCursor != null)
             mCursor.close();
         mCursor = null;
-        //should be done asynchronously, but i guess that does not matter for 20 entries...
+        //should be done asynchronously, but i guess that does not matter for at most 20 entries...
         mCursor = mSubjectDb.getAllGroupsInfos();
     }
 

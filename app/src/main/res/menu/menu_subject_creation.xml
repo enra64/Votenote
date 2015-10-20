@@ -1,19 +1,23 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="de.oerntec.votenote.SubjectManagerStuff.SubjectCreationActivity">
     <item
         android:id="@+id/action_save"
+        android:icon="@drawable/ic_button_save"
         android:orderInCategory="100"
-        android:showAsAction="ifRoom"
-        android:title="Speichern" />
+        android:title="Speichern"
+        app:showAsAction="ifRoom" />
     <item
         android:id="@+id/action_abort"
+        android:icon="@drawable/ic_button_cancel"
         android:orderInCategory="100"
-        android:showAsAction="ifRoom"
-        android:title="Abbrechen" />
+        android:title="Abbrechen"
+        app:showAsAction="ifRoom" />
     <item
         android:id="@+id/action_delete"
+        android:icon="@drawable/ic_button_delete"
         android:orderInCategory="100"
-        android:showAsAction="ifRoom"
-        android:title="Löschen" />
+        android:title="Löschen"
+        app:showAsAction="ifRoom" />
 </menu>

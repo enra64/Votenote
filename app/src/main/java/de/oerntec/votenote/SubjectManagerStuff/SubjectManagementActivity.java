@@ -36,15 +36,11 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.SeekBar;
-import android.widget.SeekBar.OnSeekBarChangeListener;
-import android.widget.TextView;
 
 import de.oerntec.votenote.CardListHelpers.OnItemClickListener;
 import de.oerntec.votenote.CardListHelpers.RecyclerItemClickListener;
 import de.oerntec.votenote.CardListHelpers.SwipeDeletion;
 import de.oerntec.votenote.Database.DBLessons;
-import de.oerntec.votenote.Database.DBSubjects;
 import de.oerntec.votenote.Database.Subject;
 import de.oerntec.votenote.ImportExport.XmlImporter;
 import de.oerntec.votenote.R;
@@ -53,13 +49,25 @@ import de.oerntec.votenote.TranslationHelper;
 @SuppressLint("InflateParams")
 public class SubjectManagementActivity extends AppCompatActivity implements SwipeDeletion.UndoSnackBarHost {
     /**
-     * Lesson should be added, not changed
+     * Lesson is to be added, not changed
      */
     public static final int ADD_SUBJECT_CODE = -1;
+
     /**
-     * default db access
+     * result code if the subject was deleted
      */
-    private static DBSubjects mSubjectDb;
+    public static final int SUBJECT_CREATOR_RESULT_DELETE = 3;
+
+    /**
+     * result code of the subject creator when it created a new subject
+     */
+    public static final int SUBJECT_CREATOR_RESULT_NEW = 1;
+
+    /**
+     * result code of the subject creator when it changed a subject
+     */
+    public static final int SUBJECT_CREATOR_RESULT_CHANGED = 2;
+
     /**
      * the subject adapter used to fill the list
      */
@@ -90,9 +98,6 @@ public class SubjectManagementActivity extends AppCompatActivity implements Swip
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null)
             actionBar.setDisplayHomeAsUpEnabled(true);
-
-        //get db
-        mSubjectDb = DBSubjects.getInstance();
 
         TranslationHelper.adjustLanguage(this);
 
@@ -145,12 +150,13 @@ public class SubjectManagementActivity extends AppCompatActivity implements Swip
         manager.setOrientation(LinearLayoutManager.VERTICAL);
         mSubjectList.setLayoutManager(manager);
 
+
         mSubjectAdapter = new SubjectAdapter(this);
 
         mSubjectList.setAdapter(mSubjectAdapter);
         mSubjectList.addOnItemTouchListener(new RecyclerItemClickListener(this, mSubjectList, new OnItemClickListener() {
             public void onItemClick(View view, int position) {
-                showSubjectActivity((Integer) view.getTag());
+                showSubjectCreator((Integer) view.getTag(), position);
             }
 
             public void onItemLongClick(final View view, int position) {
@@ -162,17 +168,45 @@ public class SubjectManagementActivity extends AppCompatActivity implements Swip
         addFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showSubjectActivity(ADD_SUBJECT_CODE);
+                showSubjectCreator(ADD_SUBJECT_CODE);
             }
         });
     }
 
-    private void showSubjectActivity(int subjectId) {
-        Intent subjectManagerIntent = new Intent(SubjectManagementActivity.this, SubjectCreationActivity.class);
-        subjectManagerIntent.putExtra(SubjectCreationActivity.SUBJECT_CREATOR_SUBJECT_ID_ARGUMENT_NAME, subjectId);
-        startActivity(subjectManagerIntent);
+    private void showSubjectCreator(int subjectId) {
+        showSubjectCreator(subjectId, -1);
     }
 
+    private void showSubjectCreator(int subjectId, int recyclerViewPosition) {
+        Intent subjectManagerIntent = new Intent(SubjectManagementActivity.this, SubjectCreationActivity.class);
+        subjectManagerIntent.putExtra(SubjectCreationActivity.SUBJECT_CREATOR_SUBJECT_ID_ARGUMENT_NAME, subjectId);
+        //a -1 does not matter, its default anyways
+        subjectManagerIntent.putExtra(SubjectCreationActivity.SUBJECT_CREATOR_SUBJECT_VIEW_POSITION_ARGUMENT_NAME, recyclerViewPosition);
+        startActivityForResult(subjectManagerIntent, 420);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        //abort and send further if not our request
+        if (requestCode != 420) {
+            super.onActivityResult(requestCode, resultCode, data);
+            return;
+        }
+        int recyclerViewPosition = data.getIntExtra(SubjectCreationActivity.SUBJECT_CREATOR_SUBJECT_VIEW_POSITION_ARGUMENT_NAME, 0);
+        if (resultCode == SUBJECT_CREATOR_RESULT_CHANGED) {
+            //notify which item has changed
+            mSubjectAdapter.notifyOfChangedSubject(recyclerViewPosition);
+        } else if (resultCode == SUBJECT_CREATOR_RESULT_NEW) {
+            //i have no idea where it was inserted, so fuck it, im recreating the adapter
+            reloadAdapter();
+        } else if (resultCode == SUBJECT_CREATOR_RESULT_DELETE) {
+            SwipeDeletion.executeProgrammaticSwipeDeletion(this, this, mSubjectList.getLayoutManager().getChildAt(recyclerViewPosition));
+        }
+    }
+
+    /**
+     * delete the subject, get a backup, show a undobar, and enable restoring the subject by tapping undo
+     */
     public void showUndoSnackBar(final int subjectId) {
         //delete subject, get backup
         subjectToBeDeleted = mSubjectAdapter.removeSubject(subjectId, undoBarRecyclerViewPosition);
@@ -194,7 +228,6 @@ public class SubjectManagementActivity extends AppCompatActivity implements Swip
         deletionRunnable = new Runnable() {
             @Override
             public void run() {
-                //check whether "undo" was tapped
                 DBLessons.getInstance().deleteAllEntriesForGroup(subjectId);
             }
         };
@@ -210,7 +243,6 @@ public class SubjectManagementActivity extends AppCompatActivity implements Swip
         subjectToBeDeleted = null;
         positionOfSubjectToBeDeleted = -1;
     }
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -232,7 +264,7 @@ public class SubjectManagementActivity extends AppCompatActivity implements Swip
     /**
      * fuck it recreate dat adapter
      */
-    public void onImport() {
+    public void reloadAdapter() {
         mSubjectList.swapAdapter(new SubjectAdapter(this), false);
     }
 
@@ -246,34 +278,5 @@ public class SubjectManagementActivity extends AppCompatActivity implements Swip
 
     public void setPreference(String key, boolean newValue) {
         PreferenceManager.getDefaultSharedPreferences(this).edit().putBoolean(key, newValue).apply();
-    }
-
-    static class SeekerListener implements OnSeekBarChangeListener {
-        TextView mAffected;
-        String mEndingAddition;
-
-        public SeekerListener(TextView affected, String endingAddition) {
-            mAffected = affected;
-            mEndingAddition = endingAddition;
-        }
-
-        public SeekerListener(TextView affected) {
-            this(affected, "");
-        }
-
-        @Override
-        public void onProgressChanged(SeekBar seekBar, int progress, boolean b) {
-            mAffected.setText(progress + mEndingAddition);
-        }
-
-        @Override
-        public void onStartTrackingTouch(SeekBar seekBar) {
-
-        }
-
-        @Override
-        public void onStopTrackingTouch(SeekBar seekBar) {
-
-        }
     }
 }

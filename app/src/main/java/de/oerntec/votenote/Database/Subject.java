@@ -36,4 +36,25 @@ public class Subject {
         this.subjectScheduledAssignmentsPerLesson = subjectScheduledAssignmentsPerLesson;
         this.subjectWantedPresentationPoints = subjectWantedPresentationPoints;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof Subject))
+            return false;
+        Subject s = (Subject) o;
+        if (!id.equals(s.id))
+            return false;
+        if (!subjectName.equals(s.subjectName))
+            return false;
+        if (!subjectMinimumVotePercentage.equals(s.subjectMinimumVotePercentage))
+            return false;
+        if (!subjectCurrentPresentationPoints.equals(s.subjectCurrentPresentationPoints))
+            return false;
+        if (!subjectScheduledLessonCount.equals(s.subjectScheduledLessonCount))
+            return false;
+        //noinspection SimplifiableIfStatement
+        if (!subjectScheduledAssignmentsPerLesson.equals(s.subjectScheduledAssignmentsPerLesson))
+            return false;
+        return subjectWantedPresentationPoints.equals(s.subjectWantedPresentationPoints);
+    }
 }

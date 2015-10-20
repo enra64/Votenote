@@ -76,7 +76,7 @@ public class XmlImporter {
                             Toast.makeText(activity, activity.getString(R.string.import_result_bad), Toast.LENGTH_LONG).show();
 
                         if (activity instanceof SubjectManagementActivity) {
-                            ((SubjectManagementActivity) activity).onImport();
+                            ((SubjectManagementActivity) activity).reloadAdapter();
                         }
                     }
                 }
