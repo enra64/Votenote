@@ -200,6 +200,7 @@ public class SubjectManagementActivity extends AppCompatActivity implements Swip
             super.onActivityResult(requestCode, resultCode, data);
             return;
         }
+
         if (resultCode == SUBJECT_CREATOR_RESULT_CHANGED) {
             int recyclerViewPosition = data.getIntExtra(SubjectCreationActivity.SUBJECT_CREATOR_SUBJECT_VIEW_POSITION_ARGUMENT_NAME, 0);
             //notify which item has changed

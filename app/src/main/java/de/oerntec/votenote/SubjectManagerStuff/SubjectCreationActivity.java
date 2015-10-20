@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
+import de.oerntec.votenote.Helpers.General;
 import de.oerntec.votenote.R;
 
 public class SubjectCreationActivity extends AppCompatActivity {
@@ -50,6 +51,13 @@ public class SubjectCreationActivity extends AppCompatActivity {
         fragmentManager
                 .beginTransaction()
                 .replace(R.id.activity_subject_creation_fragment_container, currentSubjectFragment).commit();
+    }
+
+    @Override
+    protected void onPause() {
+        //holy shit hide the fucking keyboard
+        General.nukeKeyboard(this);
+        super.onPause();
     }
 
     @Override
