@@ -160,7 +160,7 @@ public class LessonFragment extends Fragment implements SwipeDeletion.UndoSnackB
                 if (viewTag != null) {
                     int lessonId = (Integer) viewTag;
                     if (lessonId != 0)
-                        showUndoSnackBar(lessonId);
+                        showUndoSnackBar(lessonId, mLessonList.getChildAdapterPosition(viewHolder.itemView));
                 }
             }
         };
@@ -171,7 +171,7 @@ public class LessonFragment extends Fragment implements SwipeDeletion.UndoSnackB
         mLessonList.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), mLessonList, new OnItemClickListener() {
             public void onItemClick(View view, int position) {
                 if (position != 0)
-                    MainDialogHelper.showChangeLessonDialog((MainActivity) getActivity(), LessonFragment.this, view, mSubjectId, (Integer) view.getTag());
+                    MainDialogHelper.showChangeLessonDialog((MainActivity) getActivity(), LessonFragment.this, view, mSubjectId, (Integer) view.getTag(), position);
                 //show undo bar, check whether everything necessary is called, change button color
             }
 
@@ -196,7 +196,7 @@ public class LessonFragment extends Fragment implements SwipeDeletion.UndoSnackB
         mAdapter.notifyItemChanged(0);
     }
 
-    public void showUndoSnackBar(final int lessonId) {
+    public void showUndoSnackBar(final int lessonId, int lessonPosition) {
         mLessonToDelete = mAdapter.removeLesson(lessonId);
         Snackbar
                 .make(mRootView.findViewById(R.id.subject_fragment_coordinator_layout), getActivity().getString(R.string.undobar_deleted), Snackbar.LENGTH_LONG)

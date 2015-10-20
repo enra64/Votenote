@@ -31,7 +31,7 @@ public class SwipeDeletion {
      * @param snackBarHost class having an interface to show a udo snackbar
      * @param animatedView animated view
      */
-    public static void executeProgrammaticSwipeDeletion(final Context context, final UndoSnackBarHost snackBarHost, final View animatedView) {
+    public static void executeProgrammaticSwipeDeletion(final Context context, final UndoSnackBarHost snackBarHost, final View animatedView, final int position) {
         //delay animation to start after dialog closed
         new Handler().postDelayed(new Runnable() {
             @Override
@@ -50,7 +50,7 @@ public class SwipeDeletion {
                 }, anim.getDuration());
 
                 //delete the lesson from db with undobar
-                snackBarHost.showUndoSnackBar((Integer) animatedView.getTag());
+                snackBarHost.showUndoSnackBar((Integer) animatedView.getTag(), position);
             }
         }, 300);
     }
@@ -62,9 +62,10 @@ public class SwipeDeletion {
         /**
          * called to show the undo snack bar
          *
-         * @param id lesson/subject id
+         * @param id database id
+         * @param position position of the view in the recyclerview
          */
-        void showUndoSnackBar(int id);
+        void showUndoSnackBar(int id, int position);
     }
 
 

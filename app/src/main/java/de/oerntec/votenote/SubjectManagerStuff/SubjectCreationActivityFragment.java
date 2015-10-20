@@ -176,7 +176,7 @@ public class SubjectCreationActivityFragment extends Fragment {
     }
 
     private void deleteCurrentSubject() {
-        //wat
+        //abort if this is called for a new subject, that cant work
         if (mIsNewSubject)
             return;
 

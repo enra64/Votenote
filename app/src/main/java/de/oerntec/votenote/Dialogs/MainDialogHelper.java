@@ -43,7 +43,7 @@ public class MainDialogHelper {
      * @param groupID   id of the group to add a lesson to
      */
     public static void showAddLessonDialog(final MainActivity mActivity, final int groupID) {
-        showLessonDialog(mActivity, null, null, groupID, ADD_LESSON_CODE);
+        showLessonDialog(mActivity, null, null, groupID, ADD_LESSON_CODE, -1);
     }
 
     /**
@@ -53,15 +53,15 @@ public class MainDialogHelper {
      * @param groupID                  the id of the subject
      * @param translatedLessonPosition the id of the lesson, translated (+1) from listview
      */
-    public static void showChangeLessonDialog(final MainActivity mActivity, LessonFragment lessonFragment, View lessonView, final int groupID, final int translatedLessonPosition) {
-        showLessonDialog(mActivity, lessonFragment, lessonView, groupID, translatedLessonPosition);
+    public static void showChangeLessonDialog(MainActivity mActivity, LessonFragment lessonFragment, View lessonView, int groupID, int translatedLessonPosition, int recyclerviewLessonPosition) {
+        showLessonDialog(mActivity, lessonFragment, lessonView, groupID, translatedLessonPosition, recyclerviewLessonPosition);
     }
 
 
     /**
      * Shows a dialog to edit or add a lesson
      */
-    private static void showLessonDialog(final MainActivity mActivity, final LessonFragment lessonFragment, final View lessonView, final int subjectId, final int lessonID) {
+    private static void showLessonDialog(final MainActivity mActivity, final LessonFragment lessonFragment, final View lessonView, final int subjectId, final int lessonID, final int lessonPosition) {
         //db access
         final DBLessons entryDB = DBLessons.getInstance();
 
@@ -140,7 +140,7 @@ public class MainDialogHelper {
             builder.setNeutralButton(R.string.delete_button_text, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
-                    SwipeDeletion.executeProgrammaticSwipeDeletion(mActivity, lessonFragment, lessonView);
+                    SwipeDeletion.executeProgrammaticSwipeDeletion(mActivity, lessonFragment, lessonView, lessonPosition);
                 }
             });
         }

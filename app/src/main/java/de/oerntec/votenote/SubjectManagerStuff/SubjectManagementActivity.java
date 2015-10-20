@@ -73,20 +73,29 @@ public class SubjectManagementActivity extends AppCompatActivity implements Swip
      */
     private static SubjectAdapter mSubjectAdapter;
 
+    /**
+     * handler for deleting lessons of subject
+     */
     Handler deletionHandler;
-    Runnable deletionRunnable;
-    /**
-     * whenever a dialog is opened, we save its position in the recyclerview in here. while it is
-     * quite ugly, it should work without problems since the only use is from the delete button in
-     * the change dialog.
-     */
-    private int undoBarRecyclerViewPosition = -1;
-    /**
-     * saves the subject on delete to be able to add it again should the user demand it
-     */
-    private Subject subjectToBeDeleted;
-    private int positionOfSubjectToBeDeleted;
 
+    /**
+     * runnable created for deleting lessons of subject
+     */
+    Runnable deletionRunnable;
+
+    /**
+     * save the deleted subject in showUndoBar to enable restoring it
+     */
+    private Subject undoBarSubject;
+
+    /**
+     * save the id of the deleted subject in showUndoBar to enable restoring it
+     */
+    private int undoBarSubjectPosition;
+
+    /**
+     * recyclerview holding all subjects
+     */
     private RecyclerView mSubjectList;
 
     @Override
@@ -135,8 +144,7 @@ public class SubjectManagementActivity extends AppCompatActivity implements Swip
                     int subjectId = (Integer) viewTag;
                     if (subjectId != 0) {
                         //i hope i never have to touch this again
-                        undoBarRecyclerViewPosition = mSubjectList.getChildAdapterPosition(viewHolder.itemView);
-                        showUndoSnackBar(subjectId);
+                        showUndoSnackBar(subjectId, mSubjectList.getChildAdapterPosition(viewHolder.itemView));
                     }
                 }
             }
@@ -192,26 +200,27 @@ public class SubjectManagementActivity extends AppCompatActivity implements Swip
             super.onActivityResult(requestCode, resultCode, data);
             return;
         }
-        int recyclerViewPosition = data.getIntExtra(SubjectCreationActivity.SUBJECT_CREATOR_SUBJECT_VIEW_POSITION_ARGUMENT_NAME, 0);
         if (resultCode == SUBJECT_CREATOR_RESULT_CHANGED) {
+            int recyclerViewPosition = data.getIntExtra(SubjectCreationActivity.SUBJECT_CREATOR_SUBJECT_VIEW_POSITION_ARGUMENT_NAME, 0);
             //notify which item has changed
             mSubjectAdapter.notifyOfChangedSubject(recyclerViewPosition);
         } else if (resultCode == SUBJECT_CREATOR_RESULT_NEW) {
             //i have no idea where it was inserted, so fuck it, im recreating the adapter
             reloadAdapter();
         } else if (resultCode == SUBJECT_CREATOR_RESULT_DELETE) {
-            SwipeDeletion.executeProgrammaticSwipeDeletion(this, this, mSubjectList.getLayoutManager().getChildAt(recyclerViewPosition));
+            int recyclerViewPosition = data.getIntExtra(SubjectCreationActivity.SUBJECT_CREATOR_SUBJECT_VIEW_POSITION_ARGUMENT_NAME, 0);
+            SwipeDeletion.executeProgrammaticSwipeDeletion(this, this, mSubjectList.getLayoutManager().getChildAt(recyclerViewPosition), recyclerViewPosition);
         }
     }
 
     /**
      * delete the subject, get a backup, show a undobar, and enable restoring the subject by tapping undo
      */
-    public void showUndoSnackBar(final int subjectId) {
+    public void showUndoSnackBar(final int subjectId, final int position) {
         //delete subject, get backup
-        subjectToBeDeleted = mSubjectAdapter.removeSubject(subjectId, undoBarRecyclerViewPosition);
+        undoBarSubject = mSubjectAdapter.removeSubject(subjectId, position);
         //save the old position
-        positionOfSubjectToBeDeleted = undoBarRecyclerViewPosition;
+        undoBarSubjectPosition = position;
         //TODO: less fucked up way to save the positions in the recyclerview; currently done via 2 class variables :/
         //make snackbar
         Snackbar
@@ -236,12 +245,12 @@ public class SubjectManagementActivity extends AppCompatActivity implements Swip
 
     //dont do anything, as we only delete the lesson when the undo bar gets hidden
     private void onUndo() {
-        if (subjectToBeDeleted != null)
-            mSubjectAdapter.addSubject(subjectToBeDeleted, positionOfSubjectToBeDeleted);
+        if (undoBarSubject != null)
+            mSubjectAdapter.addSubject(undoBarSubject, undoBarSubjectPosition);
         if (deletionHandler != null)
             deletionHandler.removeCallbacks(deletionRunnable);
-        subjectToBeDeleted = null;
-        positionOfSubjectToBeDeleted = -1;
+        undoBarSubject = null;
+        undoBarSubjectPosition = -1;
     }
 
     @Override
