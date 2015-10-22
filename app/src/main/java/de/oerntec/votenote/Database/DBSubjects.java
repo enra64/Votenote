@@ -366,4 +366,3 @@ public class DBSubjects {
         return val == null ? -1 : Integer.valueOf(val.subjectWantedPresentationPoints);
     }
 }
-
