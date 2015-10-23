@@ -74,14 +74,14 @@ public class DatabaseCreator extends SQLiteOpenHelper {
     /***********************************************************************************************
      * admission percentage names database start
      **********************************************************************************************/
-    public static final String ADMISSION_PERCENTAGES_NAMES_ID = "_id";
-    public static final String ADMISSION_PERCENTAGES_NAMES_SUBJECT_ID = "subject_id";
-    public static final String ADMISSION_PERCENTAGES_NAMES_NAME = "percentage_name";
-    public static final String ADMISSION_PERCENTAGES_NAMES_TARGET_PERCENTAGE = "target_percentage";
-    public static final String ADMISSION_PERCENTAGES_NAMES_TARGET_LESSON_COUNT = "target_lesson_count";
-    public static final String ADMISSION_PERCENTAGES_NAMES_TARGET_ASSIGNMENTS_PER_LESSON = "target_assignments_per-lesson";
+    public static final String ADMISSION_PERCENTAGES_META_ID = "_id";
+    public static final String ADMISSION_PERCENTAGES_META_SUBJECT_ID = "subject_id";
+    public static final String ADMISSION_PERCENTAGES_META_NAME = "percentage_name";
+    public static final String ADMISSION_PERCENTAGES_META_TARGET_PERCENTAGE = "target_percentage";
+    public static final String ADMISSION_PERCENTAGES_META_TARGET_LESSON_COUNT = "target_lesson_count";
+    public static final String ADMISSION_PERCENTAGES_META_TARGET_ASSIGNMENTS_PER_LESSON = "target_assignments_per-lesson";
 
-    public static final String TABLE_NAME_ADMISSION_PERCENTAGES_NAMES = "admission_percentages_names";
+    public static final String TABLE_NAME_ADMISSION_PERCENTAGES_META = "admission_percentages_names";
     /***********************************************************************************************
      admission percentage names database end
      **********************************************************************************************/
@@ -132,13 +132,13 @@ public class DatabaseCreator extends SQLiteOpenHelper {
                     ADMISSION_PERCENTAGES_DATA_FINISHED_ASSIGNMENTS + " integer not null," +
                     ADMISSION_PERCENTAGES_DATA_AVAILABLE_ASSIGNMENTS + " integer not null);";
 
-    private static final String CREATE_DATABASE_ADMISSION_PERCENTAGES_NAMES =
-            "create table " + TABLE_NAME_ADMISSION_PERCENTAGES_NAMES + "( " + ADMISSION_PERCENTAGES_NAMES_ID + " integer primary key," +
-                    ADMISSION_PERCENTAGES_NAMES_SUBJECT_ID + " integer not null," +
-                    ADMISSION_PERCENTAGES_NAMES_NAME + " integer not null," +
-                    ADMISSION_PERCENTAGES_NAMES_TARGET_ASSIGNMENTS_PER_LESSON + " integer not null," +
-                    ADMISSION_PERCENTAGES_NAMES_TARGET_LESSON_COUNT + " integer not null," +
-                    ADMISSION_PERCENTAGES_NAMES_TARGET_PERCENTAGE + " integer not null);";
+    private static final String CREATE_DATABASE_ADMISSION_PERCENTAGES_META =
+            "create table " + TABLE_NAME_ADMISSION_PERCENTAGES_META + "( " + ADMISSION_PERCENTAGES_META_ID + " integer primary key," +
+                    ADMISSION_PERCENTAGES_META_SUBJECT_ID + " integer not null," +
+                    ADMISSION_PERCENTAGES_META_NAME + " string not null," +
+                    ADMISSION_PERCENTAGES_META_TARGET_ASSIGNMENTS_PER_LESSON + " integer not null," +
+                    ADMISSION_PERCENTAGES_META_TARGET_LESSON_COUNT + " integer not null," +
+                    ADMISSION_PERCENTAGES_META_TARGET_PERCENTAGE + " integer not null);";
 
     public DatabaseCreator(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -153,7 +153,7 @@ public class DatabaseCreator extends SQLiteOpenHelper {
 
         //new system
         database.execSQL(CREATE_DATABASE_ADMISSION_COUNTERS);
-        database.execSQL(CREATE_DATABASE_ADMISSION_PERCENTAGES_NAMES);
+        database.execSQL(CREATE_DATABASE_ADMISSION_PERCENTAGES_META);
         database.execSQL(CREATE_DATABASE_ADMISSION_PERCENTAGES_DATA);
     }
 
@@ -168,7 +168,7 @@ public class DatabaseCreator extends SQLiteOpenHelper {
             if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
                 Log.w(DatabaseCreator.class.getName(), "creating new databases for multiple counters, percentages");
             database.execSQL(CREATE_DATABASE_ADMISSION_COUNTERS);
-            database.execSQL(CREATE_DATABASE_ADMISSION_PERCENTAGES_NAMES);
+            database.execSQL(CREATE_DATABASE_ADMISSION_PERCENTAGES_META);
             database.execSQL(CREATE_DATABASE_ADMISSION_PERCENTAGES_DATA);
         }
     }
