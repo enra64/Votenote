@@ -42,6 +42,7 @@ import android.widget.Toast;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
+import de.oerntec.votenote.Database.DBAdmissionCounters;
 import de.oerntec.votenote.Database.DBLessons;
 import de.oerntec.votenote.Database.DBSubjects;
 import de.oerntec.votenote.Diagram.DiagramActivity;
@@ -155,6 +156,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         //database access
         mSubjectDb = DBSubjects.setupInstance(this);
         mLessonDb = DBLessons.setupInstance(this);
+        DBAdmissionCounters.setupInstance(this);
 
         setContentView(R.layout.activity_main);
 

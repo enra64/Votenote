@@ -80,7 +80,7 @@ public class DatabaseCreator extends SQLiteOpenHelper {
     public static final String ADMISSION_PERCENTAGES_META_NAME = "percentage_name";
     public static final String ADMISSION_PERCENTAGES_META_TARGET_PERCENTAGE = "target_percentage";
     public static final String ADMISSION_PERCENTAGES_META_TARGET_LESSON_COUNT = "target_lesson_count";
-    public static final String ADMISSION_PERCENTAGES_META_TARGET_ASSIGNMENTS_PER_LESSON = "target_assignments_per-lesson";
+    public static final String ADMISSION_PERCENTAGES_META_TARGET_ASSIGNMENTS_PER_LESSON = "target_assignments_per_lesson";
 
     public static final String TABLE_NAME_ADMISSION_PERCENTAGES_META = "admission_percentages_names";
     /***********************************************************************************************
@@ -149,7 +149,7 @@ public class DatabaseCreator extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase database) {
         //old database system
-        //database.execSQL(CREATE_DATABASE_ENTRIES);
+        database.execSQL(CREATE_DATABASE_ENTRIES);
         database.execSQL(CREATE_DATABASE_GROUPS);
 
         //new system

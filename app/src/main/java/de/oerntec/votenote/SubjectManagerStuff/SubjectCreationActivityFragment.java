@@ -3,8 +3,10 @@ package de.oerntec.votenote.SubjectManagerStuff;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.DataSetObserver;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -18,9 +20,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.SeekBar;
+import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.List;
+
+import de.oerntec.votenote.Database.AdmissionCounter;
+import de.oerntec.votenote.Database.DBAdmissionCounters;
 import de.oerntec.votenote.Database.DBSubjects;
 import de.oerntec.votenote.Database.Subject;
 import de.oerntec.votenote.R;
@@ -33,13 +41,26 @@ public class SubjectCreationActivityFragment extends Fragment {
      * Lesson should be added, not changed
      */
     public static final int ADD_SUBJECT_CODE = -1;
+
+    private static AdmissionCounter ADD_ADMISSIONS_COUNTER_ITEM;
+
     /**
      * DB for the subjects
      */
     private final DBSubjects mSubjectDb = DBSubjects.getInstance();
+
+    /**
+     * Database containing entries concerning admission counters
+     */
+    private final DBAdmissionCounters mAdmissionCounterDb = DBAdmissionCounters.getInstance();
+
+    /*
+     * Views in the creation dialog
+     */
     private EditText nameInput;
     private TextView voteInfo, presInfo, estimatedAssignmentsHelp, estimatedUebungCountHelp;
     private SeekBar minVoteSeek, wantedPresentationPointsSeekbar, estimatedAssignmentsSeek, estimatedUebungCountSeek;
+    private Spinner mAdmissionCounterSpinner;
 
     /**
      * toolbar to avoid constantly getting it
@@ -58,7 +79,7 @@ public class SubjectCreationActivityFragment extends Fragment {
     /**
      * Database id of current subject
      */
-    private int mDatabaseId;
+    private int mSubjectId;
 
     /**
      * Position this subject had when if it was already displayed in the recyclerview of subject-
@@ -67,14 +88,14 @@ public class SubjectCreationActivityFragment extends Fragment {
     private int mRecyclerViewPosition;
 
     /**
-     * convenience info about whether current subject is old or new
+     * convenient info about whether current subject is old or new
      */
     private boolean mIsOldSubject, mIsNewSubject;
 
     /**
      * Old subject data
      */
-    private Subject mOldSubjectData;
+    private Subject mOldSubjectData = null;
 
     /**
      * The subject data that is inserted into the fragment on start
@@ -95,10 +116,14 @@ public class SubjectCreationActivityFragment extends Fragment {
         return fragment;
     }
 
+    /**
+     * Beginning here we can access getString etc
+     */
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         nameHint = getString(R.string.subject_add_hint);
+        ADD_ADMISSIONS_COUNTER_ITEM = new AdmissionCounter(-1, -1, "New Counter", -1, -1);
         mActionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
     }
 
@@ -106,11 +131,11 @@ public class SubjectCreationActivityFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //get arguments from intent
-        mDatabaseId = getArguments().getInt(SubjectCreationActivity.SUBJECT_CREATOR_SUBJECT_ID_ARGUMENT_NAME, -1);
+        mSubjectId = getArguments().getInt(SubjectCreationActivity.SUBJECT_CREATOR_SUBJECT_ID_ARGUMENT_NAME, -1);
         mRecyclerViewPosition = getArguments().getInt(SubjectCreationActivity.SUBJECT_CREATOR_SUBJECT_VIEW_POSITION_ARGUMENT_NAME, -1);
 
         //create a boolean containing whether we create a new subject to ease understanding
-        mIsNewSubject = mDatabaseId == ADD_SUBJECT_CODE;
+        mIsNewSubject = mSubjectId == ADD_SUBJECT_CODE;
         mIsOldSubject = !mIsNewSubject;
 
         setHasOptionsMenu(true);
@@ -128,7 +153,7 @@ public class SubjectCreationActivityFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View input = inflater.inflate(R.layout.subject_manager_dialog_groupsettings, container, false);
+        View input = inflater.inflate(R.layout.subject_manager_fragment_subject_settings, container, false);
 
         nameInput = (EditText) input.findViewById(R.id.subject_manager_dialog_groupsettings_edit_name);
 
@@ -144,14 +169,18 @@ public class SubjectCreationActivityFragment extends Fragment {
         estimatedUebungCountHelp = (TextView) input.findViewById(R.id.subject_manager_dialog_groupsettings_text_estimated_uebung_count);
         estimatedUebungCountSeek = (SeekBar) input.findViewById(R.id.subject_manager_dialog_groupsettings_seek_estimated_uebung_count);
 
+        mAdmissionCounterSpinner = (Spinner) input.findViewById(R.id.subject_manager_counter_spinner);
+
         return input;
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        loadValues();
-        insertValues();
+        if (mIsOldSubject)
+            loadOldSubjectValues();
+
+        setValuesForViews();
         //save inserted data to compare when exiting activity
         mInsertedSubjectData = createSubjectFromInputFields();
     }
@@ -233,7 +262,7 @@ public class SubjectCreationActivityFragment extends Fragment {
      * Read all input fields and create a subject from that
      */
     private Subject createSubjectFromInputFields() {
-        return new Subject(String.valueOf(mDatabaseId),
+        return new Subject(String.valueOf(mSubjectId),
                 String.valueOf(nameInput.getText().toString()),
                 String.valueOf(minVoteSeek.getProgress()),
                 "0",
@@ -283,15 +312,22 @@ public class SubjectCreationActivityFragment extends Fragment {
     private Intent getCurrentResultIntent() {
         //save result data into intent
         Intent returnIntent = new Intent();
-        returnIntent.putExtra(SubjectCreationActivity.SUBJECT_CREATOR_SUBJECT_ID_ARGUMENT_NAME, mDatabaseId);
+        returnIntent.putExtra(SubjectCreationActivity.SUBJECT_CREATOR_SUBJECT_ID_ARGUMENT_NAME, mSubjectId);
         returnIntent.putExtra(SubjectCreationActivity.SUBJECT_CREATOR_SUBJECT_VIEW_POSITION_ARGUMENT_NAME, mRecyclerViewPosition);
         return returnIntent;
     }
 
-    private void insertValues() {
-        //offer hint to user
+    /**
+     * Either set default values to all views in the creator or set the previously loaded old values
+     */
+    private void setValuesForViews() {
+        /*
+        Name input
+         */
         if (mIsNewSubject) {
+            //set an error if the view is empty
             nameInput.setError(nameHint);
+            //delete said error if the view is no longer empty
             nameInput.addTextChangedListener(new TextWatcher() {
                 @Override
                 public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -310,6 +346,13 @@ public class SubjectCreationActivityFragment extends Fragment {
         } else
             nameInput.setHint(nameHint);
 
+        /*
+            Admission counter code
+         */
+        List<AdmissionCounter> admissionCounters = mAdmissionCounterDb.getAdmissionCounters(mSubjectId);
+        admissionCounters.add(ADD_ADMISSIONS_COUNTER_ITEM);
+        AdmissionCounterAdapter<AdmissionCounter> adapter = new AdmissionCounterAdapter<>(getActivity(), admissionCounters);
+        mAdmissionCounterSpinner.setAdapter(adapter);
 
         //only set the old name as text if it is not "subject name", so the user can correct his value
         if (mIsOldSubject)
@@ -368,18 +411,90 @@ public class SubjectCreationActivityFragment extends Fragment {
     /**
      * Load default values or values from old subject data
      */
-    private void loadValues() {
+    private void loadOldSubjectValues() {
         //try to get old subject data; returns null if no subject is found
-        mOldSubjectData = mSubjectDb.getSubject(mDatabaseId);
+        mOldSubjectData = mSubjectDb.getSubject(mSubjectId);
 
-        //if we only change the entry, get the previously set values.
-        if (mIsOldSubject) {
-            //extract subject data
-            nameHint = mOldSubjectData.subjectName;
-            presentationPointsHint = Integer.parseInt(mOldSubjectData.subjectWantedPresentationPoints);
-            minimumVotePercentageHint = Integer.parseInt(mOldSubjectData.subjectMinimumVotePercentage);
-            scheduledAssignmentsPerLesson = Integer.parseInt(mOldSubjectData.subjectScheduledAssignmentsPerLesson);
-            scheduledNumberOfLessons = Integer.parseInt(mOldSubjectData.subjectScheduledLessonCount);
+        //extract subject data
+        nameHint = mOldSubjectData.subjectName;
+        presentationPointsHint = Integer.parseInt(mOldSubjectData.subjectWantedPresentationPoints);
+        minimumVotePercentageHint = Integer.parseInt(mOldSubjectData.subjectMinimumVotePercentage);
+        scheduledAssignmentsPerLesson = Integer.parseInt(mOldSubjectData.subjectScheduledAssignmentsPerLesson);
+        scheduledNumberOfLessons = Integer.parseInt(mOldSubjectData.subjectScheduledLessonCount);
+    }
+
+    private class AdmissionCounterAdapter<T> implements SpinnerAdapter {
+        private List<T> mObjects;
+        private Context mContext;
+
+        public AdmissionCounterAdapter(Context context, List<T> objects) {
+            mObjects = objects;
+            mContext = context;
+        }
+
+        @Override
+        public void registerDataSetObserver(DataSetObserver observer) {
+
+        }
+
+        @Override
+        public void unregisterDataSetObserver(DataSetObserver observer) {
+
+        }
+
+        @Override
+        public int getCount() {
+            return mObjects.size();
+        }
+
+        @Override
+        public T getItem(int position) {
+            return mObjects.get(position);
+        }
+
+        @Override
+        public long getItemId(int position) {
+            T obj = mObjects.get(position);
+            if (obj instanceof AdmissionCounter)
+                return ((AdmissionCounter) obj).id;
+            else
+                throw new AssertionError("class can only handle cases listed above");
+        }
+
+        @Override
+        public boolean hasStableIds() {
+            return true;
+        }
+
+        @Override
+        public View getView(int position, View view, ViewGroup parent) {
+            if (view == null) {
+                LayoutInflater inflater = ((Activity) mContext).getLayoutInflater();
+                view = inflater.inflate(android.R.layout.simple_spinner_item, parent, false);
+            }
+            TextView text = (TextView) view.findViewById(android.R.id.text1);
+            text.setText(((AdmissionCounter) getItem(position)).counterName);
+            return view;
+        }
+
+        @Override
+        public int getItemViewType(int position) {
+            return IGNORE_ITEM_VIEW_TYPE;
+        }
+
+        @Override
+        public int getViewTypeCount() {
+            return 1;
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return mObjects.isEmpty();
+        }
+
+        @Override
+        public View getDropDownView(int position, View convertView, ViewGroup parent) {
+            return getView(position, convertView, parent);
         }
     }
 }
