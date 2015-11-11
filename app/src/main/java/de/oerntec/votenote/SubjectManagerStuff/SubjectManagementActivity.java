@@ -44,6 +44,7 @@ import de.oerntec.votenote.Database.DBLessons;
 import de.oerntec.votenote.Database.Group;
 import de.oerntec.votenote.ImportExport.XmlImporter;
 import de.oerntec.votenote.R;
+import de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.SubjectCreationActivity;
 import de.oerntec.votenote.TranslationHelper;
 
 @SuppressLint("InflateParams")

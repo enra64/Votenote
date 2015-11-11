@@ -25,8 +25,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import de.oerntec.votenote.Database.DBGroups;
 import de.oerntec.votenote.Database.DBLessons;
-import de.oerntec.votenote.Database.DBSubjects;
 import de.oerntec.votenote.Database.Lesson;
 import de.oerntec.votenote.MainActivity;
 import de.oerntec.votenote.R;
@@ -164,7 +164,7 @@ public class LessonAdapter extends RecyclerView.Adapter<LessonAdapter.Holder> {
     public void onBindViewHolder(Holder holder, int position) {
         if (holder instanceof InfoHolder) {
             InfoHolder infoHolder = (InfoHolder) holder;
-            infoHolder.title.setText(DBSubjects.getInstance().getGroupName(mSubjectId));
+            infoHolder.title.setText(DBGroups.getInstance().getGroupName(mSubjectId));
             SubjectInfoCalculator.setAverageNeededAssignments(mContext, infoHolder.avgLeft, mSubjectId);
             SubjectInfoCalculator.setCurrentPresentationPointStatus(mContext, infoHolder.prespoints, mSubjectId);
             SubjectInfoCalculator.setVoteAverage(mContext, infoHolder.percentage, mSubjectId);

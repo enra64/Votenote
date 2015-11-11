@@ -36,8 +36,8 @@ import android.view.ViewGroup;
 import de.oerntec.votenote.CardListHelpers.OnItemClickListener;
 import de.oerntec.votenote.CardListHelpers.RecyclerItemClickListener;
 import de.oerntec.votenote.CardListHelpers.SwipeDeletion;
+import de.oerntec.votenote.Database.DBGroups;
 import de.oerntec.votenote.Database.DBLessons;
-import de.oerntec.votenote.Database.DBSubjects;
 import de.oerntec.votenote.Database.Lesson;
 import de.oerntec.votenote.Dialogs.MainDialogHelper;
 import de.oerntec.votenote.MainActivity;
@@ -59,7 +59,7 @@ public class LessonFragment extends Fragment implements SwipeDeletion.UndoSnackB
     /**
      * DB Singleton instance
      */
-    private static DBSubjects mSubjectDb = DBSubjects.getInstance();
+    private static DBGroups mSubjectDb = DBGroups.getInstance();
     /**
      * DB Singleton instance
      */
@@ -114,7 +114,7 @@ public class LessonFragment extends Fragment implements SwipeDeletion.UndoSnackB
 
 
         //if translatedSection is -1, no group has been added yet
-        if (mSubjectId == DBSubjects.NO_GROUPS_EXIST) {
+        if (mSubjectId == DBGroups.NO_GROUPS_EXIST) {
             Intent intent = new Intent(getActivity(), SubjectManagementActivity.class);
             intent.putExtra("firstGroup", true);
             getActivity().startActivityForResult(intent, MainActivity.ADD_FIRST_SUBJECT_REQUEST);

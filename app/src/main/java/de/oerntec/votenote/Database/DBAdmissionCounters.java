@@ -130,14 +130,14 @@ public class DBAdmissionCounters {
     }
 
     /**
-     * Get a all admission counters for a subject
+     * Get a all admission counters for a subject, ordered by their id
      *
      * @param subjectId what subject id are we looking for
      * @return AdmissionCounter object corresponding to the db values
      */
     public List<AdmissionCounter> getAdmissionCounters(int subjectId) {
         String[] whereArgs = {String.valueOf(subjectId)};
-        Cursor mCursor = database.query(true, DatabaseCreator.TABLE_NAME_ADMISSION_COUNTERS, null, DatabaseCreator.ADMISSION_COUNTER_SUBJECT_ID + "=?", whereArgs, null, null, null, null);
+        Cursor mCursor = database.query(true, DatabaseCreator.TABLE_NAME_ADMISSION_COUNTERS, null, DatabaseCreator.ADMISSION_COUNTER_SUBJECT_ID + "=?", whereArgs, null, null, DatabaseCreator.ADMISSION_COUNTER_ID + " ASC", null);
 
         List<AdmissionCounter> counters = new LinkedList<>();
 
@@ -161,6 +161,10 @@ public class DBAdmissionCounters {
             Log.i("dbgroups:delete", "deleting all " + checkValue + " entries of type " + subjectId);
     }
 
+    /**
+     * Delete a counter
+     * @param id the admission counter id to search for
+     */
     public void deleteCounter(int id) {
         String[] whereArgs = new String[]{String.valueOf(id)};
         int checkValue =
@@ -169,7 +173,9 @@ public class DBAdmissionCounters {
     }
 
     /**
-     * Add an entry to the respective uebung, returns the lesson id
+     * Add an admission counter into the table
+     * @param newCounter the counter to add
+     * @return false if not exactly one row was inserted
      */
     public boolean addAdmissionCounter(AdmissionCounter newCounter) {
         ContentValues values = new ContentValues();

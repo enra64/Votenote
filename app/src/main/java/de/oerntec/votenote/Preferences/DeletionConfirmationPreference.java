@@ -22,7 +22,7 @@ import android.preference.DialogPreference;
 import android.util.AttributeSet;
 
 import de.oerntec.votenote.Database.DBLessons;
-import de.oerntec.votenote.Database.DBSubjects;
+import de.oerntec.votenote.Database.DBGroups;
 import de.oerntec.votenote.R;
 
 public class DeletionConfirmationPreference extends DialogPreference {
@@ -38,7 +38,7 @@ public class DeletionConfirmationPreference extends DialogPreference {
     protected void onDialogClosed(boolean positiveResult) {
         if (positiveResult) {
             DBLessons.getInstance().dropData();
-            DBSubjects.getInstance().dropData();
+            DBGroups.getInstance().dropData();
         } else
             super.onDialogClosed(false);
     }

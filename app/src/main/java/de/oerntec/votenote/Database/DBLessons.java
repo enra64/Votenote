@@ -227,7 +227,7 @@ public class DBLessons {
         if (mCursor.moveToFirst())
             returnValue = mCursor.getInt(1);
         else//default to the scheduled value
-            returnValue = DBSubjects.getInstance().getScheduledAssignmentsPerLesson(subjectId);
+            returnValue = DBGroups.getInstance().getScheduledAssignmentsPerLesson(subjectId);
         mCursor.close();
         return returnValue;
     }
@@ -248,7 +248,7 @@ public class DBLessons {
         if (mCursor.moveToFirst())
             returnValue = mCursor.getInt(1);
         else//return the scheduled amount of work as default
-            returnValue = DBSubjects.getInstance().getScheduledAssignmentsPerLesson(subjectId);
+            returnValue = DBGroups.getInstance().getScheduledAssignmentsPerLesson(subjectId);
         mCursor.close();
         return returnValue;
     }

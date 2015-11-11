@@ -24,8 +24,8 @@ import android.widget.Toast;
 import java.io.IOException;
 import java.util.List;
 
+import de.oerntec.votenote.Database.DBGroups;
 import de.oerntec.votenote.Database.DBLessons;
-import de.oerntec.votenote.Database.DBSubjects;
 import de.oerntec.votenote.Database.Group;
 import de.oerntec.votenote.R;
 
@@ -49,7 +49,7 @@ public class CsvExporter {
 
     private static void export(final String path, final Context activity) {
         //get database access
-        final DBSubjects groupsDB = DBSubjects.getInstance();
+        final DBGroups groupsDB = DBGroups.getInstance();
         final DBLessons entryDB = DBLessons.getInstance();
 
         StringBuilder s = new StringBuilder();

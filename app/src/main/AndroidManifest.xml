@@ -47,7 +47,7 @@
                 android:value="de.oerntec.votenote.MainActivity" />
         </activity>
         <activity
-            android:name=".SubjectManagerStuff.SubjectCreationActivity"
+            android:name=".SubjectManagerStuff.SubjectCreation.SubjectCreationActivity"
             android:label="@string/title_activity_subject_creation"
             android:parentActivityName=".SubjectManagerStuff.SubjectManagementActivity">
             <meta-data

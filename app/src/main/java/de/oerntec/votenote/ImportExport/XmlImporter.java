@@ -33,8 +33,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
+import de.oerntec.votenote.Database.DBGroups;
 import de.oerntec.votenote.Database.DBLessons;
-import de.oerntec.votenote.Database.DBSubjects;
 import de.oerntec.votenote.MainActivity;
 import de.oerntec.votenote.R;
 import de.oerntec.votenote.SubjectManagerStuff.SubjectManagementActivity;
@@ -44,7 +44,7 @@ public class XmlImporter {
 
     public static void importDialog(final Context activity) {
         //if there already are subjects, ask the user whether he truly wants to delete everything
-        if (DBSubjects.getInstance().getCount() > 0) {
+        if (DBGroups.getInstance().getCount() > 0) {
             AlertDialog.Builder b = new AlertDialog.Builder(activity);
             b.setTitle(activity.getString(R.string.xml_import_dialog_title));
             b.setMessage(activity.getString(R.string.xml_import_warning_message));
@@ -89,7 +89,7 @@ public class XmlImporter {
         File file = new File(filename);
         InputStream inputStream;
         DBLessons.getInstance().dropData();
-        DBSubjects.getInstance().dropData();
+        DBGroups.getInstance().dropData();
         try {
             inputStream = new FileInputStream(file);
         } catch (FileNotFoundException e) {
@@ -216,7 +216,7 @@ public class XmlImporter {
     }
 
     private static void parseSubject(XmlPullParser parser) throws IOException, XmlPullParserException {
-        DBSubjects db = DBSubjects.getInstance();
+        DBGroups db = DBGroups.getInstance();
         parser.require(XmlPullParser.START_TAG, null, "row");
 
         parser.nextTag();

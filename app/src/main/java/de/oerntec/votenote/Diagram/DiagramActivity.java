@@ -43,14 +43,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import de.oerntec.votenote.Database.DBGroups;
 import de.oerntec.votenote.Database.DBLessons;
-import de.oerntec.votenote.Database.DBSubjects;
 import de.oerntec.votenote.R;
 import de.oerntec.votenote.TranslationHelper;
 
 
 public class DiagramActivity extends AppCompatActivity implements DiagramSubjectAdapter.AdapterListener {
-    private static DBSubjects mSubjectDb;
+    private static DBGroups mSubjectDb;
     private static DBLessons mLessonDb;
     private static GraphView mGraph;
     private Random r;
@@ -72,7 +72,7 @@ public class DiagramActivity extends AppCompatActivity implements DiagramSubject
             actionBar.setDisplayHomeAsUpEnabled(true);
 
         //get db connections
-        mSubjectDb = DBSubjects.getInstance();
+        mSubjectDb = DBGroups.getInstance();
         mLessonDb = DBLessons.getInstance();
 
         //init random

@@ -23,12 +23,12 @@ import android.graphics.Color;
 import android.view.View;
 import android.widget.TextView;
 
+import de.oerntec.votenote.Database.DBGroups;
 import de.oerntec.votenote.Database.DBLessons;
-import de.oerntec.votenote.Database.DBSubjects;
 import de.oerntec.votenote.R;
 
 class SubjectInfoCalculator {
-    private static DBSubjects groupDB = DBSubjects.getInstance();
+    private static DBGroups groupDB = DBGroups.getInstance();
     private static DBLessons entryDB = DBLessons.getInstance();
 
     /**

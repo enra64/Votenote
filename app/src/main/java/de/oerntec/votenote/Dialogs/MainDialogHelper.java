@@ -26,8 +26,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import de.oerntec.votenote.CardListHelpers.SwipeDeletion;
+import de.oerntec.votenote.Database.DBGroups;
 import de.oerntec.votenote.Database.DBLessons;
-import de.oerntec.votenote.Database.DBSubjects;
 import de.oerntec.votenote.Database.Lesson;
 import de.oerntec.votenote.LessonFragmentStuff.LessonFragment;
 import de.oerntec.votenote.MainActivity;
@@ -214,7 +214,7 @@ public class MainDialogHelper {
      */
     public static void showPresentationPointDialog(final int subjectId, final MainActivity activity) {
         //db access
-        final DBSubjects groupsDB = DBSubjects.getInstance();
+        final DBGroups groupsDB = DBGroups.getInstance();
 
         final View inputView = activity.getLayoutInflater().inflate(R.layout.subject_fragment_dialog_presentation_points, null);
         final NumberPicker presPointPicker = (NumberPicker) inputView.findViewById(R.id.mainfragment_dialog_prespoints_picker);
@@ -242,7 +242,7 @@ public class MainDialogHelper {
 
     public static void showAllInfoDialog(MainActivity activity, int lessonId) {
         DBLessons lessonDb = DBLessons.getInstance();
-        DBSubjects subjectDb = DBSubjects.getInstance();
+        DBGroups subjectDb = DBGroups.getInstance();
 
         int scheduledMaximumAssignments = subjectDb.getScheduledWork(lessonId);
         float numberOfNeededAssignments = ((float) scheduledMaximumAssignments * (float) subjectDb.getMinVote(lessonId)) / (float) 100;

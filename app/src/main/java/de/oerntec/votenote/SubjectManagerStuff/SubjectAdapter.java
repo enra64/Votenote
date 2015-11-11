@@ -26,7 +26,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import de.oerntec.votenote.Database.DBSubjects;
+import de.oerntec.votenote.Database.DBGroups;
 import de.oerntec.votenote.Database.Group;
 import de.oerntec.votenote.MainActivity;
 import de.oerntec.votenote.R;
@@ -34,7 +34,7 @@ import de.oerntec.votenote.R;
 public class SubjectAdapter extends RecyclerView.Adapter<SubjectAdapter.SubjectHolder> {
     public static final int NEW_SUJBECT_CODE = -1;
 
-    private DBSubjects mSubjectDb = DBSubjects.getInstance();
+    private DBGroups mSubjectDb = DBGroups.getInstance();
     private Context mContext;
     private Cursor mCursor;
 

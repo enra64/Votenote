@@ -26,11 +26,11 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import de.oerntec.votenote.Database.DBSubjects;
+import de.oerntec.votenote.Database.DBGroups;
 import de.oerntec.votenote.R;
 
 public class NavigationDrawerAdapter extends RecyclerView.Adapter<NavigationDrawerAdapter.SubjectHolder> {
-    private DBSubjects mSubjectDb = DBSubjects.getInstance();
+    private DBGroups mSubjectDb = DBGroups.getInstance();
 
     private SelectionCallback mOnClickCallback;
     private Cursor mCursor;

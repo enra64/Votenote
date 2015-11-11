@@ -44,7 +44,7 @@ import java.io.StringWriter;
 
 import de.oerntec.votenote.Database.DBAdmissionCounters;
 import de.oerntec.votenote.Database.DBLessons;
-import de.oerntec.votenote.Database.DBSubjects;
+import de.oerntec.votenote.Database.DBGroups;
 import de.oerntec.votenote.Diagram.DiagramActivity;
 import de.oerntec.votenote.Dialogs.MainDialogHelper;
 import de.oerntec.votenote.ImportExport.Writer;
@@ -126,7 +126,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
      */
     public static NavigationDrawerFragment mNavigationDrawerFragment;
     //database connection
-    private static DBSubjects mSubjectDb;
+    private static DBGroups mSubjectDb;
     private static DBLessons mLessonDb;
     private static int mCurrentSelectedId, mCurrentSelectedPosition;
     private static MainActivity me;
@@ -154,7 +154,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         me = this;
 
         //database access
-        mSubjectDb = DBSubjects.setupInstance(this);
+        mSubjectDb = DBGroups.setupInstance(this);
         mLessonDb = DBLessons.setupInstance(this);
         DBAdmissionCounters.setupInstance(this);
 

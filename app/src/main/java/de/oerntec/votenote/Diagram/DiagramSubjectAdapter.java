@@ -28,12 +28,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import de.oerntec.votenote.Database.DBGroups;
 import de.oerntec.votenote.Database.DBLessons;
-import de.oerntec.votenote.Database.DBSubjects;
 import de.oerntec.votenote.R;
 
 public class DiagramSubjectAdapter extends RecyclerView.Adapter<DiagramSubjectAdapter.SubjectHolder> {
-    private DBSubjects mSubjectDb = DBSubjects.getInstance();
+    private DBGroups mSubjectDb = DBGroups.getInstance();
 
     private AdapterListener mAdapterListener;
     private Cursor mCursor;

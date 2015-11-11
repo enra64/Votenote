@@ -20,17 +20,17 @@ package de.oerntec.votenote.Database;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import de.oerntec.votenote.MainActivity;
 
 public class DBSubjects {
-    public final static int NO_GROUPS_EXIST = -1;
-
     private static DBSubjects mInstance;
     private SQLiteDatabase database;
 
@@ -58,311 +58,79 @@ public class DBSubjects {
      * Delete the group with the given name AND the given id
      * @return Number of affected rows.
      */
-    public int deleteSubject(Group delete) {
+    public int deleteSubject(Subject delete) {
         if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
-            Log.i("dbgroups:delete", "deleted " + delete.subjectName + " at " + delete.id);
-        String whereClause = DatabaseCreator.GROUPS_NAME + "=?" + " AND " + DatabaseCreator.GROUPS_ID + "=?";
-        String[] whereArgs = new String[]{delete.subjectName, String.valueOf(delete.id)};
+            Log.i("dbgroups:delete", "deleted " + delete.name + " at " + delete.id);
+        String whereClause = DatabaseCreator.SUBJECTS_NAME + "=?" + " AND " + DatabaseCreator.SUBJECTS_ID + "=?";
+        String[] whereArgs = new String[]{delete.name, String.valueOf(delete.id)};
         return database.delete(DatabaseCreator.TABLE_NAME_GROUPS, whereClause, whereArgs);
     }
 
     /**
      * Adds a group with the given Parameters
-     *
-     * @param groupName Name of the new Group
-     * @param minVot    minimum vote
-     * @param minPres   minimum presentation points
-     * @return -1 if group exists, 1 else.
+     * @param subjectName Name of the new Group
+     * @return -1 if the group name is not unique (violates constraint), the id of the added group otherwise
      */
-    public int addGroup(String groupName, int minVot, int minPres, int newScheduledUebungCount, int newScheduledAssignmentsPerUebung) {
-        return addGroup(-1, groupName, minVot, minPres, -1,
-                newScheduledUebungCount, newScheduledAssignmentsPerUebung);
-    }
-
-    public int addGroup(Group val) {
-        return addGroup(
-                Integer.valueOf(val.id),
-                val.subjectName,
-                Integer.valueOf(val.subjectMinimumVotePercentage),
-                Integer.valueOf(val.subjectWantedPresentationPoints),
-                Integer.valueOf(val.subjectCurrentPresentationPoints),
-                Integer.valueOf(val.subjectScheduledLessonCount),
-                Integer.valueOf(val.subjectScheduledAssignmentsPerLesson));
-    }
-
-    /**
-     * Adds a group with the given Parameters
-     * @param id Id, overwrites rowid if >0
-     * @param groupName Name of the new Group
-     * @param minVot    minimum vote
-     * @param minPres   minimum presentation points
-     * @return -1 if group exists, 1 else.
-     */
-    public int addGroup(int id, String groupName, int minVot, int minPres, int currentPres,
-                        int newScheduledLessonCount, int newScheduledAssignmentsPerUebung) {
-        //check whether group name exists; abort if it does
-        String[] testColumns = new String[]{DatabaseCreator.GROUPS_ID, DatabaseCreator.GROUPS_NAME};
-        Cursor testCursor = database.query(true, DatabaseCreator.TABLE_NAME_GROUPS, testColumns, DatabaseCreator.GROUPS_NAME + "=?", new String[]{groupName}, null, null, DatabaseCreator.GROUPS_ID + " DESC", null);
-
-        //abort if group already exists
-        if (testCursor.getCount() > 0) {
-            testCursor.close();
-            return -1;
-        }
-        testCursor.close();
-
+    public int addSubject(String subjectName) {
         //create values for insert or update
         ContentValues values = new ContentValues();
-        values.put(DatabaseCreator.GROUPS_NAME, groupName);
-        values.put(DatabaseCreator.GROUPS_MINIMUM_VOTE_PERCENTAGE, minVot);
-        if (currentPres > 0)
-            values.put(DatabaseCreator.GROUPS_CURRENT_PRESENTATION_POINTS, currentPres);
-        if (id > 0)
-            values.put(DatabaseCreator.GROUPS_ID, id);
-        values.put(DatabaseCreator.GROUPS_WANTED_PRESENTATION_POINTS, minPres);
-        values.put(DatabaseCreator.GROUPS_SCHEDULED_NUMBER_OF_LESSONS, newScheduledLessonCount);
-        values.put(DatabaseCreator.GROUPS_SCHEDULED_ASSIGNMENTS_PER_LESSON, newScheduledAssignmentsPerUebung);
+        values.put(DatabaseCreator.SUBJECTS_NAME, subjectName);
 
-        //insert name, because it does not exist yet
         if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
-            Log.i("DBSubjects", "adding group");
-        database.insert(DatabaseCreator.TABLE_NAME_GROUPS, null, values);
-        return 1;
+            Log.i("DBGroups", "adding group");
+
+        //try to insert the subject. since
+        try{
+            database.insert(DatabaseCreator.TABLE_NAME_SUBJECTS, null, values);
+        } catch( SQLiteConstraintException e) {
+            return -1;
+        }
+
+        //get maximum id value. because id is autoincrement, that must be the id of the subject we just added
+        Cursor subjectIdCursor = database.rawQuery("SELECT MAX(" + DatabaseCreator.SUBJECTS_ID + ") FROM " + DatabaseCreator.TABLE_NAME_SUBJECTS, null);
+
+        //throw error if we have more or less than one result row, because that is bullshit
+        if(subjectIdCursor.getCount() != 1)
+            throw new AssertionError("somehow we got more than one result with a max query?");
+
+        //retrieve value and close cursor
+        subjectIdCursor.moveToFirst();
+        int result = subjectIdCursor.getInt(subjectIdCursor.getColumnIndex(DatabaseCreator.SUBJECTS_ID));
+        subjectIdCursor.close();
+
+        return result;
     }
 
-    /**
-     * This function returns the id of the group that is displayed at drawerselection in the drawer
-     *
-     * @param drawerSelection position in the drawer. _not_ the database id
-     * @return the database id corresponding to the position
-     */
-    public int translatePositionToID(int drawerSelection) {
-        Cursor groups = getAllGroupNames();
-        if (groups.getCount() == 0)
-            return NO_GROUPS_EXIST;
-        groups.moveToPosition(drawerSelection);
-        int translatedSection = groups.getInt(0);
-        groups.close();
-        return translatedSection;
+    public List<Subject> getAllSubjects() {
+        Cursor mCursor = database.query(true,
+                DatabaseCreator.TABLE_NAME_SUBJECTS,
+                null,
+                null,
+                null,
+                null,
+                null,
+                DatabaseCreator.ADMISSION_COUNTER_ID + " ASC",
+                null);
+
+        List<Subject> subjects = new LinkedList<>();
+
+        while (mCursor.moveToNext())
+            subjects.add(new Subject(
+                    mCursor.getString(mCursor.getColumnIndex(DatabaseCreator.SUBJECTS_NAME)),
+                    mCursor.getInt(mCursor.getColumnIndex(DatabaseCreator.SUBJECTS_ID))
+            ));
+
+        mCursor.close();
+        return subjects;
     }
 
     /**
      * returns number of subjects
      */
     public int getCount() {
-        Cursor c = getAllGroupNames();
+        Cursor c = getDataDump();
         int val = c.getCount();
         c.close();
         return val;
-    }
-
-    /**
-     * Return a cursor containing all Groups sorted by id desc;
-     * sequence: ID, NAME, MINVOTE, MINPRES
-     *
-     * @return the cursor
-     */
-    public Cursor getAllGroupNames() {
-        //sort cursor by name to have a defined order
-        String[] cols = new String[]{DatabaseCreator.GROUPS_ID,
-                DatabaseCreator.GROUPS_NAME,
-                DatabaseCreator.GROUPS_MINIMUM_VOTE_PERCENTAGE,
-                DatabaseCreator.GROUPS_WANTED_PRESENTATION_POINTS};
-        Cursor mCursor = database.query(true, DatabaseCreator.TABLE_NAME_GROUPS, cols, null, null, null, null, DatabaseCreator.GROUPS_ID + " DESC", null);
-        if (mCursor != null)
-            mCursor.moveToFirst();
-        return mCursor; // iterate to get each value.
-    }
-
-    public Cursor getAllButOneGroupNames(int excludedID) {
-        //sort cursor by name to have a defined order
-        String[] cols = new String[]{DatabaseCreator.GROUPS_ID, DatabaseCreator.GROUPS_NAME};
-        Cursor mCursor = database.query(true, DatabaseCreator.TABLE_NAME_GROUPS, cols, DatabaseCreator.GROUPS_ID + "!=?", new String[]{excludedID + ""}, null, null, DatabaseCreator.GROUPS_ID + " DESC", null);
-        if (mCursor != null)
-            mCursor.moveToFirst();
-        return mCursor; // iterate to get each value.
-    }
-
-    public int getNumberOfSubjects() {
-        //sort cursor by name to have a defined order
-        String[] cols = new String[]{DatabaseCreator.GROUPS_ID};
-        Cursor mCursor = database.query(true, DatabaseCreator.TABLE_NAME_GROUPS, cols, null, null, null, null, DatabaseCreator.GROUPS_ID + " DESC", null);
-        int answer = mCursor.getCount();
-        mCursor.close();
-        return answer; // iterate to get each value.
-    }
-
-    public void dropData() {
-        database.delete(DatabaseCreator.TABLE_NAME_GROUPS, null, null);
-    }
-
-    /**
-     * returns a cursor with all
-     */
-    public Cursor getAllGroupsInfos() {
-        //sort cursor by name to have a defined reihenfolg
-        String[] cols = new String[]{DatabaseCreator.GROUPS_ID,
-                DatabaseCreator.GROUPS_NAME,
-                DatabaseCreator.GROUPS_MINIMUM_VOTE_PERCENTAGE,
-                DatabaseCreator.GROUPS_WANTED_PRESENTATION_POINTS,
-                DatabaseCreator.GROUPS_SCHEDULED_NUMBER_OF_LESSONS,
-                DatabaseCreator.GROUPS_SCHEDULED_ASSIGNMENTS_PER_LESSON};
-        Cursor mCursor = database.query(true, DatabaseCreator.TABLE_NAME_GROUPS, cols, null, null, null, null, DatabaseCreator.GROUPS_ID + " DESC", null);
-        if (mCursor != null)
-            mCursor.moveToFirst();
-        return mCursor; // iterate to get each value.
-    }
-
-    public List<Group> getAllSubjects() {
-        String[] cols = new String[]{DatabaseCreator.GROUPS_ID,//0
-                DatabaseCreator.GROUPS_NAME,//1
-                DatabaseCreator.GROUPS_MINIMUM_VOTE_PERCENTAGE,//2
-                DatabaseCreator.GROUPS_CURRENT_PRESENTATION_POINTS,//3
-                DatabaseCreator.GROUPS_WANTED_PRESENTATION_POINTS,//4
-                DatabaseCreator.GROUPS_SCHEDULED_NUMBER_OF_LESSONS,//5
-                DatabaseCreator.GROUPS_SCHEDULED_ASSIGNMENTS_PER_LESSON};//6
-        Cursor mCursor = database.query(true, DatabaseCreator.TABLE_NAME_GROUPS, cols, null, null, null, null, null, null);
-        ArrayList<Group> resultList = new ArrayList<>();
-        while (mCursor.moveToNext()) {
-            resultList.add(new Group(mCursor.getString(0), //id
-                    mCursor.getString(1), //name
-                    mCursor.getString(2), //minvote
-                    mCursor.getString(3), //current prespoints
-                    mCursor.getString(5), //sched lesson count
-                    mCursor.getString(6), //sched assignments per lesson
-                    mCursor.getString(4))); //wanted prespoints
-        }
-        mCursor.close();
-        return resultList;
-    }
-
-    /**
-     * Get specific group data
-     *
-     * @param databaseId db id of the group
-     * @return data. null when no group was found
-     */
-    public Group getSubject(int databaseId) {
-        String[] cols = new String[]{DatabaseCreator.GROUPS_ID,//0
-                DatabaseCreator.GROUPS_NAME,//1
-                DatabaseCreator.GROUPS_MINIMUM_VOTE_PERCENTAGE,//2
-                DatabaseCreator.GROUPS_CURRENT_PRESENTATION_POINTS,//3
-                DatabaseCreator.GROUPS_WANTED_PRESENTATION_POINTS,//4
-                DatabaseCreator.GROUPS_SCHEDULED_NUMBER_OF_LESSONS,//5
-                DatabaseCreator.GROUPS_SCHEDULED_ASSIGNMENTS_PER_LESSON};//6
-        String[] whereArgs = new String[]{String.valueOf(databaseId)};
-        Cursor mCursor = database.query(true, DatabaseCreator.TABLE_NAME_GROUPS, cols, DatabaseCreator.GROUPS_ID + "=?", whereArgs, null, null, null, null);
-        if (mCursor.getCount() > 0)
-            mCursor.moveToFirst();
-        else
-            return null;
-        Group returnValue = new Group(mCursor.getString(0), //id
-                mCursor.getString(1), //name
-                mCursor.getString(2), //minvote
-                mCursor.getString(3), //current prespoints
-                mCursor.getString(5), //sched lesson count
-                mCursor.getString(6), //sched assignments per lesson
-                mCursor.getString(4)); //wanted prespoints
-        mCursor.close();
-        return returnValue;
-    }
-
-    /**
-     * Returns the amount of assignments you could go to at maximum
-     *
-     * @return the cursor
-     */
-    public int getScheduledWork(int id) {
-        Group val = getSubject(id);
-        return val == null ? -1 : Integer.valueOf(val.subjectScheduledLessonCount) * Integer.valueOf(val.subjectScheduledAssignmentsPerLesson);
-    }
-
-    /**
-     * Returns the entered amount of uebung instances
-     *
-     * @param dbID ID of the concerned Group
-     * @return see above
-     */
-    public int getScheduledNumberOfLessons(int dbID) {
-        Group val = getSubject(dbID);
-        return val == null ? -1 : Integer.valueOf(val.subjectScheduledLessonCount);
-    }
-
-    /**
-     * Returns the entered amount estimated assignments per uebung
-     *
-     * @param dbID ID of the concerned Group
-     * @return see above
-     */
-    public int getScheduledAssignmentsPerLesson(int dbID) {
-        Group val = getSubject(dbID);
-        return val == null ? -1 : Integer.valueOf(val.subjectScheduledAssignmentsPerLesson);
-    }
-
-    /**
-     * Return the name of the group with the specified id
-     */
-    public String getGroupName(int dbID) {
-        Group val = getSubject(dbID);
-        return val == null ? "null" : val.subjectName;
-    }
-
-
-    /**
-     * Returns the minimum Vote needed for passing from db
-     *
-     * @param dbID ID of group
-     * @return minvote
-     */
-    public int getMinVote(int dbID) {
-        Group val = getSubject(dbID);
-        return val == null ? -1 : Integer.valueOf(val.subjectMinimumVotePercentage);
-    }
-
-    /**
-     * set the presentation points
-     *
-     * @param dbID       Database id of group to change
-     * @param presPoints presentation points the user has
-     * @return The amount of Rows updated, should be one
-     */
-    public int setPresPoints(int dbID, int presPoints) {
-        String[] whereArgs = {String.valueOf(dbID)};
-        ContentValues values = new ContentValues();
-        values.put(DatabaseCreator.GROUPS_CURRENT_PRESENTATION_POINTS, presPoints);
-        return database.update(DatabaseCreator.TABLE_NAME_GROUPS, values, DatabaseCreator.GROUPS_ID + "=?", whereArgs);
-    }
-
-    /**
-     * Helper function for getting the pres points for the specified group
-     *
-     * @param dbID the database id of the group
-     * @return Prespoint number
-     */
-    public int getPresPoints(int dbID) {
-        Group val = getSubject(dbID);
-        return val == null ? -1 : Integer.valueOf(val.subjectCurrentPresentationPoints);
-    }
-
-    public int changeSubject(Group oldSubject, Group newSubject) {
-        String[] whereArgs = {String.valueOf(oldSubject.id)};
-        ContentValues values = new ContentValues();
-        values.put(DatabaseCreator.GROUPS_NAME, newSubject.subjectName);
-        values.put(DatabaseCreator.GROUPS_MINIMUM_VOTE_PERCENTAGE, newSubject.subjectMinimumVotePercentage);
-        values.put(DatabaseCreator.GROUPS_WANTED_PRESENTATION_POINTS, newSubject.subjectWantedPresentationPoints);
-        values.put(DatabaseCreator.GROUPS_SCHEDULED_NUMBER_OF_LESSONS, newSubject.subjectScheduledLessonCount);
-        values.put(DatabaseCreator.GROUPS_SCHEDULED_ASSIGNMENTS_PER_LESSON, newSubject.subjectScheduledAssignmentsPerLesson);
-        return database.update(DatabaseCreator.TABLE_NAME_GROUPS, values, DatabaseCreator.GROUPS_ID + "=?", whereArgs);
-    }
-
-    /**
-     * Get the minimum prespoints for the given group
-     *
-     * @param dbID ID of the Group
-     * @return Minimum number of Prespoints needed for passing, -1 on null
-     */
-    public int getWantedPresPoints(int dbID) {
-        Group val = getSubject(dbID);
-        return val == null ? -1 : Integer.valueOf(val.subjectWantedPresentationPoints);
     }
 }
