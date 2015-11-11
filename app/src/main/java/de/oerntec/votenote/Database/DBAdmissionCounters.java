@@ -20,6 +20,7 @@ package de.oerntec.votenote.Database;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
@@ -89,16 +90,14 @@ public class DBAdmissionCounters {
      *
      * @throws AssertionError if old dbId != new dbId
      */
-    public void changeAdmissionCounter(AdmissionCounter oldValues, AdmissionCounter newValues) {
+    public void changeItem(AdmissionCounter newValues) {
         ContentValues values = new ContentValues();
         values.put(DatabaseCreator.ADMISSION_COUNTER_COUNTER_NAME, newValues.counterName);
         values.put(DatabaseCreator.ADMISSION_COUNTER_CURRENT, newValues.currentValue);
         values.put(DatabaseCreator.ADMISSION_COUNTER_SUBJECT_ID, newValues.subjectId);
         values.put(DatabaseCreator.ADMISSION_COUNTER_TARGET, newValues.targetValue);
 
-        if ((oldValues.id != newValues.id)) throw new AssertionError();
-
-        String[] whereArgs = {String.valueOf(oldValues.id)};
+        String[] whereArgs = {String.valueOf(newValues.id)};
         int affectedRows = database.update(DatabaseCreator.TABLE_NAME_ADMISSION_COUNTERS, values, DatabaseCreator.ADMISSION_COUNTER_ID + "=?", whereArgs);
         if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
             if (affectedRows != 0)
@@ -113,7 +112,7 @@ public class DBAdmissionCounters {
      * @return AdmissionCounter object corresponding to the db values
      * @throws AssertionError if not exactly one AdmissionCounters are found
      */
-    public AdmissionCounter getAdmissionCounter(int id) {
+    public AdmissionCounter getItem(int id) {
         String[] whereArgs = {String.valueOf(id)};
         Cursor mCursor = database.query(true, DatabaseCreator.TABLE_NAME_ADMISSION_COUNTERS, null, DatabaseCreator.ADMISSION_COUNTER_ID + "=?", whereArgs, null, null, null, null);
         AdmissionCounter returnValue = null;
@@ -135,7 +134,7 @@ public class DBAdmissionCounters {
      * @param subjectId what subject id are we looking for
      * @return AdmissionCounter object corresponding to the db values
      */
-    public List<AdmissionCounter> getAdmissionCounters(int subjectId) {
+    public List<AdmissionCounter> getItemsForSubject(int subjectId) {
         String[] whereArgs = {String.valueOf(subjectId)};
         Cursor mCursor = database.query(true, DatabaseCreator.TABLE_NAME_ADMISSION_COUNTERS, null, DatabaseCreator.ADMISSION_COUNTER_SUBJECT_ID + "=?", whereArgs, null, null, DatabaseCreator.ADMISSION_COUNTER_ID + " ASC", null);
 
@@ -152,7 +151,7 @@ public class DBAdmissionCounters {
         return counters;
     }
 
-    public void deleteAllCounters(int subjectId) {
+    public void deleteItemsForSubject(int subjectId) {
         String[] whereArgs = new String[]{String.valueOf(subjectId)};
         int checkValue =
                 database.delete(DatabaseCreator.TABLE_NAME_ADMISSION_COUNTERS,
@@ -165,11 +164,17 @@ public class DBAdmissionCounters {
      * Delete a counter
      * @param id the admission counter id to search for
      */
-    public void deleteCounter(int id) {
+    public void deleteItem(int id) {
         String[] whereArgs = new String[]{String.valueOf(id)};
-        int checkValue =
-                database.delete(DatabaseCreator.TABLE_NAME_ADMISSION_COUNTERS,
-                        DatabaseCreator.ADMISSION_COUNTER_ID + "=?", whereArgs);
+        database.delete(DatabaseCreator.TABLE_NAME_ADMISSION_COUNTERS, DatabaseCreator.ADMISSION_COUNTER_ID + "=?", whereArgs);
+    }
+
+    public void createSavepoint(String id) {
+        database.execSQL("SAVEPOINT " + id);
+    }
+
+    public void rollbackToSavepoint(String id) {
+        database.execSQL("ROLLBACK TO SAVEPOINT " + id);
     }
 
     /**
@@ -177,14 +182,36 @@ public class DBAdmissionCounters {
      * @param newCounter the counter to add
      * @return false if not exactly one row was inserted
      */
-    public boolean addAdmissionCounter(AdmissionCounter newCounter) {
+    public int addItem(AdmissionCounter newCounter) {
         ContentValues values = new ContentValues();
         values.put(DatabaseCreator.ADMISSION_COUNTER_COUNTER_NAME, newCounter.counterName);
         values.put(DatabaseCreator.ADMISSION_COUNTER_CURRENT, newCounter.currentValue);
         values.put(DatabaseCreator.ADMISSION_COUNTER_SUBJECT_ID, newCounter.subjectId);
         values.put(DatabaseCreator.ADMISSION_COUNTER_TARGET, newCounter.targetValue);
 
-        return -1 != database.insert(DatabaseCreator.TABLE_NAME_ADMISSION_COUNTERS, null, values);
+        if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
+            Log.i("DBAC", "adding counter");
+
+        //try to insert the subject. since
+        try {
+            database.insert(DatabaseCreator.TABLE_NAME_ADMISSION_COUNTERS, null, values);
+        } catch (SQLiteConstraintException e) {
+            return -1;
+        }
+
+        //get maximum id value. because id is autoincrement, that must be the id of the subject we just added
+        Cursor idCursor = database.rawQuery("SELECT MAX(" + DatabaseCreator.ADMISSION_COUNTER_ID + ") FROM " + DatabaseCreator.TABLE_NAME_ADMISSION_COUNTERS, null);
+
+        //throw error if we have more or less than one result row, because that is bullshit
+        if (idCursor.getCount() != 1)
+            throw new AssertionError("somehow we got more than one result with a max query?");
+
+        //retrieve value and close cursor
+        idCursor.moveToFirst();
+        int result = idCursor.getInt(idCursor.getColumnIndex(DatabaseCreator.ADMISSION_COUNTER_ID));
+        idCursor.close();
+
+        return result;
     }
 
     public int getCount() {

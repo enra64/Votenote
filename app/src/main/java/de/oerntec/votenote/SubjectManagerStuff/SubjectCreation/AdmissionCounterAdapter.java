@@ -56,7 +56,7 @@ public class AdmissionCounterAdapter extends RecyclerView.Adapter<AdmissionCount
      */
     public boolean addItem(AdmissionCounter item) {
         //add to database
-        boolean success = mDb.addAdmissionCounter(item);
+        boolean success = mDb.addItem(item);
         requery();
         //the counters are ordered by their id ascending, so the latest counter should be the lowest
         if (success)
@@ -81,20 +81,20 @@ public class AdmissionCounterAdapter extends RecyclerView.Adapter<AdmissionCount
      * @return admission counter backup
      */
     public AdmissionCounter removeCounter(int admissionCounterId, int recyclerViewPosition) {
-        AdmissionCounter bkp = mDb.getAdmissionCounter(admissionCounterId);
+        AdmissionCounter bkp = mDb.getItem(admissionCounterId);
         if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
             Log.i("subject adapter", "attempting to remove counter: " + bkp.counterName);
 
         notifyItemRemoved(recyclerViewPosition);
         notifyItemRangeChanged(recyclerViewPosition, getItemCount() - 1);
-        mDb.deleteCounter(admissionCounterId);
+        mDb.deleteItem(admissionCounterId);
         requery();
         return bkp;
     }
 
     private void requery() {
         mData = null;
-        mData = mDb.getAdmissionCounters(mSubjectId);
+        mData = mDb.getItemsForSubject(mSubjectId);
     }
 
     @Override

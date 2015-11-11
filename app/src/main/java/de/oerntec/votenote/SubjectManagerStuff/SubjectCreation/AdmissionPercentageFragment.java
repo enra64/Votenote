@@ -16,11 +16,12 @@ import de.oerntec.votenote.Database.DBAdmissionPercentageMeta;
 import de.oerntec.votenote.R;
 import de.oerntec.votenote.SubjectManagerStuff.SeekerListener;
 
-public class PercentageFragment extends Fragment {
+public class AdmissionPercentageFragment extends Fragment {
     private static final String SUBJECT_ID = "subject_id";
+    private static final String ADMISSION_PERCENTAGE_ID = "ap_id";
     private static final String SUBJECT_IS_NEW = "subject_is_new";
 
-    private int mSubjectId, mAdmissionCounterId;
+    private int mSubjectId, mAdmissionPercentageId;
 
     private DBAdmissionPercentageMeta mDb;
 
@@ -33,22 +34,23 @@ public class PercentageFragment extends Fragment {
     * load default values into these variables
     */
     private String nameHint;
-    private int presentationPointsHint = 0;
-    private int minimumVotePercentageHint = 50;
-    private int scheduledAssignmentsPerLesson = 5;
-    private int scheduledNumberOfLessons = 10;
+    private int requiredPercentageHint = 50, estimatedAssignmentsHint = 5, estimatedLessonCountHint = 10;
 
+    /**
+     * the id used to distinguish our current savepoint
+     */
     private String mSavepointId;
 
-    private boolean mIsOldPercentageCounter, mIsNewPercentageCounter;
+    private boolean mIsOldPercentageCounter, mIsNew;
 
-    public PercentageFragment() {
+    public AdmissionPercentageFragment() {
     }
 
-    public static PercentageFragment newInstance(int subjectId, boolean isNew) {
-        PercentageFragment fragment = new PercentageFragment();
+    public static AdmissionPercentageFragment newInstance(int subjectId, int admissionCounterId, boolean isNew) {
+        AdmissionPercentageFragment fragment = new AdmissionPercentageFragment();
         Bundle args = new Bundle();
         args.putInt(SUBJECT_ID, subjectId);
+        args.putInt(ADMISSION_PERCENTAGE_ID, admissionCounterId);
         args.putBoolean(SUBJECT_IS_NEW, isNew);
         fragment.setArguments(args);
         return fragment;
@@ -59,18 +61,19 @@ public class PercentageFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mSubjectId = getArguments().getInt(SUBJECT_ID);
-            mIsNewPercentageCounter = getArguments().getBoolean(SUBJECT_IS_NEW);
-            mIsOldPercentageCounter = !mIsNewPercentageCounter;
+            mAdmissionPercentageId = getArguments().getInt(ADMISSION_PERCENTAGE_ID);
+            mIsNew = getArguments().getBoolean(SUBJECT_IS_NEW);
+            mIsOldPercentageCounter = !mIsNew;
             mDb = DBAdmissionPercentageMeta.getInstance();
 
             //create a savepoint now, so we can rollback if the user decides to abort
-            mSavepointId = mSubjectId + "PCMETA";
+            mSavepointId = mSubjectId + "APCMETA" + System.currentTimeMillis();
             mDb.createSavepoint(mSavepointId);
 
             //create a new meta entry for this so we have an id to work with
-            mAdmissionCounterId = mDb.addItem(new AdmissionPercentageMeta(-1, mSubjectId, 0, 0, 0, "if you see this, i fucked up."));
-        }
-        else
+            if (mIsNew)
+                mAdmissionPercentageId = mDb.addItem(new AdmissionPercentageMeta(-1, mSubjectId, 0, 0, 0, "if you see this, i fucked up."));
+        } else
             throw new AssertionError("why are there no arguments here?");
     }
 
@@ -105,17 +108,17 @@ public class PercentageFragment extends Fragment {
      * Load default values or values from old subject data
      */
     private void loadOldSubjectValues() {
-        if (mIsNewPercentageCounter)
+        if (mIsNew)
             throw new AssertionError("this is a new subject, we cannot load data for it!");
 
         //try to get old subject data; returns null if no subject is found
-        AdmissionPercentageMeta oldState = mDb.getItem(mAdmissionCounterId);
+        AdmissionPercentageMeta oldState = mDb.getItem(mAdmissionPercentageId);
 
         //extract subject data
         nameHint = oldState.name;
-        minimumVotePercentageHint = oldState.targetPercentage;
-        scheduledAssignmentsPerLesson = oldState.estimatedAssignmentsPerLesson;
-        scheduledNumberOfLessons = oldState.estimatedLessonCount;
+        requiredPercentageHint = oldState.targetPercentage;
+        estimatedAssignmentsHint = oldState.estimatedAssignmentsPerLesson;
+        estimatedLessonCountHint = oldState.estimatedLessonCount;
     }
 
     /**
@@ -125,7 +128,7 @@ public class PercentageFragment extends Fragment {
         /*
         Name input
          */
-        if (mIsNewPercentageCounter) {
+        if (mIsNew) {
             //set an error if the view is empty
             nameInput.setError(nameHint);
             //delete said error if the view is no longer empty
@@ -154,33 +157,33 @@ public class PercentageFragment extends Fragment {
 
         //minvotehelp
         //initialize seekbar and seekbar info text
-        requiredPercentageInfo.setText(minimumVotePercentageHint + "%");
+        requiredPercentageInfo.setText(requiredPercentageHint + "%");
 
         //minvoteseek
         requiredPercentageSeek.setMax(100);
-        requiredPercentageSeek.setProgress(minimumVotePercentageHint);
+        requiredPercentageSeek.setProgress(requiredPercentageHint);
         requiredPercentageSeek.setOnSeekBarChangeListener(new SeekerListener(requiredPercentageInfo, "%"));
 
         //assignments per uebung help
-        estimatedAssignmentsHelp.setText(scheduledAssignmentsPerLesson + "");
+        estimatedAssignmentsHelp.setText(estimatedAssignmentsHint + "");
 
         //assignments per uebung seek
         estimatedAssignmentsSeek.setMax(50);
-        estimatedAssignmentsSeek.setProgress(scheduledAssignmentsPerLesson);
+        estimatedAssignmentsSeek.setProgress(estimatedAssignmentsHint);
         estimatedAssignmentsSeek.setOnSeekBarChangeListener(new SeekerListener(estimatedAssignmentsHelp));
 
         //uebung instances help
-        estimatedUebungCountHelp.setText(scheduledNumberOfLessons + "");
+        estimatedUebungCountHelp.setText(estimatedLessonCountHint + "");
 
         //ubeung instances seek
         estimatedLessonCountSeek.setMax(50);
-        estimatedLessonCountSeek.setProgress(scheduledNumberOfLessons);
+        estimatedLessonCountSeek.setProgress(estimatedLessonCountHint);
         estimatedLessonCountSeek.setOnSeekBarChangeListener(new SeekerListener(estimatedUebungCountHelp));
     }
 
     private AdmissionPercentageMeta save() {
         AdmissionPercentageMeta result = new AdmissionPercentageMeta(
-                mAdmissionCounterId,
+                mAdmissionPercentageId,
                 mSubjectId,
                 estimatedAssignmentsSeek.getProgress(),
                 estimatedLessonCountSeek.getProgress(),
@@ -197,12 +200,12 @@ public class PercentageFragment extends Fragment {
 
     public String getTitle() {
         String title;
-        if (mIsNewPercentageCounter) {
+        if (mIsNew) {
             if (mDb.getCount() == 0)
                 title = "Add your first percentage counter";//need a better name
             else
                 title = "Add a percentage counter";
-        } else//if old subject
+        } else//if previously existing percentage counter
             title = "Change" + " " + nameHint;
         return title;
     }

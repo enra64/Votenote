@@ -8,10 +8,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -19,23 +16,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.SeekBar;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import java.util.List;
-
-import de.oerntec.votenote.CardListHelpers.OnItemClickListener;
-import de.oerntec.votenote.CardListHelpers.RecyclerItemClickListener;
 import de.oerntec.votenote.Database.AdmissionCounter;
 import de.oerntec.votenote.Database.AdmissionPercentageMeta;
 import de.oerntec.votenote.Database.DBAdmissionCounters;
-import de.oerntec.votenote.Database.DBGroups;
 import de.oerntec.votenote.Database.DBSubjects;
 import de.oerntec.votenote.Database.DatabaseCreator;
 import de.oerntec.votenote.Database.Group;
 import de.oerntec.votenote.R;
-import de.oerntec.votenote.SubjectManagerStuff.SeekerListener;
 import de.oerntec.votenote.SubjectManagerStuff.SubjectManagementActivity;
 
 /**
@@ -66,12 +54,10 @@ public class SubjectCreationActivityFragment extends Fragment implements Subject
 
     private SQLiteDatabase mDatabase;
 
-    /*
-     * Views on the screen
+    /**
+     * Contains the subject name
      */
     private EditText nameInput;
-    private TextView voteInfo, presInfo, estimatedAssignmentsHelp, estimatedUebungCountHelp;
-    private SeekBar minVoteSeek, wantedPresentationPointsSeekbar, estimatedAssignmentsSeek, estimatedUebungCountSeek;
 
     /**
      * Counter list
@@ -89,10 +75,6 @@ public class SubjectCreationActivityFragment extends Fragment implements Subject
      * load default values into variables
      */
     private String nameHint;
-    private int presentationPointsHint = 0;
-    private int minimumVotePercentageHint = 50;
-    private int scheduledAssignmentsPerLesson = 5;
-    private int scheduledNumberOfLessons = 10;
 
     /**
      * Database id of current subject
@@ -183,18 +165,6 @@ public class SubjectCreationActivityFragment extends Fragment implements Subject
         View input = inflater.inflate(R.layout.subject_manager_fragment_subject_settings, container, false);
 
         nameInput = (EditText) input.findViewById(R.id.subject_manager_dialog_groupsettings_edit_name);
-
-        voteInfo = (TextView) input.findViewById(R.id.subject_manager_dialog_groupsettings_text_min_votierungs);
-        minVoteSeek = (SeekBar) input.findViewById(R.id.subject_manager_dialog_groupsettings_seek_min_votierungs);
-
-        presInfo = (TextView) input.findViewById(R.id.subject_manager_dialog_groupsettings_text_prespoints);
-        wantedPresentationPointsSeekbar = (SeekBar) input.findViewById(R.id.subject_manager_dialog_groupsettings_seek_prespoints);
-
-        estimatedAssignmentsHelp = (TextView) input.findViewById(R.id.subject_manager_dialog_groupsettings_text_assignments_per_uebung);
-        estimatedAssignmentsSeek = (SeekBar) input.findViewById(R.id.subject_manager_dialog_groupsettings_seek_assignments_per_uebung);
-
-        estimatedUebungCountHelp = (TextView) input.findViewById(R.id.subject_manager_dialog_groupsettings_text_estimated_uebung_count);
-        estimatedUebungCountSeek = (SeekBar) input.findViewById(R.id.subject_manager_dialog_groupsettings_seek_estimated_uebung_count);
 
         mAdmissionCounterList = (RecyclerView) input.findViewById(R.id.subject_manager_admission_counter_list);
 
@@ -318,129 +288,9 @@ public class SubjectCreationActivityFragment extends Fragment implements Subject
         return returnIntent;
     }
 
-    /**
-     * Either set default values to all views in the creator or set the previously loaded old values
-     */
-    private void setValuesForViews() {
-        /*
-        Name input
-         */
-        if (mIsNewSubject) {
-            //set an error if the view is empty
-            nameInput.setError(nameHint);
-            //delete said error if the view is no longer empty
-            nameInput.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                }
-
-                @Override
-                public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                    if (charSequence.length() == 0)
-                        nameInput.setError(nameHint);
-                }
-
-                @Override
-                public void afterTextChanged(Editable editable) {
-                }
-            });
-        } else
-            nameInput.setHint(nameHint);
-
-        /*
-            Admission counter list code
-         */
-        List<AdmissionCounter> admissionCounters = mAdmissionCounterDb.getAdmissionCounters(mSubjectId);
-        admissionCounters.add(ADD_ADMISSIONS_COUNTER_ITEM);
-
-        //config the recyclerview
-        mAdmissionCounterList.setHasFixedSize(true);
-
-        //give it a layoutmanager (whatever that is)
-        LinearLayoutManager manager = new LinearLayoutManager(getContext());
-        manager.setOrientation(LinearLayoutManager.VERTICAL);
-        mAdmissionCounterList.setLayoutManager(manager);
-
-        mAdapter = new AdmissionCounterAdapter(getContext(), mSubjectId);
-
-        mAdmissionCounterList.setAdapter(mAdapter);
-        mAdmissionCounterList.addOnItemTouchListener(new RecyclerItemClickListener(getContext(), mAdmissionCounterList, new OnItemClickListener() {
-            public void onItemClick(View view, int position) {
-                Dialogs.counterChangeDialog(mAdapter.getItemAtPosition(position), getActivity(), SubjectCreationActivityFragment.this);
-            }
-
-            public void onItemLongClick(final View view, int position) {
-                Dialogs.counterDeleteDialog(mAdapter.getItemAtPosition(position), getActivity(), SubjectCreationActivityFragment.this);
-            }
-        }));
-
-        //only set the old name as text if it is not "subject name", so the user can correct his value
-        if (mIsOldSubject)
-            nameInput.setText(nameHint);
-
-        //minpreshelp
-        presInfo.setText("" + presentationPointsHint);
-
-        //minpres seek
-        wantedPresentationPointsSeekbar.setProgress(presentationPointsHint);
-        wantedPresentationPointsSeekbar.setMax(30);
-        wantedPresentationPointsSeekbar.setOnSeekBarChangeListener(new SeekerListener(presInfo));
-
-        //minvotehelp
-        //initialize seekbar and seekbar info text
-        voteInfo.setText(minimumVotePercentageHint + "%");
-
-        //minvoteseek
-        minVoteSeek.setMax(100);
-        minVoteSeek.setProgress(minimumVotePercentageHint);
-        minVoteSeek.setOnSeekBarChangeListener(new SeekerListener(voteInfo, "%"));
-
-        //assignments per uebung help
-        estimatedAssignmentsHelp.setText(scheduledAssignmentsPerLesson + "");
-
-        //assignments per uebung seek
-        estimatedAssignmentsSeek.setMax(50);
-        estimatedAssignmentsSeek.setProgress(scheduledAssignmentsPerLesson);
-        estimatedAssignmentsSeek.setOnSeekBarChangeListener(new SeekerListener(estimatedAssignmentsHelp));
-
-        //uebung instances help
-        estimatedUebungCountHelp.setText(scheduledNumberOfLessons + "");
-
-        //ubeung instances seek
-        estimatedUebungCountSeek.setMax(50);
-        estimatedUebungCountSeek.setProgress(scheduledNumberOfLessons);
-        estimatedUebungCountSeek.setOnSeekBarChangeListener(new SeekerListener(estimatedUebungCountHelp));
-
-        String title;
-        if (mIsNewSubject) {
-            if (mSubjectDb.getNumberOfSubjects() == 0)
-                title = getString(R.string.subject_manage_add_title_first_subject);
-            else
-                title = getString(R.string.subject_manage_add_title_new_subject);
-        } else//if old subject
-            title = getString(R.string.subject_manage_add_title_change_subject) + " " + nameHint;
-
-        //try to set activity title
-        mActionBar.setTitle(title);
-    }
 
     public void onBackPressed() {
         showBackConfirmation();
-    }
-
-    /**
-     * Load default values or values from old subject data
-     */
-    private void loadOldSubjectValues() {
-        //try to get old subject data; returns null if no subject is found
-        mOldSubjectData = mSubjectDb.getSubject(mSubjectId);
-
-        //extract subject data
-        nameHint = mOldSubjectData.subjectName;
-        presentationPointsHint = Integer.parseInt(mOldSubjectData.subjectWantedPresentationPoints);
-        minimumVotePercentageHint = Integer.parseInt(mOldSubjectData.subjectMinimumVotePercentage);
-        scheduledAssignmentsPerLesson = Integer.parseInt(mOldSubjectData.subjectScheduledAssignmentsPerLesson);
-        scheduledNumberOfLessons = Integer.parseInt(mOldSubjectData.subjectScheduledLessonCount);
     }
 
     @Override
