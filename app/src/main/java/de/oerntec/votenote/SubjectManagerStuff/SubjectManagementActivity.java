@@ -41,7 +41,7 @@ import de.oerntec.votenote.CardListHelpers.OnItemClickListener;
 import de.oerntec.votenote.CardListHelpers.RecyclerItemClickListener;
 import de.oerntec.votenote.CardListHelpers.SwipeDeletion;
 import de.oerntec.votenote.Database.DBLessons;
-import de.oerntec.votenote.Database.Subject;
+import de.oerntec.votenote.Database.Group;
 import de.oerntec.votenote.ImportExport.XmlImporter;
 import de.oerntec.votenote.R;
 import de.oerntec.votenote.TranslationHelper;
@@ -86,7 +86,7 @@ public class SubjectManagementActivity extends AppCompatActivity implements Swip
     /**
      * save the deleted subject in showUndoBar to enable restoring it
      */
-    private Subject undoBarSubject;
+    private Group undoBarSubject;
 
     /**
      * save the id of the deleted subject in showUndoBar to enable restoring it

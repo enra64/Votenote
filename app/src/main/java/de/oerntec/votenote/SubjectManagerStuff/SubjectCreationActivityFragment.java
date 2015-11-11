@@ -10,6 +10,7 @@ import android.database.DataSetObserver;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -18,6 +19,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.Spinner;
@@ -28,19 +30,22 @@ import android.widget.Toast;
 import java.util.List;
 
 import de.oerntec.votenote.Database.AdmissionCounter;
+import de.oerntec.votenote.Database.AdmissionPercentageMeta;
 import de.oerntec.votenote.Database.DBAdmissionCounters;
 import de.oerntec.votenote.Database.DBSubjects;
-import de.oerntec.votenote.Database.Subject;
+import de.oerntec.votenote.Database.Group;
 import de.oerntec.votenote.R;
 
 /**
  * A placeholder fragment containing a simple view.
  */
-public class SubjectCreationActivityFragment extends Fragment {
+public class SubjectCreationActivityFragment extends Fragment implements SubjectCreationDialogInterface{
     /**
      * Lesson should be added, not changed
      */
     public static final int ADD_SUBJECT_CODE = -1;
+
+    public static final int ADD_ADMISSION_COUNTER_SIGNAL_ID = -2;
 
     private static AdmissionCounter ADD_ADMISSIONS_COUNTER_ITEM;
 
@@ -55,12 +60,12 @@ public class SubjectCreationActivityFragment extends Fragment {
     private final DBAdmissionCounters mAdmissionCounterDb = DBAdmissionCounters.getInstance();
 
     /*
-     * Views in the creation dialog
+     * Views on the screen
      */
     private EditText nameInput;
     private TextView voteInfo, presInfo, estimatedAssignmentsHelp, estimatedUebungCountHelp;
     private SeekBar minVoteSeek, wantedPresentationPointsSeekbar, estimatedAssignmentsSeek, estimatedUebungCountSeek;
-    private Spinner mAdmissionCounterSpinner;
+    private RecyclerView mAdmissionCounterList;
 
     /**
      * toolbar to avoid constantly getting it
@@ -95,12 +100,12 @@ public class SubjectCreationActivityFragment extends Fragment {
     /**
      * Old subject data
      */
-    private Subject mOldSubjectData = null;
+    private Group mOldSubjectData = null;
 
     /**
      * The subject data that is inserted into the fragment on start
      */
-    private Subject mInsertedSubjectData;
+    private Group mInsertedSubjectData;
 
     public SubjectCreationActivityFragment() {
     }
@@ -123,7 +128,7 @@ public class SubjectCreationActivityFragment extends Fragment {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         nameHint = getString(R.string.subject_add_hint);
-        ADD_ADMISSIONS_COUNTER_ITEM = new AdmissionCounter(-1, -1, "New Counter", -1, -1);
+        ADD_ADMISSIONS_COUNTER_ITEM = new AdmissionCounter(ADD_ADMISSION_COUNTER_SIGNAL_ID, -1, "New Counter", -1, -1);
         mActionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
     }
 
@@ -169,7 +174,7 @@ public class SubjectCreationActivityFragment extends Fragment {
         estimatedUebungCountHelp = (TextView) input.findViewById(R.id.subject_manager_dialog_groupsettings_text_estimated_uebung_count);
         estimatedUebungCountSeek = (SeekBar) input.findViewById(R.id.subject_manager_dialog_groupsettings_seek_estimated_uebung_count);
 
-        mAdmissionCounterSpinner = (Spinner) input.findViewById(R.id.subject_manager_counter_spinner);
+        mAdmissionCounterList = (RecyclerView) input.findViewById(R.id.subject_manager_admission_counter_list);
 
         return input;
     }
@@ -221,7 +226,7 @@ public class SubjectCreationActivityFragment extends Fragment {
      */
     private void showBackConfirmation() {
         //if the subject did not change, we dont need to show this dialog
-        Subject currentSubject = createSubjectFromInputFields();
+        Group currentSubject = createSubjectFromInputFields();
         boolean hasEmptyName = "".equals(currentSubject.subjectName);
         if (mInsertedSubjectData.equals(currentSubject)) {
             getActivity().finish();
@@ -261,8 +266,8 @@ public class SubjectCreationActivityFragment extends Fragment {
     /**
      * Read all input fields and create a subject from that
      */
-    private Subject createSubjectFromInputFields() {
-        return new Subject(String.valueOf(mSubjectId),
+    private Group createSubjectFromInputFields() {
+        return new Group(String.valueOf(mSubjectId),
                 String.valueOf(nameInput.getText().toString()),
                 String.valueOf(minVoteSeek.getProgress()),
                 "0",
@@ -276,7 +281,7 @@ public class SubjectCreationActivityFragment extends Fragment {
      */
     private void saveData() {
         //create a new subject containing all known values
-        Subject newSubject = createSubjectFromInputFields();
+        Group newSubject = createSubjectFromInputFields();
         //the currently saved data has changed
         mInsertedSubjectData = newSubject;
         //flag whether save was somehow aborted
@@ -347,12 +352,28 @@ public class SubjectCreationActivityFragment extends Fragment {
             nameInput.setHint(nameHint);
 
         /*
-            Admission counter code
+            Admission counter list code
          */
         List<AdmissionCounter> admissionCounters = mAdmissionCounterDb.getAdmissionCounters(mSubjectId);
         admissionCounters.add(ADD_ADMISSIONS_COUNTER_ITEM);
-        AdmissionCounterAdapter<AdmissionCounter> adapter = new AdmissionCounterAdapter<>(getActivity(), admissionCounters);
+        final AdmissionCounterAdapter<AdmissionCounter> adapter = new AdmissionCounterAdapter<>(getActivity(), admissionCounters);
         mAdmissionCounterSpinner.setAdapter(adapter);
+
+        //add onclick
+        mAdmissionCounterSpinner.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                //get counter id
+                int counterId = (int) view.getTag();
+
+                //the "add item" item was clicked
+                if(counterId == ADD_ADMISSION_COUNTER_SIGNAL_ID)
+                    CounterDialog.openCounterDialog(ADD_ADMISSIONS_COUNTER_ITEM.clone(), getActivity(), SubjectCreationActivityFragment.this);
+                //another item was clicked, so load that
+                else
+                    CounterDialog.openCounterDialog(adapter.getItem(position), getActivity(), SubjectCreationActivityFragment.this);
+            }
+        });
 
         //only set the old name as text if it is not "subject name", so the user can correct his value
         if (mIsOldSubject)
@@ -423,6 +444,16 @@ public class SubjectCreationActivityFragment extends Fragment {
         scheduledNumberOfLessons = Integer.parseInt(mOldSubjectData.subjectScheduledLessonCount);
     }
 
+    @Override
+    public void admissionCounterFinished(AdmissionCounter result) {
+        mAdmissionCounterSpinner.getAdapter()
+    }
+
+    @Override
+    public void admissionPercentageFinished(AdmissionPercentageMeta result) {
+
+    }
+
     private class AdmissionCounterAdapter<T> implements SpinnerAdapter {
         private List<T> mObjects;
         private Context mContext;
@@ -440,6 +471,10 @@ public class SubjectCreationActivityFragment extends Fragment {
         @Override
         public void unregisterDataSetObserver(DataSetObserver observer) {
 
+        }
+
+        public void add(T val){
+            mObjects.add(val);
         }
 
         @Override
@@ -472,8 +507,14 @@ public class SubjectCreationActivityFragment extends Fragment {
                 LayoutInflater inflater = ((Activity) mContext).getLayoutInflater();
                 view = inflater.inflate(android.R.layout.simple_spinner_item, parent, false);
             }
+            AdmissionCounter item = (AdmissionCounter) getItem(position);
+
+            //set tag on view
+            view.setTag(item.id);
+
+            //set text
             TextView text = (TextView) view.findViewById(android.R.id.text1);
-            text.setText(((AdmissionCounter) getItem(position)).counterName);
+            text.setText(item.counterName);
             return view;
         }
 

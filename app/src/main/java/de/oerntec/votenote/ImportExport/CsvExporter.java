@@ -26,7 +26,7 @@ import java.util.List;
 
 import de.oerntec.votenote.Database.DBLessons;
 import de.oerntec.votenote.Database.DBSubjects;
-import de.oerntec.votenote.Database.Subject;
+import de.oerntec.votenote.Database.Group;
 import de.oerntec.votenote.R;
 
 public class CsvExporter {
@@ -57,9 +57,9 @@ public class CsvExporter {
         s.append("sep=;");
         s.append("\r\n");
 
-        List<Subject> subjectList = groupsDB.getAllSubjects();
+        List<Group> subjectList = groupsDB.getAllSubjects();
 
-        for (Subject subject : subjectList) {
+        for (Group subject : subjectList) {
             String groupName = subject.subjectName;
             s.append(groupName);
             s.append(": ");

@@ -17,44 +17,42 @@
 * */
 package de.oerntec.votenote.Database;
 
-public class Subject {
-    public String id,
-            subjectName,
-            subjectMinimumVotePercentage,
-            subjectCurrentPresentationPoints,
-            subjectScheduledLessonCount,
-            subjectScheduledAssignmentsPerLesson,
-            subjectWantedPresentationPoints;
+import java.util.List;
 
-    public Subject(String id, String subjectName, String subjectMinimumVotePercentage, String subjectCurrentPresentationPoints,
-                   String subjectScheduledLessonCount, String subjectScheduledAssignmentsPerLesson, String subjectWantedPresentationPoints) {
+public class Subject {
+    public String name;
+    public int id;
+    public List<AdmissionCounter> admissionCounterList = null;
+    public List<AdmissionPercentageData> admissionPercentageDataList = null;
+    public List<AdmissionPercentageMeta> admissionPercentageMetaList = null;
+
+
+    public Subject(String name, int id) {
+        this.name = name;
         this.id = id;
-        this.subjectName = subjectName;
-        this.subjectMinimumVotePercentage = subjectMinimumVotePercentage;
-        this.subjectCurrentPresentationPoints = subjectCurrentPresentationPoints;
-        this.subjectScheduledLessonCount = subjectScheduledLessonCount;
-        this.subjectScheduledAssignmentsPerLesson = subjectScheduledAssignmentsPerLesson;
-        this.subjectWantedPresentationPoints = subjectWantedPresentationPoints;
+    }
+
+    public Subject(String name, int id, List<AdmissionCounter> admissionCounterList, List<AdmissionPercentageData> admissionPercentageDataList, List<AdmissionPercentageMeta> admissionPercentageMetaList) {
+        this.name = name;
+        this.id = id;
+        this.admissionCounterList = admissionCounterList;
+        this.admissionPercentageDataList = admissionPercentageDataList;
+        this.admissionPercentageMetaList = admissionPercentageMetaList;
     }
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof Subject))
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Subject subject = (Subject) o;
+
+        if (id != subject.id) return false;
+        if (name != null ? !name.equals(subject.name) : subject.name != null) return false;
+        if (admissionCounterList != null ? !admissionCounterList.equals(subject.admissionCounterList) : subject.admissionCounterList != null)
             return false;
-        Subject s = (Subject) o;
-        if (!id.equals(s.id))
+        if (admissionPercentageDataList != null ? !admissionPercentageDataList.equals(subject.admissionPercentageDataList) : subject.admissionPercentageDataList != null)
             return false;
-        if (!subjectName.equals(s.subjectName))
-            return false;
-        if (!subjectMinimumVotePercentage.equals(s.subjectMinimumVotePercentage))
-            return false;
-        if (!subjectCurrentPresentationPoints.equals(s.subjectCurrentPresentationPoints))
-            return false;
-        if (!subjectScheduledLessonCount.equals(s.subjectScheduledLessonCount))
-            return false;
-        //noinspection SimplifiableIfStatement
-        if (!subjectScheduledAssignmentsPerLesson.equals(s.subjectScheduledAssignmentsPerLesson))
-            return false;
-        return subjectWantedPresentationPoints.equals(s.subjectWantedPresentationPoints);
+        return !(admissionPercentageMetaList != null ? !admissionPercentageMetaList.equals(subject.admissionPercentageMetaList) : subject.admissionPercentageMetaList != null);
     }
 }

@@ -1,8 +1,5 @@
 package de.oerntec.votenote.Database;
 
-/**
- * Created by Arne on 23-Oct-15.
- */
 public class AdmissionPercentageData {
     int id, subjectId, lessonId, finishedAssignments, availableAssignments;
 
@@ -12,5 +9,20 @@ public class AdmissionPercentageData {
         this.lessonId = lessonId;
         this.finishedAssignments = finishedAssignments;
         this.availableAssignments = availableAssignments;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        AdmissionPercentageData that = (AdmissionPercentageData) o;
+
+        if (id != that.id) return false;
+        if (subjectId != that.subjectId) return false;
+        if (lessonId != that.lessonId) return false;
+        if (finishedAssignments != that.finishedAssignments) return false;
+        return availableAssignments == that.availableAssignments;
+
     }
 }

@@ -223,10 +223,18 @@
 
     <Spinner
         android:id="@+id/subject_manager_counter_spinner"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/subject_manager_dialog_groupsettings_est_ueb_count"
         android:layout_alignStart="@+id/subject_manager_dialog_groupsettings_est_ueb_count"
         android:layout_below="@+id/subject_manager_sublayout_exercise_count" />
+
+    <RecyclerView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/subject_manager_admission_counter_list"
+        android:layout_below="@+id/subject_manager_counter_spinner"
+        android:layout_alignLeft="@+id/subject_manager_counter_spinner"
+        android:layout_alignStart="@+id/subject_manager_counter_spinner" />
 
 </RelativeLayout>

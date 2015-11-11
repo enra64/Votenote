@@ -27,7 +27,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import de.oerntec.votenote.Database.DBSubjects;
-import de.oerntec.votenote.Database.Subject;
+import de.oerntec.votenote.Database.Group;
 import de.oerntec.votenote.MainActivity;
 import de.oerntec.votenote.R;
 
@@ -43,7 +43,7 @@ public class SubjectAdapter extends RecyclerView.Adapter<SubjectAdapter.SubjectH
         requery();
     }
 
-    public int addSubject(Subject subject, int position) {
+    public int addSubject(Group subject, int position) {
         //add to database
         int result = mSubjectDb.addGroup(subject);
         requery();
@@ -69,8 +69,8 @@ public class SubjectAdapter extends RecyclerView.Adapter<SubjectAdapter.SubjectH
      * @param recyclerViewPosition position in recyclerview
      * @return subject backup
      */
-    public Subject removeSubject(int subjectId, int recyclerViewPosition) {
-        Subject bkp = mSubjectDb.getSubject(subjectId);
+    public Group removeSubject(int subjectId, int recyclerViewPosition) {
+        Group bkp = mSubjectDb.getSubject(subjectId);
         if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
             Log.i("subject adapter", "attempting to remove " + subjectId + " " + bkp.subjectName);
 
