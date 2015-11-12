@@ -3,7 +3,7 @@ package de.oerntec.votenote.Database;
 /**
  * POJO class for representing the metadata available about an admission percentage counter
  */
-public class AdmissionPercentageMeta {
+public class AdmissionPercentageMeta implements NameAndIdPojo {
     public int id, subjectId, estimatedAssignmentsPerLesson, estimatedLessonCount, targetPercentage;
     public String name;
 
@@ -30,5 +30,15 @@ public class AdmissionPercentageMeta {
         if (targetPercentage != that.targetPercentage) return false;
         return !(name != null ? !name.equals(that.name) : that.name != null);
 
+    }
+
+    @Override
+    public String getDisplayName() {
+        return name + " - " + targetPercentage + "%";
+    }
+
+    @Override
+    public int getId() {
+        return id;
     }
 }

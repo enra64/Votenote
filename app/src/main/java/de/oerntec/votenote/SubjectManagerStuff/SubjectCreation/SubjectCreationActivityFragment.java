@@ -6,8 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -17,12 +16,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
+import de.oerntec.votenote.CardListHelpers.OnItemClickListener;
+import de.oerntec.votenote.CardListHelpers.RecyclerItemClickListener;
 import de.oerntec.votenote.Database.AdmissionCounter;
 import de.oerntec.votenote.Database.AdmissionPercentageMeta;
 import de.oerntec.votenote.Database.DBAdmissionCounters;
+import de.oerntec.votenote.Database.DBAdmissionPercentageMeta;
 import de.oerntec.votenote.Database.DBSubjects;
 import de.oerntec.votenote.Database.DatabaseCreator;
-import de.oerntec.votenote.Database.Group;
+import de.oerntec.votenote.Database.NameAndIdPojo;
+import de.oerntec.votenote.Database.PojoDatabase;
+import de.oerntec.votenote.Database.Subject;
+import de.oerntec.votenote.Helpers.NotEmptyWatcher;
 import de.oerntec.votenote.R;
 import de.oerntec.votenote.SubjectManagerStuff.SubjectManagementActivity;
 
@@ -35,12 +40,10 @@ public class SubjectCreationActivityFragment extends Fragment implements Subject
      */
     public static final int ADD_SUBJECT_CODE = -1;
 
-    public static final int ADD_ADMISSION_COUNTER_SIGNAL_ID = -2;
-
     /**
-     * Admission counter that is displayed to have a "button" for adding counters
+     * ID used for adding percentage or counter
      */
-    private static AdmissionCounter ADD_ADMISSIONS_COUNTER_ITEM;
+    public static final int ID_ADD_ITEM = -2;
 
     /**
      * DB for the subjects
@@ -48,10 +51,8 @@ public class SubjectCreationActivityFragment extends Fragment implements Subject
     private final DBSubjects mSubjectDb = DBSubjects.getInstance();
 
     /**
-     * Database containing entries concerning admission counters
+     * Need direct database access to start/end transaction
      */
-    private final DBAdmissionCounters mAdmissionCounterDb = DBAdmissionCounters.getInstance();
-
     private SQLiteDatabase mDatabase;
 
     /**
@@ -64,17 +65,15 @@ public class SubjectCreationActivityFragment extends Fragment implements Subject
      */
     private RecyclerView mAdmissionCounterList;
 
-    private AdmissionCounterAdapter mAdapter;
+    /**
+     * Admission percentage list
+     */
+    private RecyclerView mAdmissionPercentageList;
 
     /**
-     * toolbar to avoid constantly getting it
+     * adapters for Admission counters, admission percentage counters
      */
-    private ActionBar mActionBar;
-
-    /*
-     * load default values into variables
-     */
-    private String nameHint;
+    private SubjectCreatorAdapter mCounterAdapter = null, mPercentageAdapter = null;
 
     /**
      * Database id of current subject
@@ -93,14 +92,9 @@ public class SubjectCreationActivityFragment extends Fragment implements Subject
     private boolean mIsOldSubject, mIsNewSubject;
 
     /**
-     * Old subject data
+     * Set this to true if the subject was changed in any way, so we can prompt the user for save/abort
      */
-    private Group mOldSubjectData = null;
-
-    /**
-     * The subject data that is inserted into the fragment on start
-     */
-    private Group mInsertedSubjectData;
+    private boolean mSubjectHasBeenChanged = false;
 
     public SubjectCreationActivityFragment() {
     }
@@ -119,11 +113,8 @@ public class SubjectCreationActivityFragment extends Fragment implements Subject
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //get subject hint default
-        nameHint = getString(R.string.subject_add_hint);
 
-        //get an actionbar
-        mActionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        //ActionBar mActionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();//does this even do anything?
 
         //get arguments from intent
         mSubjectId = getArguments().getInt(SubjectCreationActivity.SUBJECT_CREATOR_SUBJECT_ID_ARGUMENT_NAME, -1);
@@ -144,9 +135,6 @@ public class SubjectCreationActivityFragment extends Fragment implements Subject
         if(mIsNewSubject)
             mSubjectId = mSubjectDb.addSubject("If you see this, i fucked up.");
 
-        //create a counter item used as an "add"-button
-        ADD_ADMISSIONS_COUNTER_ITEM = new AdmissionCounter(ADD_ADMISSION_COUNTER_SIGNAL_ID, mSubjectId, "New Counter", 0, 3);
-
         setHasOptionsMenu(true);
     }
 
@@ -162,22 +150,65 @@ public class SubjectCreationActivityFragment extends Fragment implements Subject
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        //inflate view, extract views
         View input = inflater.inflate(R.layout.subject_manager_fragment_subject_settings, container, false);
-
         nameInput = (EditText) input.findViewById(R.id.subject_manager_dialog_groupsettings_edit_name);
-
         mAdmissionCounterList = (RecyclerView) input.findViewById(R.id.subject_manager_admission_counter_list);
-
+        mAdmissionPercentageList = (RecyclerView) input.findViewById(R.id.subject_manager_admission_percentage_counter_list);
         return input;
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        if (mIsOldSubject)
-            loadOldSubjectValues();
 
-        setValuesForViews();
+        nameInput.addTextChangedListener(new NotEmptyWatcher(nameInput));
+
+        if (mIsOldSubject) {
+            Subject oldData = mSubjectDb.getItem(mSubjectId);
+            nameInput.setText(oldData.name);
+        }
+
+        initializeList(mAdmissionCounterList, DBAdmissionCounters.getInstance(), mCounterAdapter, new AdmissionCounter(-1, -1, "", -1, -1));
+        initializeList(mAdmissionPercentageList, DBAdmissionPercentageMeta.getInstance(), mPercentageAdapter, new AdmissionPercentageMeta(-1, -1, -1, -1, -1, ""));
+    }
+
+    private void initializeList(RecyclerView subject, PojoDatabase database, SubjectCreatorAdapter adapterReference, final NameAndIdPojo identificator) {
+        //config the recyclerview
+        subject.setHasFixedSize(true);
+
+        //give it a layoutmanager (whatever that is)
+        LinearLayoutManager manager = new LinearLayoutManager(getContext());
+        manager.setOrientation(LinearLayoutManager.VERTICAL);
+        subject.setLayoutManager(manager);
+
+        adapterReference = new SubjectCreatorAdapter<>(database, mSubjectId);
+
+        subject.setAdapter(adapterReference);
+        subject.addOnItemTouchListener(new RecyclerItemClickListener(getContext(), subject, new OnItemClickListener() {
+            public void onItemClick(View view, int position) {
+                if ((int) view.getTag() != ID_ADD_ITEM) {
+                    if (identificator instanceof AdmissionCounter)
+                        Dialogs.showCounterDialog(getFragmentManager(), mSubjectId, (int) view.getTag(), false);
+                    else
+                        Dialogs.showPercentageDialog(getFragmentManager(), mSubjectId, (int) view.getTag(), false);
+                } else {
+                    if (identificator instanceof AdmissionCounter)
+                        Dialogs.showCounterDialog(getFragmentManager(), mSubjectId, ID_ADD_ITEM, true);
+                    else
+                        Dialogs.showPercentageDialog(getFragmentManager(), mSubjectId, ID_ADD_ITEM, true);
+                }
+            }
+
+            public void onItemLongClick(final View view, int position) {
+                if ((int) view.getTag() != ID_ADD_ITEM) {
+                    if (identificator instanceof AdmissionCounter)
+                        Dialogs.showCounterDeleteDialog((AdmissionCounter) mCounterAdapter.getItemAtPosition(position), getActivity(), SubjectCreationActivityFragment.this);
+                    else
+                        Dialogs.showPercentageDeleteDialog((AdmissionPercentageMeta) mPercentageAdapter.getItemAtPosition(position), getActivity(), SubjectCreationActivityFragment.this);
+                }
+            }
+        }));
     }
 
     @Override
@@ -216,16 +247,15 @@ public class SubjectCreationActivityFragment extends Fragment implements Subject
      */
     private void showBackConfirmation() {
         //if the subject did not change, we dont need to show this dialog
-        Group currentSubject = createSubjectFromInputFields();
-        boolean hasEmptyName = "".equals(currentSubject.subjectName);
-        if (mInsertedSubjectData.equals(currentSubject)) {
+        boolean hasEmptyName = "".equals(nameInput.toString());
+        if (!mSubjectHasBeenChanged) {
             getActivity().finish();
             return;
         }
         //create dialog
         AlertDialog.Builder b = new AlertDialog.Builder(getActivity());
         b.setTitle("Speichern?");
-        b.setMessage("Möchtest du die Übung speichern?");
+        b.setMessage("Möchtest du deine Änderungen speichern?");
 
         //create buttons
         b.setPositiveButton("Speichern", new DialogInterface.OnClickListener() {
@@ -255,22 +285,10 @@ public class SubjectCreationActivityFragment extends Fragment implements Subject
     }
 
     /**
-     * Read all input fields and create a subject from that
-     */
-    private Group createSubjectFromInputFields() {
-        return new Group(String.valueOf(mSubjectId),
-                String.valueOf(nameInput.getText().toString()),
-                String.valueOf(minVoteSeek.getProgress()),
-                "0",
-                String.valueOf(estimatedUebungCountSeek.getProgress()),
-                String.valueOf(estimatedAssignmentsSeek.getProgress()),
-                String.valueOf(wantedPresentationPointsSeekbar.getProgress()));
-    }
-
-    /**
      * Write the new data out to db
      */
     private void saveData() {
+        mSubjectDb.changeItem(new Subject(nameInput.getText().toString(), mSubjectId));
         mDatabase.setTransactionSuccessful();
         mDatabase.endTransaction();
     }
@@ -294,19 +312,26 @@ public class SubjectCreationActivityFragment extends Fragment implements Subject
     }
 
     @Override
-    public void admissionCounterFinished(AdmissionCounter result, boolean isNew) {
-        if(isNew){
-            mAdapter.addItem(result);
-        }
+    public void admissionCounterFinished(int id, boolean isNew) {
+        mSubjectHasBeenChanged = true;
+        mCounterAdapter.notifyOfChangeAtId(id);
     }
 
     @Override
-    public void admissionCounterDelete(AdmissionCounter delete) {
-
+    public void deleteAdmissionCounter(AdmissionCounter delete) {
+        mSubjectHasBeenChanged = true;
+        mCounterAdapter.removeItem(delete.id);
     }
 
     @Override
-    public void admissionPercentageFinished(AdmissionPercentageMeta result, boolean isNew) {
+    public void admissionPercentageFinished(int id, boolean isNew) {
+        mSubjectHasBeenChanged = true;
+        mPercentageAdapter.notifyOfChangeAtId(id);
+    }
 
+    @Override
+    public void deleteAdmissionPercentage(AdmissionPercentageMeta delete) {
+        mSubjectHasBeenChanged = true;
+        mPercentageAdapter.removeItem(delete.id);
     }
 }

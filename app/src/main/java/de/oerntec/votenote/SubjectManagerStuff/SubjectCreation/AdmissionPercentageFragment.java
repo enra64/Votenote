@@ -1,22 +1,24 @@
 package de.oerntec.votenote.SubjectManagerStuff.SubjectCreation;
 
-import android.app.Fragment;
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
+import android.content.DialogInterface;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
 import de.oerntec.votenote.Database.AdmissionPercentageMeta;
 import de.oerntec.votenote.Database.DBAdmissionPercentageMeta;
+import de.oerntec.votenote.Helpers.NotEmptyWatcher;
 import de.oerntec.votenote.R;
 import de.oerntec.votenote.SubjectManagerStuff.SeekerListener;
 
-public class AdmissionPercentageFragment extends Fragment {
+public class AdmissionPercentageFragment extends DialogFragment {
     private static final String SUBJECT_ID = "subject_id";
     private static final String ADMISSION_PERCENTAGE_ID = "ap_id";
     private static final String SUBJECT_IS_NEW = "subject_is_new";
@@ -29,6 +31,11 @@ public class AdmissionPercentageFragment extends Fragment {
     private EditText nameInput;
     private TextView requiredPercentageInfo, estimatedAssignmentsHelp, estimatedUebungCountHelp;
     private SeekBar requiredPercentageSeek, estimatedAssignmentsSeek, estimatedLessonCountSeek;
+
+    /**
+     * use this interface to notify the underlying fragment of an added item
+     */
+    private SubjectCreationDialogInterface mCallback;
 
     /*
     * load default values into these variables
@@ -57,6 +64,11 @@ public class AdmissionPercentageFragment extends Fragment {
     }
 
     @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
@@ -77,22 +89,61 @@ public class AdmissionPercentageFragment extends Fragment {
             throw new AssertionError("why are there no arguments here?");
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    private View createView(LayoutInflater inflater) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.subject_manager_fragment_percentage_creator_fragment, container, false);
+        View view = inflater.inflate(R.layout.subject_manager_fragment_percentage_creator_fragment, null, false);
 
         nameInput = (EditText) view.findViewById(R.id.subject_manager_dialog_groupsettings_edit_name);
 
-        requiredPercentageInfo = (TextView) view.findViewById(R.id.subject_manager_dialog_groupsettings_text_min_votierungs);
-        requiredPercentageSeek = (SeekBar) view.findViewById(R.id.subject_manager_dialog_groupsettings_seek_min_votierungs);
+        requiredPercentageInfo = (TextView) view.findViewById(R.id.subject_manager_dialog_groupsettings_required_percentage_current_value);
+        requiredPercentageSeek = (SeekBar) view.findViewById(R.id.subject_manager_dialog_groupsettings_required_percentage_seekbar);
 
-        estimatedAssignmentsHelp = (TextView) view.findViewById(R.id.subject_manager_dialog_groupsettings_text_assignments_per_uebung);
-        estimatedAssignmentsSeek = (SeekBar) view.findViewById(R.id.subject_manager_dialog_groupsettings_seek_assignments_per_uebung);
+        estimatedAssignmentsHelp = (TextView) view.findViewById(R.id.subject_manager_dialog_groupsettings_estimated_assignments_per_lesson_current_value);
+        estimatedAssignmentsSeek = (SeekBar) view.findViewById(R.id.subject_manager_dialog_groupsettings_estimated_assignments_per_lesson_seekbar);
 
-        estimatedUebungCountHelp = (TextView) view.findViewById(R.id.subject_manager_dialog_groupsettings_text_estimated_uebung_count);
-        estimatedLessonCountSeek = (SeekBar) view.findViewById(R.id.subject_manager_dialog_groupsettings_seek_estimated_uebung_count);
+        estimatedUebungCountHelp = (TextView) view.findViewById(R.id.subject_manager_dialog_groupsettings_estimated_lesson_count_current_value);
+        estimatedLessonCountSeek = (SeekBar) view.findViewById(R.id.subject_manager_dialog_groupsettings_estimated_lesson_count_seekbar);
         return view;
+    }
+
+    /**
+     * called after onCreate, before onCreateView
+     */
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        AlertDialog.Builder b = new AlertDialog.Builder(getActivity())
+                .setView(createView(getActivity().getLayoutInflater()))
+                .setTitle(getTitle())
+                .setPositiveButton("OK",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                //change the item we created at the beginning of this dialog to the actual values
+                                mDb.changeItem(new AdmissionPercentageMeta(
+                                        mAdmissionPercentageId,
+                                        mSubjectId,
+                                        estimatedAssignmentsSeek.getProgress(),
+                                        estimatedLessonCountSeek.getProgress(),
+                                        requiredPercentageSeek.getProgress(),
+                                        nameInput.getText().toString()));
+                                //commit
+                                mDb.releaseSavePoint(mSavepointId);
+                                //notify the host fragment that we changed an item
+                                SubjectCreationActivity host = (SubjectCreationActivity) getActivity();
+                                host.callCreatorFragmentForItemChange(mAdmissionPercentageId, true, mIsNew);
+                                //bail
+                                dialog.dismiss();
+                            }
+                        }
+                )
+                .setNegativeButton("Cancel",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                mDb.rollbackToSavepoint(mSavepointId);
+                                dialog.dismiss();
+                            }
+                        }
+                );
+        return b.create();
     }
 
     @Override
@@ -125,80 +176,32 @@ public class AdmissionPercentageFragment extends Fragment {
      * Either set default values to all views in the creator or set the previously loaded old values
      */
     private void setValuesForViews() {
-        /*
-        Name input
-         */
-        if (mIsNew) {
-            //set an error if the view is empty
-            nameInput.setError(nameHint);
-            //delete said error if the view is no longer empty
-            nameInput.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                }
-
-                @Override
-                public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                    if (charSequence.length() == 0)
-                        nameInput.setError(nameHint);
-                }
-
-                @Override
-                public void afterTextChanged(Editable editable) {
-                }
-            });
-        } else
-            nameInput.setHint(nameHint);
-
+        //display an error if the edittext is empty
+        nameInput.addTextChangedListener(new NotEmptyWatcher(nameInput));
 
         //only set the old name as text if it is not "subject name", so the user can correct his value
         if (mIsOldPercentageCounter)
             nameInput.setText(nameHint);
 
-        //minvotehelp
-        //initialize seekbar and seekbar info text
-        requiredPercentageInfo.setText(requiredPercentageHint + "%");
+        initSeekbar(requiredPercentageSeek, requiredPercentageInfo, requiredPercentageHint, 100);
 
-        //minvoteseek
-        requiredPercentageSeek.setMax(100);
-        requiredPercentageSeek.setProgress(requiredPercentageHint);
-        requiredPercentageSeek.setOnSeekBarChangeListener(new SeekerListener(requiredPercentageInfo, "%"));
+        initSeekbar(estimatedAssignmentsSeek, estimatedAssignmentsHelp, estimatedAssignmentsHint, 50);
 
-        //assignments per uebung help
-        estimatedAssignmentsHelp.setText(estimatedAssignmentsHint + "");
-
-        //assignments per uebung seek
-        estimatedAssignmentsSeek.setMax(50);
-        estimatedAssignmentsSeek.setProgress(estimatedAssignmentsHint);
-        estimatedAssignmentsSeek.setOnSeekBarChangeListener(new SeekerListener(estimatedAssignmentsHelp));
-
-        //uebung instances help
-        estimatedUebungCountHelp.setText(estimatedLessonCountHint + "");
-
-        //ubeung instances seek
-        estimatedLessonCountSeek.setMax(50);
-        estimatedLessonCountSeek.setProgress(estimatedLessonCountHint);
-        estimatedLessonCountSeek.setOnSeekBarChangeListener(new SeekerListener(estimatedUebungCountHelp));
+        initSeekbar(estimatedLessonCountSeek, estimatedUebungCountHelp, estimatedLessonCountHint, 50);
     }
 
-    private AdmissionPercentageMeta save() {
-        AdmissionPercentageMeta result = new AdmissionPercentageMeta(
-                mAdmissionPercentageId,
-                mSubjectId,
-                estimatedAssignmentsSeek.getProgress(),
-                estimatedLessonCountSeek.getProgress(),
-                requiredPercentageSeek.getProgress(),
-                nameInput.getText().toString()
-        );
-        mDb.changeItem(result);
-        return result;
+    private void initSeekbar(SeekBar item, TextView currentValueView, int hint, int max) {
+        //set the textview that displays the current value
+        currentValueView.setText(String.valueOf(hint));
+        //configure the seekbar maximum
+        item.setMax(max);
+        //set seekbar progress
+        item.setProgress(hint);
+        //set listener to update current value view
+        item.setOnSeekBarChangeListener(new SeekerListener(currentValueView));
     }
 
-    public void abort() {
-        mDb.rollbackToSavepoint(mSavepointId);
-    }
-
-    public String getTitle() {
+    private String getTitle() {
         String title;
         if (mIsNew) {
             if (mDb.getCount() == 0)

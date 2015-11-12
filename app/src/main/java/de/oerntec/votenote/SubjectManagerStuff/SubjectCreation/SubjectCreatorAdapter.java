@@ -17,7 +17,6 @@
 * */
 package de.oerntec.votenote.SubjectManagerStuff.SubjectCreation;
 
-import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -27,25 +26,22 @@ import android.widget.TextView;
 
 import java.util.List;
 
-import de.oerntec.votenote.Database.AdmissionCounter;
-import de.oerntec.votenote.Database.DBAdmissionCounters;
+import de.oerntec.votenote.Database.NameAndIdPojo;
+import de.oerntec.votenote.Database.PojoDatabase;
 import de.oerntec.votenote.MainActivity;
 
-public class AdmissionCounterAdapter extends RecyclerView.Adapter<AdmissionCounterAdapter.AdmissionCounterHolder> {
-    private Context mContext;
-    private DBAdmissionCounters mDb;
-    private List<AdmissionCounter> mData;
+public class SubjectCreatorAdapter<T extends NameAndIdPojo> extends RecyclerView.Adapter<SubjectCreatorAdapter.NameViewHolder> {
+    private PojoDatabase<T> mDb;
+    private List<T> mData;
     private int mSubjectId;
 
-
-    public AdmissionCounterAdapter(Context context, int subjectId) {
-        mContext = context;
+    public SubjectCreatorAdapter(PojoDatabase<T> db, int subjectId) {
         mSubjectId = subjectId;
-        mDb = DBAdmissionCounters.getInstance();
+        mDb = db;
         requery();
     }
 
-    public AdmissionCounter getItemAtPosition(int position){
+    public T getItemAtPosition(int position) {
         return mData.get(position);
     }
 
@@ -54,36 +50,40 @@ public class AdmissionCounterAdapter extends RecyclerView.Adapter<AdmissionCount
      * @param item
      * @return True if the item has been successfully inserted
      */
-    public boolean addItem(AdmissionCounter item) {
+    public boolean addItem(T item) {
         //add to database
-        boolean success = mDb.addItem(item);
+        int check = mDb.addItem(item);
         requery();
         //the counters are ordered by their id ascending, so the latest counter should be the lowest
-        if (success)
+        if (check >= 0)
             notifyItemInserted(mData.size() - 1);
-        return success;
+        return check >= 0;
     }
 
     /**
      * requery
      * notify of single changed item
      */
-    public void notifyOfChangedPosition(int recyclerViewPosition) {
+    public void notifyOfChangeAtId(int id) {
         requery();
-        notifyItemChanged(recyclerViewPosition);
+        notifyItemChanged(convertIdToPosition(id));
     }
 
     /**
      * save admission counter, delete, return backup
      *
      * @param admissionCounterId            id in db
-     * @param recyclerViewPosition position in recyclerview
      * @return admission counter backup
      */
-    public AdmissionCounter removeCounter(int admissionCounterId, int recyclerViewPosition) {
-        AdmissionCounter bkp = mDb.getItem(admissionCounterId);
+    public T removeItem(int admissionCounterId) {
+        T bkp = mDb.getItem(admissionCounterId);
+        if (bkp == null)
+            throw new AssertionError("could not find item i am supposed to delete");
+
+        int recyclerViewPosition = convertIdToPosition(admissionCounterId);
+
         if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
-            Log.i("subject adapter", "attempting to remove counter: " + bkp.counterName);
+            Log.i("subject adapter", "attempting to remove counter: " + bkp.getDisplayName());
 
         notifyItemRemoved(recyclerViewPosition);
         notifyItemRangeChanged(recyclerViewPosition, getItemCount() - 1);
@@ -92,18 +92,28 @@ public class AdmissionCounterAdapter extends RecyclerView.Adapter<AdmissionCount
         return bkp;
     }
 
+    /**
+     * goes through the datalist, returns the position our id can be found at
+     */
+    private int convertIdToPosition(int id) {
+        for (int pos = 0; pos < mData.size(); pos++)
+            if (mData.get(pos).getId() == id)
+                return pos;
+        throw new AssertionError("could not find that id in mData - someone fucked up");
+    }
+
     private void requery() {
         mData = null;
-        mData = mDb.getItemsForSubject(mSubjectId);
+        mData = mDb.getItemsForSubject(mSubjectId);//add, get, delete, getForSubject
     }
 
     @Override
-    public AdmissionCounterHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public NameViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         //inflate layout
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         View root = inflater.inflate(android.R.layout.simple_list_item_1, parent, false);
         //create holder for the views
-        AdmissionCounterHolder holder = new AdmissionCounterHolder(root);
+        NameViewHolder holder = new NameViewHolder(root);
         //set view ids
         holder.name = (TextView) root.findViewById(android.R.id.text1);
         //return the created holder
@@ -111,17 +121,17 @@ public class AdmissionCounterAdapter extends RecyclerView.Adapter<AdmissionCount
     }
 
     @Override
-    public void onBindViewHolder(AdmissionCounterHolder holder, int position) {
-        AdmissionCounter data = mData.get(position);
+    public void onBindViewHolder(NameViewHolder holder, int position) {
+        T data = mData.get(position);
 
         //set view visible to avoid using invisible views
         holder.itemView.setVisibility(View.VISIBLE);
 
         //set tag for later identification avoiding all confusion
-        holder.itemView.setTag(data.id);
+        holder.itemView.setTag(data.getId());
 
         //set texts
-        holder.name.setText(data.counterName + " - " + data.targetValue);
+        holder.name.setText(data.getDisplayName());
     }
 
     @Override
@@ -129,10 +139,10 @@ public class AdmissionCounterAdapter extends RecyclerView.Adapter<AdmissionCount
         return mData.size();
     }
 
-    static class AdmissionCounterHolder extends RecyclerView.ViewHolder {
+    static class NameViewHolder extends RecyclerView.ViewHolder {
         TextView name;
 
-        public AdmissionCounterHolder(View itemView) {
+        public NameViewHolder(View itemView) {
             super(itemView);
         }
     }

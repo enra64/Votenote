@@ -29,7 +29,7 @@ import java.util.List;
 
 import de.oerntec.votenote.MainActivity;
 
-public class DBAdmissionCounters {
+public class DBAdmissionCounters implements PojoDatabase<AdmissionCounter> {
     /**
      * Singleton instance
      */
@@ -170,11 +170,15 @@ public class DBAdmissionCounters {
     }
 
     public void createSavepoint(String id) {
-        database.execSQL("SAVEPOINT " + id);
+        database.execSQL(";SAVEPOINT " + id);
     }
 
     public void rollbackToSavepoint(String id) {
-        database.execSQL("ROLLBACK TO SAVEPOINT " + id);
+        database.execSQL(";ROLLBACK TO SAVEPOINT " + id);
+    }
+
+    public void releaseSavePoint(String id) {
+        database.execSQL(";RELEASE SAVEPOINT " + id);
     }
 
     /**

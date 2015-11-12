@@ -29,7 +29,7 @@ import java.util.List;
 
 import de.oerntec.votenote.MainActivity;
 
-public class DBAdmissionPercentageMeta {
+public class DBAdmissionPercentageMeta implements PojoDatabase<AdmissionPercentageMeta> {
     /**
      * Singleton instance
      */
@@ -125,13 +125,16 @@ public class DBAdmissionPercentageMeta {
     }
 
     public void createSavepoint(String id) {
-        database.execSQL("SAVEPOINT " + id);
+        database.execSQL(";SAVEPOINT " + id);
     }
 
     public void rollbackToSavepoint(String id) {
-        database.execSQL("ROLLBACK TO SAVEPOINT " + id);
+        database.execSQL(";ROLLBACK TO SAVEPOINT " + id);
     }
 
+    public void releaseSavePoint(String id) {
+        database.execSQL(";RELEASE SAVEPOINT " + id);
+    }
     /**
      * Get a single admission counter.
      *

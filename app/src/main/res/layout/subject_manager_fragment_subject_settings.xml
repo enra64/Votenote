@@ -7,234 +7,35 @@
         android:id="@+id/subject_manager_dialog_groupsettings_edit_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/subject_manager_dialog_name_description"
-        android:layout_alignStart="@+id/subject_manager_dialog_name_description"
-        android:layout_below="@+id/subject_manager_dialog_name_description"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/textView18"
         android:ems="10"
         android:inputType="textNoSuggestions"
         android:textSize="20sp" />
 
-    <TextView
-        android:id="@+id/subject_manager_dialog_name_description"
+    <RecyclerView
+        android:id="@+id/subject_manager_admission_counter_list"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="5dp"
-        android:text="@string/subject_manager_dialog_subject_name"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textSize="20sp" />
-
-
-    <RelativeLayout
-        android:id="@+id/subject_manager_sublayout_votes"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/subject_manager_dialog_groupsettings_min_votes_scrollview">
-
-        <SeekBar
-            android:id="@+id/subject_manager_dialog_groupsettings_seek_min_votierungs"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentStart="true"
-            android:layout_centerVertical="true" />
-
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:id="@+id/subject_manager_sublayout_presentation_points"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/subject_manager_dialog_groupsettings_min_votes_scrollview"
-        android:layout_alignParentLeft="true"
-        android:layout_alignStart="@+id/subject_manager_dialog_groupsettings_min_votes_scrollview"
-        android:layout_below="@+id/subject_manager_dialog_groupsettings_prespoints_scrollview">
-
-        <SeekBar
-            android:id="@+id/subject_manager_dialog_groupsettings_seek_prespoints"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentStart="true"
-            android:layout_centerVertical="true" />
-
-    </RelativeLayout>
-
-    <TextView
-        android:id="@+id/subject_manager_dialog_groupsettings_estimated_assignments_per_uebung"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/subject_manager_dialog_groupsettings_prespoints_scrollview"
-        android:layout_alignStart="@+id/subject_manager_dialog_groupsettings_prespoints_scrollview"
-        android:layout_below="@+id/subject_manager_sublayout_presentation_points"
-        android:layout_marginTop="10dp"
-        android:text="@string/subjectmanager_assignments_per_lesson"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textSize="20sp" />
-
-    <RelativeLayout
-        android:id="@+id/subject_manager_sublayout_assignments_per_exercise"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/subject_manager_dialog_groupsettings_min_votes_scrollview"
-        android:layout_alignParentLeft="true"
-        android:layout_alignStart="@+id/subject_manager_dialog_groupsettings_min_votes_scrollview"
-        android:layout_below="@+id/subject_manager_dialog_groupsettings_estimated_assignments_per_uebung">
-
-        <SeekBar
-            android:id="@+id/subject_manager_dialog_groupsettings_seek_assignments_per_uebung"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentStart="true"
-            android:layout_centerVertical="true" />
-    </RelativeLayout>
-
-
-    <TextView
-        android:id="@+id/subject_manager_dialog_groupsettings_est_ueb_count"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/subject_manager_dialog_groupsettings_estimated_assignments_per_uebung"
-        android:layout_alignStart="@+id/subject_manager_dialog_groupsettings_estimated_assignments_per_uebung"
-        android:layout_below="@+id/subject_manager_sublayout_assignments_per_exercise"
-        android:layout_marginTop="10dp"
-        android:text="@string/subjectmanager_lesson_count"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textSize="20sp" />
-
-    <RelativeLayout
-        android:id="@+id/subject_manager_sublayout_exercise_count"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/subject_manager_dialog_groupsettings_min_votes_scrollview"
-        android:layout_alignParentLeft="true"
-        android:layout_alignStart="@+id/subject_manager_dialog_groupsettings_min_votes_scrollview"
-        android:layout_below="@+id/subject_manager_dialog_groupsettings_est_ueb_count">
-
-        <SeekBar
-            android:id="@+id/subject_manager_dialog_groupsettings_seek_estimated_uebung_count"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentStart="true"
-            android:layout_centerVertical="true"
-            android:layout_marginBottom="-10dp" />
-
-
-    </RelativeLayout>
-
-    <TextView
-        android:id="@+id/subject_manager_dialog_groupsettings_text_min_votierungs"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/subject_manager_dialog_groupsettings_min_votes_scrollview"
-        android:layout_alignEnd="@+id/subject_manager_dialog_groupsettings_edit_name"
-        android:layout_alignRight="@+id/subject_manager_dialog_groupsettings_edit_name"
-        android:text="100%"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textColor="@android:color/secondary_text_dark"
-        android:textSize="20sp" />
-
-    <TextView
-        android:id="@+id/subject_manager_dialog_groupsettings_text_prespoints"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/subject_manager_dialog_groupsettings_prespoints_scrollview"
-        android:layout_alignEnd="@+id/subject_manager_dialog_groupsettings_text_min_votierungs"
-        android:layout_alignRight="@+id/subject_manager_dialog_groupsettings_text_min_votierungs"
-        android:text="50"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textColor="@android:color/secondary_text_dark"
-        android:textSize="20sp" />
-
-    <TextView
-        android:id="@+id/subject_manager_dialog_groupsettings_text_assignments_per_uebung"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/subject_manager_sublayout_assignments_per_exercise"
-        android:layout_alignEnd="@+id/subject_manager_dialog_groupsettings_text_min_votierungs"
-        android:layout_alignRight="@+id/subject_manager_dialog_groupsettings_text_min_votierungs"
-        android:text="50"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textColor="@android:color/secondary_text_dark"
-        android:textSize="20sp" />
-
-    <TextView
-        android:id="@+id/subject_manager_dialog_groupsettings_text_estimated_uebung_count"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/subject_manager_sublayout_exercise_count"
-        android:layout_alignEnd="@+id/subject_manager_dialog_groupsettings_text_min_votierungs"
-        android:layout_alignRight="@+id/subject_manager_dialog_groupsettings_text_min_votierungs"
-        android:text="50"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textColor="@android:color/secondary_text_dark"
-        android:textSize="20sp" />
-
-    <HorizontalScrollView
-        android:id="@+id/subject_manager_dialog_groupsettings_prespoints_scrollview"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/subject_manager_dialog_groupsettings_min_votes_scrollview"
-        android:layout_alignStart="@+id/subject_manager_dialog_groupsettings_min_votes_scrollview"
-        android:layout_below="@+id/subject_manager_sublayout_votes"
-        android:layout_marginTop="10dp"
-        android:layout_toLeftOf="@+id/subject_manager_dialog_groupsettings_text_prespoints"
-        android:layout_toStartOf="@+id/subject_manager_dialog_groupsettings_text_prespoints">
-
-        <TextView
-            android:id="@+id/subject_manager_dialog_groupsettings_prespoints"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/subjectmanager_needed_prespoints"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textSize="20sp" />
-    </HorizontalScrollView>
-
-    <HorizontalScrollView
-        android:id="@+id/subject_manager_dialog_groupsettings_min_votes_scrollview"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/subject_manager_dialog_groupsettings_edit_name"
-        android:layout_alignStart="@+id/subject_manager_dialog_groupsettings_edit_name"
-        android:layout_below="@+id/subject_manager_dialog_groupsettings_edit_name"
-        android:layout_marginTop="10dp"
-        android:layout_toLeftOf="@+id/subject_manager_dialog_groupsettings_text_min_votierungs"
-        android:layout_toStartOf="@+id/subject_manager_dialog_groupsettings_text_min_votierungs">
-
-        <TextView
-            android:id="@+id/subject_manager_dialog_groupsettings_min_votes"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/subjectmanager_needed_work"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textSize="20sp" />
-    </HorizontalScrollView>
-
-    <Spinner
-        android:id="@+id/subject_manager_counter_spinner"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/subject_manager_dialog_groupsettings_est_ueb_count"
-        android:layout_alignStart="@+id/subject_manager_dialog_groupsettings_est_ueb_count"
-        android:layout_below="@+id/subject_manager_sublayout_exercise_count" />
+        android:layout_below="@+id/subject_manager_admission_percentage_counter_list" />
 
     <RecyclerView
+        android:id="@+id/subject_manager_admission_percentage_counter_list"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/subject_manager_admission_counter_list"
-        android:layout_below="@+id/subject_manager_counter_spinner"
-        android:layout_alignLeft="@+id/subject_manager_counter_spinner"
-        android:layout_alignStart="@+id/subject_manager_counter_spinner" />
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/subject_manager_dialog_groupsettings_edit_name" />
+
+    <TextView
+        android:id="@+id/textView18"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:text="Name der Übung"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
 
 </RelativeLayout>

@@ -53,6 +53,14 @@ public class SubjectCreationActivity extends AppCompatActivity {
                 .replace(R.id.activity_subject_creation_fragment_container, currentSubjectFragment).commit();
     }
 
+    void callCreatorFragmentForItemChange(int itemId, boolean isPercentage, boolean isNew) {
+        SubjectCreationActivityFragment creator = (SubjectCreationActivityFragment) getFragmentManager().findFragmentById(R.id.activity_subject_creation_fragment_container);
+        if (isPercentage)
+            creator.admissionPercentageFinished(itemId, isNew);
+        else
+            creator.admissionCounterFinished(itemId, isNew);
+    }
+
     @Override
     protected void onPause() {
         //holy shit hide the fucking keyboard

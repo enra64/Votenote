@@ -7,7 +7,11 @@ import de.oerntec.votenote.Database.AdmissionPercentageMeta;
  * Interface to be able to give results from dedicated dialog classes
  */
 public interface SubjectCreationDialogInterface {
-    void admissionCounterFinished(AdmissionCounter result, boolean isNew);
-    void admissionCounterDelete(AdmissionCounter delete);
-    void admissionPercentageFinished(AdmissionPercentageMeta result, boolean isNew);
+    void admissionCounterFinished(int id, boolean isNew);
+
+    void deleteAdmissionCounter(AdmissionCounter deleted);
+
+    void admissionPercentageFinished(int id, boolean isNew);
+
+    void deleteAdmissionPercentage(AdmissionPercentageMeta deleted);
 }

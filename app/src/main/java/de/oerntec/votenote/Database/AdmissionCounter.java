@@ -3,7 +3,7 @@ package de.oerntec.votenote.Database;
 /**
  * POJO for representing an admission counter
  */
-public class AdmissionCounter implements Cloneable{
+public class AdmissionCounter implements Cloneable, NameAndIdPojo {
     public int id, subjectId, currentValue, targetValue;
     public String counterName;
 
@@ -38,5 +38,15 @@ public class AdmissionCounter implements Cloneable{
         if (targetValue != that.targetValue) return false;
         return !(counterName != null ? !counterName.equals(that.counterName) : that.counterName != null);
 
+    }
+
+    @Override
+    public String getDisplayName() {
+        return counterName + " - " + targetValue;
+    }
+
+    @Override
+    public int getId() {
+        return id;
     }
 }

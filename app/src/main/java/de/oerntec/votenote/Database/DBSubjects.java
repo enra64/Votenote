@@ -24,7 +24,6 @@ import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -101,6 +100,18 @@ public class DBSubjects {
         return result;
     }
 
+    public void changeItem(Subject newItem) {
+        ContentValues values = new ContentValues();
+        values.put(DatabaseCreator.SUBJECTS_NAME, newItem.name);
+
+        String[] whereArgs = {String.valueOf(newItem.id)};
+        int affectedRows = database.update(DatabaseCreator.TABLE_NAME_SUBJECTS, values, DatabaseCreator.SUBJECTS_ID + "=?", whereArgs);
+        if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
+            if (affectedRows != 0)
+                Log.i("AdmissionCounters", "No or more than one entry was changed, something is weird");
+        if (affectedRows != 0) throw new AssertionError();
+    }
+
     public List<Subject> getAllSubjects() {
         Cursor mCursor = database.query(true,
                 DatabaseCreator.TABLE_NAME_SUBJECTS,
@@ -122,6 +133,31 @@ public class DBSubjects {
 
         mCursor.close();
         return subjects;
+    }
+
+    public Subject getItem(int subjectId) {
+        Cursor mCursor = database.query(
+                true,
+                DatabaseCreator.TABLE_NAME_SUBJECTS,
+                null,
+                DatabaseCreator.SUBJECTS_ID + "=" + subjectId,
+                null,
+                null,
+                null,
+                DatabaseCreator.ADMISSION_COUNTER_ID + " ASC",
+                null);
+
+        if (mCursor.getCount() != 1)
+            throw new AssertionError("id is primary key?");
+
+        mCursor.moveToFirst();
+
+        Subject result = new Subject(
+                mCursor.getString(mCursor.getColumnIndex(DatabaseCreator.SUBJECTS_NAME)),
+                mCursor.getInt(mCursor.getColumnIndex(DatabaseCreator.SUBJECTS_ID)));
+
+        mCursor.close();
+        return result;
     }
 
     /**
