@@ -25,7 +25,7 @@ import android.util.Log;
 
 import de.oerntec.votenote.MainActivity;
 
-public class DBLessons {
+public class DBLessonsa {
     /**
      * Singleton instance
      */

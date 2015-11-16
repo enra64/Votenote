@@ -43,8 +43,9 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 
 import de.oerntec.votenote.Database.DBAdmissionCounters;
-import de.oerntec.votenote.Database.DBLessons;
-import de.oerntec.votenote.Database.DBGroups;
+import de.oerntec.votenote.Database.DBAdmissionPercentageData;
+import de.oerntec.votenote.Database.DBAdmissionPercentageMeta;
+import de.oerntec.votenote.Database.DBSubjects;
 import de.oerntec.votenote.Diagram.DiagramActivity;
 import de.oerntec.votenote.Dialogs.MainDialogHelper;
 import de.oerntec.votenote.ImportExport.Writer;
@@ -126,9 +127,12 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
      */
     public static NavigationDrawerFragment mNavigationDrawerFragment;
     //database connection
-    private static DBGroups mSubjectDb;
-    private static DBLessons mLessonDb;
-    private static int mCurrentSelectedId, mCurrentSelectedPosition;
+    private static DBSubjects mSubjectDb;
+    private static DBAdmissionPercentageMeta mPercentageMetaDb;
+    private static DBAdmissionPercentageData mPercentageDataDb;
+    private static DBAdmissionCounters mAdmissionCounterDb;
+
+    private static int mCurrentSelectedSubjectId, mCurrentSelectedPosition;
     private static MainActivity me;
     private boolean mCurrentFragmentHasPrespoints;
 
@@ -154,9 +158,10 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         me = this;
 
         //database access
-        mSubjectDb = DBGroups.setupInstance(this);
-        mLessonDb = DBLessons.setupInstance(this);
-        DBAdmissionCounters.setupInstance(this);
+        mSubjectDb = DBSubjects.setupInstance(this);
+        mAdmissionCounterDb = DBAdmissionCounters.setupInstance(this);
+        mPercentageDataDb = DBAdmissionPercentageData.setupInstance(this);
+        mPercentageMetaDb = DBAdmissionPercentageMeta.setupInstance(this);
 
         setContentView(R.layout.activity_main);
 
@@ -226,7 +231,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
             }
         }
 
-        int lessonCount = mLessonDb.getCount();
+        int lessonCount = mSubjectDb.getNumberOfLessonsForSubject(mCurrentSelectedSubjectId);
         int subjectCount = mSubjectDb.getCount();
 
         //check whether we possibly have subjects, but none is loaded for some reason
@@ -301,15 +306,13 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         invalidateOptionsMenu();
     }
 
-    /**
-     * position is 0 indexed; the phf gets position+1
-     */
     @Override
     public void onNavigationDrawerItemSelected(int position) {
         //keep track of what fragment is shown
-        mCurrentSelectedId = mSubjectDb.translatePositionToID(position);
+        mCurrentSelectedSubjectId = mSubjectDb.getIdOfSubject(position);
         mCurrentSelectedPosition = position;
-        mCurrentFragmentHasPrespoints = mSubjectDb.getWantedPresPoints(mCurrentSelectedId) > 0;
+
+        mCurrentFragmentHasPrespoints = DBAdmissionCounters.getInstance().getItemsForSubject(mCurrentSelectedSubjectId).size() > 0;
         // update the menu_main content by replacing fragments
         if (ENABLE_DEBUG_LOG_CALLS)
             Log.i("votenote main", "selected fragment " + position);
@@ -317,14 +320,14 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         fragmentManager
                 .beginTransaction()
                 .replace(R.id.container,
-                        LessonFragment.newInstance(position)).commit();
+                        LessonFragment.newInstance(mCurrentSelectedSubjectId)).commit();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         //save where the user left
-        if (mCurrentSelectedId != -1) {
+        if (mCurrentSelectedSubjectId != -1) {
             setPreference("last_selected_dbid", mCurrentSelectedPosition);
             if (ENABLE_DEBUG_LOG_CALLS)
                 Log.i("last selected", "" + mCurrentSelectedPosition);
@@ -436,11 +439,11 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
     }
 
     private void onPresentationPointsClick() {
-        MainDialogHelper.showPresentationPointDialog(mCurrentSelectedId, this);
+        MainDialogHelper.showPresentationPointDialog(mCurrentSelectedSubjectId, this);
     }
 
     private void onInfoClick() {
-        MainDialogHelper.showAllInfoDialog(this, mCurrentSelectedId);
+        MainDialogHelper.showAllInfoDialog(this, mCurrentSelectedSubjectId);
         //handy-dandy exception thrower for exception handling testing
         //Integer.valueOf("rip");
     }

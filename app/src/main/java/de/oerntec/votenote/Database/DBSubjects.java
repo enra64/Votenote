@@ -100,6 +100,20 @@ public class DBSubjects {
         return result;
     }
 
+    public int getNumberOfLessonsForSubject(int subjectId) {
+        String data = DatabaseCreator.TABLE_NAME_ADMISSION_PERCENTAGES_DATA;
+        String meta = DatabaseCreator.TABLE_NAME_ADMISSION_PERCENTAGES_META;
+        Cursor c = database.rawQuery(
+                "SELECT " + data + "." + DatabaseCreator.ADMISSION_PERCENTAGES_DATA_LESSON_ID + ", " +
+                        "FROM " + data +
+                        " INNER JOIN " + meta +
+                        " ON " + data + "." + DatabaseCreator.ADMISSION_PERCENTAGES_DATA_ADMISSION_PERCENTAGE_ID + "=" + meta + "." + DatabaseCreator.ADMISSION_PERCENTAGES_META_ID +
+                        " WHERE " + meta + "." + DatabaseCreator.ADMISSION_PERCENTAGES_META_SUBJECT_ID + "=?", new String[]{String.valueOf(subjectId)});
+        int number = c.getCount();
+        c.close();
+        return number;
+    }
+
     public void changeItem(Subject newItem) {
         ContentValues values = new ContentValues();
         values.put(DatabaseCreator.SUBJECTS_NAME, newItem.name);
@@ -133,6 +147,14 @@ public class DBSubjects {
 
         mCursor.close();
         return subjects;
+    }
+
+
+    public int getIdOfSubject(int position) {
+        List<Subject> subjectList = getAllSubjects();
+        if (position >= subjectList.size())
+            throw new AssertionError("there are not that many subjects!");
+        return subjectList.get(position).id;
     }
 
     public Subject getItem(int subjectId) {

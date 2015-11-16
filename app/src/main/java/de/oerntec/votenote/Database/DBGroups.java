@@ -28,7 +28,7 @@ import java.util.List;
 
 import de.oerntec.votenote.MainActivity;
 
-public class DBGroups {
+public class DBGroupsA {
     public final static int NO_GROUPS_EXIST = -1;
 
     private static DBGroups mInstance;

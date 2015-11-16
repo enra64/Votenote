@@ -18,16 +18,19 @@
 package de.oerntec.votenote.LessonFragmentStuff;
 
 import android.content.Context;
-import android.database.Cursor;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import de.oerntec.votenote.Database.DBGroups;
-import de.oerntec.votenote.Database.DBLessons;
-import de.oerntec.votenote.Database.Lesson;
+import java.util.List;
+
+import de.oerntec.votenote.Database.AdmissionPercentageData;
+import de.oerntec.votenote.Database.AdmissionPercentageMeta;
+import de.oerntec.votenote.Database.DBAdmissionPercentageData;
+import de.oerntec.votenote.Database.DBAdmissionPercentageMeta;
+import de.oerntec.votenote.Database.DBSubjects;
 import de.oerntec.votenote.MainActivity;
 import de.oerntec.votenote.R;
 
@@ -35,16 +38,32 @@ public class LessonAdapter extends RecyclerView.Adapter<LessonAdapter.Holder> {
     private static final int VIEW_TYPE_INFO = 0;
     private static final int VIEW_TYPE_LESSON = 1;
 
-    private DBLessons mLessonDb = DBLessons.getInstance();
+    private DBAdmissionPercentageMeta mMetaDb = DBAdmissionPercentageMeta.getInstance();
+    private DBAdmissionPercentageData mDataDb = DBAdmissionPercentageData.getInstance();
+
+    /**
+     * The meta pojo belonging to the given admission percentage meta id
+     */
+    private AdmissionPercentageMeta mMetaPojo;
+
+    private List<AdmissionPercentageData> mData;
 
     private Context mContext;
-    private int mSubjectId;
+    private int mSubjectId, mAdmissionPercentageMetaId;
     private boolean mLatestLessonFirst;
-    private Cursor mCursor;
 
-    public LessonAdapter(Context context, int subjectId) {
+    public LessonAdapter(Context context, int admissionPercentageMetaId) {
         mContext = context;
-        mSubjectId = subjectId;
+        //get db
+        mMetaDb = DBAdmissionPercentageMeta.getInstance();
+        mDataDb = DBAdmissionPercentageData.getInstance();
+        //transfer the percentage meta id this adapter is for
+        mAdmissionPercentageMetaId = admissionPercentageMetaId;
+        //get the pojo object corresponding to this adapter
+        mMetaPojo = mMetaDb.getItem(admissionPercentageMetaId);
+        //get the subject id
+        mSubjectId = mMetaPojo.subjectId;
+        //do we want reverse sort?
         mLatestLessonFirst = MainActivity.getPreference("reverse_lesson_sort", false);
         requery();
     }
@@ -55,13 +74,10 @@ public class LessonAdapter extends RecyclerView.Adapter<LessonAdapter.Holder> {
      * add the lesson to the database
      * notify any observers of the change
      */
-    public void addLesson(Lesson lesson) {
+    public void addLesson(AdmissionPercentageData item) {
         //add to database
-        int lessonId = lesson.lessonId;
-        if (lessonId == -1)
-            lessonId = mLessonDb.addLessonAtEnd(lesson);
-        else
-            mLessonDb.insertLesson(lesson);
+        int lessonId = item.lessonId;
+        lessonId = mDataDb.addItem(item);
         requery();
         //notify
         notifyItemInserted(getRecyclerViewPosition(lessonId));
@@ -76,10 +92,10 @@ public class LessonAdapter extends RecyclerView.Adapter<LessonAdapter.Holder> {
      * requery
      * notify of single changed item
      */
-    public void changeLesson(Lesson oldLesson, Lesson newLesson) {
+    public void changeLesson(AdmissionPercentageData oldLesson, AdmissionPercentageData newLesson) {
         if (oldLesson.lessonId != newLesson.lessonId)
             throw new IllegalArgumentException("Old and new lesson must have the same lesson ID!");
-        mLessonDb.changeLesson(oldLesson, newLesson);
+        mDataDb.changeItem(oldLesson, newLesson);
         requery();
         notifyItemChanged(getRecyclerViewPosition(oldLesson.lessonId));
         //update infoview
@@ -91,10 +107,10 @@ public class LessonAdapter extends RecyclerView.Adapter<LessonAdapter.Holder> {
      * requery
      * notify
      */
-    public Lesson removeLesson(final int lessonId) {
-        Lesson bkp = mLessonDb.getLesson(mSubjectId, lessonId);
-        final int listPosition = getRecyclerViewPosition(lessonId);
-        mLessonDb.removeEntry(mSubjectId, lessonId);
+    public AdmissionPercentageData removeLesson(final int admissionDataId) {
+        AdmissionPercentageData bkp = mDataDb.getItem(admissionDataId);
+        final int listPosition = getRecyclerViewPosition(admissionDataId);
+        mDataDb.deleteItem(admissionDataId);
         requery();
         notifyItemRemoved(listPosition);
         notifyChangedLessonRange(listPosition);
@@ -102,11 +118,8 @@ public class LessonAdapter extends RecyclerView.Adapter<LessonAdapter.Holder> {
     }
 
     private void requery() {
-        if (mCursor != null)
-            mCursor.close();
-        mCursor = null;
-        //should be done asynchronously, but i guess that does not matter for 20 entries...
-        mCursor = mLessonDb.getAllLessonsForSubject(mSubjectId);
+        //mMetaPojo = mMetaDb.getItem(mAdmissionPercentageMetaId);
+        mData = mDataDb.getItemsForMetaId(mAdmissionPercentageMetaId, mLatestLessonFirst);
     }
 
     /**
@@ -164,29 +177,28 @@ public class LessonAdapter extends RecyclerView.Adapter<LessonAdapter.Holder> {
     public void onBindViewHolder(Holder holder, int position) {
         if (holder instanceof InfoHolder) {
             InfoHolder infoHolder = (InfoHolder) holder;
-            infoHolder.title.setText(DBGroups.getInstance().getGroupName(mSubjectId));
+            infoHolder.title.setText(DBSubjects.getInstance().getItem(mSubjectId).name);
             SubjectInfoCalculator.setAverageNeededAssignments(mContext, infoHolder.avgLeft, mSubjectId);
             SubjectInfoCalculator.setCurrentPresentationPointStatus(mContext, infoHolder.prespoints, mSubjectId);
             SubjectInfoCalculator.setVoteAverage(mContext, infoHolder.percentage, mSubjectId);
-            infoHolder.votedAssignments.setText(DBLessons.getInstance().getCompletedAssignmentCount(mSubjectId) + " " + mContext.getString(R.string.voted_assignments_info_card));
+            //TODO: create list of counters
+            //infoHolder.votedAssignments.setText(DBLessons.getInstance().getCompletedAssignmentCount(mSubjectId) + " " + mContext.getString(R.string.voted_assignments_info_card));
         } else if (holder instanceof LessonHolder) {
             LessonHolder lessonHolder = (LessonHolder) holder;
             //adjust for the info view
             position--;
 
-            mCursor.moveToPosition(position);
-
-            Lesson currentLesson = createLessonFromCursor();
+            AdmissionPercentageData data = mData.get(position);
 
             //load strings
-            String lessonIndex = String.valueOf(currentLesson.lessonId);
-            String myVote = String.valueOf(currentLesson.myVotes);
-            String maxVote = String.valueOf(currentLesson.maxVotes);
+            String lessonIndex = String.valueOf(data.lessonId);
+            String myVote = String.valueOf(data.finishedAssignments);
+            String maxVote = String.valueOf(data.availableAssignments);
             String voteString = " " + (Integer.valueOf(myVote) < 2 ? mContext.getString(R.string.subject_fragment_singular_vote)
                     : mContext.getString(R.string.main_dialog_lesson_votes));
 
             //tag for identification without mistakes
-            lessonHolder.itemView.setTag(currentLesson.lessonId);
+            lessonHolder.itemView.setTag(data.lessonId);
 
             //set visible, because the programmatic swipe sets views invisible to avoid flickering
             lessonHolder.itemView.setVisibility(View.VISIBLE);
@@ -197,19 +209,9 @@ public class LessonAdapter extends RecyclerView.Adapter<LessonAdapter.Holder> {
         }
     }
 
-    /**
-     * move mCursor to the correct position before!
-     */
-    private Lesson createLessonFromCursor() {
-        return new Lesson(mCursor.getInt(0),
-                mCursor.getInt(1),
-                mCursor.getInt(2),
-                mCursor.getInt(3), mSubjectId);
-    }
-
     @Override
     public int getItemCount() {
-        return mCursor == null ? 0 : mCursor.getCount() + 1;//+1 for infoview
+        return mData == null ? 0 : mData.size() + 1;//+1 for infoview
     }
 
     @Override

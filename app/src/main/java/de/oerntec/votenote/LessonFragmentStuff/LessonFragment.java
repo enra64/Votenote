@@ -37,7 +37,6 @@ import de.oerntec.votenote.CardListHelpers.OnItemClickListener;
 import de.oerntec.votenote.CardListHelpers.RecyclerItemClickListener;
 import de.oerntec.votenote.CardListHelpers.SwipeDeletion;
 import de.oerntec.votenote.Database.DBGroups;
-import de.oerntec.votenote.Database.DBLessons;
 import de.oerntec.votenote.Database.Lesson;
 import de.oerntec.votenote.Dialogs.MainDialogHelper;
 import de.oerntec.votenote.MainActivity;
@@ -52,19 +51,15 @@ public class LessonFragment extends Fragment implements SwipeDeletion.UndoSnackB
      * The fragment argument representing the section number for this
      * fragment.
      */
-    private static final String ARG_SECTION_NUMBER = "section_number";
+    private static final String ARG_SUBJECT_ID = "section_number";
 
     private static Lesson mLessonToDelete = null;
 
     /**
-     * DB Singleton instance
+     * Adapter to display the lessons
      */
-    private static DBGroups mSubjectDb = DBGroups.getInstance();
-    /**
-     * DB Singleton instance
-     */
-    private static DBLessons mLessonDb = DBLessons.getInstance();
     public LessonAdapter mAdapter;
+
     /**
      * Contains the database id for the displayed fragment/subject
      */
@@ -82,12 +77,12 @@ public class LessonFragment extends Fragment implements SwipeDeletion.UndoSnackB
      * Returns a new instance of this fragment for the given section number.
      */
 
-    public static LessonFragment newInstance(int sectionNumber) {
+    public static LessonFragment newInstance(int subjectId) {
         if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
             Log.i("votenote placeholder", "newinstance");
         LessonFragment fragment = new LessonFragment();
         Bundle args = new Bundle();
-        args.putInt(ARG_SECTION_NUMBER, sectionNumber);
+        args.putInt(ARG_SUBJECT_ID, subjectId);
         fragment.setArguments(args);
         return fragment;
     }
@@ -98,7 +93,7 @@ public class LessonFragment extends Fragment implements SwipeDeletion.UndoSnackB
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         //translate from position in drawer to db group id
-        mSubjectId = mSubjectDb.translatePositionToID(getArguments().getInt(ARG_SECTION_NUMBER));
+        mSubjectId = getArguments().getInt(ARG_SUBJECT_ID);
 
         //find and inflate everything
         View rootView = inflater.inflate(R.layout.subject_fragment, container, false);
@@ -211,7 +206,7 @@ public class LessonFragment extends Fragment implements SwipeDeletion.UndoSnackB
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        ((MainActivity) activity).onSectionAttached(getArguments().getInt(ARG_SECTION_NUMBER));
+        ((MainActivity) activity).onSectionAttached(getArguments().getInt(ARG_SUBJECT_ID));
     }
 
     //dont do anything, as we only delete the lesson when the undo bar gets hidden

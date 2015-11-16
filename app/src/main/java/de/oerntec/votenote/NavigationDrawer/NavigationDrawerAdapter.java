@@ -18,7 +18,6 @@
 package de.oerntec.votenote.NavigationDrawer;
 
 import android.content.Context;
-import android.database.Cursor;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,14 +25,16 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import de.oerntec.votenote.Database.DBGroups;
+import java.util.List;
+
+import de.oerntec.votenote.Database.DBSubjects;
+import de.oerntec.votenote.Database.Subject;
 import de.oerntec.votenote.R;
 
 public class NavigationDrawerAdapter extends RecyclerView.Adapter<NavigationDrawerAdapter.SubjectHolder> {
-    private DBGroups mSubjectDb = DBGroups.getInstance();
-
+    private DBSubjects mSubjectDb = DBSubjects.getInstance();
+    private List<Subject> mData;
     private SelectionCallback mOnClickCallback;
-    private Cursor mCursor;
     private int mCurrentSelection;
     private Context mContext;
 
@@ -47,12 +48,8 @@ public class NavigationDrawerAdapter extends RecyclerView.Adapter<NavigationDraw
      * Requery cursor and reload everything
      */
     public void requeryAndReload() {
-        if (mCursor != null)
-            mCursor.close();
-        mCursor = null;
-        //should be done asynchronously, but i guess that does not matter for 20 entries...
-        mCursor = mSubjectDb.getAllGroupNames();
-        notifyItemRangeChanged(0, mCursor.getCount());
+        mData = mSubjectDb.getAllSubjects();
+        notifyItemRangeChanged(0, mData.size());
     }
 
     @Override
@@ -71,14 +68,14 @@ public class NavigationDrawerAdapter extends RecyclerView.Adapter<NavigationDraw
 
     @Override
     public void onBindViewHolder(final SubjectHolder holder, int position) {
-        mCursor.moveToPosition(position);
+        Subject currentData = mData.get(position);
 
         //load strings
-        int subjectId = mCursor.getInt(0);
-        String name = mCursor.getString(1);
-        holder.subjectId = mCursor.getInt(0);
+        int subjectId = currentData.id;
+        String name = currentData.name;
+        holder.subjectId = subjectId;
 
-        //set tag for later identification avoiding all
+        //set tag for later identification avoiding all confusion
         holder.itemView.setTag(subjectId);
 
         if (position == mCurrentSelection) {
@@ -102,7 +99,7 @@ public class NavigationDrawerAdapter extends RecyclerView.Adapter<NavigationDraw
 
     @Override
     public int getItemCount() {
-        return mCursor.getCount();
+        return mData.size();
     }
 
     /**

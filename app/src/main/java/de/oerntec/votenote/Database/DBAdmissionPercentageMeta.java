@@ -111,10 +111,10 @@ public class DBAdmissionPercentageMeta implements PojoDatabase<AdmissionPercenta
     public void changeItem(AdmissionPercentageMeta newItem) {
         ContentValues values = new ContentValues();
         values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_NAME, newItem.name);
-        values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_SUBJECT_ID, newItem.name);
-        values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_TARGET_ASSIGNMENTS_PER_LESSON, newItem.name);
-        values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_TARGET_PERCENTAGE, newItem.name);
-        values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_TARGET_LESSON_COUNT, newItem.name);
+        values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_SUBJECT_ID, newItem.subjectId);
+        values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_TARGET_ASSIGNMENTS_PER_LESSON, newItem.estimatedAssignmentsPerLesson);
+        values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_TARGET_PERCENTAGE, newItem.targetPercentage);
+        values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_TARGET_LESSON_COUNT, newItem.estimatedLessonCount);
 
         String[] whereArgs = {String.valueOf(newItem.id)};
         int affectedRows = database.update(DatabaseCreator.TABLE_NAME_ADMISSION_PERCENTAGES_META, values, DatabaseCreator.ADMISSION_PERCENTAGES_META_ID + "=?", whereArgs);
@@ -169,7 +169,8 @@ public class DBAdmissionPercentageMeta implements PojoDatabase<AdmissionPercenta
      */
     public List<AdmissionPercentageMeta> getItemsForSubject(int subjectId) {
         String[] whereArgs = {String.valueOf(subjectId)};
-        Cursor c = database.query(true, DatabaseCreator.TABLE_NAME_ADMISSION_PERCENTAGES_META, null, DatabaseCreator.ADMISSION_PERCENTAGES_META_SUBJECT_ID + "=?", whereArgs, null, null, DatabaseCreator.ADMISSION_COUNTER_ID + " ASC", null);
+        Cursor c = database.query(true, DatabaseCreator.TABLE_NAME_ADMISSION_PERCENTAGES_META, null, DatabaseCreator.ADMISSION_PERCENTAGES_META_SUBJECT_ID + "=?",
+                whereArgs, null, null, DatabaseCreator.ADMISSION_PERCENTAGES_META_ID + " ASC", null);
 
         List<AdmissionPercentageMeta> items = new LinkedList<>();
 
@@ -217,10 +218,10 @@ public class DBAdmissionPercentageMeta implements PojoDatabase<AdmissionPercenta
         //create values for insert or update
         ContentValues values = new ContentValues();
         values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_NAME, newItem.name);
-        values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_SUBJECT_ID, newItem.name);
-        values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_TARGET_ASSIGNMENTS_PER_LESSON, newItem.name);
-        values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_TARGET_PERCENTAGE, newItem.name);
-        values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_TARGET_LESSON_COUNT, newItem.name);
+        values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_SUBJECT_ID, newItem.subjectId);
+        values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_TARGET_ASSIGNMENTS_PER_LESSON, newItem.estimatedAssignmentsPerLesson);
+        values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_TARGET_PERCENTAGE, newItem.targetPercentage);
+        values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_TARGET_LESSON_COUNT, newItem.estimatedLessonCount);
 
         if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
             Log.i("DBAP-M", "adding meta item");
