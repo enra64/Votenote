@@ -21,7 +21,6 @@ package de.oerntec.votenote.LessonFragmentStuff;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -36,8 +35,8 @@ import android.view.ViewGroup;
 import de.oerntec.votenote.CardListHelpers.OnItemClickListener;
 import de.oerntec.votenote.CardListHelpers.RecyclerItemClickListener;
 import de.oerntec.votenote.CardListHelpers.SwipeDeletion;
-import de.oerntec.votenote.Database.DBGroups;
-import de.oerntec.votenote.Database.Lesson;
+import de.oerntec.votenote.Database.AdmissionPercentageMeta;
+import de.oerntec.votenote.Database.DBAdmissionPercentageData;
 import de.oerntec.votenote.Dialogs.MainDialogHelper;
 import de.oerntec.votenote.MainActivity;
 import de.oerntec.votenote.R;
@@ -53,7 +52,10 @@ public class LessonFragment extends Fragment implements SwipeDeletion.UndoSnackB
      */
     private static final String ARG_SUBJECT_ID = "section_number";
 
-    private static Lesson mLessonToDelete = null;
+    /**
+     * Savepoint last used, null if no savepoint can currently be used
+     */
+    private static String mLastRemovalSavePointId = null;
 
     /**
      * Adapter to display the lessons
@@ -64,22 +66,27 @@ public class LessonFragment extends Fragment implements SwipeDeletion.UndoSnackB
      * Contains the database id for the displayed fragment/subject
      */
     private int mSubjectId;
+
     /**
      * Parent viewgroup
      */
     private View mRootView;
+
     /**
      * List containing the vote data
      */
     private RecyclerView mLessonList;
 
     /**
+     * db holding percentage data
+     */
+    private DBAdmissionPercentageData mDataDb = DBAdmissionPercentageData.getInstance();
+
+    /**
      * Returns a new instance of this fragment for the given section number.
      */
 
     public static LessonFragment newInstance(int subjectId) {
-        if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
-            Log.i("votenote placeholder", "newinstance");
         LessonFragment fragment = new LessonFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_SUBJECT_ID, subjectId);
@@ -92,11 +99,12 @@ public class LessonFragment extends Fragment implements SwipeDeletion.UndoSnackB
      */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        //translate from position in drawer to db group id
+        //save the subject we are currently working for
         mSubjectId = getArguments().getInt(ARG_SUBJECT_ID);
 
-        //find and inflate everything
+        //inflate and find views
         View rootView = inflater.inflate(R.layout.subject_fragment, container, false);
+        FloatingActionButton addFab = (FloatingActionButton) rootView.findViewById(R.id.subject_fragment_add_fab);
         mLessonList = (RecyclerView) rootView.findViewById(R.id.subject_fragment_recyclerview);
 
         //config the recyclerview
@@ -109,7 +117,7 @@ public class LessonFragment extends Fragment implements SwipeDeletion.UndoSnackB
 
 
         //if translatedSection is -1, no group has been added yet
-        if (mSubjectId == DBGroups.NO_GROUPS_EXIST) {
+        if (mSubjectId ==) {
             Intent intent = new Intent(getActivity(), SubjectManagementActivity.class);
             intent.putExtra("firstGroup", true);
             getActivity().startActivityForResult(intent, MainActivity.ADD_FIRST_SUBJECT_REQUEST);
@@ -119,20 +127,19 @@ public class LessonFragment extends Fragment implements SwipeDeletion.UndoSnackB
         /*
         DISPLAY GROUP INFO
          */
-        String currentGroupName = mSubjectDb.getGroupName(mSubjectId);
+        mAdapter = new LessonAdapter(getActivity(), mSubjectId);
+        //set adapter
+        mLessonList.setAdapter(mAdapter);
+
+        AdmissionPercentageMeta currentMetaObject = mAdapter.getCurrentMeta();
+
         if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
-            Log.i("lesson fragment", "Loading Group, DB says ID" + mSubjectId + ", Name " + currentGroupName);
+            Log.i("lesson fragment", "Loading Group, DB says ID" + mSubjectId + ", Name " + currentMetaObject.getDisplayName());
 
         //LISTVIEW FOR uebung instances
-        Cursor allEntryCursor = mLessonDb.getAllLessonsForSubject(mSubjectId);
-
-        if (allEntryCursor.getCount() == 0)
+        if (mAdapter.getItemCount() == 0)
             if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
-                Log.e("Main Listview", "Received Empty allEntryCursor for group " + currentGroupName + " with id " + mSubjectId);
-
-        //set adapter
-        mAdapter = new LessonAdapter(getActivity(), mSubjectId);
-        mLessonList.setAdapter(mAdapter);
+                Log.e("Main Listview", "Received Empty allEntryCursor for group " + currentMetaObject.getDisplayName() + " with id " + mSubjectId);
 
         ItemTouchHelper.SimpleCallback swipeCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
             @Override
@@ -175,7 +182,6 @@ public class LessonFragment extends Fragment implements SwipeDeletion.UndoSnackB
         }));
 
         //add listener to fab
-        FloatingActionButton addFab = (FloatingActionButton) rootView.findViewById(R.id.subject_fragment_add_fab);
         addFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -192,7 +198,8 @@ public class LessonFragment extends Fragment implements SwipeDeletion.UndoSnackB
     }
 
     public void showUndoSnackBar(final int lessonId, int lessonPosition) {
-        mLessonToDelete = mAdapter.removeLesson(lessonId);
+        //remove the lesson. creates a savepoint before that, returns the id
+        mLastRemovalSavePointId = mAdapter.removeLesson(lessonId);
         Snackbar
                 .make(mRootView.findViewById(R.id.subject_fragment_coordinator_layout), getActivity().getString(R.string.undobar_deleted), Snackbar.LENGTH_LONG)
                 .setAction("UNDO", new View.OnClickListener() {
@@ -211,8 +218,10 @@ public class LessonFragment extends Fragment implements SwipeDeletion.UndoSnackB
 
     //dont do anything, as we only delete the lesson when the undo bar gets hidden
     private void onUndo() {
-        if (mLessonToDelete != null) {
-            mAdapter.addLesson(mLessonToDelete);
+        if (mLastRemovalSavePointId != null) {
+            DBAdmissionPercentageData.getInstance().rollbackToSavepoint(mLastRemovalSavePointId);
+            mLastRemovalSavePointId = null;
+            mAdapter.requery();
         }
     }
 }

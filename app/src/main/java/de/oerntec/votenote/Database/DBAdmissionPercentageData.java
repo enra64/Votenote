@@ -235,7 +235,7 @@ public class DBAdmissionPercentageData {
         //create values for insert or update
         ContentValues values = new ContentValues();
 
-        //only put id if not new subject, eg restored item//TODO: solve with transaction, otherwise we need to do magic with the rest of the entries
+        //only put id if not new subject, eg restored item//TODO: solve removal with transaction, otherwise we need to do magic with the rest of the entries
         if (newItem.id > 0)
             values.put(DatabaseCreator.ADMISSION_PERCENTAGES_DATA_ID, newItem.id);
         values.put(DatabaseCreator.ADMISSION_PERCENTAGES_DATA_ADMISSION_PERCENTAGE_ID, newItem.admissionPercentageMetaId);

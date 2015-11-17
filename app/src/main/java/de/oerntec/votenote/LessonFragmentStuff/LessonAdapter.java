@@ -35,10 +35,24 @@ import de.oerntec.votenote.MainActivity;
 import de.oerntec.votenote.R;
 
 public class LessonAdapter extends RecyclerView.Adapter<LessonAdapter.Holder> {
+    /**
+     * Use the infocard
+     */
     private static final int VIEW_TYPE_INFO = 0;
+
+    /**
+     * use the card for lessons
+     */
     private static final int VIEW_TYPE_LESSON = 1;
 
+    /**
+     * Admission Percentage Meta Database
+     */
     private DBAdmissionPercentageMeta mMetaDb = DBAdmissionPercentageMeta.getInstance();
+
+    /**
+     * Admission Percentage Data Database
+     */
     private DBAdmissionPercentageData mDataDb = DBAdmissionPercentageData.getInstance();
 
     /**
@@ -46,6 +60,9 @@ public class LessonAdapter extends RecyclerView.Adapter<LessonAdapter.Holder> {
      */
     private AdmissionPercentageMeta mMetaPojo;
 
+    /**
+     * List of current data objects
+     */
     private List<AdmissionPercentageData> mData;
 
     private Context mContext;
@@ -103,21 +120,22 @@ public class LessonAdapter extends RecyclerView.Adapter<LessonAdapter.Holder> {
     }
 
     /**
-     * remove from db
-     * requery
-     * notify
+     * Remove lesson from database
+     * @param admissionDataId primary key id of the admission data object
+     * @return Savepoint ID of the savepoint created before deleting the object
      */
-    public AdmissionPercentageData removeLesson(final int admissionDataId) {
-        AdmissionPercentageData bkp = mDataDb.getItem(admissionDataId);
+    public String removeLesson(final int admissionDataId) {
+        String savePointId = "delete_lesson_" + System.currentTimeMillis();
+        mDataDb.createSavepoint(savePointId);
         final int listPosition = getRecyclerViewPosition(admissionDataId);
         mDataDb.deleteItem(admissionDataId);
         requery();
         notifyItemRemoved(listPosition);
         notifyChangedLessonRange(listPosition);
-        return bkp;
+        return savePointId;
     }
 
-    private void requery() {
+    protected void requery() {
         //mMetaPojo = mMetaDb.getItem(mAdmissionPercentageMetaId);
         mData = mDataDb.getItemsForMetaId(mAdmissionPercentageMetaId, mLatestLessonFirst);
     }
@@ -128,6 +146,12 @@ public class LessonAdapter extends RecyclerView.Adapter<LessonAdapter.Holder> {
      */
     private int getRecyclerViewPosition(int lessonId) {
         return mLatestLessonFirst ? getItemCount() - lessonId : lessonId;
+    }
+
+    public AdmissionPercentageMeta getCurrentMeta() {
+        if (mMetaPojo == null)
+            throw new AssertionError("the meta object has not been loaded yet");
+        return mMetaPojo;
     }
 
     /**

@@ -36,7 +36,6 @@ public class DBSubjects {
     private DBSubjects(Context context) {
         DatabaseCreator dbHelper = new DatabaseCreator(context);
         database = dbHelper.getWritableDatabase();
-
     }
 
     public static DBSubjects setupInstance(Context context) {
@@ -50,7 +49,7 @@ public class DBSubjects {
     }
 
     public Cursor getDataDump() {
-        return database.rawQuery("SELECT * FROM " + DatabaseCreator.TABLE_NAME_GROUPS, new String[0]);
+        return database.rawQuery("SELECT * FROM " + DatabaseCreator.TABLE_NAME_GROUPS, null);
     }
 
     /**
