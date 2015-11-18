@@ -163,6 +163,26 @@ public class DBAdmissionPercentageData {
         return returnValue;
     }
 
+    public AdmissionPercentageData getItem(int apMetaId, int lessonId) {
+        String[] whereArgs = {String.valueOf(apMetaId), String.valueOf(lessonId)};
+        Cursor c = database.query(true, DatabaseCreator.TABLE_NAME_ADMISSION_PERCENTAGES_DATA, null,
+                DatabaseCreator.ADMISSION_PERCENTAGES_DATA_ADMISSION_PERCENTAGE_ID + "=? AND " +
+                        DatabaseCreator.ADMISSION_PERCENTAGES_DATA_LESSON_ID + "=?", whereArgs, null, null, null, null);
+        AdmissionPercentageData returnValue = null;
+        if (c.getCount() != 1)
+            throw new AssertionError("more than one item returned if we search via id is bad");
+        if (c.moveToFirst())
+            returnValue = new AdmissionPercentageData(
+                    c.getInt(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_DATA_ID)),
+                    c.getInt(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_DATA_ADMISSION_PERCENTAGE_ID)),
+                    c.getInt(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_DATA_LESSON_ID)),
+                    c.getInt(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_DATA_FINISHED_ASSIGNMENTS)),
+                    c.getInt(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_DATA_AVAILABLE_ASSIGNMENTS))
+            );
+        c.close();
+        return returnValue;
+    }
+
     /**
      * Get a all admission counters for a subject, ordered by their lesson id
      *
@@ -273,5 +293,22 @@ public class DBAdmissionPercentageData {
         int result = c.getCount();
         c.close();
         return result;
+    }
+
+    private int getMaxLessonIdForAp(int apMetaId) {
+        Cursor cursor = database.rawQuery("SELECT MAX(" + DatabaseCreator.ADMISSION_PERCENTAGES_DATA_LESSON_ID + ") FROM " +
+                DatabaseCreator.TABLE_NAME_ADMISSION_PERCENTAGES_DATA +
+                " WHERE " + DatabaseCreator.ADMISSION_PERCENTAGES_DATA_ADMISSION_PERCENTAGE_ID + "=?", new String[]{String.valueOf(apMetaId)});
+        cursor.moveToFirst();
+        if (cursor.getCount() == 0)
+            throw new AssertionError("!=1 on max query");
+        int maximumLessonId = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_DATA_LESSON_ID));
+        cursor.close();
+        return maximumLessonId;
+    }
+
+    public AdmissionPercentageData getNewestItemForMetaId(int apMetaId) {
+        int lessonId = getMaxLessonIdForAp(apMetaId);
+        return getItem(apMetaId, lessonId);
     }
 }

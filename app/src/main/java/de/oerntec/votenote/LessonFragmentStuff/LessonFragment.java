@@ -50,7 +50,7 @@ public class LessonFragment extends Fragment implements SwipeDeletion.UndoSnackB
      * The fragment argument representing the section number for this
      * fragment.
      */
-    private static final String ARG_SUBJECT_ID = "section_number";
+    private static final String ARG_PERCENTAGE_META_ID = "percentage_id";
 
     /**
      * Savepoint last used, null if no savepoint can currently be used
@@ -65,7 +65,12 @@ public class LessonFragment extends Fragment implements SwipeDeletion.UndoSnackB
     /**
      * Contains the database id for the displayed fragment/subject
      */
-    private int mSubjectId;
+    //private int mSubjectId;
+
+    /**
+     * The percentage meta id all data in this fragment has
+     */
+    private int mPercentageMetaId;
 
     /**
      * Parent viewgroup
@@ -86,10 +91,10 @@ public class LessonFragment extends Fragment implements SwipeDeletion.UndoSnackB
      * Returns a new instance of this fragment for the given section number.
      */
 
-    public static LessonFragment newInstance(int subjectId) {
+    public static LessonFragment newInstance(int percentageMetaId) {
         LessonFragment fragment = new LessonFragment();
         Bundle args = new Bundle();
-        args.putInt(ARG_SUBJECT_ID, subjectId);
+        args.putInt(ARG_PERCENTAGE_META_ID, percentageMetaId);
         fragment.setArguments(args);
         return fragment;
     }
@@ -100,7 +105,7 @@ public class LessonFragment extends Fragment implements SwipeDeletion.UndoSnackB
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         //save the subject we are currently working for
-        mSubjectId = getArguments().getInt(ARG_SUBJECT_ID);
+        mPercentageMetaId = getArguments().getInt(ARG_PERCENTAGE_META_ID);
 
         //inflate and find views
         View rootView = inflater.inflate(R.layout.subject_fragment, container, false);
@@ -117,7 +122,7 @@ public class LessonFragment extends Fragment implements SwipeDeletion.UndoSnackB
 
 
         //if translatedSection is -1, no group has been added yet
-        if (mSubjectId ==) {
+        if (mPercentageMetaId == -1) {
             Intent intent = new Intent(getActivity(), SubjectManagementActivity.class);
             intent.putExtra("firstGroup", true);
             getActivity().startActivityForResult(intent, MainActivity.ADD_FIRST_SUBJECT_REQUEST);
@@ -127,19 +132,19 @@ public class LessonFragment extends Fragment implements SwipeDeletion.UndoSnackB
         /*
         DISPLAY GROUP INFO
          */
-        mAdapter = new LessonAdapter(getActivity(), mSubjectId);
+        mAdapter = new LessonAdapter(getActivity(), mPercentageMetaId);
         //set adapter
         mLessonList.setAdapter(mAdapter);
 
         AdmissionPercentageMeta currentMetaObject = mAdapter.getCurrentMeta();
 
         if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
-            Log.i("lesson fragment", "Loading Group, DB says ID" + mSubjectId + ", Name " + currentMetaObject.getDisplayName());
+            Log.i("lesson fragment", "Loading Group, DB says meta ID" + mPercentageMetaId + ", Name " + currentMetaObject.getDisplayName());
 
         //LISTVIEW FOR uebung instances
         if (mAdapter.getItemCount() == 0)
             if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
-                Log.e("Main Listview", "Received Empty allEntryCursor for group " + currentMetaObject.getDisplayName() + " with id " + mSubjectId);
+                Log.e("Main Listview", "Received Empty allEntryCursor for group " + currentMetaObject.getDisplayName() + " with id " + mPercentageMetaId);
 
         ItemTouchHelper.SimpleCallback swipeCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
             @Override
@@ -173,8 +178,7 @@ public class LessonFragment extends Fragment implements SwipeDeletion.UndoSnackB
         mLessonList.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), mLessonList, new OnItemClickListener() {
             public void onItemClick(View view, int position) {
                 if (position != 0)
-                    MainDialogHelper.showChangeLessonDialog((MainActivity) getActivity(), LessonFragment.this, view, mSubjectId, (Integer) view.getTag(), position);
-                //show undo bar, check whether everything necessary is called, change button color
+                    MainDialogHelper.showChangeLessonDialog((MainActivity) getActivity(), LessonFragment.this, view, mPercentageMetaId, (Integer) view.getTag(), position);
             }
 
             public void onItemLongClick(final View view, int position) {
@@ -185,7 +189,7 @@ public class LessonFragment extends Fragment implements SwipeDeletion.UndoSnackB
         addFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                MainDialogHelper.showAddLessonDialog((MainActivity) getActivity(), mSubjectId);
+                MainDialogHelper.showAddLessonDialog((MainActivity) getActivity(), mPercentageMetaId);
             }
         });
 
@@ -213,7 +217,7 @@ public class LessonFragment extends Fragment implements SwipeDeletion.UndoSnackB
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        ((MainActivity) activity).onSectionAttached(getArguments().getInt(ARG_SUBJECT_ID));
+        ((MainActivity) activity).onSectionAttached(getArguments().getInt(ARG_PERCENTAGE_META_ID));
     }
 
     //dont do anything, as we only delete the lesson when the undo bar gets hidden

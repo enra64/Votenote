@@ -26,6 +26,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import de.oerntec.votenote.CardListHelpers.SwipeDeletion;
+import de.oerntec.votenote.Database.AdmissionPercentageData;
+import de.oerntec.votenote.Database.DBAdmissionPercentageData;
 import de.oerntec.votenote.Database.DBGroups;
 import de.oerntec.votenote.Database.DBLessons;
 import de.oerntec.votenote.Database.Lesson;
@@ -40,33 +42,32 @@ public class MainDialogHelper {
      * Show an add lesson dialog
      *
      * @param mActivity Activity to use for references
-     * @param groupID   id of the group to add a lesson to
+     * @param apMetaId   id of the group to add a lesson to
      */
-    public static void showAddLessonDialog(final MainActivity mActivity, final int groupID) {
-        showLessonDialog(mActivity, null, null, groupID, ADD_LESSON_CODE, -1);
+    public static void showAddLessonDialog(final MainActivity mActivity, final int apMetaId) {
+        showLessonDialog(mActivity, null, null, apMetaId, ADD_LESSON_CODE, -1);
     }
 
     /**
      * Show a dialog to change a lesson entry
      *
      * @param mActivity                the activity for reference usage
-     * @param groupID                  the id of the subject
+     * @param apMetaId                  the id of the subject
      * @param translatedLessonPosition the id of the lesson, translated (+1) from listview
      */
-    public static void showChangeLessonDialog(MainActivity mActivity, LessonFragment lessonFragment, View lessonView, int groupID, int translatedLessonPosition, int recyclerviewLessonPosition) {
-        showLessonDialog(mActivity, lessonFragment, lessonView, groupID, translatedLessonPosition, recyclerviewLessonPosition);
+    public static void showChangeLessonDialog(MainActivity mActivity, LessonFragment lessonFragment, View lessonView, int apMetaId, int translatedLessonPosition, int recyclerviewLessonPosition) {
+        showLessonDialog(mActivity, lessonFragment, lessonView, apMetaId, translatedLessonPosition, recyclerviewLessonPosition);
     }
 
 
     /**
      * Shows a dialog to edit or add a lesson
      */
-    private static void showLessonDialog(final MainActivity mActivity, final LessonFragment lessonFragment, final View lessonView, final int subjectId, final int lessonID, final int lessonPosition) {
-        //db access
-        final DBLessons entryDB = DBLessons.getInstance();
-
+    private static void showLessonDialog(final MainActivity mActivity, final LessonFragment lessonFragment, final View lessonView, final int apMetaId, final int lessonID, final int lessonPosition) {
         final int maxVoteValue;
         final int myVoteValue;
+
+        final DBAdmissionPercentageData apDataDb = DBAdmissionPercentageData.getInstance();
 
         //whether or not to try automatically fixing invalid choices
         boolean autoNumberPickerFixEnabled = MainActivity.getPreference("move_max_assignments_picker", true);
@@ -75,8 +76,9 @@ public class MainDialogHelper {
         final boolean isNewLesson = lessonID == ADD_LESSON_CODE;
         //set values according to usage (add or change)
         if (isNewLesson) {
-            maxVoteValue = entryDB.getPreviousMaximumVote(subjectId);
-            myVoteValue = entryDB.getPreviousMyVote(subjectId);
+            AdmissionPercentageData lastEnteredLesson = apDataDb.getNewestItemForMetaId(apMetaId);
+            maxVoteValue = lastEnteredLesson.availableAssignments;
+            myVoteValue = lastEnteredLesson.finishedAssignments;
         } else {
             oldValues = entryDB.getLesson(subjectId, lessonID);
             myVoteValue = oldValues != null ? oldValues.myVotes : 0;
