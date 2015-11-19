@@ -114,8 +114,6 @@ public class SubjectCreationActivityFragment extends Fragment implements Subject
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //ActionBar mActionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();//does this even do anything?
-
         //get arguments from intent
         mSubjectId = getArguments().getInt(SubjectCreationActivity.SUBJECT_CREATOR_SUBJECT_ID_ARGUMENT_NAME, -1);
         mRecyclerViewPosition = getArguments().getInt(SubjectCreationActivity.SUBJECT_CREATOR_SUBJECT_VIEW_POSITION_ARGUMENT_NAME, -1);

@@ -46,10 +46,11 @@ import de.oerntec.votenote.Database.DBAdmissionCounters;
 import de.oerntec.votenote.Database.DBAdmissionPercentageData;
 import de.oerntec.votenote.Database.DBAdmissionPercentageMeta;
 import de.oerntec.votenote.Database.DBSubjects;
+import de.oerntec.votenote.Database.Lesson;
 import de.oerntec.votenote.Diagram.DiagramActivity;
 import de.oerntec.votenote.Dialogs.MainDialogHelper;
 import de.oerntec.votenote.ImportExport.Writer;
-import de.oerntec.votenote.LessonFragmentStuff.LessonFragment;
+import de.oerntec.votenote.AdmissionPercentageFragmentStuff.AdmissionPercentageFragment;
 import de.oerntec.votenote.NavigationDrawer.NavigationDrawerFragment;
 import de.oerntec.votenote.SubjectManagerStuff.SubjectManagementActivity;
 
@@ -240,7 +241,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
 
         Fragment checkFragment = getFragmentManager().findFragmentById(R.id.container);
         //check whether we have a fragment loaded
-        if (!(checkFragment != null && checkFragment instanceof LessonFragment)) {
+        if (!(checkFragment != null && checkFragment instanceof AdmissionPercentageFragment)) {
             //no! try to load a fragment
             if (hasValidLastSelected)
                 mNavigationDrawerFragment.selectItem(lastSelected);
@@ -319,8 +320,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         FragmentManager fragmentManager = getFragmentManager();
         fragmentManager
                 .beginTransaction()
-                .replace(R.id.container,
-                        LessonFragment.newInstance(mCurrentSelectedSubjectId)).commit();
+                .replace(R.id.container, LessonFragment.newInstance(mCurrentSelectedSubjectId)).commit();
     }
 
     @Override
@@ -456,8 +456,8 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         PreferenceManager.getDefaultSharedPreferences(this).edit().putBoolean(key, val).apply();
     }
 
-    public LessonFragment getCurrentFragment() {
-        return (LessonFragment) getFragmentManager().findFragmentById(R.id.container);
+    public AdmissionPercentageFragment getCurrentFragment() {
+        return (AdmissionPercentageFragment) getFragmentManager().findFragmentById(R.id.container);
     }
 
     @Override

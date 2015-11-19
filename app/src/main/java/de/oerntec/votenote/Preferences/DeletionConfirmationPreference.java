@@ -21,11 +21,12 @@ import android.content.Context;
 import android.preference.DialogPreference;
 import android.util.AttributeSet;
 
-import de.oerntec.votenote.Database.DBLessons;
-import de.oerntec.votenote.Database.DBGroups;
+import de.oerntec.votenote.Database.DatabaseCreator;
 import de.oerntec.votenote.R;
 
 public class DeletionConfirmationPreference extends DialogPreference {
+    Context mContext;
+
     public DeletionConfirmationPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
         setDialogTitle(R.string.deletion_confirmation_title);
@@ -37,8 +38,8 @@ public class DeletionConfirmationPreference extends DialogPreference {
     @Override
     protected void onDialogClosed(boolean positiveResult) {
         if (positiveResult) {
-            DBLessons.getInstance().dropData();
-            DBGroups.getInstance().dropData();
+            DatabaseCreator db = new DatabaseCreator(mContext);
+            db.reset(mContext);
         } else
             super.onDialogClosed(false);
     }

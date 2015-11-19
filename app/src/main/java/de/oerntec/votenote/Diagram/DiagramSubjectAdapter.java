@@ -28,12 +28,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import de.oerntec.votenote.Database.DBGroups;
-import de.oerntec.votenote.Database.DBLessons;
 import de.oerntec.votenote.R;
 
 public class DiagramSubjectAdapter extends RecyclerView.Adapter<DiagramSubjectAdapter.SubjectHolder> {
-    private DBGroups mSubjectDb = DBGroups.getInstance();
+    //private DBGroups mSubjectDb = DBGroups.getInstance();
 
     private AdapterListener mAdapterListener;
     private Cursor mCursor;
@@ -52,7 +50,7 @@ public class DiagramSubjectAdapter extends RecyclerView.Adapter<DiagramSubjectAd
             mCursor.close();
         mCursor = null;
         //should be done asynchronously, but i guess that does not matter for 20 entries...
-        mCursor = mSubjectDb.getAllGroupNames();
+        //mCursor = mSubjectDb.getAllGroupNames();
     }
 
     @Override
@@ -81,7 +79,7 @@ public class DiagramSubjectAdapter extends RecyclerView.Adapter<DiagramSubjectAd
         //set tag for later identification avoiding all
         holder.itemView.setTag(subjectId);
 
-        final boolean enoughLessons = DBLessons.getInstance().getLessonCountForSubject(subjectId) > 1;
+        final boolean enoughLessons = false;//DBLessons.getInstance().getLessonCountForSubject(subjectId) > 1;
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override

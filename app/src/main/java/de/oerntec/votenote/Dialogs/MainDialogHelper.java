@@ -28,10 +28,8 @@ import android.widget.Toast;
 import de.oerntec.votenote.CardListHelpers.SwipeDeletion;
 import de.oerntec.votenote.Database.AdmissionPercentageData;
 import de.oerntec.votenote.Database.DBAdmissionPercentageData;
-import de.oerntec.votenote.Database.DBGroups;
-import de.oerntec.votenote.Database.DBLessons;
 import de.oerntec.votenote.Database.Lesson;
-import de.oerntec.votenote.LessonFragmentStuff.LessonFragment;
+import de.oerntec.votenote.AdmissionPercentageFragmentStuff.AdmissionPercentageFragment;
 import de.oerntec.votenote.MainActivity;
 import de.oerntec.votenote.R;
 
@@ -55,16 +53,16 @@ public class MainDialogHelper {
      * @param apMetaId                  the id of the subject
      * @param translatedLessonPosition the id of the lesson, translated (+1) from listview
      */
-    public static void showChangeLessonDialog(MainActivity mActivity, LessonFragment lessonFragment, View lessonView, int apMetaId, int translatedLessonPosition, int recyclerviewLessonPosition) {
-        showLessonDialog(mActivity, lessonFragment, lessonView, apMetaId, translatedLessonPosition, recyclerviewLessonPosition);
+    public static void showChangeLessonDialog(MainActivity mActivity, AdmissionPercentageFragment admissionPercentageFragment, View lessonView, int apMetaId, int translatedLessonPosition, int recyclerviewLessonPosition) {
+        showLessonDialog(mActivity, admissionPercentageFragment, lessonView, apMetaId, translatedLessonPosition, recyclerviewLessonPosition);
     }
 
 
     /**
      * Shows a dialog to edit or add a lesson
      */
-    private static void showLessonDialog(final MainActivity mActivity, final LessonFragment lessonFragment, final View lessonView, final int apMetaId, final int lessonID, final int lessonPosition) {
-        final int maxVoteValue;
+    private static void showLessonDialog(final MainActivity mActivity, final AdmissionPercentageFragment admissionPercentageFragment, final View lessonView, final int apMetaId, final int lessonID, final int lessonPosition) {
+        /*final int maxVoteValue;
         final int myVoteValue;
 
         final DBAdmissionPercentageData apDataDb = DBAdmissionPercentageData.getInstance();
@@ -142,7 +140,7 @@ public class MainDialogHelper {
             builder.setNeutralButton(R.string.delete_button_text, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
-                    SwipeDeletion.executeProgrammaticSwipeDeletion(mActivity, lessonFragment, lessonView, lessonPosition);
+                    SwipeDeletion.executeProgrammaticSwipeDeletion(mActivity, admissionPercentageFragment, lessonView, lessonPosition);
                 }
             });
         }
@@ -191,7 +189,7 @@ public class MainDialogHelper {
                     boolean isValid = myVoteValue <= maxVoteValue;
                     dialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(isValid);
                     infoView.setTextColor(isValid ?
-                            Color.argb(255, 153, 204, 0) /*green*/ :
+                            Color.argb(255, 153, 204, 0) :
                             mActivity.getResources().getColor(R.color.warning_red));
                 }
             };
@@ -205,6 +203,7 @@ public class MainDialogHelper {
         //change delete button text color to red
         if (!isNewLesson)
             dialog.getButton(DialogInterface.BUTTON_NEUTRAL).setTextColor(mActivity.getResources().getColor(R.color.warning_red));
+                    */
     }
 
 
@@ -214,7 +213,7 @@ public class MainDialogHelper {
      * @param subjectId ID of the group in the database
      * @param activity   reference for various stuff
      */
-    public static void showPresentationPointDialog(final int subjectId, final MainActivity activity) {
+    public static void showPresentationPointDialog(final int subjectId, final MainActivity activity) {/*
         //db access
         final DBGroups groupsDB = DBGroups.getInstance();
 
@@ -227,7 +226,7 @@ public class MainDialogHelper {
 
 		/*
          * PRESPOINT ALERTDIALOG
-		 */
+		 /
         AlertDialog.Builder b = new AlertDialog.Builder(activity)
                 .setView(inputView)
                 .setPositiveButton(activity.getString(R.string.dialog_button_ok), new DialogInterface.OnClickListener() {
@@ -239,10 +238,10 @@ public class MainDialogHelper {
                     }
                 }).setNegativeButton(activity.getString(R.string.dialog_button_abort), null);
         b.setTitle(activity.getString(R.string.main_dialog_pres_title));
-        b.create().show();
+        b.create().show();*/
     }
 
-    public static void showAllInfoDialog(MainActivity activity, int lessonId) {
+    public static void showAllInfoDialog(MainActivity activity, int lessonId) {/*
         DBLessons lessonDb = DBLessons.getInstance();
         DBGroups subjectDb = DBGroups.getInstance();
 
@@ -271,6 +270,6 @@ public class MainDialogHelper {
                 remainingNeededAssignmentsString,
                 numberOfElapsedLessonsString,
                 numberOfLessonsLeftString,
-                neededAssignmentsPerUebungString}, null).show();
+                neededAssignmentsPerUebungString}, null).show();*/
     }
 }

@@ -26,15 +26,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import de.oerntec.votenote.Database.DBGroups;
+//import de.oerntec.votenote.Database.DBGroups;
+import de.oerntec.votenote.Database.DBSubjects;
 import de.oerntec.votenote.Database.Group;
+import de.oerntec.votenote.Database.Subject;
 import de.oerntec.votenote.MainActivity;
 import de.oerntec.votenote.R;
 
 public class SubjectAdapter extends RecyclerView.Adapter<SubjectAdapter.SubjectHolder> {
     public static final int NEW_SUJBECT_CODE = -1;
 
-    private DBGroups mSubjectDb = DBGroups.getInstance();
+    private DBSubjects mSubjectDb = DBSubjects.getInstance();
     private Context mContext;
     private Cursor mCursor;
 
@@ -43,9 +45,11 @@ public class SubjectAdapter extends RecyclerView.Adapter<SubjectAdapter.SubjectH
         requery();
     }
 
-    public int addSubject(Group subject, int position) {
+    public int addSubject(Subject subject, int position) {
         //add to database
-        int result = mSubjectDb.addGroup(subject);
+        int result = mSubjectDb.addSubject(subject.name);
+        subject.id = result;
+        mSubjectDb.changeItem(subject);
         requery();
         //the new lesson should be the first, because the cursor is desc sorted by id
         if (result != -1)

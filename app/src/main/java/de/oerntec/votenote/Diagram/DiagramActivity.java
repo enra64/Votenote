@@ -43,15 +43,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import de.oerntec.votenote.Database.DBGroups;
-import de.oerntec.votenote.Database.DBLessons;
 import de.oerntec.votenote.R;
 import de.oerntec.votenote.TranslationHelper;
 
 
 public class DiagramActivity extends AppCompatActivity implements DiagramSubjectAdapter.AdapterListener {
-    private static DBGroups mSubjectDb;
-    private static DBLessons mLessonDb;
     private static GraphView mGraph;
     private Random r;
     private Map<Integer, LineGraphSeries<DataPoint>> lineGraphMap;
@@ -72,8 +68,8 @@ public class DiagramActivity extends AppCompatActivity implements DiagramSubject
             actionBar.setDisplayHomeAsUpEnabled(true);
 
         //get db connections
-        mSubjectDb = DBGroups.getInstance();
-        mLessonDb = DBLessons.getInstance();
+        //mSubjectDb = DBGroups.getInstance();
+        //mLessonDb = DBLessons.getInstance();
 
         //init random
         r = new Random();
@@ -108,7 +104,7 @@ public class DiagramActivity extends AppCompatActivity implements DiagramSubject
     }
 
     private int[] generateGoldenRatioColors() {
-        int subjectCount = mSubjectDb.getNumberOfSubjects();
+        int subjectCount = 0;// mSubjectDb.getNumberOfSubjects();
         float sat = .5f, val = .95f;
         float goldenFloat = 0.618033988749895f;
         int[] colorArray = new int[subjectCount];
@@ -166,7 +162,7 @@ public class DiagramActivity extends AppCompatActivity implements DiagramSubject
      */
     private LineGraphSeries<DataPoint> getGroupLineGraph(int subjectId, int color) {
         //get cursor
-        Cursor allLessonsForSubject = mLessonDb.getAllLessonsForSubject(subjectId);
+        Cursor allLessonsForSubject = null;//mLessonDb.getAllLessonsForSubject(subjectId);
 
         //add uebung data to graph
         DataPoint[] dataPointArray = new DataPoint[allLessonsForSubject.getCount()];
@@ -190,7 +186,7 @@ public class DiagramActivity extends AppCompatActivity implements DiagramSubject
         answer.setColor(color);
 
         //set name
-        answer.setTitle(mSubjectDb.getGroupName(subjectId));
+        //answer.setTitle(mSubjectDb.getGroupName(subjectId));
 
         //add points
         return answer;

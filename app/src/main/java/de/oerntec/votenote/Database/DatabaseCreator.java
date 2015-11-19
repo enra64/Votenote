@@ -181,4 +181,9 @@ public class DatabaseCreator extends SQLiteOpenHelper {
             database.execSQL(CREATE_TABLE_ADMISSION_PERCENTAGES_DATA);
         }
     }
+
+    public void reset(Context c) {
+        c.deleteDatabase(DATABASE_NAME);
+        onCreate(getWritableDatabase());
+    }
 }

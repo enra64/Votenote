@@ -15,15 +15,15 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 * */
-package de.oerntec.votenote.LessonFragmentStuff;
+package de.oerntec.votenote.AdmissionPercentageFragmentStuff;
 
 
 import android.app.Activity;
+import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
@@ -45,7 +45,7 @@ import de.oerntec.votenote.SubjectManagerStuff.SubjectManagementActivity;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class LessonFragment extends Fragment implements SwipeDeletion.UndoSnackBarHost {
+public class AdmissionPercentageFragment extends Fragment implements SwipeDeletion.UndoSnackBarHost {
     /**
      * The fragment argument representing the section number for this
      * fragment.
@@ -60,7 +60,7 @@ public class LessonFragment extends Fragment implements SwipeDeletion.UndoSnackB
     /**
      * Adapter to display the lessons
      */
-    public LessonAdapter mAdapter;
+    public AdmissionPercentageAdapter mAdapter;
 
     /**
      * Contains the database id for the displayed fragment/subject
@@ -91,8 +91,8 @@ public class LessonFragment extends Fragment implements SwipeDeletion.UndoSnackB
      * Returns a new instance of this fragment for the given section number.
      */
 
-    public static LessonFragment newInstance(int percentageMetaId) {
-        LessonFragment fragment = new LessonFragment();
+    public static AdmissionPercentageFragment newInstance(int percentageMetaId) {
+        AdmissionPercentageFragment fragment = new AdmissionPercentageFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_PERCENTAGE_META_ID, percentageMetaId);
         fragment.setArguments(args);
@@ -132,7 +132,7 @@ public class LessonFragment extends Fragment implements SwipeDeletion.UndoSnackB
         /*
         DISPLAY GROUP INFO
          */
-        mAdapter = new LessonAdapter(getActivity(), mPercentageMetaId);
+        mAdapter = new AdmissionPercentageAdapter(getActivity(), mPercentageMetaId);
         //set adapter
         mLessonList.setAdapter(mAdapter);
 
@@ -155,7 +155,7 @@ public class LessonFragment extends Fragment implements SwipeDeletion.UndoSnackB
             @Override
             public int getSwipeDirs(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
                 //no swipey swipey for info view
-                if (viewHolder instanceof LessonAdapter.InfoHolder)
+                if (viewHolder instanceof AdmissionPercentageAdapter.InfoHolder)
                     return 0;
                 return super.getSwipeDirs(recyclerView, viewHolder);
             }
@@ -178,7 +178,7 @@ public class LessonFragment extends Fragment implements SwipeDeletion.UndoSnackB
         mLessonList.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), mLessonList, new OnItemClickListener() {
             public void onItemClick(View view, int position) {
                 if (position != 0)
-                    MainDialogHelper.showChangeLessonDialog((MainActivity) getActivity(), LessonFragment.this, view, mPercentageMetaId, (Integer) view.getTag(), position);
+                    MainDialogHelper.showChangeLessonDialog((MainActivity) getActivity(), AdmissionPercentageFragment.this, view, mPercentageMetaId, (Integer) view.getTag(), position);
             }
 
             public void onItemLongClick(final View view, int position) {

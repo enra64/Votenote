@@ -15,7 +15,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 * */
-package de.oerntec.votenote.LessonFragmentStuff;
+package de.oerntec.votenote.AdmissionPercentageFragmentStuff;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -23,20 +23,15 @@ import android.graphics.Color;
 import android.view.View;
 import android.widget.TextView;
 
-import de.oerntec.votenote.Database.DBGroups;
-import de.oerntec.votenote.Database.DBLessons;
 import de.oerntec.votenote.R;
 
 class SubjectInfoCalculator {
-    private static DBGroups groupDB = DBGroups.getInstance();
-    private static DBLessons entryDB = DBLessons.getInstance();
-
     /**
      * Write the presentation point status to the textview
      */
     static void setCurrentPresentationPointStatus(Context context, TextView presentationPointsView, int subjectId) {
-        int presentationPoints = groupDB.getPresPoints(subjectId);
-        int minimumPresentationPoints = groupDB.getWantedPresPoints(subjectId);
+        int presentationPoints = 0;//groupDB.getPresPoints(subjectId);
+        int minimumPresentationPoints = 0;//groupDB.getWantedPresPoints(subjectId);
 
         //set text informing of current presentation point level, handling plural by the way.
         presentationPointsView.setText(presentationPoints + " " + context.getString(R.string.main_dialog_lesson_von) + " " + minimumPresentationPoints + " " +
@@ -51,13 +46,13 @@ class SubjectInfoCalculator {
      * Sets how many Assignments have to be voted for to achieve the set minimum voting.
      */
     static void setAverageNeededAssignments(Context context, TextView averageNeededVotesView, int subjectId) {
-        float scheduledMaximumAssignments = groupDB.getScheduledWork(subjectId);
-        float numberOfNeededAssignments = (scheduledMaximumAssignments * (float) groupDB.getMinVote(subjectId)) / (float) 100;
-        float numberOfVotedAssignments = entryDB.getCompletedAssignmentCount(subjectId);
-        float remainingNeededAssignments = numberOfNeededAssignments - numberOfVotedAssignments;
-        int numberOfElapsedLessons = entryDB.getLessonCountForSubject(subjectId);
-        float numberOfLessonsLeft = groupDB.getScheduledNumberOfLessons(subjectId) - numberOfElapsedLessons;
-        float neededAssignmentsPerUebung = remainingNeededAssignments / numberOfLessonsLeft;
+        float scheduledMaximumAssignments = 0;//groupDB.getScheduledWork(subjectId);
+        float numberOfNeededAssignments = 0;//(scheduledMaximumAssignments * (float) groupDB.getMinVote(subjectId)) / (float) 100;
+        float numberOfVotedAssignments = 0;//entryDB.getCompletedAssignmentCount(subjectId);
+        float remainingNeededAssignments = 0;//numberOfNeededAssignments - numberOfVotedAssignments;
+        int numberOfElapsedLessons = 0;//entryDB.getLessonCountForSubject(subjectId);
+        float numberOfLessonsLeft = 0;//groupDB.getScheduledNumberOfLessons(subjectId) - numberOfElapsedLessons;
+        float neededAssignmentsPerUebung = 0;//remainingNeededAssignments / numberOfLessonsLeft;
 
         if (numberOfLessonsLeft == 0)
             averageNeededVotesView.setText(context.getString(R.string.subject_fragment_reached_scheduled_lesson_count));
@@ -71,7 +66,7 @@ class SubjectInfoCalculator {
             averageNeededVotesView.setText(context.getString(R.string.subject_fragment_error_detected));
 
         //set color
-        if (neededAssignmentsPerUebung > groupDB.getScheduledAssignmentsPerLesson(subjectId))
+        if (neededAssignmentsPerUebung > 0)//groupDB.getScheduledAssignmentsPerLesson(subjectId))
             averageNeededVotesView.setTextColor(Color.argb(255, 204, 0, 0));//red
         else
             averageNeededVotesView.setTextColor(context.getResources().getColor(R.color.abc_primary_text_material_light));
@@ -85,7 +80,7 @@ class SubjectInfoCalculator {
      */
     private static float calculateAverageVotierung(int forSection) {
         //get avg cursor
-        Cursor avgCursor = entryDB.getAllLessonsForSubject(forSection);
+        Cursor avgCursor = null;//entryDB.getAllLessonsForSubject(forSection);
         int maxVoteCount = 0, myVoteCount = 0;
         for (int i = 0; i < avgCursor.getCount(); i++) {
             myVoteCount += avgCursor.getInt(1);
@@ -103,6 +98,7 @@ class SubjectInfoCalculator {
      * Set the current average vote
      */
     static void setVoteAverage(Context context, TextView averageVoteView, int subjectId) {
+/*
         float average = calculateAverageVotierung(subjectId);
 
         //no votes have been given
@@ -119,7 +115,7 @@ class SubjectInfoCalculator {
             averageVoteView.setText(String.format("%.1f", average) + "%");
 
         //color text in
-        averageVoteView.setTextColor(average >= minVote ? Color.argb(255, 153, 204, 0) : Color.argb(255, 204, 0, 0));//red
+        averageVoteView.setTextColor(average >= minVote ? Color.argb(255, 153, 204, 0) : Color.argb(255, 204, 0, 0));//red*/
     }
 
 }

@@ -15,7 +15,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 * */
-package de.oerntec.votenote.LessonFragmentStuff;
+package de.oerntec.votenote.AdmissionPercentageFragmentStuff;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -34,7 +34,7 @@ import de.oerntec.votenote.Database.DBSubjects;
 import de.oerntec.votenote.MainActivity;
 import de.oerntec.votenote.R;
 
-public class LessonAdapter extends RecyclerView.Adapter<LessonAdapter.Holder> {
+public class AdmissionPercentageAdapter extends RecyclerView.Adapter<AdmissionPercentageAdapter.Holder> {
     /**
      * Use the infocard
      */
@@ -69,7 +69,7 @@ public class LessonAdapter extends RecyclerView.Adapter<LessonAdapter.Holder> {
     private int mSubjectId, mAdmissionPercentageMetaId;
     private boolean mLatestLessonFirst;
 
-    public LessonAdapter(Context context, int admissionPercentageMetaId) {
+    public AdmissionPercentageAdapter(Context context, int admissionPercentageMetaId) {
         mContext = context;
         //get db
         mMetaDb = DBAdmissionPercentageMeta.getInstance();
