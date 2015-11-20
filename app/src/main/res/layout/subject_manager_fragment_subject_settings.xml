@@ -14,13 +14,13 @@
         android:inputType="textNoSuggestions"
         android:textSize="20sp" />
 
-    <RecyclerView
+    <android.support.v7.widget.RecyclerView
         android:id="@+id/subject_manager_admission_counter_list"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/subject_manager_admission_percentage_counter_list" />
 
-    <RecyclerView
+    <android.support.v7.widget.RecyclerView
         android:id="@+id/subject_manager_admission_percentage_counter_list"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

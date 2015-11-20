@@ -18,7 +18,6 @@
 package de.oerntec.votenote.SubjectManagerStuff;
 
 import android.content.Context;
-import android.database.Cursor;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -26,9 +25,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-//import de.oerntec.votenote.Database.DBGroups;
+import java.util.List;
+
 import de.oerntec.votenote.Database.DBSubjects;
-import de.oerntec.votenote.Database.Group;
 import de.oerntec.votenote.Database.Subject;
 import de.oerntec.votenote.MainActivity;
 import de.oerntec.votenote.R;
@@ -38,7 +37,7 @@ public class SubjectAdapter extends RecyclerView.Adapter<SubjectAdapter.SubjectH
 
     private DBSubjects mSubjectDb = DBSubjects.getInstance();
     private Context mContext;
-    private Cursor mCursor;
+    private List<Subject> mData;
 
     public SubjectAdapter(Context context) {
         mContext = context;
@@ -73,10 +72,10 @@ public class SubjectAdapter extends RecyclerView.Adapter<SubjectAdapter.SubjectH
      * @param recyclerViewPosition position in recyclerview
      * @return subject backup
      */
-    public Group removeSubject(int subjectId, int recyclerViewPosition) {
-        Group bkp = mSubjectDb.getSubject(subjectId);
+    public Subject removeSubject(int subjectId, int recyclerViewPosition) {
+        Subject bkp = mSubjectDb.getItem(subjectId);
         if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
-            Log.i("subject adapter", "attempting to remove " + subjectId + " " + bkp.subjectName);
+            Log.i("subject adapter", "attempting to remove " + subjectId + " " + bkp.name);
 
         notifyItemRemoved(recyclerViewPosition);
         notifyItemRangeChanged(recyclerViewPosition, getItemCount() - 1);
@@ -86,11 +85,7 @@ public class SubjectAdapter extends RecyclerView.Adapter<SubjectAdapter.SubjectH
     }
 
     private void requery() {
-        if (mCursor != null)
-            mCursor.close();
-        mCursor = null;
-        //should be done asynchronously, but i guess that does not matter for at most 20 entries...
-        mCursor = mSubjectDb.getAllGroupsInfos();
+        mData = mSubjectDb.getAllSubjects();
     }
 
     @Override
@@ -112,18 +107,18 @@ public class SubjectAdapter extends RecyclerView.Adapter<SubjectAdapter.SubjectH
 
     @Override
     public void onBindViewHolder(SubjectHolder holder, int position) {
-        mCursor.moveToPosition(position);
+        Subject item = mData.get(position);
 
         //set view visible to avoid using invisible views
         holder.itemView.setVisibility(View.VISIBLE);
 
         //load strings
-        int subjectId = mCursor.getInt(0);
-        String name = mCursor.getString(1);
-        String votePercentage = mCursor.getString(2);
-        String presPoints = mCursor.getString(3);
-        String lessonCount = mCursor.getString(4);
-        String assignmentsPerLesson = mCursor.getString(5);
+        int subjectId = item.id;
+        String name = item.name;
+        String votePercentage = "todo";
+        String presPoints = "todo";
+        String lessonCount = "todo";
+        String assignmentsPerLesson = "todo";
 
         //set tag for later identification avoiding all
         holder.itemView.setTag(subjectId);
@@ -138,7 +133,7 @@ public class SubjectAdapter extends RecyclerView.Adapter<SubjectAdapter.SubjectH
 
     @Override
     public int getItemCount() {
-        return mCursor.getCount();
+        return mData.size();
     }
 
     static class SubjectHolder extends RecyclerView.ViewHolder {

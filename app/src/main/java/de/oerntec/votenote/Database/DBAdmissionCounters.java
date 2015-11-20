@@ -136,18 +136,33 @@ public class DBAdmissionCounters implements PojoDatabase<AdmissionCounter> {
      */
     public List<AdmissionCounter> getItemsForSubject(int subjectId) {
         String[] whereArgs = {String.valueOf(subjectId)};
-        Cursor mCursor = database.query(true, DatabaseCreator.TABLE_NAME_ADMISSION_COUNTERS, null, DatabaseCreator.ADMISSION_COUNTER_SUBJECT_ID + "=?", whereArgs, null, null, DatabaseCreator.ADMISSION_COUNTER_ID + " ASC", null);
+        Cursor cursor = database.query(
+                true,
+                DatabaseCreator.TABLE_NAME_ADMISSION_COUNTERS,
+                null,
+                DatabaseCreator.ADMISSION_COUNTER_SUBJECT_ID + "=?",
+                whereArgs,
+                null,
+                null,
+                DatabaseCreator.ADMISSION_COUNTER_ID + " ASC", null);
 
         List<AdmissionCounter> counters = new LinkedList<>();
 
-        while (mCursor.moveToNext())
-            counters.add(new AdmissionCounter(mCursor.getInt(0),
-                    mCursor.getInt(1),
-                    mCursor.getString(2),
-                    mCursor.getInt(3),
-                    mCursor.getInt(4)));
+        //avoid endless loop if the count is zero
+        if (cursor.getCount() <= 0) {
+            cursor.close();
+            return counters;
+        }
 
-        mCursor.close();
+        //endlosschleife
+        while (cursor.moveToNext())
+            counters.add(new AdmissionCounter(cursor.getInt(0),
+                    cursor.getInt(1),
+                    cursor.getString(2),
+                    cursor.getInt(3),
+                    cursor.getInt(4)));
+
+        cursor.close();
         return counters;
     }
 

@@ -49,7 +49,7 @@ public class DBSubjects {
     }
 
     public Cursor getDataDump() {
-        return database.rawQuery("SELECT * FROM " + DatabaseCreator.TABLE_NAME_GROUPS, null);
+        return database.rawQuery("SELECT * FROM " + DatabaseCreator.TABLE_NAME_SUBJECTS, null);
     }
 
     /**
@@ -61,7 +61,7 @@ public class DBSubjects {
             Log.i("dbgroups:delete", "deleted " + delete.name + " at " + delete.id);
         String whereClause = DatabaseCreator.SUBJECTS_NAME + "=?" + " AND " + DatabaseCreator.SUBJECTS_ID + "=?";
         String[] whereArgs = new String[]{delete.name, String.valueOf(delete.id)};
-        return database.delete(DatabaseCreator.TABLE_NAME_GROUPS, whereClause, whereArgs);
+        return database.delete(DatabaseCreator.TABLE_NAME_SUBJECTS, whereClause, whereArgs);
     }
 
     /**
@@ -85,7 +85,7 @@ public class DBSubjects {
         }
 
         //get maximum id value. because id is autoincrement, that must be the id of the subject we just added
-        Cursor subjectIdCursor = database.rawQuery("SELECT MAX(" + DatabaseCreator.SUBJECTS_ID + ") FROM " + DatabaseCreator.TABLE_NAME_SUBJECTS, null);
+        Cursor subjectIdCursor = database.rawQuery("SELECT MAX(" + DatabaseCreator.SUBJECTS_ID + ") AS maximum_subject_id FROM " + DatabaseCreator.TABLE_NAME_SUBJECTS, null);
 
         //throw error if we have more or less than one result row, because that is bullshit
         if(subjectIdCursor.getCount() != 1)
@@ -93,7 +93,7 @@ public class DBSubjects {
 
         //retrieve value and close cursor
         subjectIdCursor.moveToFirst();
-        int result = subjectIdCursor.getInt(subjectIdCursor.getColumnIndex(DatabaseCreator.SUBJECTS_ID));
+        int result = subjectIdCursor.getInt(subjectIdCursor.getColumnIndexOrThrow("maximum_subject_id"));
         subjectIdCursor.close();
 
         return result;
@@ -103,8 +103,8 @@ public class DBSubjects {
         String data = DatabaseCreator.TABLE_NAME_ADMISSION_PERCENTAGES_DATA;
         String meta = DatabaseCreator.TABLE_NAME_ADMISSION_PERCENTAGES_META;
         Cursor c = database.rawQuery(
-                "SELECT " + data + "." + DatabaseCreator.ADMISSION_PERCENTAGES_DATA_LESSON_ID + ", " +
-                        "FROM " + data +
+                "SELECT " + data + "." + DatabaseCreator.ADMISSION_PERCENTAGES_DATA_LESSON_ID +
+                        " FROM " + data +
                         " INNER JOIN " + meta +
                         " ON " + data + "." + DatabaseCreator.ADMISSION_PERCENTAGES_DATA_ADMISSION_PERCENTAGE_ID + "=" + meta + "." + DatabaseCreator.ADMISSION_PERCENTAGES_META_ID +
                         " WHERE " + meta + "." + DatabaseCreator.ADMISSION_PERCENTAGES_META_SUBJECT_ID + "=?", new String[]{String.valueOf(subjectId)});
@@ -120,9 +120,10 @@ public class DBSubjects {
         String[] whereArgs = {String.valueOf(newItem.id)};
         int affectedRows = database.update(DatabaseCreator.TABLE_NAME_SUBJECTS, values, DatabaseCreator.SUBJECTS_ID + "=?", whereArgs);
         if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
-            if (affectedRows != 0)
+            if (affectedRows != 1)
                 Log.i("AdmissionCounters", "No or more than one entry was changed, something is weird");
-        if (affectedRows != 0) throw new AssertionError();
+        if (affectedRows != 1)
+            throw new AssertionError("not exactly one group was changed");
     }
 
     public List<Subject> getAllSubjects() {

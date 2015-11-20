@@ -42,15 +42,14 @@ import android.widget.Toast;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
+import de.oerntec.votenote.AdmissionPercentageFragmentStuff.AdmissionPercentageFragment;
 import de.oerntec.votenote.Database.DBAdmissionCounters;
 import de.oerntec.votenote.Database.DBAdmissionPercentageData;
 import de.oerntec.votenote.Database.DBAdmissionPercentageMeta;
 import de.oerntec.votenote.Database.DBSubjects;
-import de.oerntec.votenote.Database.Lesson;
 import de.oerntec.votenote.Diagram.DiagramActivity;
 import de.oerntec.votenote.Dialogs.MainDialogHelper;
 import de.oerntec.votenote.ImportExport.Writer;
-import de.oerntec.votenote.AdmissionPercentageFragmentStuff.AdmissionPercentageFragment;
 import de.oerntec.votenote.NavigationDrawer.NavigationDrawerFragment;
 import de.oerntec.votenote.SubjectManagerStuff.SubjectManagementActivity;
 

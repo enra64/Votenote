@@ -18,16 +18,14 @@
 package de.oerntec.votenote.ImportExport;
 
 import android.content.Context;
-import android.database.Cursor;
-import android.widget.Toast;
 
-import java.io.IOException;
 import java.util.List;
 
-import de.oerntec.votenote.Database.DBGroups;
-import de.oerntec.votenote.Database.DBLessons;
-import de.oerntec.votenote.Database.Group;
-import de.oerntec.votenote.R;
+import de.oerntec.votenote.Database.DBAdmissionCounters;
+import de.oerntec.votenote.Database.DBAdmissionPercentageData;
+import de.oerntec.votenote.Database.DBAdmissionPercentageMeta;
+import de.oerntec.votenote.Database.DBSubjects;
+import de.oerntec.votenote.Database.Subject;
 
 public class CsvExporter {
     public static FileDialog exportDialog(final Context activity) {
@@ -49,31 +47,25 @@ public class CsvExporter {
 
     private static void export(final String path, final Context activity) {
         //get database access
-        final DBGroups groupsDB = DBGroups.getInstance();
-        final DBLessons entryDB = DBLessons.getInstance();
+        final DBAdmissionPercentageData mApDataDb = DBAdmissionPercentageData.getInstance();
+        final DBAdmissionPercentageMeta mApMetaDb = DBAdmissionPercentageMeta.getInstance();
+        final DBAdmissionCounters mCountersDb = DBAdmissionCounters.getInstance();
+        final DBSubjects mSubjectDb = DBSubjects.getInstance();
 
         StringBuilder s = new StringBuilder();
         //separator for excel
         s.append("sep=;");
         s.append("\r\n");
 
-        List<Group> subjectList = groupsDB.getAllSubjects();
+        List<Subject> subjectList = mSubjectDb.getAllSubjects();
+/*
+        for (Subject subject : subjectList) {
+            s.append(subject.name);
+            s.append(": \r\n");
 
-        for (Group subject : subjectList) {
-            String groupName = subject.subjectName;
-            s.append(groupName);
-            s.append(": ");
-            s.append(subject.subjectMinimumVotePercentage);
-            s.append("%");
-            s.append(", ");
-            s.append(subject.subjectCurrentPresentationPoints);
-            s.append(" von ");
-            s.append(subject.subjectWantedPresentationPoints);
-            s.append(" Vortragspunkten mit ");
-            s.append(subject.subjectScheduledAssignmentsPerLesson);
-            s.append(" Aufgaben in ");
-            s.append(subject.subjectScheduledLessonCount);
-            s.append(" Übungen");
+            for(AdmissionPercentageMeta apm : mApMetaDb.getItemsForSubject(subject.id)){
+                s.append()
+            }
 
             s.append(";;\r\n");
             s.append("Nummer,Gemachte Aufgaben,Maximale Aufgaben");
@@ -101,6 +93,6 @@ public class CsvExporter {
         } catch (IOException e) {
             e.printStackTrace();
             Toast.makeText(activity, activity.getString(R.string.import_result_bad), Toast.LENGTH_LONG).show();
-        }
+        }*/
     }
 }

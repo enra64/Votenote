@@ -33,8 +33,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
-import de.oerntec.votenote.Database.DBGroups;
-import de.oerntec.votenote.Database.DBLessons;
+import de.oerntec.votenote.Database.DBSubjects;
+import de.oerntec.votenote.Database.DatabaseCreator;
 import de.oerntec.votenote.MainActivity;
 import de.oerntec.votenote.R;
 import de.oerntec.votenote.SubjectManagerStuff.SubjectManagementActivity;
@@ -44,7 +44,7 @@ public class XmlImporter {
 
     public static void importDialog(final Context activity) {
         //if there already are subjects, ask the user whether he truly wants to delete everything
-        if (DBGroups.getInstance().getCount() > 0) {
+        if (DBSubjects.getInstance().getCount() > 0) {
             AlertDialog.Builder b = new AlertDialog.Builder(activity);
             b.setTitle(activity.getString(R.string.xml_import_dialog_title));
             b.setMessage(activity.getString(R.string.xml_import_warning_message));
@@ -60,23 +60,23 @@ public class XmlImporter {
             startDialog(activity);
     }
 
-    private static void startDialog(final Context activity) {
+    private static void startDialog(final Context context) {
         FileDialog fileOpenDialog = new FileDialog(
-                activity,
+                context,
                 "FileOpen..",
                 new FileDialog.FileDialogListener() {
                     @Override
                     public void onChosenDir(String chosenDir) {
                         success = true;
-                        importXml(chosenDir);
+                        importXml(chosenDir, context);
                         //check whether an exception was catched
                         if (success)
-                            Toast.makeText(activity, activity.getString(R.string.import_result_ok), Toast.LENGTH_LONG).show();
+                            Toast.makeText(context, context.getString(R.string.import_result_ok), Toast.LENGTH_LONG).show();
                         else
-                            Toast.makeText(activity, activity.getString(R.string.import_result_bad), Toast.LENGTH_LONG).show();
+                            Toast.makeText(context, context.getString(R.string.import_result_bad), Toast.LENGTH_LONG).show();
 
-                        if (activity instanceof SubjectManagementActivity) {
-                            ((SubjectManagementActivity) activity).reloadAdapter();
+                        if (context instanceof SubjectManagementActivity) {
+                            ((SubjectManagementActivity) context).reloadAdapter();
                         }
                     }
                 }
@@ -85,11 +85,10 @@ public class XmlImporter {
         fileOpenDialog.chooseFile_or_Dir();
     }
 
-    private static void importXml(String filename) {
+    private static void importXml(String filename, Context context) {
         File file = new File(filename);
         InputStream inputStream;
-        DBLessons.getInstance().dropData();
-        DBGroups.getInstance().dropData();
+        new DatabaseCreator(context).reset(context);
         try {
             inputStream = new FileInputStream(file);
         } catch (FileNotFoundException e) {
@@ -173,7 +172,6 @@ public class XmlImporter {
     }
 
     private static void parseEntry(XmlPullParser parser) throws IOException, XmlPullParserException {
-        DBLessons db = DBLessons.getInstance();
         parser.require(XmlPullParser.START_TAG, null, "row");
 
         parser.nextTag();
@@ -198,11 +196,11 @@ public class XmlImporter {
 
         parser.nextTag();
         parser.require(XmlPullParser.END_TAG, null, "row");
-        db.addLesson(
+        /*db.addLesson(
                 Integer.valueOf(typ_uebung),
                 Integer.valueOf(max_votierung),
                 Integer.valueOf(my_votierung),
-                Integer.valueOf(nummer_uebung));
+                Integer.valueOf(nummer_uebung));*/
     }
 
     private static String readText(XmlPullParser parser) throws IOException, XmlPullParserException {
@@ -216,7 +214,7 @@ public class XmlImporter {
     }
 
     private static void parseSubject(XmlPullParser parser) throws IOException, XmlPullParserException {
-        DBGroups db = DBGroups.getInstance();
+        //DBGroups db = DBGroups.getInstance();
         parser.require(XmlPullParser.START_TAG, null, "row");
 
         parser.nextTag();
@@ -255,7 +253,7 @@ public class XmlImporter {
         parser.require(XmlPullParser.END_TAG, null, "uebung_max_prespoints");
 
         parser.nextTag();
-        parser.require(XmlPullParser.END_TAG, null, "row");
+        parser.require(XmlPullParser.END_TAG, null, "row");/*
         db.addGroup(
                 Integer.valueOf(id),
                 uebung_name,
@@ -263,7 +261,7 @@ public class XmlImporter {
                 Integer.valueOf(uebung_max_prespoints),
                 Integer.valueOf(uebung_prespoints),
                 Integer.valueOf(uebung_count),
-                Integer.valueOf(uebung_maxvotes_per_ueb));
+                Integer.valueOf(uebung_maxvotes_per_ueb));*/
     }
 
     private static void skip(XmlPullParser parser) throws XmlPullParserException, IOException {

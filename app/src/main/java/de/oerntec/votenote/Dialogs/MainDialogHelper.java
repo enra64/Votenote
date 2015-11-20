@@ -17,21 +17,10 @@
 * */
 package de.oerntec.votenote.Dialogs;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.graphics.Color;
 import android.view.View;
-import android.widget.NumberPicker;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import de.oerntec.votenote.CardListHelpers.SwipeDeletion;
-import de.oerntec.votenote.Database.AdmissionPercentageData;
-import de.oerntec.votenote.Database.DBAdmissionPercentageData;
-import de.oerntec.votenote.Database.Lesson;
 import de.oerntec.votenote.AdmissionPercentageFragmentStuff.AdmissionPercentageFragment;
 import de.oerntec.votenote.MainActivity;
-import de.oerntec.votenote.R;
 
 public class MainDialogHelper {
     private static final int ADD_LESSON_CODE = -2;

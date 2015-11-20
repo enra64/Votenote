@@ -40,8 +40,7 @@ import android.view.View;
 import de.oerntec.votenote.CardListHelpers.OnItemClickListener;
 import de.oerntec.votenote.CardListHelpers.RecyclerItemClickListener;
 import de.oerntec.votenote.CardListHelpers.SwipeDeletion;
-import de.oerntec.votenote.Database.DBLessons;
-import de.oerntec.votenote.Database.Group;
+import de.oerntec.votenote.Database.Subject;
 import de.oerntec.votenote.ImportExport.XmlImporter;
 import de.oerntec.votenote.R;
 import de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.SubjectCreationActivity;
@@ -87,7 +86,7 @@ public class SubjectManagementActivity extends AppCompatActivity implements Swip
     /**
      * save the deleted subject in showUndoBar to enable restoring it
      */
-    private Group undoBarSubject;
+    private Subject undoBarSubject;
 
     /**
      * save the id of the deleted subject in showUndoBar to enable restoring it
@@ -239,7 +238,8 @@ public class SubjectManagementActivity extends AppCompatActivity implements Swip
         deletionRunnable = new Runnable() {
             @Override
             public void run() {
-                DBLessons.getInstance().deleteAllEntriesForGroup(subjectId);
+                //DBLessons.getInstance().deleteAllEntriesForGroup(subjectId);
+                //TODO: use on delete cascade for this, release savepoint here, abort in onUndo
             }
         };
         deletionHandler.postDelayed(deletionRunnable, 3000);

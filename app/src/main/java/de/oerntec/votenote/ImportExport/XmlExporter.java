@@ -6,8 +6,10 @@ import android.widget.Toast;
 
 import java.io.IOException;
 
-import de.oerntec.votenote.Database.DBLessons;
-import de.oerntec.votenote.Database.DBGroups;
+import de.oerntec.votenote.Database.DBAdmissionCounters;
+import de.oerntec.votenote.Database.DBAdmissionPercentageData;
+import de.oerntec.votenote.Database.DBAdmissionPercentageMeta;
+import de.oerntec.votenote.Database.DBSubjects;
 import de.oerntec.votenote.Database.DatabaseCreator;
 import de.oerntec.votenote.R;
 
@@ -54,8 +56,10 @@ public class XmlExporter {
 
         try {
             //export both tables
-            exportTable(DBLessons.getInstance().getAllData(), "entries");
-            exportTable(DBGroups.getInstance().getDataDump(), "subjects");
+            exportTable(DBSubjects.getInstance().getDataDump(), "subjects");
+            exportTable(DBAdmissionCounters.getInstance().getAllData(), "subjects");
+            exportTable(DBAdmissionPercentageMeta.getInstance().getAllData(), "subjects");
+            exportTable(DBAdmissionPercentageData.getInstance().getAllData(), "entries");
         } catch (IOException e) {
             success = false;
             e.printStackTrace();

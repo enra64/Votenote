@@ -1,5 +1,6 @@
 package de.oerntec.votenote.SubjectManagerStuff.SubjectCreation;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.DialogInterface;
@@ -122,18 +123,27 @@ public class SubjectCreationActivityFragment extends Fragment implements Subject
         mIsNewSubject = mSubjectId == ADD_SUBJECT_CODE;
         mIsOldSubject = !mIsNewSubject;
 
-        //get a database
-        DatabaseCreator dbHelper = new DatabaseCreator(getContext());
-        mDatabase = dbHelper.getWritableDatabase();
-
-        //begin transaction on database to enable using commit and abort
-        mDatabase.beginTransaction();
-
         //if this is a new subject, we have to create a subject now to know the subject id, which is conveniently returned by the addSubject method
         if(mIsNewSubject)
             mSubjectId = mSubjectDb.addSubject("If you see this, i fucked up.");
 
         setHasOptionsMenu(true);
+    }
+
+    /**
+     * yeah so this is deprecated in api 23, but the replacement method is not called in api<23 except if you use support fragment
+     *
+     * @param activity
+     */
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        //get a database
+        DatabaseCreator dbHelper = new DatabaseCreator(activity);
+        mDatabase = dbHelper.getWritableDatabase();
+
+        //begin transaction on database to enable using commit and abort
+        mDatabase.beginTransaction();
     }
 
     @Override
@@ -153,6 +163,10 @@ public class SubjectCreationActivityFragment extends Fragment implements Subject
         nameInput = (EditText) input.findViewById(R.id.subject_manager_dialog_groupsettings_edit_name);
         mAdmissionCounterList = (RecyclerView) input.findViewById(R.id.subject_manager_admission_counter_list);
         mAdmissionPercentageList = (RecyclerView) input.findViewById(R.id.subject_manager_admission_percentage_counter_list);
+
+        initializeList(mAdmissionCounterList, DBAdmissionCounters.getInstance(), mCounterAdapter, new AdmissionCounter(-1, -1, "", -1, -1));
+        initializeList(mAdmissionPercentageList, DBAdmissionPercentageMeta.getInstance(), mPercentageAdapter, new AdmissionPercentageMeta(-1, -1, -1, -1, -1, ""));
+
         return input;
     }
 
@@ -166,24 +180,22 @@ public class SubjectCreationActivityFragment extends Fragment implements Subject
             Subject oldData = mSubjectDb.getItem(mSubjectId);
             nameInput.setText(oldData.name);
         }
-
-        initializeList(mAdmissionCounterList, DBAdmissionCounters.getInstance(), mCounterAdapter, new AdmissionCounter(-1, -1, "", -1, -1));
-        initializeList(mAdmissionPercentageList, DBAdmissionPercentageMeta.getInstance(), mPercentageAdapter, new AdmissionPercentageMeta(-1, -1, -1, -1, -1, ""));
     }
+
 
     private void initializeList(RecyclerView subject, PojoDatabase database, SubjectCreatorAdapter adapterReference, final NameAndIdPojo identificator) {
         //config the recyclerview
         subject.setHasFixedSize(true);
 
         //give it a layoutmanager (whatever that is)
-        LinearLayoutManager manager = new LinearLayoutManager(getContext());
+        LinearLayoutManager manager = new LinearLayoutManager(getActivity());
         manager.setOrientation(LinearLayoutManager.VERTICAL);
         subject.setLayoutManager(manager);
 
         adapterReference = new SubjectCreatorAdapter<>(database, mSubjectId);
 
         subject.setAdapter(adapterReference);
-        subject.addOnItemTouchListener(new RecyclerItemClickListener(getContext(), subject, new OnItemClickListener() {
+        subject.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), subject, new OnItemClickListener() {
             public void onItemClick(View view, int position) {
                 if ((int) view.getTag() != ID_ADD_ITEM) {
                     if (identificator instanceof AdmissionCounter)
@@ -287,6 +299,8 @@ public class SubjectCreationActivityFragment extends Fragment implements Subject
      */
     private void saveData() {
         mSubjectDb.changeItem(new Subject(nameInput.getText().toString(), mSubjectId));
+        if (mDatabase == null)
+            throw new AssertionError("no db reference?");
         mDatabase.setTransactionSuccessful();
         mDatabase.endTransaction();
     }
