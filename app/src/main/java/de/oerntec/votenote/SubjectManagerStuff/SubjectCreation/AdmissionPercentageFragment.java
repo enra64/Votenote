@@ -79,7 +79,7 @@ public class AdmissionPercentageFragment extends DialogFragment {
             mDb = DBAdmissionPercentageMeta.getInstance();
 
             //create a savepoint now, so we can rollback if the user decides to abort
-            mSavepointId = mSubjectId + "APCMETA" + System.currentTimeMillis();
+            mSavepointId = "APCMETA" + mSubjectId;
             mDb.createSavepoint(mSavepointId);
 
             //create a new meta entry for this so we have an id to work with
@@ -147,8 +147,8 @@ public class AdmissionPercentageFragment extends DialogFragment {
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+    public void onStart() {
+        super.onStart();
         if (mIsOldPercentageCounter)
             loadOldSubjectValues();
 
@@ -177,16 +177,17 @@ public class AdmissionPercentageFragment extends DialogFragment {
      */
     private void setValuesForViews() {
         //display an error if the edittext is empty
-        nameInput.addTextChangedListener(new NotEmptyWatcher(nameInput));
+        nameInput.addTextChangedListener(new NotEmptyWatcher(nameInput, ((AlertDialog) getDialog()).getButton(DialogInterface.BUTTON_POSITIVE)));
 
         //only set the old name as text if it is not "subject name", so the user can correct his value
         if (mIsOldPercentageCounter)
             nameInput.setText(nameHint);
+        else {
+            ((AlertDialog) getDialog()).getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(false);
+        }
 
         initSeekbar(requiredPercentageSeek, requiredPercentageInfo, requiredPercentageHint, 100);
-
         initSeekbar(estimatedAssignmentsSeek, estimatedAssignmentsHelp, estimatedAssignmentsHint, 50);
-
         initSeekbar(estimatedLessonCountSeek, estimatedUebungCountHelp, estimatedLessonCountHint, 50);
     }
 

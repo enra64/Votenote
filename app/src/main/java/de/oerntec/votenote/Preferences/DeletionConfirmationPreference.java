@@ -38,7 +38,7 @@ public class DeletionConfirmationPreference extends DialogPreference {
     @Override
     protected void onDialogClosed(boolean positiveResult) {
         if (positiveResult) {
-            DatabaseCreator db = new DatabaseCreator(mContext);
+            DatabaseCreator db = DatabaseCreator.getInstance(mContext);
             db.reset(mContext);
         } else
             super.onDialogClosed(false);

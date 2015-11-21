@@ -1,7 +1,9 @@
 package de.oerntec.votenote.Helpers;
 
+import android.support.annotation.Nullable;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.widget.Button;
 import android.widget.EditText;
 
 /**
@@ -9,9 +11,11 @@ import android.widget.EditText;
  */
 public class NotEmptyWatcher implements TextWatcher {
     private final EditText mEditText;
+    private final Button mDisableOnEmptyButton;
 
-    public NotEmptyWatcher(EditText editText){
+    public NotEmptyWatcher(EditText editText, @Nullable Button disableOnEmpty) {
         mEditText = editText;
+        mDisableOnEmptyButton = disableOnEmpty;
     }
 
     @Override
@@ -24,7 +28,13 @@ public class NotEmptyWatcher implements TextWatcher {
 
     @Override
     public void afterTextChanged(Editable s) {
-        if(s.length() == 0)
+        if (s.length() == 0) {
             mEditText.setError("Must not be empty!");
+            if (mDisableOnEmptyButton != null)
+                mDisableOnEmptyButton.setEnabled(false);
+        } else {
+            if (mDisableOnEmptyButton != null)
+                mDisableOnEmptyButton.setEnabled(true);
+        }
     }
 }

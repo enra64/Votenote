@@ -34,7 +34,7 @@ public class DBSubjects {
     private SQLiteDatabase database;
 
     private DBSubjects(Context context) {
-        DatabaseCreator dbHelper = new DatabaseCreator(context);
+        DatabaseCreator dbHelper = DatabaseCreator.getInstance(context);
         database = dbHelper.getWritableDatabase();
     }
 

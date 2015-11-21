@@ -26,19 +26,16 @@ import de.oerntec.votenote.MainActivity;
 
 public class DatabaseCreator extends SQLiteOpenHelper {
     public static final String DATABASE_NAME = "uebungen";
-
     //new
     public static final String TABLE_NAME_SUBJECTS = "subjects";
     public static final String TABLE_NAME_ADMISSION_COUNTERS = "admission_counters";
     public static final String TABLE_NAME_ADMISSION_PERCENTAGES_META = "admission_percentages_meta";
     public static final String TABLE_NAME_ADMISSION_PERCENTAGES_DATA = "admission_percentages_data";
-
     /***********************************************************************************************
      * admission counter database start
      **********************************************************************************************/
     public static final String SUBJECTS_ID = "_id";
     public static final String SUBJECTS_NAME = "uebung_name";
-
     /***********************************************************************************************
      * admission counter database start
      **********************************************************************************************/
@@ -47,8 +44,6 @@ public class DatabaseCreator extends SQLiteOpenHelper {
     public static final String ADMISSION_COUNTER_COUNTER_NAME = "counter_name";
     public static final String ADMISSION_COUNTER_CURRENT = "current";
     public static final String ADMISSION_COUNTER_TARGET = "target";
-
-
     /***********************************************************************************************
      * admission percentage names database start
      **********************************************************************************************/
@@ -58,8 +53,6 @@ public class DatabaseCreator extends SQLiteOpenHelper {
     public static final String ADMISSION_PERCENTAGES_META_TARGET_PERCENTAGE = "target_percentage";
     public static final String ADMISSION_PERCENTAGES_META_TARGET_LESSON_COUNT = "target_lesson_count";
     public static final String ADMISSION_PERCENTAGES_META_TARGET_ASSIGNMENTS_PER_LESSON = "target_assignments_per_lesson";
-
-
     /***********************************************************************************************
      * admission percentage data database start
      **********************************************************************************************/
@@ -68,15 +61,11 @@ public class DatabaseCreator extends SQLiteOpenHelper {
     public static final String ADMISSION_PERCENTAGES_DATA_ADMISSION_PERCENTAGE_ID = "admission_percentage_id";
     public static final String ADMISSION_PERCENTAGES_DATA_FINISHED_ASSIGNMENTS = "finished_assignments";
     public static final String ADMISSION_PERCENTAGES_DATA_AVAILABLE_ASSIGNMENTS = "available_assignments";
-
-
     public static final int DATABASE_VERSION = 13;//switched to db v13 in commit 22.10.15 13:49
-
     //begin new database system
     private static final String CREATE_TABLE_SUBJECTS = "create table " + TABLE_NAME_SUBJECTS + "( " +
             SUBJECTS_ID + " integer primary key AUTOINCREMENT," + //autoincrement for more clearly defined behaviour
             SUBJECTS_NAME + " text not null UNIQUE);";
-
     private static final String CREATE_TABLE_ADMISSION_COUNTERS = "create table " + TABLE_NAME_ADMISSION_COUNTERS + "( " +
             ADMISSION_COUNTER_ID + " integer primary key," +
             ADMISSION_COUNTER_SUBJECT_ID + " integer, " +
@@ -85,7 +74,6 @@ public class DatabaseCreator extends SQLiteOpenHelper {
             ADMISSION_COUNTER_TARGET + " integer not null," +
             "FOREIGN KEY (" + ADMISSION_COUNTER_SUBJECT_ID + ") REFERENCES " + TABLE_NAME_SUBJECTS + "(" + SUBJECTS_ID + ")" +
             ");";
-
     private static final String CREATE_TABLE_ADMISSION_PERCENTAGES_DATA = "create table " + TABLE_NAME_ADMISSION_PERCENTAGES_DATA + "( " +
             ADMISSION_PERCENTAGES_DATA_LESSON_ID + " integer not null," +
             ADMISSION_PERCENTAGES_DATA_FINISHED_ASSIGNMENTS + " integer not null," +
@@ -94,7 +82,6 @@ public class DatabaseCreator extends SQLiteOpenHelper {
             "FOREIGN KEY (" + ADMISSION_PERCENTAGES_DATA_ADMISSION_PERCENTAGE_ID + ") REFERENCES " + TABLE_NAME_ADMISSION_PERCENTAGES_META + "(" + ADMISSION_PERCENTAGES_META_ID + "), " +
             "PRIMARY KEY(" + ADMISSION_PERCENTAGES_DATA_LESSON_ID + ", " + ADMISSION_PERCENTAGES_DATA_ADMISSION_PERCENTAGE_ID + ")" + //primary key is meta id + lesson id
             ");";
-
     private static final String CREATE_TABLE_ADMISSION_PERCENTAGES_META = "create table " + TABLE_NAME_ADMISSION_PERCENTAGES_META + "( " +
             ADMISSION_PERCENTAGES_META_ID + " integer primary key, " +
             ADMISSION_PERCENTAGES_META_NAME + " text not null, " +
@@ -104,9 +91,16 @@ public class DatabaseCreator extends SQLiteOpenHelper {
             ADMISSION_PERCENTAGES_META_TARGET_PERCENTAGE + " integer not null," +
             "FOREIGN KEY (" + ADMISSION_PERCENTAGES_META_SUBJECT_ID + ") REFERENCES " + TABLE_NAME_SUBJECTS + "(" + SUBJECTS_ID + ")" +
             ");";
+    private static DatabaseCreator mSingletonInstance = null;
 
-    public DatabaseCreator(Context context) {
+    private DatabaseCreator(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
+    }
+
+    public static DatabaseCreator getInstance(Context context) {
+        if (mSingletonInstance == null)
+            mSingletonInstance = new DatabaseCreator(context);
+        return mSingletonInstance;
     }
 
     // Method is called during creation of the database

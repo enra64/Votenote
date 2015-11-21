@@ -44,7 +44,7 @@ public class DBAdmissionCounters implements PojoDatabase<AdmissionCounter> {
      * Private constructor for singleton
      */
     private DBAdmissionCounters(Context context) {
-        DatabaseCreator dbHelper = new DatabaseCreator(context);
+        DatabaseCreator dbHelper = DatabaseCreator.getInstance(context);
         database = dbHelper.getWritableDatabase();
     }
 
@@ -100,9 +100,10 @@ public class DBAdmissionCounters implements PojoDatabase<AdmissionCounter> {
         String[] whereArgs = {String.valueOf(newValues.id)};
         int affectedRows = database.update(DatabaseCreator.TABLE_NAME_ADMISSION_COUNTERS, values, DatabaseCreator.ADMISSION_COUNTER_ID + "=?", whereArgs);
         if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
-            if (affectedRows != 0)
+            if (affectedRows != 1)
                 Log.i("AdmissionCounters", "No or more than one entry was changed, something is weird");
-        if (affectedRows != 0) throw new AssertionError();
+        if (affectedRows != 1)
+            throw new AssertionError("not exactly on item changed");
     }
 
     /**
@@ -114,10 +115,15 @@ public class DBAdmissionCounters implements PojoDatabase<AdmissionCounter> {
      */
     public AdmissionCounter getItem(int id) {
         String[] whereArgs = {String.valueOf(id)};
-        Cursor mCursor = database.query(true, DatabaseCreator.TABLE_NAME_ADMISSION_COUNTERS, null, DatabaseCreator.ADMISSION_COUNTER_ID + "=?", whereArgs, null, null, null, null);
+        Cursor mCursor = database.query(true,
+                DatabaseCreator.TABLE_NAME_ADMISSION_COUNTERS,
+                null,
+                DatabaseCreator.ADMISSION_COUNTER_ID + "=?",
+                whereArgs, null, null, null, null);
         AdmissionCounter returnValue = null;
         //more than one item returned if we search via id is bad
-        if (mCursor.getCount() != 1) throw new AssertionError();
+        if (mCursor.getCount() != 1)
+            throw new AssertionError("could not find item " + id);
         if (mCursor.moveToFirst())
             returnValue = new AdmissionCounter(mCursor.getInt(0),
                     mCursor.getInt(1),
@@ -147,12 +153,6 @@ public class DBAdmissionCounters implements PojoDatabase<AdmissionCounter> {
                 DatabaseCreator.ADMISSION_COUNTER_ID + " ASC", null);
 
         List<AdmissionCounter> counters = new LinkedList<>();
-
-        //avoid endless loop if the count is zero
-        if (cursor.getCount() <= 0) {
-            cursor.close();
-            return counters;
-        }
 
         //endlosschleife
         while (cursor.moveToNext())
@@ -219,7 +219,7 @@ public class DBAdmissionCounters implements PojoDatabase<AdmissionCounter> {
         }
 
         //get maximum id value. because id is autoincrement, that must be the id of the subject we just added
-        Cursor idCursor = database.rawQuery("SELECT MAX(" + DatabaseCreator.ADMISSION_COUNTER_ID + ") FROM " + DatabaseCreator.TABLE_NAME_ADMISSION_COUNTERS, null);
+        Cursor idCursor = database.rawQuery("SELECT MAX(" + DatabaseCreator.ADMISSION_COUNTER_ID + ") AS max FROM " + DatabaseCreator.TABLE_NAME_ADMISSION_COUNTERS, null);
 
         //throw error if we have more or less than one result row, because that is bullshit
         if (idCursor.getCount() != 1)
@@ -227,7 +227,7 @@ public class DBAdmissionCounters implements PojoDatabase<AdmissionCounter> {
 
         //retrieve value and close cursor
         idCursor.moveToFirst();
-        int result = idCursor.getInt(idCursor.getColumnIndex(DatabaseCreator.ADMISSION_COUNTER_ID));
+        int result = idCursor.getInt(idCursor.getColumnIndexOrThrow("max"));
         idCursor.close();
 
         return result;

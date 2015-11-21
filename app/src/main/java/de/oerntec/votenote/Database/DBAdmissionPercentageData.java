@@ -44,7 +44,7 @@ public class DBAdmissionPercentageData {
      * Private constructor for singleton
      */
     private DBAdmissionPercentageData(Context context) {
-        DatabaseCreator dbHelper = new DatabaseCreator(context);
+        DatabaseCreator dbHelper = DatabaseCreator.getInstance(context);
         database = dbHelper.getWritableDatabase();
     }
 

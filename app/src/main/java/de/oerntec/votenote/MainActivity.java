@@ -158,10 +158,10 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         me = this;
 
         //database access
-        mSubjectDb = DBSubjects.setupInstance(this);
-        mAdmissionCounterDb = DBAdmissionCounters.setupInstance(this);
-        mPercentageDataDb = DBAdmissionPercentageData.setupInstance(this);
-        mPercentageMetaDb = DBAdmissionPercentageMeta.setupInstance(this);
+        mSubjectDb = DBSubjects.setupInstance(getApplicationContext());
+        mAdmissionCounterDb = DBAdmissionCounters.setupInstance(getApplicationContext());
+        mPercentageDataDb = DBAdmissionPercentageData.setupInstance(getApplicationContext());
+        mPercentageMetaDb = DBAdmissionPercentageMeta.setupInstance(getApplicationContext());
 
         setContentView(R.layout.activity_main);
 

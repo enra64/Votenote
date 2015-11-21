@@ -88,7 +88,7 @@ public class XmlImporter {
     private static void importXml(String filename, Context context) {
         File file = new File(filename);
         InputStream inputStream;
-        new DatabaseCreator(context).reset(context);
+        DatabaseCreator.getInstance(context).reset(context);
         try {
             inputStream = new FileInputStream(file);
         } catch (FileNotFoundException e) {

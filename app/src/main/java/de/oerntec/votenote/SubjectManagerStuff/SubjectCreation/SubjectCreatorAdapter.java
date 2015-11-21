@@ -35,7 +35,7 @@ public class SubjectCreatorAdapter<T extends NameAndIdPojo> extends RecyclerView
     private List<T> mData;
     private int mSubjectId;
 
-    public SubjectCreatorAdapter(PojoDatabase<T> db, int subjectId) {
+    public SubjectCreatorAdapter(PojoDatabase<T> db, int subjectId, T newItemButton) {
         mSubjectId = subjectId;
         mDb = db;
         requery();
@@ -104,7 +104,8 @@ public class SubjectCreatorAdapter<T extends NameAndIdPojo> extends RecyclerView
 
     private void requery() {
         mData = null;
-        mData = mDb.getItemsForSubject(mSubjectId);//add, get, delete, getForSubject
+        mData = mDb.getItemsForSubject(mSubjectId);
+        //mData.add(0, mNewItemButton);
     }
 
     @Override

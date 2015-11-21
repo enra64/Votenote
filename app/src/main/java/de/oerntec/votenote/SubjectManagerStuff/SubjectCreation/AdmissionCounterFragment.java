@@ -58,7 +58,7 @@ public class AdmissionCounterFragment extends DialogFragment {
             mDb = DBAdmissionCounters.getInstance();
 
             //create a savepoint now, so we can rollback if the user decides to abort
-            mSavepointId = mSubjectId + "AC" + System.currentTimeMillis();
+            mSavepointId = "AC" + mSubjectId;
             mDb.createSavepoint(mSavepointId);
 
             //create a new table entry for this so we have an id to work with
@@ -122,22 +122,25 @@ public class AdmissionCounterFragment extends DialogFragment {
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
+    public void onStart() {
+        super.onStart();
         AdmissionCounter inputCounter = mDb.getItem(mAdmissionCounterId);
 
         //set valid value on seekbar
         mTargetPointCountSeek.setProgress(inputCounter.targetValue);
 
         //add a watcher to set an error if the name is empty
-        mNameInput.addTextChangedListener(new NotEmptyWatcher(mNameInput));
+        mNameInput.addTextChangedListener(new NotEmptyWatcher(mNameInput, ((AlertDialog) getDialog()).getButton(DialogInterface.BUTTON_POSITIVE)));
 
         //set old name
         if (mIsOld)
             mNameInput.setText(inputCounter.counterName);
-        else
-            mNameInput.setHint(inputCounter.counterName);
+        else {
+            mNameInput.setHint("Add subject");
+            //since the field is empty, put an error here
+            mNameInput.setError("Must not be empty");
+            ((AlertDialog) getDialog()).getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(false);
+        }
     }
 
     private AdmissionCounter save() {

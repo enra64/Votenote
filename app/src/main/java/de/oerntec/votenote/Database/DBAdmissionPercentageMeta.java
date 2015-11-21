@@ -44,7 +44,7 @@ public class DBAdmissionPercentageMeta implements PojoDatabase<AdmissionPercenta
      * Private constructor for singleton
      */
     private DBAdmissionPercentageMeta(Context context) {
-        DatabaseCreator dbHelper = new DatabaseCreator(context);
+        DatabaseCreator dbHelper = DatabaseCreator.getInstance(context);
         database = dbHelper.getWritableDatabase();
     }
 
@@ -55,7 +55,7 @@ public class DBAdmissionPercentageMeta implements PojoDatabase<AdmissionPercenta
      * @return the instance itself
      */
     public static DBAdmissionPercentageMeta setupInstance(Context context) {
-        if (mInstance == null)
+        //if (mInstance == null)
             mInstance = new DBAdmissionPercentageMeta(context);
         return mInstance;
     }
@@ -119,9 +119,10 @@ public class DBAdmissionPercentageMeta implements PojoDatabase<AdmissionPercenta
         String[] whereArgs = {String.valueOf(newItem.id)};
         int affectedRows = database.update(DatabaseCreator.TABLE_NAME_ADMISSION_PERCENTAGES_META, values, DatabaseCreator.ADMISSION_PERCENTAGES_META_ID + "=?", whereArgs);
         if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
-            if (affectedRows != 0)
+            if (affectedRows != 1)
                 Log.i("AdmissionCounters", "No or more than one entry was changed, something is weird");
-        if (affectedRows != 0) throw new AssertionError();
+        if (affectedRows != 1)
+            throw new AssertionError("not exactly one row changed");
     }
 
     public void createSavepoint(String id) {
@@ -234,7 +235,7 @@ public class DBAdmissionPercentageMeta implements PojoDatabase<AdmissionPercenta
         }
 
         //get maximum id value. because id is autoincrement, that must be the id of the subject we just added
-        Cursor idCursor = database.rawQuery("SELECT MAX(" + DatabaseCreator.ADMISSION_PERCENTAGES_META_ID + ") FROM " + DatabaseCreator.TABLE_NAME_ADMISSION_PERCENTAGES_META, null);
+        Cursor idCursor = database.rawQuery("SELECT MAX(" + DatabaseCreator.ADMISSION_PERCENTAGES_META_ID + ") AS max FROM " + DatabaseCreator.TABLE_NAME_ADMISSION_PERCENTAGES_META, null);
 
         //throw error if we have more or less than one result row, because that is bullshit
         if (idCursor.getCount() != 1)
@@ -242,7 +243,7 @@ public class DBAdmissionPercentageMeta implements PojoDatabase<AdmissionPercenta
 
         //retrieve value and close cursor
         idCursor.moveToFirst();
-        int result = idCursor.getInt(idCursor.getColumnIndex(DatabaseCreator.ADMISSION_PERCENTAGES_META_ID));
+        int result = idCursor.getInt(idCursor.getColumnIndexOrThrow("max"));
         idCursor.close();
 
         return result;
