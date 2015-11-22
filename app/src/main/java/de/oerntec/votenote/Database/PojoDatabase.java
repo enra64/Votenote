@@ -10,7 +10,7 @@ public interface PojoDatabase<T extends NameAndIdPojo> {
     void rollbackToSavepoint(String id);
     int getCount();
 
-    int addItem(T newCounter);
+    int addItemGetId(T newCounter);
     List<T> getItemsForSubject(int subjectId);
     T getItem(int id);
 }

@@ -46,7 +46,7 @@ public class SubjectAdapter extends RecyclerView.Adapter<SubjectAdapter.SubjectH
 
     public int addSubject(Subject subject, int position) {
         //add to database
-        int result = mSubjectDb.addSubject(subject.name);
+        int result = mSubjectDb.addItemGetId(subject.name);
         subject.id = result;
         mSubjectDb.changeItem(subject);
         requery();
@@ -79,7 +79,7 @@ public class SubjectAdapter extends RecyclerView.Adapter<SubjectAdapter.SubjectH
 
         notifyItemRemoved(recyclerViewPosition);
         notifyItemRangeChanged(recyclerViewPosition, getItemCount() - 1);
-        mSubjectDb.deleteSubject(bkp);
+        mSubjectDb.deleteItem(bkp);
         requery();
         return bkp;
     }

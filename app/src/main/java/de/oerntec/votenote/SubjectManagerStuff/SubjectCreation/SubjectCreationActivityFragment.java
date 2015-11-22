@@ -131,9 +131,9 @@ public class SubjectCreationActivityFragment extends Fragment implements Subject
         mIsNewSubject = mSubjectId == ADD_SUBJECT_CODE;
         mIsOldSubject = !mIsNewSubject;
 
-        //if this is a new subject, we have to create a subject now to know the subject id, which is conveniently returned by the addSubject method
+        //if this is a new subject, we have to create a subject now to know the subject id, which is conveniently returned by the addItemGetId method
         if(mIsNewSubject)
-            mSubjectId = mSubjectDb.addSubject("If you see this, i fucked up.");
+            mSubjectId = mSubjectDb.addItemGetId("If you see this, i fucked up.");
 
         setHasOptionsMenu(true);
     }

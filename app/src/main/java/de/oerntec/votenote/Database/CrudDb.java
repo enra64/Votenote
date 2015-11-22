@@ -8,17 +8,22 @@ public abstract class CrudDb<T> {
     /**
      * Singleton instance
      */
-    private static CrudDb mInstance;
-    final String TABLE_NAME;
+    protected static CrudDb mInstance;
+
+    /**
+     * name of the table the crud table helper is for
+     */
+    protected final String TABLE_NAME;
+
     /**
      * Database object used for accessing the database
      */
-    private final SQLiteDatabase mDatabase;
+    protected final SQLiteDatabase mDatabase;
 
     /**
      * Private constructor for singleton
      */
-    private CrudDb(Context context, String tableName) {
+    protected CrudDb(Context context, String tableName) {
         DatabaseCreator dbHelper = DatabaseCreator.getInstance(context);
         mDatabase = dbHelper.getWritableDatabase();
         TABLE_NAME = tableName;
@@ -26,7 +31,9 @@ public abstract class CrudDb<T> {
 
     abstract public void addItem(T item);
 
-    abstract public void getItem(T item);
+    abstract public int addItemGetId(T item);
+
+    abstract public T getItem(T item);
 
     abstract public void changeItem(T item);
 
@@ -69,11 +76,15 @@ public abstract class CrudDb<T> {
     /**
      * Get the total number of rows in the current table
      */
-    int getCount() {
+    public int getCount() {
         Cursor c = mDatabase.rawQuery("SELECT COUNT() AS rowNumber FROM " + TABLE_NAME, null);
         c.moveToFirst();
         int result = c.getInt(c.getColumnIndexOrThrow("rowNumber"));
         c.close();
         return result;
+    }
+
+    public Cursor getDataDump() {
+        return mDatabase.rawQuery("SELECT * FROM " + TABLE_NAME, null);
     }
 }

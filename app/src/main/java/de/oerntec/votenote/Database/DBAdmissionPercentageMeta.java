@@ -21,7 +21,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteConstraintException;
-import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import java.util.LinkedList;
@@ -29,23 +28,12 @@ import java.util.List;
 
 import de.oerntec.votenote.MainActivity;
 
-public class DBAdmissionPercentageMeta implements PojoDatabase<AdmissionPercentageMeta> {
-    /**
-     * Singleton instance
-     */
-    private static DBAdmissionPercentageMeta mInstance;
-
-    /**
-     * Database object used for accessing the database
-     */
-    private final SQLiteDatabase database;
-
+public class DBAdmissionPercentageMeta extends CrudDb<AdmissionPercentageMeta> implements PojoDatabase<AdmissionPercentageMeta> {
     /**
      * Private constructor for singleton
      */
-    private DBAdmissionPercentageMeta(Context context) {
-        DatabaseCreator dbHelper = DatabaseCreator.getInstance(context);
-        database = dbHelper.getWritableDatabase();
+    private DBAdmissionPercentageMeta(Context context, String tableName) {
+        super(context, tableName);
     }
 
     /**
@@ -55,9 +43,9 @@ public class DBAdmissionPercentageMeta implements PojoDatabase<AdmissionPercenta
      * @return the instance itself
      */
     public static DBAdmissionPercentageMeta setupInstance(Context context) {
-        //if (mInstance == null)
-            mInstance = new DBAdmissionPercentageMeta(context);
-        return mInstance;
+        if (mInstance == null)
+            mInstance = new DBAdmissionPercentageMeta(context, DatabaseCreator.TABLE_NAME_ADMISSION_PERCENTAGES_META);
+        return (DBAdmissionPercentageMeta) mInstance;
     }
 
     /**
@@ -66,48 +54,10 @@ public class DBAdmissionPercentageMeta implements PojoDatabase<AdmissionPercenta
      * @return the singleton instance
      */
     public static DBAdmissionPercentageMeta getInstance() {
-        return mInstance;
+        return (DBAdmissionPercentageMeta) mInstance;
     }
 
-    /**
-     * Drop all lesson data
-     */
-    public void dropData() {
-        database.delete(DatabaseCreator.TABLE_NAME_ADMISSION_PERCENTAGES_META, null, null);
-    }
-
-    /**
-     * Get all data, only for export
-     *
-     * @return all lesson data
-     */
-    public Cursor getAllData() {
-        return database.rawQuery("SELECT * FROM " + DatabaseCreator.TABLE_NAME_ADMISSION_PERCENTAGES_META, new String[0]);
-    }
-
-    /**
-     * Change all values except the database id in oldValues to newValues.
-     *
-     * @throws AssertionError if old dbId != new dbId
-     */
-    public void changeItem(AdmissionPercentageMeta oldValues, AdmissionPercentageMeta newItem) {
-        ContentValues values = new ContentValues();
-        values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_NAME, newItem.name);
-        values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_SUBJECT_ID, newItem.name);
-        values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_TARGET_ASSIGNMENTS_PER_LESSON, newItem.name);
-        values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_TARGET_PERCENTAGE, newItem.name);
-        values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_TARGET_LESSON_COUNT, newItem.name);
-
-        if ((oldValues.id != newItem.id)) throw new AssertionError("id not same when changing");
-
-        String[] whereArgs = {String.valueOf(oldValues.id)};
-        int affectedRows = database.update(DatabaseCreator.TABLE_NAME_ADMISSION_PERCENTAGES_META, values, DatabaseCreator.ADMISSION_PERCENTAGES_META_ID + "=?", whereArgs);
-        if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
-            if (affectedRows != 0)
-                Log.i("AdmissionCounters", "No or more than one entry was changed, something is weird");
-        if (affectedRows != 0) throw new AssertionError();
-    }
-
+    @Override
     public void changeItem(AdmissionPercentageMeta newItem) {
         ContentValues values = new ContentValues();
         values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_NAME, newItem.name);
@@ -117,7 +67,7 @@ public class DBAdmissionPercentageMeta implements PojoDatabase<AdmissionPercenta
         values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_TARGET_LESSON_COUNT, newItem.estimatedLessonCount);
 
         String[] whereArgs = {String.valueOf(newItem.id)};
-        int affectedRows = database.update(DatabaseCreator.TABLE_NAME_ADMISSION_PERCENTAGES_META, values, DatabaseCreator.ADMISSION_PERCENTAGES_META_ID + "=?", whereArgs);
+        int affectedRows = mDatabase.update(DatabaseCreator.TABLE_NAME_ADMISSION_PERCENTAGES_META, values, DatabaseCreator.ADMISSION_PERCENTAGES_META_ID + "=?", whereArgs);
         if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
             if (affectedRows != 1)
                 Log.i("AdmissionCounters", "No or more than one entry was changed, something is weird");
@@ -125,17 +75,11 @@ public class DBAdmissionPercentageMeta implements PojoDatabase<AdmissionPercenta
             throw new AssertionError("not exactly one row changed");
     }
 
-    public void createSavepoint(String id) {
-        database.execSQL(";SAVEPOINT " + id);
+    @Override
+    public AdmissionPercentageMeta getItem(AdmissionPercentageMeta idItem) {
+        return getItem(idItem.id);
     }
 
-    public void rollbackToSavepoint(String id) {
-        database.execSQL(";ROLLBACK TO SAVEPOINT " + id);
-    }
-
-    public void releaseSavePoint(String id) {
-        database.execSQL(";RELEASE SAVEPOINT " + id);
-    }
     /**
      * Get a single admission counter.
      *
@@ -143,9 +87,10 @@ public class DBAdmissionPercentageMeta implements PojoDatabase<AdmissionPercenta
      * @return AdmissionCounter object corresponding to the db values
      * @throws AssertionError if not exactly one AdmissionCounters are found
      */
+    @Deprecated
     public AdmissionPercentageMeta getItem(int id) {
         String[] whereArgs = {String.valueOf(id)};
-        Cursor c = database.query(true, DatabaseCreator.TABLE_NAME_ADMISSION_PERCENTAGES_META, null, DatabaseCreator.ADMISSION_PERCENTAGES_META_ID + "=?", whereArgs, null, null, null, null);
+        Cursor c = mDatabase.query(true, DatabaseCreator.TABLE_NAME_ADMISSION_PERCENTAGES_META, null, DatabaseCreator.ADMISSION_PERCENTAGES_META_ID + "=?", whereArgs, null, null, null, null);
         AdmissionPercentageMeta returnValue = null;
         if (c.getCount() != 1)
             throw new AssertionError("more than one item returned if we search via id is bad");
@@ -170,7 +115,7 @@ public class DBAdmissionPercentageMeta implements PojoDatabase<AdmissionPercenta
      */
     public List<AdmissionPercentageMeta> getItemsForSubject(int subjectId) {
         String[] whereArgs = {String.valueOf(subjectId)};
-        Cursor c = database.query(true, DatabaseCreator.TABLE_NAME_ADMISSION_PERCENTAGES_META, null, DatabaseCreator.ADMISSION_PERCENTAGES_META_SUBJECT_ID + "=?",
+        Cursor c = mDatabase.query(true, DatabaseCreator.TABLE_NAME_ADMISSION_PERCENTAGES_META, null, DatabaseCreator.ADMISSION_PERCENTAGES_META_SUBJECT_ID + "=?",
                 whereArgs, null, null, DatabaseCreator.ADMISSION_PERCENTAGES_META_ID + " ASC", null);
 
         List<AdmissionPercentageMeta> items = new LinkedList<>();
@@ -189,25 +134,26 @@ public class DBAdmissionPercentageMeta implements PojoDatabase<AdmissionPercenta
         return items;
     }
 
-    public void deleteItemsForSubject(int subjectId) {
-        String[] whereArgs = new String[]{String.valueOf(subjectId)};
-        int checkValue =
-                database.delete(DatabaseCreator.TABLE_NAME_ADMISSION_PERCENTAGES_META,
-                        DatabaseCreator.ADMISSION_PERCENTAGES_META_SUBJECT_ID + "=?", whereArgs);
-        if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
-            Log.i("dbgroups:delete", "deleting all " + checkValue + " entries of type " + subjectId);
-    }
-
     /**
      * Delete a counter
      *
      * @param id the admission counter id to search for
      */
+    @Deprecated
     public void deleteItem(int id) {
         String[] whereArgs = new String[]{String.valueOf(id)};
-        database.delete(DatabaseCreator.TABLE_NAME_ADMISSION_PERCENTAGES_META, DatabaseCreator.ADMISSION_PERCENTAGES_META_ID + "=?", whereArgs);
+        mDatabase.delete(DatabaseCreator.TABLE_NAME_ADMISSION_PERCENTAGES_META, DatabaseCreator.ADMISSION_PERCENTAGES_META_ID + "=?", whereArgs);
     }
 
+    @Override
+    public void deleteItem(AdmissionPercentageMeta item) {
+        deleteItem(item.id);
+    }
+
+    @Override
+    public void addItem(AdmissionPercentageMeta item) {
+        addItemGetId(item);
+    }
 
     /**
      * Add a new item
@@ -215,7 +161,8 @@ public class DBAdmissionPercentageMeta implements PojoDatabase<AdmissionPercenta
      * @param newItem the item to add
      * @return -1 if a constraint was violated, new object row id otherwise
      */
-    public int addItem(AdmissionPercentageMeta newItem) {
+    @Override
+    public int addItemGetId(AdmissionPercentageMeta newItem) {
         //create values for insert or update
         ContentValues values = new ContentValues();
         values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_NAME, newItem.name);
@@ -229,13 +176,13 @@ public class DBAdmissionPercentageMeta implements PojoDatabase<AdmissionPercenta
 
         //try to insert the subject. since
         try {
-            database.insert(DatabaseCreator.TABLE_NAME_ADMISSION_PERCENTAGES_META, null, values);
+            mDatabase.insert(DatabaseCreator.TABLE_NAME_ADMISSION_PERCENTAGES_META, null, values);
         } catch (SQLiteConstraintException e) {
             return -1;
         }
 
         //get maximum id value. because id is autoincrement, that must be the id of the subject we just added
-        Cursor idCursor = database.rawQuery("SELECT MAX(" + DatabaseCreator.ADMISSION_PERCENTAGES_META_ID + ") AS max FROM " + DatabaseCreator.TABLE_NAME_ADMISSION_PERCENTAGES_META, null);
+        Cursor idCursor = mDatabase.rawQuery("SELECT MAX(" + DatabaseCreator.ADMISSION_PERCENTAGES_META_ID + ") AS max FROM " + DatabaseCreator.TABLE_NAME_ADMISSION_PERCENTAGES_META, null);
 
         //throw error if we have more or less than one result row, because that is bullshit
         if (idCursor.getCount() != 1)
@@ -246,13 +193,6 @@ public class DBAdmissionPercentageMeta implements PojoDatabase<AdmissionPercenta
         int result = idCursor.getInt(idCursor.getColumnIndexOrThrow("max"));
         idCursor.close();
 
-        return result;
-    }
-
-    public int getCount() {
-        Cursor c = getAllData();
-        int result = c.getCount();
-        c.close();
         return result;
     }
 }

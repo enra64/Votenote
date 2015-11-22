@@ -85,7 +85,7 @@ public class MainDialogHelper {
                 myVoteValue = lastEnteredLesson.finishedAssignments;
             }
         } else {
-            oldValues = DBAdmissionPercentageData.getInstance().getItem(apMetaId, lessonID);
+            oldValues = DBAdmissionPercentageData.getInstance().getItem(lessonID, apMetaId);
             myVoteValue = oldValues != null ? oldValues.finishedAssignments : 0;
             maxVoteValue = oldValues != null ? oldValues.availableAssignments : 0;
         }

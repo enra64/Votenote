@@ -21,7 +21,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteConstraintException;
-import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import java.util.LinkedList;
@@ -29,39 +28,42 @@ import java.util.List;
 
 import de.oerntec.votenote.MainActivity;
 
-public class DBSubjects {
-    private static DBSubjects mInstance;
-    private SQLiteDatabase database;
-
-    private DBSubjects(Context context) {
-        DatabaseCreator dbHelper = DatabaseCreator.getInstance(context);
-        database = dbHelper.getWritableDatabase();
+public class DBSubjects extends CrudDb<Subject> {
+    private DBSubjects(Context context, String tableName) {
+        super(context, tableName);
     }
 
     public static DBSubjects setupInstance(Context context) {
         if (mInstance == null)
-            mInstance = new DBSubjects(context);
-        return mInstance;
+            mInstance = new DBSubjects(context, DatabaseCreator.TABLE_NAME_SUBJECTS);
+        return (DBSubjects) mInstance;
     }
 
     public static DBSubjects getInstance() {
-        return mInstance;
+        return (DBSubjects) mInstance;
     }
 
-    public Cursor getDataDump() {
-        return database.rawQuery("SELECT * FROM " + DatabaseCreator.TABLE_NAME_SUBJECTS, null);
+    @Override
+    public void addItem(Subject item) {
+        throw new Error("not implemented");
     }
 
     /**
      * Delete the group with the given name AND the given id
      * @return Number of affected rows.
      */
-    public int deleteSubject(Subject delete) {
+    public void deleteItem(Subject delete) {
         if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
             Log.i("dbgroups:delete", "deleted " + delete.name + " at " + delete.id);
         String whereClause = DatabaseCreator.SUBJECTS_NAME + "=?" + " AND " + DatabaseCreator.SUBJECTS_ID + "=?";
         String[] whereArgs = new String[]{delete.name, String.valueOf(delete.id)};
-        return database.delete(DatabaseCreator.TABLE_NAME_SUBJECTS, whereClause, whereArgs);
+        int delCount = mDatabase.delete(DatabaseCreator.TABLE_NAME_SUBJECTS, whereClause, whereArgs);
+        if (delCount != 1)
+            throw new AssertionError("deleted more than 1?");
+    }
+
+    public int addItemGetId(Subject item) {
+        return addItemGetId(item.name);
     }
 
     /**
@@ -69,7 +71,8 @@ public class DBSubjects {
      * @param subjectName Name of the new Group
      * @return -1 if the group name is not unique (violates constraint), the id of the added group otherwise
      */
-    public int addSubject(String subjectName) {
+    @Deprecated
+    public int addItemGetId(String subjectName) {
         //create values for insert or update
         ContentValues values = new ContentValues();
         values.put(DatabaseCreator.SUBJECTS_NAME, subjectName);
@@ -79,13 +82,13 @@ public class DBSubjects {
 
         //try to insert the subject. since
         try{
-            database.insert(DatabaseCreator.TABLE_NAME_SUBJECTS, null, values);
+            mDatabase.insert(DatabaseCreator.TABLE_NAME_SUBJECTS, null, values);
         } catch( SQLiteConstraintException e) {
             return -1;
         }
 
         //get maximum id value. because id is autoincrement, that must be the id of the subject we just added
-        Cursor subjectIdCursor = database.rawQuery("SELECT MAX(" + DatabaseCreator.SUBJECTS_ID + ") AS maximum_subject_id FROM " + DatabaseCreator.TABLE_NAME_SUBJECTS, null);
+        Cursor subjectIdCursor = mDatabase.rawQuery("SELECT MAX(" + DatabaseCreator.SUBJECTS_ID + ") AS maximum_subject_id FROM " + DatabaseCreator.TABLE_NAME_SUBJECTS, null);
 
         //throw error if we have more or less than one result row, because that is bullshit
         if(subjectIdCursor.getCount() != 1)
@@ -102,7 +105,7 @@ public class DBSubjects {
     public int getNumberOfLessonsForSubject(int subjectId) {
         String data = DatabaseCreator.TABLE_NAME_ADMISSION_PERCENTAGES_DATA;
         String meta = DatabaseCreator.TABLE_NAME_ADMISSION_PERCENTAGES_META;
-        Cursor c = database.rawQuery(
+        Cursor c = mDatabase.rawQuery(
                 "SELECT " + data + "." + DatabaseCreator.ADMISSION_PERCENTAGES_DATA_LESSON_ID +
                         " FROM " + data +
                         " INNER JOIN " + meta +
@@ -118,7 +121,7 @@ public class DBSubjects {
         values.put(DatabaseCreator.SUBJECTS_NAME, newItem.name);
 
         String[] whereArgs = {String.valueOf(newItem.id)};
-        int affectedRows = database.update(DatabaseCreator.TABLE_NAME_SUBJECTS, values, DatabaseCreator.SUBJECTS_ID + "=?", whereArgs);
+        int affectedRows = mDatabase.update(DatabaseCreator.TABLE_NAME_SUBJECTS, values, DatabaseCreator.SUBJECTS_ID + "=?", whereArgs);
         if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
             if (affectedRows != 1)
                 Log.i("AdmissionCounters", "No or more than one entry was changed, something is weird");
@@ -127,7 +130,7 @@ public class DBSubjects {
     }
 
     public List<Subject> getAllSubjects() {
-        Cursor mCursor = database.query(true,
+        Cursor mCursor = mDatabase.query(true,
                 DatabaseCreator.TABLE_NAME_SUBJECTS,
                 null,
                 null,
@@ -157,8 +160,13 @@ public class DBSubjects {
         return subjectList.get(position).id;
     }
 
+    public Subject getItem(Subject item) {
+        return getItem(item);
+    }
+
+    @Deprecated
     public Subject getItem(int subjectId) {
-        Cursor mCursor = database.query(
+        Cursor mCursor = mDatabase.query(
                 true,
                 DatabaseCreator.TABLE_NAME_SUBJECTS,
                 null,
@@ -180,15 +188,5 @@ public class DBSubjects {
 
         mCursor.close();
         return result;
-    }
-
-    /**
-     * returns number of subjects
-     */
-    public int getCount() {
-        Cursor c = getDataDump();
-        int val = c.getCount();
-        c.close();
-        return val;
     }
 }

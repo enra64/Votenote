@@ -85,7 +85,7 @@ public class AdmissionPercentageFragment extends DialogFragment {
 
             //create a new meta entry for this so we have an id to work with
             if (mIsNew)
-                mAdmissionPercentageId = mDb.addItem(new AdmissionPercentageMeta(-1, mSubjectId, 0, 0, 0, "if you see this, i fucked up."));
+                mAdmissionPercentageId = mDb.addItemGetId(new AdmissionPercentageMeta(-1, mSubjectId, 0, 0, 0, "if you see this, i fucked up."));
         } else
             throw new AssertionError("why are there no arguments here?");
     }
@@ -127,7 +127,7 @@ public class AdmissionPercentageFragment extends DialogFragment {
                                         requiredPercentageSeek.getProgress(),
                                         nameInput.getText().toString()));
                                 //commit
-                                mDb.releaseSavePoint(mSavepointId);
+                                mDb.releaseSavepoint(mSavepointId);
                                 //notify the host fragment that we changed an item
                                 SubjectCreationActivity host = (SubjectCreationActivity) getActivity();
                                 host.callCreatorFragmentForItemChange(mAdmissionPercentageId, true, mIsNew);

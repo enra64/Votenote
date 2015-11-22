@@ -64,7 +64,7 @@ public class AdmissionCounterFragment extends DialogFragment {
 
             //create a new table entry for this so we have an id to work with
             if (mIsNew)
-                mAdmissionCounterId = mDb.addItem(new AdmissionCounter(-1, mSubjectId, "Counter Name", 0, 3));//these are also the default values, so beware on change!
+                mAdmissionCounterId = mDb.addItemGetId(new AdmissionCounter(-1, mSubjectId, "Counter Name", 0, 3));//these are also the default values, so beware on change!
         } else
             throw new AssertionError("why are there no arguments here?");
     }
@@ -103,7 +103,7 @@ public class AdmissionCounterFragment extends DialogFragment {
                                         mTargetPointCountSeek.getProgress()
                                 ));
                                 //commit
-                                mDb.releaseSavePoint(mSavepointId);
+                                mDb.releaseSavepoint(mSavepointId);
                                 //notify the host fragment that we changed an item
                                 SubjectCreationActivity host = (SubjectCreationActivity) getActivity();
                                 host.callCreatorFragmentForItemChange(mAdmissionCounterId, false, mIsNew);

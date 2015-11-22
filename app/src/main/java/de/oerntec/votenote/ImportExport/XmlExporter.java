@@ -57,9 +57,9 @@ public class XmlExporter {
         try {
             //export both tables
             exportTable(DBSubjects.getInstance().getDataDump(), "subjects");
-            exportTable(DBAdmissionCounters.getInstance().getAllData(), "subjects");
-            exportTable(DBAdmissionPercentageMeta.getInstance().getAllData(), "subjects");
-            exportTable(DBAdmissionPercentageData.getInstance().getAllData(), "entries");
+            exportTable(DBAdmissionCounters.getInstance().getDataDump(), "subjects");
+            exportTable(DBAdmissionPercentageMeta.getInstance().getDataDump(), "subjects");
+            exportTable(DBAdmissionPercentageData.getInstance().getDataDump(), "entries");
         } catch (IOException e) {
             success = false;
             e.printStackTrace();

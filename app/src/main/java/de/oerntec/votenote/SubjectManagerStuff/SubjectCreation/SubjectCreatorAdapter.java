@@ -52,7 +52,7 @@ public class SubjectCreatorAdapter<T extends NameAndIdPojo> extends RecyclerView
      */
     public boolean addItem(T item) {
         //add to database
-        int check = mDb.addItem(item);
+        int check = mDb.addItemGetId(item);
         requery();
         //the counters are ordered by their id ascending, so the latest counter should be the lowest
         if (check >= 0)

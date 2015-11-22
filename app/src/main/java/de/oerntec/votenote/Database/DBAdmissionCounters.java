@@ -21,7 +21,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteConstraintException;
-import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import java.util.LinkedList;
@@ -29,23 +28,12 @@ import java.util.List;
 
 import de.oerntec.votenote.MainActivity;
 
-public class DBAdmissionCounters implements PojoDatabase<AdmissionCounter> {
-    /**
-     * Singleton instance
-     */
-    private static DBAdmissionCounters mInstance;
-
-    /**
-     * Database object used for accessing the database
-     */
-    private final SQLiteDatabase database;
-
+public class DBAdmissionCounters extends CrudDb<AdmissionCounter> implements PojoDatabase<AdmissionCounter> {
     /**
      * Private constructor for singleton
      */
-    private DBAdmissionCounters(Context context) {
-        DatabaseCreator dbHelper = DatabaseCreator.getInstance(context);
-        database = dbHelper.getWritableDatabase();
+    private DBAdmissionCounters(Context context, String tableName) {
+        super(context, tableName);
     }
 
     /**
@@ -56,8 +44,8 @@ public class DBAdmissionCounters implements PojoDatabase<AdmissionCounter> {
      */
     public static DBAdmissionCounters setupInstance(Context context) {
         if (mInstance == null)
-            mInstance = new DBAdmissionCounters(context);
-        return mInstance;
+            mInstance = new DBAdmissionCounters(context, DatabaseCreator.TABLE_NAME_ADMISSION_COUNTERS);
+        return (DBAdmissionCounters) mInstance;
     }
 
     /**
@@ -66,23 +54,7 @@ public class DBAdmissionCounters implements PojoDatabase<AdmissionCounter> {
      * @return the singleton instance
      */
     public static DBAdmissionCounters getInstance() {
-        return mInstance;
-    }
-
-    /**
-     * Drop all lesson data
-     */
-    public void dropData() {
-        database.delete(DatabaseCreator.TABLE_NAME_ADMISSION_COUNTERS, null, null);
-    }
-
-    /**
-     * Get all data, only for export
-     *
-     * @return all lesson data
-     */
-    public Cursor getAllData() {
-        return database.rawQuery("SELECT * FROM " + DatabaseCreator.TABLE_NAME_ADMISSION_COUNTERS, new String[0]);
+        return (DBAdmissionCounters) mInstance;
     }
 
     /**
@@ -90,6 +62,7 @@ public class DBAdmissionCounters implements PojoDatabase<AdmissionCounter> {
      *
      * @throws AssertionError if old dbId != new dbId
      */
+    @Override
     public void changeItem(AdmissionCounter newValues) {
         ContentValues values = new ContentValues();
         values.put(DatabaseCreator.ADMISSION_COUNTER_COUNTER_NAME, newValues.counterName);
@@ -98,7 +71,7 @@ public class DBAdmissionCounters implements PojoDatabase<AdmissionCounter> {
         values.put(DatabaseCreator.ADMISSION_COUNTER_TARGET, newValues.targetValue);
 
         String[] whereArgs = {String.valueOf(newValues.id)};
-        int affectedRows = database.update(DatabaseCreator.TABLE_NAME_ADMISSION_COUNTERS, values, DatabaseCreator.ADMISSION_COUNTER_ID + "=?", whereArgs);
+        int affectedRows = mDatabase.update(DatabaseCreator.TABLE_NAME_ADMISSION_COUNTERS, values, DatabaseCreator.ADMISSION_COUNTER_ID + "=?", whereArgs);
         if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
             if (affectedRows != 1)
                 Log.i("AdmissionCounters", "No or more than one entry was changed, something is weird");
@@ -106,16 +79,22 @@ public class DBAdmissionCounters implements PojoDatabase<AdmissionCounter> {
             throw new AssertionError("not exactly on item changed");
     }
 
+    @Override
+    public AdmissionCounter getItem(AdmissionCounter item) {
+        return getItem(item.id);
+    }
+
     /**
      * Get a single admission counter.
      *
      * @param id what id are we looking for
      * @return AdmissionCounter object corresponding to the db values
-     * @throws AssertionError if not exactly one AdmissionCounters are found
+     * @throws AssertionError if not exactly one AdmissionCounter is found
      */
+    @Deprecated
     public AdmissionCounter getItem(int id) {
         String[] whereArgs = {String.valueOf(id)};
-        Cursor mCursor = database.query(true,
+        Cursor mCursor = mDatabase.query(true,
                 DatabaseCreator.TABLE_NAME_ADMISSION_COUNTERS,
                 null,
                 DatabaseCreator.ADMISSION_COUNTER_ID + "=?",
@@ -142,7 +121,7 @@ public class DBAdmissionCounters implements PojoDatabase<AdmissionCounter> {
      */
     public List<AdmissionCounter> getItemsForSubject(int subjectId) {
         String[] whereArgs = {String.valueOf(subjectId)};
-        Cursor cursor = database.query(
+        Cursor cursor = mDatabase.query(
                 true,
                 DatabaseCreator.TABLE_NAME_ADMISSION_COUNTERS,
                 null,
@@ -166,34 +145,23 @@ public class DBAdmissionCounters implements PojoDatabase<AdmissionCounter> {
         return counters;
     }
 
-    public void deleteItemsForSubject(int subjectId) {
-        String[] whereArgs = new String[]{String.valueOf(subjectId)};
-        int checkValue =
-                database.delete(DatabaseCreator.TABLE_NAME_ADMISSION_COUNTERS,
-                        DatabaseCreator.ADMISSION_COUNTER_SUBJECT_ID + "=?", whereArgs);
-        if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
-            Log.i("dbgroups:delete", "deleting all " + checkValue + " entries of type " + subjectId);
+    @Override
+    public void deleteItem(AdmissionCounter item) {
+        deleteItem(item.id);
     }
 
     /**
      * Delete a counter
      * @param id the admission counter id to search for
      */
+    @Deprecated
     public void deleteItem(int id) {
         String[] whereArgs = new String[]{String.valueOf(id)};
-        database.delete(DatabaseCreator.TABLE_NAME_ADMISSION_COUNTERS, DatabaseCreator.ADMISSION_COUNTER_ID + "=?", whereArgs);
+        mDatabase.delete(DatabaseCreator.TABLE_NAME_ADMISSION_COUNTERS, DatabaseCreator.ADMISSION_COUNTER_ID + "=?", whereArgs);
     }
 
-    public void createSavepoint(String id) {
-        database.execSQL(";SAVEPOINT " + id);
-    }
-
-    public void rollbackToSavepoint(String id) {
-        database.execSQL(";ROLLBACK TO SAVEPOINT " + id);
-    }
-
-    public void releaseSavePoint(String id) {
-        database.execSQL(";RELEASE SAVEPOINT " + id);
+    public void addItem(AdmissionCounter item) {
+        addItemGetId(item);
     }
 
     /**
@@ -201,7 +169,7 @@ public class DBAdmissionCounters implements PojoDatabase<AdmissionCounter> {
      * @param newCounter the counter to add
      * @return false if not exactly one row was inserted
      */
-    public int addItem(AdmissionCounter newCounter) {
+    public int addItemGetId(AdmissionCounter newCounter) {
         ContentValues values = new ContentValues();
         values.put(DatabaseCreator.ADMISSION_COUNTER_COUNTER_NAME, newCounter.counterName);
         values.put(DatabaseCreator.ADMISSION_COUNTER_CURRENT, newCounter.currentValue);
@@ -213,13 +181,13 @@ public class DBAdmissionCounters implements PojoDatabase<AdmissionCounter> {
 
         //try to insert the subject. since
         try {
-            database.insert(DatabaseCreator.TABLE_NAME_ADMISSION_COUNTERS, null, values);
+            mDatabase.insert(DatabaseCreator.TABLE_NAME_ADMISSION_COUNTERS, null, values);
         } catch (SQLiteConstraintException e) {
             return -1;
         }
 
         //get maximum id value. because id is autoincrement, that must be the id of the subject we just added
-        Cursor idCursor = database.rawQuery("SELECT MAX(" + DatabaseCreator.ADMISSION_COUNTER_ID + ") AS max FROM " + DatabaseCreator.TABLE_NAME_ADMISSION_COUNTERS, null);
+        Cursor idCursor = mDatabase.rawQuery("SELECT MAX(" + DatabaseCreator.ADMISSION_COUNTER_ID + ") AS max FROM " + DatabaseCreator.TABLE_NAME_ADMISSION_COUNTERS, null);
 
         //throw error if we have more or less than one result row, because that is bullshit
         if (idCursor.getCount() != 1)
@@ -230,13 +198,6 @@ public class DBAdmissionCounters implements PojoDatabase<AdmissionCounter> {
         int result = idCursor.getInt(idCursor.getColumnIndexOrThrow("max"));
         idCursor.close();
 
-        return result;
-    }
-
-    public int getCount() {
-        Cursor c = getAllData();
-        int result = c.getCount();
-        c.close();
         return result;
     }
 }
