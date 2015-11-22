@@ -17,206 +17,22 @@
 * */
 package de.oerntec.votenote.Dialogs;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.graphics.Color;
-import android.view.View;
-import android.widget.NumberPicker;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.app.FragmentManager;
 
-import de.oerntec.votenote.AdmissionPercentageFragmentStuff.AdmissionPercentageFragment;
-import de.oerntec.votenote.CardListHelpers.SwipeDeletion;
-import de.oerntec.votenote.Database.Pojo.AdmissionPercentageData;
-import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMeta;
-import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageData;
-import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageMeta;
+import de.oerntec.votenote.AdmissionPercentageFragmentStuff.LessonDialogFragment;
 import de.oerntec.votenote.MainActivity;
-import de.oerntec.votenote.R;
 
 public class MainDialogHelper {
     private static final int ADD_LESSON_CODE = -2;
 
-    /**
-     * Show an add lesson dialog
-     *
-     * @param mActivity Activity to use for references
-     * @param apMetaId   id of the group to add a lesson to
-     */
-    public static void showAddLessonDialog(final MainActivity mActivity, final int apMetaId) {
-        showLessonDialog(mActivity, null, null, apMetaId, ADD_LESSON_CODE, -1);
+    public static void showAddLessonDialog(FragmentManager fragmentManager, int apMetaId) {
+        showChangeLessonDialog(fragmentManager, apMetaId, ADD_LESSON_CODE);
     }
 
-    /**
-     * Show a dialog to change a lesson entry
-     *
-     * @param mActivity                the activity for reference usage
-     * @param apMetaId                  the id of the subject
-     * @param translatedLessonPosition the id of the lesson, translated (+1) from listview
-     */
-    public static void showChangeLessonDialog(MainActivity mActivity, AdmissionPercentageFragment admissionPercentageFragment, View lessonView, int apMetaId, int translatedLessonPosition, int recyclerviewLessonPosition) {
-        showLessonDialog(mActivity, admissionPercentageFragment, lessonView, apMetaId, translatedLessonPosition, recyclerviewLessonPosition);
+    public static void showChangeLessonDialog(FragmentManager fragmentManager, int apMetaId, int lessonId) {
+        LessonDialogFragment fragment = LessonDialogFragment.newInstance(apMetaId, lessonId);
+        fragment.show(fragmentManager, "ap_create_dialog");
     }
-
-
-    /**
-     * Shows a dialog to edit or add a lesson
-     */
-    private static void showLessonDialog(final MainActivity mActivity, final AdmissionPercentageFragment admissionPercentageFragment, final View lessonView, final int apMetaId, final int lessonID, final int lessonPosition) {
-        final int maxVoteValue;
-        final int myVoteValue;
-
-        final DBAdmissionPercentageData apDataDb = DBAdmissionPercentageData.getInstance();
-
-        //whether or not to try automatically fixing invalid choices
-        boolean autoNumberPickerFixEnabled = MainActivity.getPreference("move_max_assignments_picker", true);
-
-        AdmissionPercentageData oldValues = null;
-        final boolean isNewLesson = lessonID == ADD_LESSON_CODE;
-        //set values according to usage (add or change)
-        if (isNewLesson) {
-            if (apDataDb.getItemsForMetaId(apMetaId, MainActivity.getPreference("reverse_lesson_sort", false)).size() == 0) {
-                AdmissionPercentageMeta metaItem = DBAdmissionPercentageMeta.getInstance().getItem(apMetaId);
-                maxVoteValue = metaItem.estimatedAssignmentsPerLesson;
-                myVoteValue = maxVoteValue / 2;
-            } else {
-                AdmissionPercentageData lastEnteredLesson = apDataDb.getNewestItemForMetaId(apMetaId);
-                maxVoteValue = lastEnteredLesson.availableAssignments;
-                myVoteValue = lastEnteredLesson.finishedAssignments;
-            }
-        } else {
-            oldValues = DBAdmissionPercentageData.getInstance().getItem(lessonID, apMetaId);
-            myVoteValue = oldValues != null ? oldValues.finishedAssignments : 0;
-            maxVoteValue = oldValues != null ? oldValues.availableAssignments : 0;
-        }
-
-        //inflate rootView
-        final View rootView = mActivity.getLayoutInflater().inflate(R.layout.subject_fragment_dialog_newentry, null);
-
-        //find all necessary views
-        final TextView infoView = (TextView) rootView.findViewById(R.id.infoTextView);
-        final NumberPicker myVote = (NumberPicker) rootView.findViewById(R.id.pickerMyVote);
-        final NumberPicker maxVote = (NumberPicker) rootView.findViewById(R.id.pickerMaxVote);
-
-        //config for the maximum vote picker
-        maxVote.setMinValue(0);
-        maxVote.setMaxValue(15);
-        maxVote.setValue(maxVoteValue);
-
-        //config for the actual vote picker
-        myVote.setMinValue(0);
-        myVote.setMaxValue(15);
-        myVote.setValue(myVoteValue);
-
-        //set the current values of the pickers as explanation text
-        infoView.setText(myVote.getValue() + " " + mActivity.getString(R.string.main_dialog_lesson_von)
-                + " " + maxVote.getValue() + " " + mActivity.getString(R.string.main_dialog_lesson_votes));
-
-        infoView.setTextColor(Color.argb(255, 153, 204, 0));//green
-
-        //build alertdialog
-        final AdmissionPercentageData finalOldValues = oldValues;
-
-        String changeTitle;
-
-        if (mActivity.getResources().getConfiguration().locale.getLanguage().equals("de"))
-            changeTitle = "Übung " + lessonID + " ändern?";
-        else
-            changeTitle = "Change lesson " + lessonID + "?";
-
-
-        final AlertDialog.Builder builder = new AlertDialog.Builder(mActivity)
-                .setTitle(isNewLesson ? mActivity.getString(R.string.main_dialog_lesson_new_lesson_title) : changeTitle)
-                .setView(rootView)
-                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                        if (myVote.getValue() <= maxVote.getValue()) {
-                            AdmissionPercentageData val = new AdmissionPercentageData(-1, apMetaId, -1, myVote.getValue(), maxVote.getValue());
-                            //add lesson, id and lesson id will be added automatically
-                            if (lessonID == ADD_LESSON_CODE)
-                                mActivity.getCurrentFragment().mAdapter.addLesson(val);
-                                //change lesson
-                            else {
-                                val.id = finalOldValues.id;
-                                val.lessonId = finalOldValues.lessonId;
-                                mActivity.getCurrentFragment().mAdapter.changeLesson(val);
-                            }
-                        } else
-                            Toast.makeText(mActivity, mActivity.getString(R.string.main_dialog_lesson_voted_too_much), Toast.LENGTH_SHORT).show();
-                    }
-                })
-                .setNegativeButton(mActivity.getString(R.string.dialog_button_abort), null);
-
-        //enable deleting old lessons
-        if (!isNewLesson) {
-            builder.setNeutralButton(R.string.delete_button_text, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    SwipeDeletion.executeProgrammaticSwipeDeletion(mActivity, admissionPercentageFragment, lessonView, lessonPosition);
-                }
-            });
-        }
-
-        //create dialog from builder
-        final AlertDialog dialog = builder.create();
-
-        //try to fix invalid number of done assignments
-        if (autoNumberPickerFixEnabled) {
-            myVote.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
-                @Override
-                public void onValueChange(NumberPicker numberPicker, int i, int i1) {
-                    //load new values
-                    int myVoteValue = myVote.getValue(), maxVoteValue = maxVote.getValue();
-                    if (myVoteValue > maxVoteValue)
-                        maxVote.setValue(myVoteValue);
-                    //update info text
-                    infoView.setText(myVote.getValue() + " " + mActivity.getString(R.string.main_dialog_lesson_von)
-                            + " " + maxVote.getValue() + " " + mActivity.getString(R.string.main_dialog_lesson_votes));
-                }
-            });
-            maxVote.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
-                @Override
-                public void onValueChange(NumberPicker numberPicker, int i, int i1) {
-                    //load new values
-                    int myVoteValue = myVote.getValue(), maxVoteValue = maxVote.getValue();
-                    if (myVoteValue > maxVoteValue)
-                        myVote.setValue(maxVoteValue);
-                    //update info text
-                    infoView.setText(myVote.getValue() + " " + mActivity.getString(R.string.main_dialog_lesson_von)
-                            + " " + maxVote.getValue() + " " + mActivity.getString(R.string.main_dialog_lesson_votes));
-                }
-            });
-        }
-        //fallback behaviour if the setting is disabled
-        else {
-            //listener for the vote picker
-            NumberPicker.OnValueChangeListener votePickerListener = new NumberPicker.OnValueChangeListener() {
-                @Override
-                public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-                    //load new values
-                    int myVoteValue = myVote.getValue();
-                    int maxVoteValue = maxVote.getValue();
-                    infoView.setText(myVoteValue + " " + mActivity.getString(R.string.main_dialog_lesson_von)
-                            + " " + maxVoteValue + " " + mActivity.getString(R.string.main_dialog_lesson_votes));
-                    boolean isValid = myVoteValue <= maxVoteValue;
-                    dialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(isValid);
-                    infoView.setTextColor(isValid ?
-                            Color.argb(255, 153, 204, 0) :
-                            mActivity.getResources().getColor(R.color.warning_red));
-                }
-            };
-            //add change listener to update dialog explanation if pickers changed
-            maxVote.setOnValueChangedListener(votePickerListener);
-            myVote.setOnValueChangedListener(votePickerListener);
-        }
-
-        dialog.show();
-
-        //change delete button text color to red
-        if (!isNewLesson)
-            dialog.getButton(DialogInterface.BUTTON_NEUTRAL).setTextColor(mActivity.getResources().getColor(R.color.warning_red));
-    }
-
 
     /**
      * shows the dialog to change the presentation points

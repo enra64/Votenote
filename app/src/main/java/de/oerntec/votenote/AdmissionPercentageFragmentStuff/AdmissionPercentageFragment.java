@@ -64,9 +64,9 @@ public class AdmissionPercentageFragment extends Fragment implements SwipeDeleti
     public AdmissionPercentageAdapter mAdapter;
 
     /**
-     * Contains the database id for the displayed fragment/subject
+     * Save the view that was clicked last so we can execute a programmatic swipe deletion
      */
-    //private int mSubjectId;
+    private View mLastClickedView = null;
 
     /**
      * The percentage meta id all data in this fragment has
@@ -178,8 +178,10 @@ public class AdmissionPercentageFragment extends Fragment implements SwipeDeleti
 
         mLessonList.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), mLessonList, new OnItemClickListener() {
             public void onItemClick(View view, int position) {
-                if (position != 0)
-                    MainDialogHelper.showChangeLessonDialog((MainActivity) getActivity(), AdmissionPercentageFragment.this, view, mPercentageMetaId, (Integer) view.getTag(), position);
+                if (position != 0){
+                    mLastClickedView = view;
+                    MainDialogHelper.showChangeLessonDialog(getFragmentManager(), mPercentageMetaId, (Integer) view.getTag());
+                }
             }
 
             public void onItemLongClick(final View view, int position) {
@@ -190,7 +192,7 @@ public class AdmissionPercentageFragment extends Fragment implements SwipeDeleti
         addFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                MainDialogHelper.showAddLessonDialog((MainActivity) getActivity(), mPercentageMetaId);
+                MainDialogHelper.showAddLessonDialog(getFragmentManager(), mPercentageMetaId);
             }
         });
 
@@ -228,5 +230,16 @@ public class AdmissionPercentageFragment extends Fragment implements SwipeDeleti
             mLastRemovalSavePointId = null;
             mAdapter.requery();
         }
+    }
+
+    /**
+     * delete a lesson with programmatic swipe
+     * @param mOldData the data the dialog was called with
+     */
+    public void deleteLesson(AdmissionPercentageData mOldData) {
+        if(mLastClickedView == null)
+            throw new AssertionError("mLastClickedView must not be null here, because it must only be called from the dialogfragment");
+        SwipeDeletion.executeProgrammaticSwipeDeletion(getActivity(), this, mLastClickedView, mAdapter.getRecyclerViewPosition(mOldData));
+        mLastClickedView = null;
     }
 }

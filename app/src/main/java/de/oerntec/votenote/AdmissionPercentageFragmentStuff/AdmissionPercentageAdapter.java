@@ -140,7 +140,7 @@ public class AdmissionPercentageAdapter extends RecyclerView.Adapter<AdmissionPe
      * Translates a lesson id to a list position: if not reverse sorted, just add 1 to the lesson id
      * because of the infoview. else, get the item count and subtract the id.
      */
-    private int getRecyclerViewPosition(AdmissionPercentageData item) {
+    int getRecyclerViewPosition(AdmissionPercentageData item) {
         int listPosition;
         for (listPosition = 0; listPosition < mData.size(); listPosition++) {
             AdmissionPercentageData apd = mData.get(listPosition);
