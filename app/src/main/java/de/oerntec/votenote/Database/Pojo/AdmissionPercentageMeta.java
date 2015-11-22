@@ -1,4 +1,6 @@
-package de.oerntec.votenote.Database;
+package de.oerntec.votenote.Database.Pojo;
+
+import de.oerntec.votenote.Database.NameAndIdPojo;
 
 /**
  * POJO class for representing the metadata available about an admission percentage counter

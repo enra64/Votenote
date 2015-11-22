@@ -27,10 +27,10 @@ import android.widget.Toast;
 
 import de.oerntec.votenote.AdmissionPercentageFragmentStuff.AdmissionPercentageFragment;
 import de.oerntec.votenote.CardListHelpers.SwipeDeletion;
-import de.oerntec.votenote.Database.AdmissionPercentageData;
-import de.oerntec.votenote.Database.AdmissionPercentageMeta;
-import de.oerntec.votenote.Database.DBAdmissionPercentageData;
-import de.oerntec.votenote.Database.DBAdmissionPercentageMeta;
+import de.oerntec.votenote.Database.Pojo.AdmissionPercentageData;
+import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMeta;
+import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageData;
+import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageMeta;
 import de.oerntec.votenote.MainActivity;
 import de.oerntec.votenote.R;
 

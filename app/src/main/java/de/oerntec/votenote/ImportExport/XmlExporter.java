@@ -6,11 +6,11 @@ import android.widget.Toast;
 
 import java.io.IOException;
 
-import de.oerntec.votenote.Database.DBAdmissionCounters;
-import de.oerntec.votenote.Database.DBAdmissionPercentageData;
-import de.oerntec.votenote.Database.DBAdmissionPercentageMeta;
-import de.oerntec.votenote.Database.DBSubjects;
 import de.oerntec.votenote.Database.DatabaseCreator;
+import de.oerntec.votenote.Database.TableHelpers.DBAdmissionCounters;
+import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageData;
+import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageMeta;
+import de.oerntec.votenote.Database.TableHelpers.DBSubjects;
 import de.oerntec.votenote.R;
 
 /**

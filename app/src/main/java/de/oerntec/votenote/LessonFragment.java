@@ -14,8 +14,8 @@ import android.view.ViewGroup;
 import java.util.List;
 
 import de.oerntec.votenote.AdmissionPercentageFragmentStuff.AdmissionPercentageFragment;
-import de.oerntec.votenote.Database.AdmissionPercentageMeta;
-import de.oerntec.votenote.Database.DBAdmissionPercentageMeta;
+import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMeta;
+import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageMeta;
 
 public class LessonFragment extends Fragment {
 

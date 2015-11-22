@@ -5,8 +5,8 @@ import android.app.AlertDialog;
 import android.app.FragmentManager;
 import android.content.DialogInterface;
 
-import de.oerntec.votenote.Database.AdmissionCounter;
-import de.oerntec.votenote.Database.AdmissionPercentageMeta;
+import de.oerntec.votenote.Database.Pojo.AdmissionCounter;
+import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMeta;
 
 public class Dialogs {
 

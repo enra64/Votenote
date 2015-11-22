@@ -11,8 +11,8 @@ import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import de.oerntec.votenote.Database.AdmissionCounter;
-import de.oerntec.votenote.Database.DBAdmissionCounters;
+import de.oerntec.votenote.Database.Pojo.AdmissionCounter;
+import de.oerntec.votenote.Database.TableHelpers.DBAdmissionCounters;
 import de.oerntec.votenote.Helpers.NotEmptyWatcher;
 import de.oerntec.votenote.R;
 import de.oerntec.votenote.SubjectManagerStuff.SeekerListener;

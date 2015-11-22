@@ -33,8 +33,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
-import de.oerntec.votenote.Database.DBSubjects;
 import de.oerntec.votenote.Database.DatabaseCreator;
+import de.oerntec.votenote.Database.TableHelpers.DBSubjects;
 import de.oerntec.votenote.MainActivity;
 import de.oerntec.votenote.R;
 import de.oerntec.votenote.SubjectManagerStuff.SubjectManagementActivity;

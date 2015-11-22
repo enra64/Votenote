@@ -21,11 +21,11 @@ import android.content.Context;
 
 import java.util.List;
 
-import de.oerntec.votenote.Database.DBAdmissionCounters;
-import de.oerntec.votenote.Database.DBAdmissionPercentageData;
-import de.oerntec.votenote.Database.DBAdmissionPercentageMeta;
-import de.oerntec.votenote.Database.DBSubjects;
-import de.oerntec.votenote.Database.Subject;
+import de.oerntec.votenote.Database.Pojo.Subject;
+import de.oerntec.votenote.Database.TableHelpers.DBAdmissionCounters;
+import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageData;
+import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageMeta;
+import de.oerntec.votenote.Database.TableHelpers.DBSubjects;
 
 public class CsvExporter {
     public static FileDialog exportDialog(final Context activity) {

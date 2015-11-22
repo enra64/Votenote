@@ -15,7 +15,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 * */
-package de.oerntec.votenote.Database;
+package de.oerntec.votenote.Database.TableHelpers;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -26,6 +26,8 @@ import android.util.Log;
 import java.util.LinkedList;
 import java.util.List;
 
+import de.oerntec.votenote.Database.DatabaseCreator;
+import de.oerntec.votenote.Database.Pojo.Subject;
 import de.oerntec.votenote.MainActivity;
 
 public class DBSubjects extends CrudDb<Subject> {

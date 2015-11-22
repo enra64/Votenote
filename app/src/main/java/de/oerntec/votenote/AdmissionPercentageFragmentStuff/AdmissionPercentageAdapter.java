@@ -26,11 +26,11 @@ import android.widget.TextView;
 
 import java.util.List;
 
-import de.oerntec.votenote.Database.AdmissionPercentageData;
-import de.oerntec.votenote.Database.AdmissionPercentageMeta;
-import de.oerntec.votenote.Database.DBAdmissionPercentageData;
-import de.oerntec.votenote.Database.DBAdmissionPercentageMeta;
-import de.oerntec.votenote.Database.DBSubjects;
+import de.oerntec.votenote.Database.Pojo.AdmissionPercentageData;
+import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMeta;
+import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageData;
+import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageMeta;
+import de.oerntec.votenote.Database.TableHelpers.DBSubjects;
 import de.oerntec.votenote.MainActivity;
 import de.oerntec.votenote.R;
 

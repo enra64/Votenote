@@ -40,7 +40,7 @@ import android.view.View;
 import de.oerntec.votenote.CardListHelpers.OnItemClickListener;
 import de.oerntec.votenote.CardListHelpers.RecyclerItemClickListener;
 import de.oerntec.votenote.CardListHelpers.SwipeDeletion;
-import de.oerntec.votenote.Database.Subject;
+import de.oerntec.votenote.Database.Pojo.Subject;
 import de.oerntec.votenote.ImportExport.XmlImporter;
 import de.oerntec.votenote.R;
 import de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.SubjectCreationActivity;

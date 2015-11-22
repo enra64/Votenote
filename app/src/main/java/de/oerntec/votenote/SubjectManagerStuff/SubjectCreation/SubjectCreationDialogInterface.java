@@ -1,7 +1,7 @@
 package de.oerntec.votenote.SubjectManagerStuff.SubjectCreation;
 
-import de.oerntec.votenote.Database.AdmissionCounter;
-import de.oerntec.votenote.Database.AdmissionPercentageMeta;
+import de.oerntec.votenote.Database.Pojo.AdmissionCounter;
+import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMeta;
 
 /**
  * Interface to be able to give results from dedicated dialog classes

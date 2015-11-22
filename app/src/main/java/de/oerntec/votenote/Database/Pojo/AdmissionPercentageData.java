@@ -1,4 +1,4 @@
-package de.oerntec.votenote.Database;
+package de.oerntec.votenote.Database.Pojo;
 
 public class AdmissionPercentageData {
     public int id, admissionPercentageMetaId, lessonId, finishedAssignments, availableAssignments;

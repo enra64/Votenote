@@ -27,8 +27,8 @@ import android.widget.TextView;
 
 import java.util.List;
 
-import de.oerntec.votenote.Database.DBSubjects;
-import de.oerntec.votenote.Database.Subject;
+import de.oerntec.votenote.Database.Pojo.Subject;
+import de.oerntec.votenote.Database.TableHelpers.DBSubjects;
 import de.oerntec.votenote.R;
 
 public class NavigationDrawerAdapter extends RecyclerView.Adapter<NavigationDrawerAdapter.SubjectHolder> {

@@ -1,8 +1,10 @@
-package de.oerntec.votenote.Database;
+package de.oerntec.votenote.Database.TableHelpers;
 
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+
+import de.oerntec.votenote.Database.DatabaseCreator;
 
 public abstract class CrudDb<T> {
     /**
