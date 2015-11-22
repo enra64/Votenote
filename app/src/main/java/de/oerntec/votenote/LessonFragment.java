@@ -3,10 +3,10 @@ package de.oerntec.votenote;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +16,6 @@ import java.util.List;
 import de.oerntec.votenote.AdmissionPercentageFragmentStuff.AdmissionPercentageFragment;
 import de.oerntec.votenote.Database.AdmissionPercentageMeta;
 import de.oerntec.votenote.Database.DBAdmissionPercentageMeta;
-import de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.SubjectCreationActivity;
 
 public class LessonFragment extends Fragment {
 
@@ -61,7 +60,9 @@ public class LessonFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mSubjectId = getArguments().getInt(SubjectCreationActivity.SUBJECT_CREATOR_SUBJECT_ID_ARGUMENT_NAME, -1);
+        mSubjectId = getArguments().getInt(ARG_SUBJECT_ID, -1);
+        if (mSubjectId == -1)
+            throw new AssertionError("trying to load a non-existing subject!");
     }
 
     @Nullable
@@ -77,6 +78,26 @@ public class LessonFragment extends Fragment {
     }
 
     /**
+     * get the currently displayed fragment
+     */
+    public AdmissionPercentageFragment getCurrentFragment() {
+        //totally futureproof
+        AdmissionPercentageFragment current = mAdmissionPercentageAdapter.getCurrentFragment();
+        if (current == null)
+            throw new AssertionError("could not find current fragment");
+        return current;
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        List<AdmissionPercentageMeta> percentages = DBAdmissionPercentageMeta.getInstance().getItemsForSubject(mSubjectId);
+        if (percentages.size() > 0) {
+            mViewPager.setCurrentItem(0);
+        }
+    }
+
+    /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.
      */
@@ -84,6 +105,7 @@ public class LessonFragment extends Fragment {
         private DBAdmissionPercentageMeta mMetaDb;
         private List<AdmissionPercentageMeta> mData;
         private int mSubjectId;
+        private AdmissionPercentageFragment mCurrentFragment;
 
         public AdmissionPercentageAdapter(FragmentManager fm, DBAdmissionPercentageMeta dbMeta, int subjectId) {
             super(fm);
@@ -99,14 +121,16 @@ public class LessonFragment extends Fragment {
 
         @Override
         public Fragment getItem(int position) {
-            // getItem is called to instantiate the fragment for the given page.
-            // Return a PlaceholderFragment (defined as a static inner class below).
-            return AdmissionPercentageFragment.newInstance(mData.get(position).id);
+            mCurrentFragment = AdmissionPercentageFragment.newInstance(mData.get(position).id);
+            return mCurrentFragment;
+        }
+
+        public AdmissionPercentageFragment getCurrentFragment() {
+            return mCurrentFragment;
         }
 
         @Override
         public int getCount() {
-            // Show 3 total pages.
             return mData.size();
         }
 

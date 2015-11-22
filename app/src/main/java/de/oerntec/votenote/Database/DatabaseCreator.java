@@ -56,12 +56,13 @@ public class DatabaseCreator extends SQLiteOpenHelper {
     /***********************************************************************************************
      * admission percentage data database start
      **********************************************************************************************/
-    public static final String ADMISSION_PERCENTAGES_DATA_ID = "_id";
+    //public static final String ADMISSION_PERCENTAGES_DATA_ID = "rowid";
     public static final String ADMISSION_PERCENTAGES_DATA_LESSON_ID = "lesson_id";
     public static final String ADMISSION_PERCENTAGES_DATA_ADMISSION_PERCENTAGE_ID = "admission_percentage_id";
     public static final String ADMISSION_PERCENTAGES_DATA_FINISHED_ASSIGNMENTS = "finished_assignments";
     public static final String ADMISSION_PERCENTAGES_DATA_AVAILABLE_ASSIGNMENTS = "available_assignments";
     public static final int DATABASE_VERSION = 13;//switched to db v13 in commit 22.10.15 13:49
+
     //begin new database system
     private static final String CREATE_TABLE_SUBJECTS = "create table " + TABLE_NAME_SUBJECTS + "( " +
             SUBJECTS_ID + " integer primary key AUTOINCREMENT," + //autoincrement for more clearly defined behaviour
@@ -74,7 +75,8 @@ public class DatabaseCreator extends SQLiteOpenHelper {
             ADMISSION_COUNTER_TARGET + " integer not null," +
             "FOREIGN KEY (" + ADMISSION_COUNTER_SUBJECT_ID + ") REFERENCES " + TABLE_NAME_SUBJECTS + "(" + SUBJECTS_ID + ")" +
             ");";
-    private static final String CREATE_TABLE_ADMISSION_PERCENTAGES_DATA = "create table " + TABLE_NAME_ADMISSION_PERCENTAGES_DATA + "( " +
+    private static final String CREATE_TABLE_ADMISSION_PERCENTAGES_DATA =
+            "create table " + TABLE_NAME_ADMISSION_PERCENTAGES_DATA + "( " +
             ADMISSION_PERCENTAGES_DATA_LESSON_ID + " integer not null," +
             ADMISSION_PERCENTAGES_DATA_FINISHED_ASSIGNMENTS + " integer not null," +
             ADMISSION_PERCENTAGES_DATA_ADMISSION_PERCENTAGE_ID + " integer, " +
@@ -133,8 +135,11 @@ public class DatabaseCreator extends SQLiteOpenHelper {
         }
     }
 
-    public void reset(Context c) {
-        c.deleteDatabase(DATABASE_NAME);
+    public void reset(Context context) {
+        getWritableDatabase().execSQL("DROP TABLE " + TABLE_NAME_SUBJECTS);
+        getWritableDatabase().execSQL("DROP TABLE " + TABLE_NAME_ADMISSION_PERCENTAGES_META);
+        getWritableDatabase().execSQL("DROP TABLE " + TABLE_NAME_ADMISSION_PERCENTAGES_DATA);
+        getWritableDatabase().execSQL("DROP TABLE " + TABLE_NAME_ADMISSION_COUNTERS);
         onCreate(getWritableDatabase());
     }
 }

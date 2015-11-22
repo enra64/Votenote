@@ -17,10 +17,22 @@
 * */
 package de.oerntec.votenote.Dialogs;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.graphics.Color;
 import android.view.View;
+import android.widget.NumberPicker;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import de.oerntec.votenote.AdmissionPercentageFragmentStuff.AdmissionPercentageFragment;
+import de.oerntec.votenote.CardListHelpers.SwipeDeletion;
+import de.oerntec.votenote.Database.AdmissionPercentageData;
+import de.oerntec.votenote.Database.AdmissionPercentageMeta;
+import de.oerntec.votenote.Database.DBAdmissionPercentageData;
+import de.oerntec.votenote.Database.DBAdmissionPercentageMeta;
 import de.oerntec.votenote.MainActivity;
+import de.oerntec.votenote.R;
 
 public class MainDialogHelper {
     private static final int ADD_LESSON_CODE = -2;
@@ -51,7 +63,7 @@ public class MainDialogHelper {
      * Shows a dialog to edit or add a lesson
      */
     private static void showLessonDialog(final MainActivity mActivity, final AdmissionPercentageFragment admissionPercentageFragment, final View lessonView, final int apMetaId, final int lessonID, final int lessonPosition) {
-        /*final int maxVoteValue;
+        final int maxVoteValue;
         final int myVoteValue;
 
         final DBAdmissionPercentageData apDataDb = DBAdmissionPercentageData.getInstance();
@@ -59,17 +71,23 @@ public class MainDialogHelper {
         //whether or not to try automatically fixing invalid choices
         boolean autoNumberPickerFixEnabled = MainActivity.getPreference("move_max_assignments_picker", true);
 
-        Lesson oldValues = null;
+        AdmissionPercentageData oldValues = null;
         final boolean isNewLesson = lessonID == ADD_LESSON_CODE;
         //set values according to usage (add or change)
         if (isNewLesson) {
-            AdmissionPercentageData lastEnteredLesson = apDataDb.getNewestItemForMetaId(apMetaId);
-            maxVoteValue = lastEnteredLesson.availableAssignments;
-            myVoteValue = lastEnteredLesson.finishedAssignments;
+            if (apDataDb.getItemsForMetaId(apMetaId, MainActivity.getPreference("reverse_lesson_sort", false)).size() == 0) {
+                AdmissionPercentageMeta metaItem = DBAdmissionPercentageMeta.getInstance().getItem(apMetaId);
+                maxVoteValue = metaItem.estimatedAssignmentsPerLesson;
+                myVoteValue = maxVoteValue / 2;
+            } else {
+                AdmissionPercentageData lastEnteredLesson = apDataDb.getNewestItemForMetaId(apMetaId);
+                maxVoteValue = lastEnteredLesson.availableAssignments;
+                myVoteValue = lastEnteredLesson.finishedAssignments;
+            }
         } else {
-            oldValues = entryDB.getLesson(subjectId, lessonID);
-            myVoteValue = oldValues != null ? oldValues.myVotes : 0;
-            maxVoteValue = oldValues != null ? oldValues.maxVotes : 0;
+            oldValues = DBAdmissionPercentageData.getInstance().getItem(apMetaId, lessonID);
+            myVoteValue = oldValues != null ? oldValues.finishedAssignments : 0;
+            maxVoteValue = oldValues != null ? oldValues.availableAssignments : 0;
         }
 
         //inflate rootView
@@ -97,7 +115,7 @@ public class MainDialogHelper {
         infoView.setTextColor(Color.argb(255, 153, 204, 0));//green
 
         //build alertdialog
-        final Lesson finalOldValues = oldValues;
+        final AdmissionPercentageData finalOldValues = oldValues;
 
         String changeTitle;
 
@@ -113,11 +131,16 @@ public class MainDialogHelper {
                 .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
                         if (myVote.getValue() <= maxVote.getValue()) {
-                            Lesson val = new Lesson(finalOldValues == null ? -1 : finalOldValues.lessonId, myVote.getValue(), maxVote.getValue(), -1, subjectId);
+                            AdmissionPercentageData val = new AdmissionPercentageData(-1, apMetaId, -1, myVote.getValue(), maxVote.getValue());
+                            //add lesson, id and lesson id will be added automatically
                             if (lessonID == ADD_LESSON_CODE)
                                 mActivity.getCurrentFragment().mAdapter.addLesson(val);
-                            else
-                                mActivity.getCurrentFragment().mAdapter.changeLesson(finalOldValues, val);
+                                //change lesson
+                            else {
+                                val.id = finalOldValues.id;
+                                val.lessonId = finalOldValues.lessonId;
+                                mActivity.getCurrentFragment().mAdapter.changeLesson(val);
+                            }
                         } else
                             Toast.makeText(mActivity, mActivity.getString(R.string.main_dialog_lesson_voted_too_much), Toast.LENGTH_SHORT).show();
                     }
@@ -192,7 +215,6 @@ public class MainDialogHelper {
         //change delete button text color to red
         if (!isNewLesson)
             dialog.getButton(DialogInterface.BUTTON_NEUTRAL).setTextColor(mActivity.getResources().getColor(R.color.warning_red));
-                    */
     }
 
 

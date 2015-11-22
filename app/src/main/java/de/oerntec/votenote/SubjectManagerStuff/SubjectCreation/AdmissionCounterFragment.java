@@ -15,6 +15,7 @@ import de.oerntec.votenote.Database.AdmissionCounter;
 import de.oerntec.votenote.Database.DBAdmissionCounters;
 import de.oerntec.votenote.Helpers.NotEmptyWatcher;
 import de.oerntec.votenote.R;
+import de.oerntec.votenote.SubjectManagerStuff.SeekerListener;
 
 public class AdmissionCounterFragment extends DialogFragment {
     private static final String SUBJECT_ID = "subject_id";
@@ -27,7 +28,7 @@ public class AdmissionCounterFragment extends DialogFragment {
 
     //views needed for configuring a new percentage counter
     private EditText mNameInput;
-    private TextView mTargetPointCountHelp;
+    private TextView mTargetPointCountCurrent;
     private SeekBar mTargetPointCountSeek;
 
     private String mSavepointId;
@@ -74,6 +75,7 @@ public class AdmissionCounterFragment extends DialogFragment {
 
         mNameInput = (EditText) view.findViewById(R.id.subject_manager_fragment_dialog_admission_counter_name_edittext);
         mTargetPointCountSeek = (SeekBar) view.findViewById(R.id.subject_manager_fragment_dialog_admission_counter_target_seekbar);
+        mTargetPointCountCurrent = (TextView) view.findViewById(R.id.subject_manager_fragment_dialog_admission_counter_current);
         return view;
     }
 
@@ -128,6 +130,7 @@ public class AdmissionCounterFragment extends DialogFragment {
 
         //set valid value on seekbar
         mTargetPointCountSeek.setProgress(inputCounter.targetValue);
+        mTargetPointCountSeek.setOnSeekBarChangeListener(new SeekerListener(mTargetPointCountCurrent));
 
         //add a watcher to set an error if the name is empty
         mNameInput.addTextChangedListener(new NotEmptyWatcher(mNameInput, ((AlertDialog) getDialog()).getButton(DialogInterface.BUTTON_POSITIVE)));

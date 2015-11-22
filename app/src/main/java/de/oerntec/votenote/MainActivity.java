@@ -456,7 +456,8 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
     }
 
     public AdmissionPercentageFragment getCurrentFragment() {
-        return (AdmissionPercentageFragment) getFragmentManager().findFragmentById(R.id.container);
+        LessonFragment currentSubjectFragment = ((LessonFragment) getFragmentManager().findFragmentById(R.id.container));
+        return currentSubjectFragment.getCurrentFragment();
     }
 
     @Override

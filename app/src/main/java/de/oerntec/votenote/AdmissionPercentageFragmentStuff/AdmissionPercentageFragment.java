@@ -35,6 +35,7 @@ import android.view.ViewGroup;
 import de.oerntec.votenote.CardListHelpers.OnItemClickListener;
 import de.oerntec.votenote.CardListHelpers.RecyclerItemClickListener;
 import de.oerntec.votenote.CardListHelpers.SwipeDeletion;
+import de.oerntec.votenote.Database.AdmissionPercentageData;
 import de.oerntec.votenote.Database.AdmissionPercentageMeta;
 import de.oerntec.votenote.Database.DBAdmissionPercentageData;
 import de.oerntec.votenote.Dialogs.MainDialogHelper;
@@ -203,7 +204,7 @@ public class AdmissionPercentageFragment extends Fragment implements SwipeDeleti
 
     public void showUndoSnackBar(final int lessonId, int lessonPosition) {
         //remove the lesson. creates a savepoint before that, returns the id
-        mLastRemovalSavePointId = mAdapter.removeLesson(lessonId);
+        mLastRemovalSavePointId = mAdapter.removeLesson(new AdmissionPercentageData(mPercentageMetaId, lessonId, -1, -1));
         Snackbar
                 .make(mRootView.findViewById(R.id.subject_fragment_coordinator_layout), getActivity().getString(R.string.undobar_deleted), Snackbar.LENGTH_LONG)
                 .setAction("UNDO", new View.OnClickListener() {

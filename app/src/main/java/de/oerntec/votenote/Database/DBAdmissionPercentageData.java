@@ -69,12 +69,6 @@ public class DBAdmissionPercentageData {
         return mInstance;
     }
 
-    /**
-     * Drop all lesson data
-     */
-    public void dropData() {
-        database.delete(DatabaseCreator.TABLE_NAME_ADMISSION_PERCENTAGES_DATA, null, null);
-    }
 
     /**
      * Get all data, only for export
@@ -90,7 +84,7 @@ public class DBAdmissionPercentageData {
      *
      * @throws AssertionError if old dbId != new dbId
      */
-    public void changeItem(AdmissionPercentageData oldValues, AdmissionPercentageData newItem) {
+    /*public void changeItem(AdmissionPercentageData oldValues, AdmissionPercentageData newItem) {
         ContentValues values = new ContentValues();
         values.put(DatabaseCreator.ADMISSION_PERCENTAGES_DATA_ID, newItem.id);
         values.put(DatabaseCreator.ADMISSION_PERCENTAGES_DATA_ADMISSION_PERCENTAGE_ID, newItem.admissionPercentageMetaId);
@@ -107,18 +101,20 @@ public class DBAdmissionPercentageData {
             if (affectedRows != 0)
                 Log.i("AdmissionCounters", "!= 1 entry was changed, something is weird");
         if (affectedRows != 0) throw new AssertionError();
-    }
+    }*/
 
     public void changeItem(AdmissionPercentageData newItem) {
         ContentValues values = new ContentValues();
-        values.put(DatabaseCreator.ADMISSION_PERCENTAGES_DATA_ID, newItem.id);
+        //values.put(DatabaseCreator.ADMISSION_PERCENTAGES_DATA_ID, newItem.id);
         values.put(DatabaseCreator.ADMISSION_PERCENTAGES_DATA_ADMISSION_PERCENTAGE_ID, newItem.admissionPercentageMetaId);
         values.put(DatabaseCreator.ADMISSION_PERCENTAGES_DATA_LESSON_ID, newItem.lessonId);
         values.put(DatabaseCreator.ADMISSION_PERCENTAGES_DATA_FINISHED_ASSIGNMENTS, newItem.finishedAssignments);
         values.put(DatabaseCreator.ADMISSION_PERCENTAGES_DATA_AVAILABLE_ASSIGNMENTS, newItem.availableAssignments);
 
-        String[] whereArgs = {String.valueOf(newItem.id)};
-        int affectedRows = database.update(DatabaseCreator.TABLE_NAME_ADMISSION_PERCENTAGES_DATA, values, DatabaseCreator.ADMISSION_PERCENTAGES_DATA_ID + "=?", whereArgs);
+        String[] whereArgs = {String.valueOf(newItem.admissionPercentageMetaId), String.valueOf(newItem.lessonId)};
+        int affectedRows = database.update(DatabaseCreator.TABLE_NAME_ADMISSION_PERCENTAGES_DATA, values,
+                DatabaseCreator.ADMISSION_PERCENTAGES_DATA_ADMISSION_PERCENTAGE_ID + "=? AND " +
+                        DatabaseCreator.ADMISSION_PERCENTAGES_DATA_LESSON_ID + "=?", whereArgs);
         if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
             if (affectedRows != 0)
                 Log.i("AdmissionCounters", "No or more than one entry was changed, something is weird");
@@ -141,11 +137,10 @@ public class DBAdmissionPercentageData {
     /**
      * Get a single admission counter.
      *
-     * @param id what id are we looking for
      * @return AdmissionCounter object corresponding to the db values
      * @throws AssertionError if not exactly one AdmissionCounters are found
      */
-    public AdmissionPercentageData getItem(int id) {
+    /*public AdmissionPercentageData getItem(int apMetaId, int lessonId) {
         String[] whereArgs = {String.valueOf(id)};
         Cursor c = database.query(true, DatabaseCreator.TABLE_NAME_ADMISSION_PERCENTAGES_DATA, null, DatabaseCreator.ADMISSION_PERCENTAGES_DATA_ID + "=?", whereArgs, null, null, null, null);
         AdmissionPercentageData returnValue = null;
@@ -153,7 +148,30 @@ public class DBAdmissionPercentageData {
             throw new AssertionError("more than one item returned if we search via id is bad");
         if (c.moveToFirst())
             returnValue = new AdmissionPercentageData(
-                    c.getInt(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_DATA_ID)),
+                    //c.getInt(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_DATA_ID)),
+                    c.getInt(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_DATA_ADMISSION_PERCENTAGE_ID)),
+                    c.getInt(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_DATA_LESSON_ID)),
+                    c.getInt(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_DATA_FINISHED_ASSIGNMENTS)),
+                    c.getInt(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_DATA_AVAILABLE_ASSIGNMENTS))
+            );
+        c.close();
+        return returnValue;
+    }*/
+
+    public AdmissionPercentageData getItem(int apMetaId, int lessonId) {
+        String[] whereArgs = {String.valueOf(apMetaId), String.valueOf(lessonId)};
+        Cursor c = database.query(true,
+                DatabaseCreator.TABLE_NAME_ADMISSION_PERCENTAGES_DATA,
+                null,
+                DatabaseCreator.ADMISSION_PERCENTAGES_DATA_ADMISSION_PERCENTAGE_ID + "=? AND " +
+                        DatabaseCreator.ADMISSION_PERCENTAGES_DATA_LESSON_ID + "=?",
+                whereArgs, null, null, null, null);
+        AdmissionPercentageData returnValue = null;
+        if (c.getCount() != 1)
+            throw new AssertionError("!=1 id returned: " + c.getCount());
+        if (c.moveToFirst())
+            returnValue = new AdmissionPercentageData(
+                    //c.getInt(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_DATA_ID)),
                     c.getInt(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_DATA_ADMISSION_PERCENTAGE_ID)),
                     c.getInt(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_DATA_LESSON_ID)),
                     c.getInt(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_DATA_FINISHED_ASSIGNMENTS)),
@@ -163,25 +181,15 @@ public class DBAdmissionPercentageData {
         return returnValue;
     }
 
-    public AdmissionPercentageData getItem(int apMetaId, int lessonId) {
-        String[] whereArgs = {String.valueOf(apMetaId), String.valueOf(lessonId)};
-        Cursor c = database.query(true, DatabaseCreator.TABLE_NAME_ADMISSION_PERCENTAGES_DATA, null,
-                DatabaseCreator.ADMISSION_PERCENTAGES_DATA_ADMISSION_PERCENTAGE_ID + "=? AND " +
-                        DatabaseCreator.ADMISSION_PERCENTAGES_DATA_LESSON_ID + "=?", whereArgs, null, null, null, null);
-        AdmissionPercentageData returnValue = null;
-        if (c.getCount() != 1)
-            throw new AssertionError("more than one item returned if we search via id is bad");
-        if (c.moveToFirst())
-            returnValue = new AdmissionPercentageData(
-                    c.getInt(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_DATA_ID)),
-                    c.getInt(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_DATA_ADMISSION_PERCENTAGE_ID)),
-                    c.getInt(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_DATA_LESSON_ID)),
-                    c.getInt(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_DATA_FINISHED_ASSIGNMENTS)),
-                    c.getInt(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_DATA_AVAILABLE_ASSIGNMENTS))
-            );
-        c.close();
-        return returnValue;
+    public void deleteItemsForSubject(int subjectId) {
+        String[] whereArgs = new String[]{String.valueOf(subjectId)};
+        int checkValue =
+                database.delete(DatabaseCreator.TABLE_NAME_ADMISSION_PERCENTAGES_DATA,
+                        DatabaseCreator.ADMISSION_PERCENTAGES_META_SUBJECT_ID + "=?", whereArgs);
+        if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
+            Log.i("dbgroups:delete", "deleting all " + checkValue + " entries of type " + subjectId);
     }
+
 
     /**
      * Get a all admission counters for a subject, ordered by their lesson id
@@ -207,7 +215,7 @@ public class DBAdmissionPercentageData {
 
         while (c.moveToNext())
             items.add(new AdmissionPercentageData(
-                    c.getInt(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_DATA_ID)),
+                    //c.getInt(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_DATA_ID)),
                     c.getInt(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_DATA_ADMISSION_PERCENTAGE_ID)),
                     c.getInt(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_DATA_LESSON_ID)),
                     c.getInt(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_DATA_FINISHED_ASSIGNMENTS)),
@@ -218,46 +226,42 @@ public class DBAdmissionPercentageData {
         return items;
     }
 
-    public void deleteItemsForSubject(int subjectId) {
-        String[] whereArgs = new String[]{String.valueOf(subjectId)};
-        int checkValue =
-                database.delete(DatabaseCreator.TABLE_NAME_ADMISSION_PERCENTAGES_DATA,
-                        DatabaseCreator.ADMISSION_PERCENTAGES_META_SUBJECT_ID + "=?", whereArgs);
-        if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
-            Log.i("dbgroups:delete", "deleting all " + checkValue + " entries of type " + subjectId);
-    }
-
     /**
      * Delete a counter
-     *
-     * @param id the admission counter id to search for
      */
-    public void deleteItem(int id) {
-        String[] whereArgs = new String[]{String.valueOf(id)};
-        database.delete(DatabaseCreator.TABLE_NAME_ADMISSION_PERCENTAGES_DATA, DatabaseCreator.ADMISSION_PERCENTAGES_DATA_ID + "=?", whereArgs);
+    public void deleteItem(AdmissionPercentageData item) {
+        String[] whereArgs = new String[]{String.valueOf(item.admissionPercentageMetaId), String.valueOf(item.lessonId)};
+        database.delete(DatabaseCreator.TABLE_NAME_ADMISSION_PERCENTAGES_DATA, DatabaseCreator.ADMISSION_PERCENTAGES_DATA_ADMISSION_PERCENTAGE_ID + "=? AND " +
+                DatabaseCreator.ADMISSION_PERCENTAGES_DATA_LESSON_ID + "=?", whereArgs);
     }
 
     /**
      * Add a new item
      *
      * @param newItem the item to add
-     * @return -1 if a constraint was violated, new object row id otherwise
      */
-    public int addItem(AdmissionPercentageData newItem) {
-        Cursor lessonIdCursor = database.rawQuery("SELECT MAX(" + DatabaseCreator.ADMISSION_PERCENTAGES_DATA_LESSON_ID + ") " +
-                "FROM " + DatabaseCreator.TABLE_NAME_ADMISSION_PERCENTAGES_DATA +
-                " WHERE " + DatabaseCreator.ADMISSION_PERCENTAGES_DATA_ADMISSION_PERCENTAGE_ID + "=" + newItem.admissionPercentageMetaId, null);
+    public void addItem(AdmissionPercentageData newItem) {
+        int id = newItem.id;
 
-        if (lessonIdCursor.getCount() == 0)
-
+        //get the next free lesson id if this is a new data item
+        if (id == -1) {
+            Cursor lessonIdCursor = database.rawQuery("SELECT MAX(" + DatabaseCreator.ADMISSION_PERCENTAGES_DATA_LESSON_ID + ") " +
+                    "AS max_lesson_id FROM " + DatabaseCreator.TABLE_NAME_ADMISSION_PERCENTAGES_DATA +
+                    " WHERE " + DatabaseCreator.ADMISSION_PERCENTAGES_DATA_ADMISSION_PERCENTAGE_ID + "=" + newItem.admissionPercentageMetaId, null);
+            if (lessonIdCursor.getCount() == 0)
+                id = 0;
+            else {
+                lessonIdCursor.moveToFirst();
+                id = lessonIdCursor.getInt(lessonIdCursor.getColumnIndexOrThrow("max_lesson_id")) + 1;
+            }
             lessonIdCursor.close();
+        }
 
         //create values for insert or update
         ContentValues values = new ContentValues();
 
         //only put id if not new subject, eg restored item//TODO: solve removal with transaction, otherwise we need to do magic with the rest of the entries
-        if (newItem.id > 0)
-            values.put(DatabaseCreator.ADMISSION_PERCENTAGES_DATA_ID, newItem.id);
+        //values.put(DatabaseCreator.ADMISSION_PERCENTAGES_DATA_ID, id);
         values.put(DatabaseCreator.ADMISSION_PERCENTAGES_DATA_ADMISSION_PERCENTAGE_ID, newItem.admissionPercentageMetaId);
         values.put(DatabaseCreator.ADMISSION_PERCENTAGES_DATA_LESSON_ID, newItem.lessonId);
         values.put(DatabaseCreator.ADMISSION_PERCENTAGES_DATA_FINISHED_ASSIGNMENTS, newItem.finishedAssignments);
@@ -272,20 +276,6 @@ public class DBAdmissionPercentageData {
         } catch (SQLiteConstraintException e) {
             throw new AssertionError("not exactly one subject inserted");
         }
-
-        //get maximum id value. because id is autoincrement, that must be the id of the subject we just added
-        Cursor idCursor = database.rawQuery("SELECT MAX(" + DatabaseCreator.ADMISSION_PERCENTAGES_DATA_ID + ") FROM " + DatabaseCreator.TABLE_NAME_ADMISSION_PERCENTAGES_DATA, null);
-
-        //throw error if we have more or less than one result row, because that is bullshit
-        if (idCursor.getCount() != 1)
-            throw new AssertionError("somehow we got more than one result with a max query?");
-
-        //retrieve value and close cursor
-        idCursor.moveToFirst();
-        int result = idCursor.getInt(idCursor.getColumnIndex(DatabaseCreator.ADMISSION_PERCENTAGES_DATA_ID));
-        idCursor.close();
-
-        return result;
     }
 
     public int getCount() {
@@ -295,14 +285,20 @@ public class DBAdmissionPercentageData {
         return result;
     }
 
+    /**
+     * gets the maximum lesson id an admission percentage counter has had yet
+     *
+     * @param apMetaId
+     * @return
+     */
     private int getMaxLessonIdForAp(int apMetaId) {
-        Cursor cursor = database.rawQuery("SELECT MAX(" + DatabaseCreator.ADMISSION_PERCENTAGES_DATA_LESSON_ID + ") FROM " +
+        Cursor cursor = database.rawQuery("SELECT MAX(" + DatabaseCreator.ADMISSION_PERCENTAGES_DATA_LESSON_ID + ") AS max FROM " +
                 DatabaseCreator.TABLE_NAME_ADMISSION_PERCENTAGES_DATA +
                 " WHERE " + DatabaseCreator.ADMISSION_PERCENTAGES_DATA_ADMISSION_PERCENTAGE_ID + "=?", new String[]{String.valueOf(apMetaId)});
         cursor.moveToFirst();
         if (cursor.getCount() == 0)
             throw new AssertionError("!=1 on max query");
-        int maximumLessonId = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_DATA_LESSON_ID));
+        int maximumLessonId = cursor.getInt(cursor.getColumnIndexOrThrow("max"));
         cursor.close();
         return maximumLessonId;
     }

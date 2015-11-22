@@ -1,5 +1,6 @@
 package de.oerntec.votenote.SubjectManagerStuff.SubjectCreation;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -91,7 +92,7 @@ public class AdmissionPercentageFragment extends DialogFragment {
 
     private View createView(LayoutInflater inflater) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.subject_manager_fragment_percentage_creator_fragment, null, false);
+        @SuppressLint("InflateParams") View view = inflater.inflate(R.layout.subject_manager_fragment_percentage_creator_fragment, null, false);
 
         nameInput = (EditText) view.findViewById(R.id.subject_manager_dialog_groupsettings_edit_name);
 
@@ -113,7 +114,7 @@ public class AdmissionPercentageFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder b = new AlertDialog.Builder(getActivity())
                 .setView(createView(getActivity().getLayoutInflater()))
-                .setTitle(getTitle())
+                .setTitle("test")
                 .setPositiveButton("OK",
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
@@ -151,8 +152,10 @@ public class AdmissionPercentageFragment extends DialogFragment {
         super.onStart();
         if (mIsOldPercentageCounter)
             loadOldSubjectValues();
-
         setValuesForViews();
+
+        //set title now, all old data has been loaded
+        getDialog().setTitle(getTitle());
     }
 
     /**

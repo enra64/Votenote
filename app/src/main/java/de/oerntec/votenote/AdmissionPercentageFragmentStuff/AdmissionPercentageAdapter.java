@@ -93,13 +93,12 @@ public class AdmissionPercentageAdapter extends RecyclerView.Adapter<AdmissionPe
      */
     public void addLesson(AdmissionPercentageData item) {
         //add to database
-        int lessonId = item.lessonId;
-        lessonId = mDataDb.addItem(item);
+        mDataDb.addItem(item);
         requery();
         //notify
-        notifyItemInserted(getRecyclerViewPosition(lessonId));
-        if (lessonId != -1)
-            notifyChangedLessonRange(getRecyclerViewPosition(lessonId));
+        notifyItemInserted(getRecyclerViewPosition(item));
+        if (item.lessonId != -1)
+            notifyChangedLessonRange(getRecyclerViewPosition(item));
         else
             notifyItemChanged(0);
     }
@@ -109,26 +108,23 @@ public class AdmissionPercentageAdapter extends RecyclerView.Adapter<AdmissionPe
      * requery
      * notify of single changed item
      */
-    public void changeLesson(AdmissionPercentageData oldLesson, AdmissionPercentageData newLesson) {
-        if (oldLesson.lessonId != newLesson.lessonId)
-            throw new IllegalArgumentException("Old and new lesson must have the same lesson ID!");
-        mDataDb.changeItem(oldLesson, newLesson);
+    public void changeLesson(AdmissionPercentageData changedLesson) {
+        mDataDb.changeItem(changedLesson);
         requery();
-        notifyItemChanged(getRecyclerViewPosition(oldLesson.lessonId));
+        notifyItemChanged(getRecyclerViewPosition(changedLesson));
         //update infoview
         notifyItemChanged(0);
     }
 
     /**
      * Remove lesson from database
-     * @param admissionDataId primary key id of the admission data object
      * @return Savepoint ID of the savepoint created before deleting the object
      */
-    public String removeLesson(final int admissionDataId) {
+    public String removeLesson(final AdmissionPercentageData item) {
         String savePointId = "delete_lesson_" + System.currentTimeMillis();
         mDataDb.createSavepoint(savePointId);
-        final int listPosition = getRecyclerViewPosition(admissionDataId);
-        mDataDb.deleteItem(admissionDataId);
+        final int listPosition = getRecyclerViewPosition(item);
+        mDataDb.deleteItem(item);
         requery();
         notifyItemRemoved(listPosition);
         notifyChangedLessonRange(listPosition);
@@ -144,8 +140,16 @@ public class AdmissionPercentageAdapter extends RecyclerView.Adapter<AdmissionPe
      * Translates a lesson id to a list position: if not reverse sorted, just add 1 to the lesson id
      * because of the infoview. else, get the item count and subtract the id.
      */
-    private int getRecyclerViewPosition(int lessonId) {
-        return mLatestLessonFirst ? getItemCount() - lessonId : lessonId;
+    private int getRecyclerViewPosition(AdmissionPercentageData item) {
+        int listPosition;
+        for (listPosition = 0; listPosition < mData.size(); listPosition++) {
+            AdmissionPercentageData apd = mData.get(listPosition);
+            if (apd.lessonId == item.lessonId && apd.admissionPercentageMetaId == item.admissionPercentageMetaId)
+                break;
+        }
+        //beware of the infoview, the old lessonIds startes at 1
+        listPosition++;
+        return mLatestLessonFirst ? getItemCount() - listPosition : listPosition;
     }
 
     public AdmissionPercentageMeta getCurrentMeta() {

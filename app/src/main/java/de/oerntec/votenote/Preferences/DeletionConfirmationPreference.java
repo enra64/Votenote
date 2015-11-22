@@ -25,8 +25,6 @@ import de.oerntec.votenote.Database.DatabaseCreator;
 import de.oerntec.votenote.R;
 
 public class DeletionConfirmationPreference extends DialogPreference {
-    Context mContext;
-
     public DeletionConfirmationPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
         setDialogTitle(R.string.deletion_confirmation_title);
@@ -38,8 +36,8 @@ public class DeletionConfirmationPreference extends DialogPreference {
     @Override
     protected void onDialogClosed(boolean positiveResult) {
         if (positiveResult) {
-            DatabaseCreator db = DatabaseCreator.getInstance(mContext);
-            db.reset(mContext);
+            DatabaseCreator db = DatabaseCreator.getInstance(getContext());
+            db.reset(getContext());
         } else
             super.onDialogClosed(false);
     }

@@ -12,10 +12,13 @@ import android.widget.EditText;
 public class NotEmptyWatcher implements TextWatcher {
     private final EditText mEditText;
     private final Button mDisableOnEmptyButton;
+    private String mErrorString;
 
     public NotEmptyWatcher(EditText editText, @Nullable Button disableOnEmpty) {
         mEditText = editText;
         mDisableOnEmptyButton = disableOnEmpty;
+        //editText.getContext();
+        mErrorString = "Must not be empty!";
     }
 
     @Override
@@ -29,7 +32,7 @@ public class NotEmptyWatcher implements TextWatcher {
     @Override
     public void afterTextChanged(Editable s) {
         if (s.length() == 0) {
-            mEditText.setError("Must not be empty!");
+            mEditText.setError(mErrorString);
             if (mDisableOnEmptyButton != null)
                 mDisableOnEmptyButton.setEnabled(false);
         } else {

@@ -11,6 +11,14 @@ public class AdmissionPercentageData {
         this.availableAssignments = availableAssignments;
     }
 
+    public AdmissionPercentageData(int admissionPercentageMetaId, int lessonId, int finishedAssignments, int availableAssignments) {
+        this.id = -1;
+        this.admissionPercentageMetaId = admissionPercentageMetaId;
+        this.lessonId = lessonId;
+        this.finishedAssignments = finishedAssignments;
+        this.availableAssignments = availableAssignments;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

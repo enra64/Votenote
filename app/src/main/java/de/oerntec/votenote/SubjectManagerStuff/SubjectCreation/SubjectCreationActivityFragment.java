@@ -64,11 +64,13 @@ public class SubjectCreationActivityFragment extends Fragment implements Subject
     /**
      * Counter list
      */
+    @SuppressWarnings("FieldCanBeLocal")
     private RecyclerView mAdmissionCounterList;
 
     /**
      * Admission percentage list
      */
+    @SuppressWarnings("FieldCanBeLocal")
     private RecyclerView mAdmissionPercentageList;
 
     /**
@@ -82,8 +84,8 @@ public class SubjectCreationActivityFragment extends Fragment implements Subject
     private int mSubjectId;
 
     /**
-     * Position this subject had when if it was already displayed in the recyclerview of subject-
-     * managementactivity
+     * Position this subject had when if it was already displayed in the recyclerView of subject-
+     * managementActivity
      */
     private int mRecyclerViewPosition;
 
@@ -96,6 +98,12 @@ public class SubjectCreationActivityFragment extends Fragment implements Subject
      * Set this to true if the subject was changed in any way, so we can prompt the user for save/abort
      */
     private boolean mSubjectHasBeenChanged = false;
+
+    /**
+     * save the old subject name here because otherwise we will not know whether the name has actually changed
+     * initialised as empty string, because if you create a new subject the name is empty
+     */
+    private String mOldSubjectName = "";
 
     public SubjectCreationActivityFragment() {
     }
@@ -133,6 +141,7 @@ public class SubjectCreationActivityFragment extends Fragment implements Subject
     /**
      * yeah so this is deprecated in api 23, but the replacement method is not called in api<23 except if you use support fragment
      */
+    @SuppressWarnings("deprecation")
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
@@ -179,11 +188,13 @@ public class SubjectCreationActivityFragment extends Fragment implements Subject
 
         if (mIsOldSubject) {
             Subject oldData = mSubjectDb.getItem(mSubjectId);
+            mOldSubjectName = oldData.name;
             nameInput.setText(oldData.name);
         }
     }
 
 
+    @SuppressWarnings("unchecked")
     private void initializeList(RecyclerView subject, PojoDatabase database, final NameAndIdPojo identificator) {
         //config the recyclerview
         subject.setHasFixedSize(true);
@@ -196,10 +207,10 @@ public class SubjectCreationActivityFragment extends Fragment implements Subject
         final boolean isCounter = identificator instanceof AdmissionCounter;
 
         if (isCounter) {
-            mCounterAdapter = new SubjectCreatorAdapter<AdmissionCounter>(database, mSubjectId, new AdmissionCounter(ID_ADD_ITEM, mSubjectId, null, -1, -1));
+            mCounterAdapter = new SubjectCreatorAdapter<>(database, mSubjectId, new AdmissionCounter(ID_ADD_ITEM, mSubjectId, null, -1, -1));
             subject.setAdapter(mCounterAdapter);
         } else {
-            mPercentageAdapter = new SubjectCreatorAdapter<AdmissionPercentageMeta>(database, mSubjectId, new AdmissionPercentageMeta(ID_ADD_ITEM, mSubjectId, -1, -1, -1, null));
+            mPercentageAdapter = new SubjectCreatorAdapter<>(database, mSubjectId, new AdmissionPercentageMeta(ID_ADD_ITEM, mSubjectId, -1, -1, -1, null));
             subject.setAdapter(mPercentageAdapter);
         }
 
@@ -236,10 +247,20 @@ public class SubjectCreationActivityFragment extends Fragment implements Subject
                 saveData();
                 return true;
             case R.id.action_abort:
-                getActivity().finish();
+                abort();
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void abort() {
+        mDatabase.endTransaction();
+        getActivity().finish();
+    }
+
+    private boolean hasChanged() {
+
+        return !nameInput.getText().toString().equals(mOldSubjectName) || mSubjectHasBeenChanged;
     }
 
     private void deleteCurrentSubject() {
@@ -260,7 +281,7 @@ public class SubjectCreationActivityFragment extends Fragment implements Subject
     private void showBackConfirmation() {
         //if the subject did not change, we dont need to show this dialog
         boolean hasEmptyName = "".equals(nameInput.toString());
-        if (!mSubjectHasBeenChanged) {
+        if (!hasChanged()) {
             getActivity().finish();
             return;
         }
@@ -283,8 +304,7 @@ public class SubjectCreationActivityFragment extends Fragment implements Subject
         b.setNegativeButton("Verwerfen", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                mDatabase.endTransaction();
-                getActivity().finish();
+                abort();
             }
         });
         b.setNeutralButton("Abbrechen", null);
@@ -300,11 +320,15 @@ public class SubjectCreationActivityFragment extends Fragment implements Subject
      * Write the new data out to db
      */
     private void saveData() {
-        mSubjectDb.changeItem(new Subject(nameInput.getText().toString(), mSubjectId));
+        String newName = nameInput.getText().toString();
+        mSubjectDb.changeItem(new Subject(newName, mSubjectId));
         if (mDatabase == null)
             throw new AssertionError("no db reference?");
         mDatabase.setTransactionSuccessful();
         mDatabase.endTransaction();
+
+        //reenable the change listeners
+        mOldSubjectName = newName;
         mSubjectHasBeenChanged = false;
     }
 
