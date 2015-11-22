@@ -33,6 +33,11 @@ import de.oerntec.votenote.MainActivity;
 
 public class DBAdmissionCounters extends CrudDb<AdmissionCounter> implements PojoDatabase<AdmissionCounter> {
     /**
+     * Singleton instance
+     */
+    private static DBAdmissionCounters mInstance;
+
+    /**
      * Private constructor for singleton
      */
     private DBAdmissionCounters(Context context, String tableName) {
@@ -48,7 +53,7 @@ public class DBAdmissionCounters extends CrudDb<AdmissionCounter> implements Poj
     public static DBAdmissionCounters setupInstance(Context context) {
         if (mInstance == null)
             mInstance = new DBAdmissionCounters(context, DatabaseCreator.TABLE_NAME_ADMISSION_COUNTERS);
-        return (DBAdmissionCounters) mInstance;
+        return mInstance;
     }
 
     /**
@@ -57,7 +62,7 @@ public class DBAdmissionCounters extends CrudDb<AdmissionCounter> implements Poj
      * @return the singleton instance
      */
     public static DBAdmissionCounters getInstance() {
-        return (DBAdmissionCounters) mInstance;
+        return mInstance;
     }
 
     /**

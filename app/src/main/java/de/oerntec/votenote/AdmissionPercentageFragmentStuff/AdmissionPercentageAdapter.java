@@ -93,14 +93,14 @@ public class AdmissionPercentageAdapter extends RecyclerView.Adapter<AdmissionPe
      */
     public void addLesson(AdmissionPercentageData item) {
         //add to database
-        mDataDb.addItem(item);
+        item.lessonId = mDataDb.addItemGetId(item);
         requery();
-        //notify
-        notifyItemInserted(getRecyclerViewPosition(item));
-        if (item.lessonId != -1)
-            notifyChangedLessonRange(getRecyclerViewPosition(item));
-        else
-            notifyItemChanged(0);
+
+        int recyclerViewPosition = getRecyclerViewPosition(item);
+
+        //notify of changes
+        notifyItemInserted(recyclerViewPosition);
+        notifyChangedLessonRange(recyclerViewPosition);
     }
 
     /**
@@ -149,7 +149,7 @@ public class AdmissionPercentageAdapter extends RecyclerView.Adapter<AdmissionPe
         }
         //beware of the infoview, the old lessonIds startes at 1
         listPosition++;
-        return mLatestLessonFirst ? getItemCount() - listPosition : listPosition;
+        return mLatestLessonFirst ? listPosition : getItemCount() - listPosition;
     }
 
     public AdmissionPercentageMeta getCurrentMeta() {
@@ -167,8 +167,8 @@ public class AdmissionPercentageAdapter extends RecyclerView.Adapter<AdmissionPe
         if (mLatestLessonFirst)
             notifyItemRangeChanged(0, changedPosition);
         else {
-            notifyItemRangeChanged(changedPosition, getItemCount() - 1);
             notifyItemChanged(0);
+            notifyItemRangeChanged(changedPosition, getItemCount() - 1);
         }
     }
 

@@ -8,11 +8,6 @@ import de.oerntec.votenote.Database.DatabaseCreator;
 
 public abstract class CrudDb<T> {
     /**
-     * Singleton instance
-     */
-    protected static CrudDb mInstance;
-
-    /**
      * name of the table the crud table helper is for
      */
     protected final String TABLE_NAME;

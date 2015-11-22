@@ -208,8 +208,8 @@ public class LessonDialogFragment extends DialogFragment implements DialogInterf
             currentFinishedAssignments = mOldData.finishedAssignments;
         }
 
-        setPicker(mAvailableAssignmentsPicker, 0, 15, currentAvailableAssignments);
-        setPicker(mFinishedAssignmentsPicker, 0, 15, currentFinishedAssignments);
+        setPicker(mAvailableAssignmentsPicker, 0, currentAvailableAssignments * 2, currentAvailableAssignments);
+        setPicker(mFinishedAssignmentsPicker, 0, currentAvailableAssignments * 2, currentFinishedAssignments);
     }
 
     /**

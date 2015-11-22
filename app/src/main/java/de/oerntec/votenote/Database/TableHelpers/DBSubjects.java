@@ -31,6 +31,11 @@ import de.oerntec.votenote.Database.Pojo.Subject;
 import de.oerntec.votenote.MainActivity;
 
 public class DBSubjects extends CrudDb<Subject> {
+    /**
+     * Singleton instance
+     */
+    private static DBSubjects mInstance;
+
     private DBSubjects(Context context, String tableName) {
         super(context, tableName);
     }

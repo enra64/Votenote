@@ -31,6 +31,11 @@ import de.oerntec.votenote.Database.Pojo.AdmissionPercentageData;
 import de.oerntec.votenote.MainActivity;
 
 public class DBAdmissionPercentageData extends CrudDb<AdmissionPercentageData> {
+    /**
+     * Singleton instance
+     */
+    private static DBAdmissionPercentageData mInstance;
+
     private DBAdmissionPercentageData(Context context, String tableName) {
         super(context, tableName);
     }
@@ -232,9 +237,9 @@ public class DBAdmissionPercentageData extends CrudDb<AdmissionPercentageData> {
     }
 
     @Override
-    @Deprecated
     public int addItemGetId(AdmissionPercentageData item) {
-        throw new AssertionError("not implemented");
+        addItem(item);
+        return getMaxLessonIdForAp(item.admissionPercentageMetaId);
     }
 
     /**

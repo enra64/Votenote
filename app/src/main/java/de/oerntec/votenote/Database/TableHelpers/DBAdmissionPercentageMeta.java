@@ -33,6 +33,11 @@ import de.oerntec.votenote.MainActivity;
 
 public class DBAdmissionPercentageMeta extends CrudDb<AdmissionPercentageMeta> implements PojoDatabase<AdmissionPercentageMeta> {
     /**
+     * Singleton instance
+     */
+    private static DBAdmissionPercentageMeta mInstance;
+
+    /**
      * Private constructor for singleton
      */
     private DBAdmissionPercentageMeta(Context context, String tableName) {
