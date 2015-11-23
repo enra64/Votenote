@@ -259,7 +259,6 @@ public class SubjectCreationActivityFragment extends Fragment implements Subject
     }
 
     private boolean hasChanged() {
-
         return !nameInput.getText().toString().equals(mOldSubjectName) || mSubjectHasBeenChanged;
     }
 
@@ -282,6 +281,7 @@ public class SubjectCreationActivityFragment extends Fragment implements Subject
         //if the subject did not change, we dont need to show this dialog
         boolean hasEmptyName = "".equals(nameInput.toString());
         if (!hasChanged()) {
+            mDatabase.endTransaction();
             getActivity().finish();
             return;
         }

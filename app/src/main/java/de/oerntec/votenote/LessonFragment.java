@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.HashMap;
 import java.util.List;
 
 import de.oerntec.votenote.AdmissionPercentageFragmentStuff.AdmissionPercentageFragment;
@@ -82,7 +83,7 @@ public class LessonFragment extends Fragment {
      */
     public AdmissionPercentageFragment getCurrentFragment() {
         //totally futureproof
-        AdmissionPercentageFragment current = mAdmissionPercentageAdapter.getCurrentFragment();
+        AdmissionPercentageFragment current = mAdmissionPercentageAdapter.getFragmentInstance(mViewPager.getCurrentItem());
         if (current == null)
             throw new AssertionError("could not find current fragment");
         return current;
@@ -105,28 +106,52 @@ public class LessonFragment extends Fragment {
         private DBAdmissionPercentageMeta mMetaDb;
         private List<AdmissionPercentageMeta> mData;
         private int mSubjectId;
-        private AdmissionPercentageFragment mCurrentFragment;
+        private HashMap<Integer, AdmissionPercentageFragment> mReferenceMap;
 
         public AdmissionPercentageAdapter(FragmentManager fm, DBAdmissionPercentageMeta dbMeta, int subjectId) {
             super(fm);
             mMetaDb = dbMeta;
             mSubjectId = subjectId;
-
             reload();
+
+            mReferenceMap = new HashMap<>(getCount() * 2);
         }
 
         public void reload(){
             mData = mMetaDb.getItemsForSubject(mSubjectId);
         }
 
+        /**
+         * remove fragment instance from hashMap
+         */
         @Override
-        public Fragment getItem(int position) {
-            mCurrentFragment = AdmissionPercentageFragment.newInstance(mData.get(position).id);
-            return mCurrentFragment;
+        public void destroyItem(ViewGroup container, int position, Object object) {
+            super.destroyItem(container, position, object);
+            mReferenceMap.remove(mData.get(position).id);
         }
 
-        public AdmissionPercentageFragment getCurrentFragment() {
-            return mCurrentFragment;
+        /**
+         * Instantiate a pager fragment
+         */
+        @Override
+        public Fragment getItem(int position) {
+            AdmissionPercentageFragment fragment = AdmissionPercentageFragment.newInstance(mData.get(position).id);
+            mReferenceMap.put(mData.get(position).id, fragment);
+            return fragment;
+        }
+
+        /**
+         * return the saved instance reference to the given id
+         */
+        public AdmissionPercentageFragment getFragmentInstance(Integer requestedMetaId) {
+            AdmissionPercentageFragment instance = mReferenceMap.get(requestedMetaId);
+            if(instance == null)
+                throw new AssertionError("could not find such an id");
+            //meta id the fragment has saved
+            int fragmentMetaId = instance.getAdmissionPercentageMetaId();
+            if(fragmentMetaId != requestedMetaId)
+                throw new AssertionError("requested meta id != actual");
+            return instance;
         }
 
         @Override

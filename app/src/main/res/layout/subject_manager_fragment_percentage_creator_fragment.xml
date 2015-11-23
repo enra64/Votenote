@@ -80,7 +80,6 @@
             android:layout_height="wrap_content"
             android:layout_above="@+id/subject_manager_dialog_groupsettings_estimated_lesson_count_seekbar"
             android:layout_alignEnd="@+id/subject_manager_dialog_groupsettings_required_percentage_current_value"
-            android:layout_alignRight="@+id/subject_manager_dialog_groupsettings_required_percentage_current_value"
             android:text="50"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:textColor="@android:color/secondary_text_dark"
@@ -91,12 +90,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_above="@+id/subject_manager_dialog_groupsettings_estimated_assignments_per_lesson_seekbar"
-            android:layout_alignLeft="@+id/subject_manager_dialog_groupsettings_estimated_lesson_count_current_value"
-            android:layout_alignStart="@+id/subject_manager_dialog_groupsettings_estimated_lesson_count_current_value"
             android:text="50"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:textColor="@android:color/secondary_text_dark"
-            android:textSize="20sp" />
+            android:textSize="20sp"
+            android:layout_alignEnd="@+id/subject_manager_dialog_groupsettings_required_percentage_current_value" />
 
         <TextView
             android:id="@+id/subject_manager_dialog_groupsettings_required_percentage_current_value"

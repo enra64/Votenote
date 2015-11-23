@@ -135,7 +135,7 @@ public class DatabaseCreator extends SQLiteOpenHelper {
         }
     }
 
-    public void reset(Context context) {
+    public void reset() {
         getWritableDatabase().execSQL("DROP TABLE " + TABLE_NAME_SUBJECTS);
         getWritableDatabase().execSQL("DROP TABLE " + TABLE_NAME_ADMISSION_PERCENTAGES_META);
         getWritableDatabase().execSQL("DROP TABLE " + TABLE_NAME_ADMISSION_PERCENTAGES_DATA);

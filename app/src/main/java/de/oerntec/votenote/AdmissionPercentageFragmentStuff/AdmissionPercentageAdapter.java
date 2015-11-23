@@ -132,7 +132,6 @@ public class AdmissionPercentageAdapter extends RecyclerView.Adapter<AdmissionPe
     }
 
     protected void requery() {
-        //mMetaPojo = mMetaDb.getItem(mAdmissionPercentageMetaId);
         mData = mDataDb.getItemsForMetaId(mAdmissionPercentageMetaId, mLatestLessonFirst);
     }
 
@@ -149,7 +148,8 @@ public class AdmissionPercentageAdapter extends RecyclerView.Adapter<AdmissionPe
         }
         //beware of the infoview, the old lessonIds startes at 1
         listPosition++;
-        return mLatestLessonFirst ? listPosition : getItemCount() - listPosition;
+        return listPosition;
+        //return mLatestLessonFirst ? listPosition : getItemCount() - listPosition;
     }
 
     public AdmissionPercentageMeta getCurrentMeta() {

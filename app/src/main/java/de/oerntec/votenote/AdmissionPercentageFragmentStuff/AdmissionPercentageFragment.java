@@ -100,6 +100,10 @@ public class AdmissionPercentageFragment extends Fragment implements SwipeDeleti
         return fragment;
     }
 
+    public int getAdmissionPercentageMetaId(){
+        return mPercentageMetaId;
+    }
+
     /* MAIN FRAGMENT BUILDING
      * Build the menu_main fragment containing uebung specific info, and the menu_main listview
      */
@@ -140,7 +144,7 @@ public class AdmissionPercentageFragment extends Fragment implements SwipeDeleti
         AdmissionPercentageMeta currentMetaObject = mAdapter.getCurrentMeta();
 
         if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
-            Log.i("lesson fragment", "Loading Group, DB says meta ID" + mPercentageMetaId + ", Name " + currentMetaObject.getDisplayName());
+            Log.i("ap fragemnt", "Loading APM, DB says meta ID" + mPercentageMetaId + ", Name " + currentMetaObject.getDisplayName());
 
         //LISTVIEW FOR uebung instances
         if (mAdapter.getItemCount() == 0)
