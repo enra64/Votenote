@@ -82,7 +82,6 @@ public class LessonFragment extends Fragment {
      * get the currently displayed fragment
      */
     public AdmissionPercentageFragment getCurrentFragment() {
-        //totally futureproof
         AdmissionPercentageFragment current = mAdmissionPercentageAdapter.getFragmentInstance(mViewPager.getCurrentItem());
         if (current == null)
             throw new AssertionError("could not find current fragment");
