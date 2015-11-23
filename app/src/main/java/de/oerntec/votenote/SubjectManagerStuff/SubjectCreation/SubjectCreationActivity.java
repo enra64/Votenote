@@ -12,13 +12,13 @@ public class SubjectCreationActivity extends AppCompatActivity {
     /**
      * argument in intent bundle containing which id the fragment is for
      */
-    public static final String SUBJECT_CREATOR_SUBJECT_ID_ARGUMENT_NAME = "subjectId";
+    public static final String ARG_CREATOR_SUBJECT_ID = "subjectId";
 
     /**
      * argument in intent bundle containing which position the subject was at in the recyclerview
      * of subjectmanagementactivity
      */
-    public static final String SUBJECT_CREATOR_SUBJECT_VIEW_POSITION_ARGUMENT_NAME = "recyclerViewPosition";
+    public static final String ARG_CREATOR_VIEW_POSITION = "recyclerViewPosition";
 
     /**
      * save the current fragment here to avoid lookups
@@ -41,8 +41,8 @@ public class SubjectCreationActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-        int subjectId = getIntent().getExtras().getInt(SUBJECT_CREATOR_SUBJECT_ID_ARGUMENT_NAME, -1);
-        int subjectPosition = getIntent().getExtras().getInt(SUBJECT_CREATOR_SUBJECT_VIEW_POSITION_ARGUMENT_NAME, -1);
+        int subjectId = getIntent().getExtras().getInt(ARG_CREATOR_SUBJECT_ID, -1);
+        int subjectPosition = getIntent().getExtras().getInt(ARG_CREATOR_VIEW_POSITION, -1);
 
         currentSubjectFragment = SubjectCreationActivityFragment.newInstance(subjectId, subjectPosition);
 

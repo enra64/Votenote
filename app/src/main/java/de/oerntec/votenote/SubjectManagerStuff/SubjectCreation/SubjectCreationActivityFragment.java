@@ -111,8 +111,8 @@ public class SubjectCreationActivityFragment extends Fragment implements Subject
     public static SubjectCreationActivityFragment newInstance(int subjectId, int subjectPosition) {
         Bundle args = new Bundle();
         //put arguments into an intent
-        args.putInt(SubjectCreationActivity.SUBJECT_CREATOR_SUBJECT_ID_ARGUMENT_NAME, subjectId);
-        args.putInt(SubjectCreationActivity.SUBJECT_CREATOR_SUBJECT_VIEW_POSITION_ARGUMENT_NAME, subjectPosition);
+        args.putInt(SubjectCreationActivity.ARG_CREATOR_SUBJECT_ID, subjectId);
+        args.putInt(SubjectCreationActivity.ARG_CREATOR_VIEW_POSITION, subjectPosition);
 
         SubjectCreationActivityFragment fragment = new SubjectCreationActivityFragment();
         fragment.setArguments(args);
@@ -124,8 +124,8 @@ public class SubjectCreationActivityFragment extends Fragment implements Subject
         super.onCreate(savedInstanceState);
 
         //get arguments from intent
-        mSubjectId = getArguments().getInt(SubjectCreationActivity.SUBJECT_CREATOR_SUBJECT_ID_ARGUMENT_NAME, -1);
-        mRecyclerViewPosition = getArguments().getInt(SubjectCreationActivity.SUBJECT_CREATOR_SUBJECT_VIEW_POSITION_ARGUMENT_NAME, -1);
+        mSubjectId = getArguments().getInt(SubjectCreationActivity.ARG_CREATOR_SUBJECT_ID, -1);
+        mRecyclerViewPosition = getArguments().getInt(SubjectCreationActivity.ARG_CREATOR_VIEW_POSITION, -1);
 
         //create a boolean containing whether we create a new subject to ease understanding
         mIsNewSubject = mSubjectId == ADD_SUBJECT_CODE;
@@ -268,7 +268,7 @@ public class SubjectCreationActivityFragment extends Fragment implements Subject
             throw new AssertionError("tried to delete a new subject");
 
         //set the result to be retrieved by subject manager
-        getActivity().setResult(SubjectManagementActivity.SUBJECT_CREATOR_RESULT_DELETE, getCurrentResultIntent());
+        setActivityResult(true);
 
         //kill creator activity
         getActivity().finish();
@@ -297,6 +297,9 @@ public class SubjectCreationActivityFragment extends Fragment implements Subject
                 //save data first
                 saveData();
 
+                //set the result, delete is false, change is determined by mIsNewSubject
+                setActivityResult(false);
+
                 //close the activity containing this fragment
                 getActivity().finish();
             }
@@ -314,6 +317,15 @@ public class SubjectCreationActivityFragment extends Fragment implements Subject
             dialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(false);
             dialog.setMessage("Einen leeren Namen kannst du nicht speichern!");
         }
+    }
+
+    private void setActivityResult(boolean delete) {
+        if (delete)
+            getActivity().setResult(SubjectManagementActivity.SUBJECT_CREATOR_RESULT_DELETE, getCurrentResultIntent());
+        else if (mIsNewSubject)
+            getActivity().setResult(SubjectManagementActivity.SUBJECT_CREATOR_RESULT_NEW, getCurrentResultIntent());
+        else
+            getActivity().setResult(SubjectManagementActivity.SUBJECT_CREATOR_RESULT_CHANGED, getCurrentResultIntent());
     }
 
     /**
@@ -340,8 +352,8 @@ public class SubjectCreationActivityFragment extends Fragment implements Subject
     private Intent getCurrentResultIntent() {
         //save result data into intent
         Intent returnIntent = new Intent();
-        returnIntent.putExtra(SubjectCreationActivity.SUBJECT_CREATOR_SUBJECT_ID_ARGUMENT_NAME, mSubjectId);
-        returnIntent.putExtra(SubjectCreationActivity.SUBJECT_CREATOR_SUBJECT_VIEW_POSITION_ARGUMENT_NAME, mRecyclerViewPosition);
+        returnIntent.putExtra(SubjectCreationActivity.ARG_CREATOR_SUBJECT_ID, mSubjectId);
+        returnIntent.putExtra(SubjectCreationActivity.ARG_CREATOR_VIEW_POSITION, mRecyclerViewPosition);
         return returnIntent;
     }
 

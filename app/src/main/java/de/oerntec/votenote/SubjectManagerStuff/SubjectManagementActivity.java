@@ -187,9 +187,9 @@ public class SubjectManagementActivity extends AppCompatActivity implements Swip
 
     private void showSubjectCreator(int subjectId, int recyclerViewPosition) {
         Intent subjectManagerIntent = new Intent(SubjectManagementActivity.this, SubjectCreationActivity.class);
-        subjectManagerIntent.putExtra(SubjectCreationActivity.SUBJECT_CREATOR_SUBJECT_ID_ARGUMENT_NAME, subjectId);
+        subjectManagerIntent.putExtra(SubjectCreationActivity.ARG_CREATOR_SUBJECT_ID, subjectId);
         //a -1 does not matter, its default anyways
-        subjectManagerIntent.putExtra(SubjectCreationActivity.SUBJECT_CREATOR_SUBJECT_VIEW_POSITION_ARGUMENT_NAME, recyclerViewPosition);
+        subjectManagerIntent.putExtra(SubjectCreationActivity.ARG_CREATOR_VIEW_POSITION, recyclerViewPosition);
         startActivityForResult(subjectManagerIntent, 420);
     }
 
@@ -202,14 +202,14 @@ public class SubjectManagementActivity extends AppCompatActivity implements Swip
         }
 
         if (resultCode == SUBJECT_CREATOR_RESULT_CHANGED) {
-            int recyclerViewPosition = data.getIntExtra(SubjectCreationActivity.SUBJECT_CREATOR_SUBJECT_VIEW_POSITION_ARGUMENT_NAME, 0);
+            int recyclerViewPosition = data.getIntExtra(SubjectCreationActivity.ARG_CREATOR_VIEW_POSITION, 0);
             //notify which item has changed
             mSubjectAdapter.notifyOfChangedSubject(recyclerViewPosition);
         } else if (resultCode == SUBJECT_CREATOR_RESULT_NEW) {
-            //i have no idea where it was inserted, so fuck it, im recreating the adapter
+            //i have no idea where it was inserted, so fuck it, i'm recreating the adapter
             reloadAdapter();
         } else if (resultCode == SUBJECT_CREATOR_RESULT_DELETE) {
-            int recyclerViewPosition = data.getIntExtra(SubjectCreationActivity.SUBJECT_CREATOR_SUBJECT_VIEW_POSITION_ARGUMENT_NAME, 0);
+            int recyclerViewPosition = data.getIntExtra(SubjectCreationActivity.ARG_CREATOR_VIEW_POSITION, 0);
             SwipeDeletion.executeProgrammaticSwipeDeletion(this, this, mSubjectList.getLayoutManager().getChildAt(recyclerViewPosition), recyclerViewPosition);
         }
     }
