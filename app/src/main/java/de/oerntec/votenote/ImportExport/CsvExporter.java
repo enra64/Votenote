@@ -18,6 +18,7 @@
 package de.oerntec.votenote.ImportExport;
 
 import android.content.Context;
+import android.util.Log;
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -62,15 +63,17 @@ public class CsvExporter {
         //separator for excel
         b.append("sep=;").append(le);
         for(Subject s : subjects){
-            b.append(s.name).append(le);
+            b.append("Subject:").append(s.name).append(le);
             for(AdmissionPercentageMeta apm : s.admissionPercentageMetaList){
+                b.append("Admission Percentage:");
                 b.append(apmHeader).append(le);
                 b.append(apm.getCsvRepresentation()).append(le);
-                for(AdmissionPercentageData apd : apm.mDataList){
+                b.append(apdHeader).append(le);
+                for(AdmissionPercentageData apd : apm.mDataList)
                     b.append(apd.getCsvRepresentation()).append(le);
-                }
             }
             for(AdmissionCounter ac : s.admissionCounterList){
+                b.append("Admission Counter:").append(ac.counterName).append(le);
                 b.append(acHeader).append(le);
                 b.append(ac.getCsvRepresentation()).append(le);
             }
@@ -78,8 +81,10 @@ public class CsvExporter {
         }
         try {
             Writer.writeToFile(b.toString(), path);
+            if(MainActivity.ENABLE_DEBUG_LOG_CALLS)
+                Log.i("csv export", "export path is:" + path);
         } catch (IOException e) {
-            Toast.makeText(activity, "Exception occured", Toast.LENGTH_LONG);
+            Toast.makeText(activity, "Exception occured", Toast.LENGTH_LONG).show();
             e.printStackTrace();
         }
     }
