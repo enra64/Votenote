@@ -113,7 +113,7 @@ public class LessonFragment extends Fragment {
             mSubjectId = subjectId;
             reload();
 
-            mReferenceMap = new HashMap<>(getCount() * 2);
+            mReferenceMap = new HashMap<>();
         }
 
         public void reload(){
@@ -126,7 +126,7 @@ public class LessonFragment extends Fragment {
         @Override
         public void destroyItem(ViewGroup container, int position, Object object) {
             super.destroyItem(container, position, object);
-            mReferenceMap.remove(mData.get(position).id);
+            mReferenceMap.remove(position);
         }
 
         /**
@@ -135,21 +135,17 @@ public class LessonFragment extends Fragment {
         @Override
         public Fragment getItem(int position) {
             AdmissionPercentageFragment fragment = AdmissionPercentageFragment.newInstance(mData.get(position).id);
-            mReferenceMap.put(mData.get(position).id, fragment);
+            mReferenceMap.put(position, fragment);
             return fragment;
         }
 
         /**
          * return the saved instance reference to the given id
          */
-        public AdmissionPercentageFragment getFragmentInstance(Integer requestedMetaId) {
-            AdmissionPercentageFragment instance = mReferenceMap.get(requestedMetaId);
+        public AdmissionPercentageFragment getFragmentInstance(Integer requestedPosition) {
+            AdmissionPercentageFragment instance = mReferenceMap.get(requestedPosition);
             if(instance == null)
                 throw new AssertionError("could not find such an id");
-            //meta id the fragment has saved
-            int fragmentMetaId = instance.getAdmissionPercentageMetaId();
-            if(fragmentMetaId != requestedMetaId)
-                throw new AssertionError("requested meta id != actual");
             return instance;
         }
 

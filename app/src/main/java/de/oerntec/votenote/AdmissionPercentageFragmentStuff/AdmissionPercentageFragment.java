@@ -74,6 +74,11 @@ public class AdmissionPercentageFragment extends Fragment implements SwipeDeleti
     private int mPercentageMetaId;
 
     /**
+     * POJO object to hold the admission percentage meta data from fragment start
+     */
+    private AdmissionPercentageMeta mMetaObject;
+
+    /**
      * Parent viewgroup
      */
     private View mRootView;
@@ -141,15 +146,15 @@ public class AdmissionPercentageFragment extends Fragment implements SwipeDeleti
         //set adapter
         mLessonList.setAdapter(mAdapter);
 
-        AdmissionPercentageMeta currentMetaObject = mAdapter.getCurrentMeta();
+        mMetaObject = mAdapter.getCurrentMeta();
 
         if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
-            Log.i("ap fragemnt", "Loading APM, DB says meta ID" + mPercentageMetaId + ", Name " + currentMetaObject.getDisplayName());
+            Log.i("ap fragemnt", "Loading APM, DB says meta ID" + mPercentageMetaId + ", Name " + mMetaObject.getDisplayName());
 
         //LISTVIEW FOR uebung instances
         if (mAdapter.getItemCount() == 0)
             if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
-                Log.e("Main Listview", "Received Empty allEntryCursor for group " + currentMetaObject.getDisplayName() + " with id " + mPercentageMetaId);
+                Log.e("Main Listview", "Received Empty allEntryCursor for group " + mMetaObject.getDisplayName() + " with id " + mPercentageMetaId);
 
         ItemTouchHelper.SimpleCallback swipeCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
             @Override
@@ -245,5 +250,10 @@ public class AdmissionPercentageFragment extends Fragment implements SwipeDeleti
             throw new AssertionError("mLastClickedView must not be null here, because it must only be called from the dialogfragment");
         SwipeDeletion.executeProgrammaticSwipeDeletion(getActivity(), this, mLastClickedView, mAdapter.getRecyclerViewPosition(mOldData));
         mLastClickedView = null;
+    }
+
+    @Override
+    public String toString() {
+        return "apc fragment id " + mPercentageMetaId + " name " + mMetaObject.getDisplayName();
     }
 }
