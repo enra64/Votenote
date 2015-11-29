@@ -1,6 +1,5 @@
 package de.oerntec.votenote.AdmissionPercentageFragmentStuff;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
@@ -291,12 +290,12 @@ public class LessonDialogFragment extends DialogFragment implements DialogInterf
                     AdmissionPercentageData val = new AdmissionPercentageData(ADD_LESSON_CODE, mMetaId, ADD_LESSON_CODE, finishedAssignments, availableAssignments);
                     //add lesson, id and lesson id will be added automatically
                     if (mIsNewLesson)
-                        ((MainActivity) getActivity()).getCurrentFragment().mAdapter.addLesson(val);
+                        ((MainActivity) getActivity()).getCurrentAdmissionPercentageFragment().mAdapter.addLesson(val);
                         //change lesson
                     else {
                         val.id = mOldData.id;
                         val.lessonId = mOldData.lessonId;
-                        ((MainActivity) getActivity()).getCurrentFragment().mAdapter.changeLesson(val);
+                        ((MainActivity) getActivity()).getCurrentAdmissionPercentageFragment().mAdapter.changeLesson(val);
                     }
                 }
                 else
@@ -304,7 +303,7 @@ public class LessonDialogFragment extends DialogFragment implements DialogInterf
                 break;
             //delete
             case AlertDialog.BUTTON_NEUTRAL:
-                ((MainActivity) getActivity()).getCurrentFragment().deleteLesson(mOldData);
+                ((MainActivity) getActivity()).getCurrentAdmissionPercentageFragment().deleteLessonAnimated(mOldData);
                 break;
         }
     }

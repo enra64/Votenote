@@ -22,6 +22,7 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
@@ -31,6 +32,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 
 import de.oerntec.votenote.CardListHelpers.OnItemClickListener;
 import de.oerntec.votenote.CardListHelpers.RecyclerItemClickListener;
@@ -149,7 +152,7 @@ public class AdmissionPercentageFragment extends Fragment implements SwipeDeleti
         mMetaObject = mAdapter.getCurrentMeta();
 
         if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
-            Log.i("ap fragemnt", "Loading APM, DB says meta ID" + mPercentageMetaId + ", Name " + mMetaObject.getDisplayName());
+            Log.i("ap fragemnt", toString());
 
         //LISTVIEW FOR uebung instances
         if (mAdapter.getItemCount() == 0)
@@ -217,13 +220,21 @@ public class AdmissionPercentageFragment extends Fragment implements SwipeDeleti
         //remove the lesson. creates a savepoint before that, returns the id
         mLastRemovalSavePointId = mAdapter.removeLesson(new AdmissionPercentageData(mPercentageMetaId, lessonId, -1, -1));
         Snackbar
-                .make(mRootView.findViewById(R.id.subject_fragment_coordinator_layout), getActivity().getString(R.string.undobar_deleted), Snackbar.LENGTH_LONG)
-                .setAction("UNDO", new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        onUndo();
-                    }
-                }).show();
+            .make(mRootView.findViewById(R.id.subject_fragment_coordinator_layout), getActivity().getString(R.string.undobar_deleted), Snackbar.LENGTH_LONG)
+            .setAction("UNDO", new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    onUndo();
+                }
+            }).show();
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                //pressing undo will reset the savepoint id, easier than killing off the handler
+                if(mLastRemovalSavePointId != null)
+                    mDataDb.releaseSavepoint(mLastRemovalSavePointId);
+            }
+        }, 2800);
     }
 
     @Override
@@ -237,7 +248,7 @@ public class AdmissionPercentageFragment extends Fragment implements SwipeDeleti
         if (mLastRemovalSavePointId != null) {
             DBAdmissionPercentageData.getInstance().rollbackToSavepoint(mLastRemovalSavePointId);
             mLastRemovalSavePointId = null;
-            mAdapter.requery();
+            mAdapter.reinstantiateLesson();
         }
     }
 
@@ -245,7 +256,7 @@ public class AdmissionPercentageFragment extends Fragment implements SwipeDeleti
      * delete a lesson with programmatic swipe
      * @param mOldData the data the dialog was called with
      */
-    public void deleteLesson(AdmissionPercentageData mOldData) {
+    public void deleteLessonAnimated(AdmissionPercentageData mOldData) {
         if(mLastClickedView == null)
             throw new AssertionError("mLastClickedView must not be null here, because it must only be called from the dialogfragment");
         SwipeDeletion.executeProgrammaticSwipeDeletion(getActivity(), this, mLastClickedView, mAdapter.getRecyclerViewPosition(mOldData));

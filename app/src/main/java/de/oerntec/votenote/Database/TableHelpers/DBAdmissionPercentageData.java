@@ -61,29 +61,6 @@ public class DBAdmissionPercentageData extends CrudDb<AdmissionPercentageData> {
         return (DBAdmissionPercentageData) mInstance;
     }
 
-    /**
-     * Change all values except the database id in oldValues to newValues.
-     *
-     * @throws AssertionError if old dbId != new dbId
-     */
-    /*public void changeItem(AdmissionPercentageData oldValues, AdmissionPercentageData newItem) {
-        ContentValues values = new ContentValues();
-        values.put(DatabaseCreator.ADMISSION_PERCENTAGES_DATA_ID, newItem.id);
-        values.put(DatabaseCreator.ADMISSION_PERCENTAGES_DATA_ADMISSION_PERCENTAGE_ID, newItem.admissionPercentageMetaId);
-        values.put(DatabaseCreator.ADMISSION_PERCENTAGES_DATA_LESSON_ID, newItem.lessonId);
-        values.put(DatabaseCreator.ADMISSION_PERCENTAGES_DATA_FINISHED_ASSIGNMENTS, newItem.finishedAssignments);
-        values.put(DatabaseCreator.ADMISSION_PERCENTAGES_DATA_AVAILABLE_ASSIGNMENTS, newItem.availableAssignments);
-
-        if ((oldValues.id != newItem.id))
-            throw new AssertionError("id not same when changing");
-
-        String[] whereArgs = {String.valueOf(oldValues.id)};
-        int affectedRows = database.update(DatabaseCreator.TABLE_NAME_ADMISSION_PERCENTAGES_DATA, values, DatabaseCreator.ADMISSION_PERCENTAGES_DATA_ID + "=?", whereArgs);
-        if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
-            if (affectedRows != 0)
-                Log.i("AdmissionCounters", "!= 1 entry was changed, something is weird");
-        if (affectedRows != 0) throw new AssertionError();
-    }*/
     @Override
     public void changeItem(AdmissionPercentageData newItem) {
         ContentValues values = new ContentValues();
@@ -98,35 +75,12 @@ public class DBAdmissionPercentageData extends CrudDb<AdmissionPercentageData> {
                 DatabaseCreator.ADMISSION_PERCENTAGES_DATA_ADMISSION_PERCENTAGE_ID + "=? AND " +
                         DatabaseCreator.ADMISSION_PERCENTAGES_DATA_LESSON_ID + "=?", whereArgs);
         if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
-            if (affectedRows != 0)
+            if (affectedRows != 1)
                 Log.i("AdmissionCounters", "No or more than one entry was changed, something is weird");
-        if (affectedRows != 0)
+        if (affectedRows != 1)
             throw new AssertionError("no item was changed");
     }
 
-    /**
-     * Get a single admission counter.
-     *
-     * @return AdmissionCounter object corresponding to the db values
-     * @throws AssertionError if not exactly one AdmissionCounters are found
-     */
-    /*public AdmissionPercentageData getItem(int apMetaId, int lessonId) {
-        String[] whereArgs = {String.valueOf(id)};
-        Cursor c = mDatabase.query(true, DatabaseCreator.TABLE_NAME_ADMISSION_PERCENTAGES_DATA, null, DatabaseCreator.ADMISSION_PERCENTAGES_DATA_ID + "=?", whereArgs, null, null, null, null);
-        AdmissionPercentageData returnValue = null;
-        if (c.getCount() != 1)
-            throw new AssertionError("more than one item returned if we search via id is bad");
-        if (c.moveToFirst())
-            returnValue = new AdmissionPercentageData(
-                    //c.getInt(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_DATA_ID)),
-                    c.getInt(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_DATA_ADMISSION_PERCENTAGE_ID)),
-                    c.getInt(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_DATA_LESSON_ID)),
-                    c.getInt(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_DATA_FINISHED_ASSIGNMENTS)),
-                    c.getInt(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_DATA_AVAILABLE_ASSIGNMENTS))
-            );
-        c.close();
-        return returnValue;
-    }*/
     @Deprecated
     public AdmissionPercentageData getItem(int lessonId, int apMetaId) {
         return getItem(new AdmissionPercentageData(apMetaId, lessonId, -1, -1));
@@ -199,6 +153,12 @@ public class DBAdmissionPercentageData extends CrudDb<AdmissionPercentageData> {
         String[] whereArgs = new String[]{String.valueOf(item.admissionPercentageMetaId), String.valueOf(item.lessonId)};
         mDatabase.delete(DatabaseCreator.TABLE_NAME_ADMISSION_PERCENTAGES_DATA, DatabaseCreator.ADMISSION_PERCENTAGES_DATA_ADMISSION_PERCENTAGE_ID + "=? AND " +
                 DatabaseCreator.ADMISSION_PERCENTAGES_DATA_LESSON_ID + "=?", whereArgs);
+        //decrease all following lesson id's by one
+        mDatabase.execSQL("UPDATE " + DatabaseCreator.TABLE_NAME_ADMISSION_PERCENTAGES_DATA + " SET "
+                + DatabaseCreator.ADMISSION_PERCENTAGES_DATA_LESSON_ID + " = "
+                + DatabaseCreator.ADMISSION_PERCENTAGES_DATA_LESSON_ID + " - 1 WHERE "
+                + DatabaseCreator.ADMISSION_PERCENTAGES_DATA_ADMISSION_PERCENTAGE_ID + " = " + item.admissionPercentageMetaId + " AND "
+                + DatabaseCreator.ADMISSION_PERCENTAGES_DATA_LESSON_ID + " > " + item.lessonId);
     }
 
     /**
@@ -218,8 +178,6 @@ public class DBAdmissionPercentageData extends CrudDb<AdmissionPercentageData> {
         //create values for insert or update
         ContentValues values = new ContentValues();
 
-        //only put id if not new subject, eg restored item
-        //TODO: solve removal with transaction, otherwise we need to increase the id of all following entries on re-insert
         values.put(DatabaseCreator.ADMISSION_PERCENTAGES_DATA_ADMISSION_PERCENTAGE_ID, newItem.admissionPercentageMetaId);
         values.put(DatabaseCreator.ADMISSION_PERCENTAGES_DATA_LESSON_ID, lessonId);
         values.put(DatabaseCreator.ADMISSION_PERCENTAGES_DATA_FINISHED_ASSIGNMENTS, newItem.finishedAssignments);
@@ -263,7 +221,6 @@ public class DBAdmissionPercentageData extends CrudDb<AdmissionPercentageData> {
 
     public AdmissionPercentageData getNewestItemForMetaId(int apMetaId) {
         int lessonId = getMaxLessonIdForAp(apMetaId);
-        //todo: what to do if no lesson has been entered yet?
         return getItem(new AdmissionPercentageData(apMetaId, lessonId, -1, -1));
     }
 }

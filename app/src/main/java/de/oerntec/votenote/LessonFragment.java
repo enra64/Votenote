@@ -121,15 +121,6 @@ public class LessonFragment extends Fragment {
         }
 
         /**
-         * remove fragment instance from hashMap
-         */
-        @Override
-        public void destroyItem(ViewGroup container, int position, Object object) {
-            super.destroyItem(container, position, object);
-            mReferenceMap.remove(position);
-        }
-
-        /**
          * Instantiate a pager fragment
          */
         @Override
@@ -145,7 +136,7 @@ public class LessonFragment extends Fragment {
         public AdmissionPercentageFragment getFragmentInstance(Integer requestedPosition) {
             AdmissionPercentageFragment instance = mReferenceMap.get(requestedPosition);
             if(instance == null)
-                throw new AssertionError("could not find such an id");
+                throw new AssertionError("could not find anything at " + requestedPosition);
             return instance;
         }
 

@@ -18,6 +18,7 @@
 package de.oerntec.votenote.AdmissionPercentageFragmentStuff;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,11 +27,12 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import de.oerntec.votenote.Database.Pojo.AdmissionCounter;
 import de.oerntec.votenote.Database.Pojo.AdmissionPercentageData;
 import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMeta;
+import de.oerntec.votenote.Database.TableHelpers.DBAdmissionCounters;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageData;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageMeta;
-import de.oerntec.votenote.Database.TableHelpers.DBSubjects;
 import de.oerntec.votenote.MainActivity;
 import de.oerntec.votenote.R;
 
@@ -61,6 +63,11 @@ public class AdmissionPercentageAdapter extends RecyclerView.Adapter<AdmissionPe
     private AdmissionPercentageMeta mMetaPojo;
 
     /**
+     * Holds the position of the item that was last deleted, so we know what to do for an undo
+     */
+    private Integer mLastDeletedPosition;
+
+    /**
      * List of current data objects
      */
     private List<AdmissionPercentageData> mData;
@@ -86,10 +93,8 @@ public class AdmissionPercentageAdapter extends RecyclerView.Adapter<AdmissionPe
     }
 
     /**
-     * Does 4 things: add the lesson to the local array;
-     * sort the local array
-     * add the lesson to the database
-     * notify any observers of the change
+     * Add item to the database, notify recyclerview of change
+     * @param item item to add to the database
      */
     public void addLesson(AdmissionPercentageData item) {
         //add to database
@@ -101,6 +106,14 @@ public class AdmissionPercentageAdapter extends RecyclerView.Adapter<AdmissionPe
         //notify of changes
         notifyItemInserted(recyclerViewPosition);
         notifyChangedLessonRange(recyclerViewPosition);
+    }
+
+    public void reinstantiateLesson(){
+        //reload database
+        requery();
+        //notify of changes
+        notifyItemInserted(mLastDeletedPosition);
+        notifyChangedLessonRange(mLastDeletedPosition);
     }
 
     /**
@@ -124,12 +137,15 @@ public class AdmissionPercentageAdapter extends RecyclerView.Adapter<AdmissionPe
         String savePointId = "delete_lesson_" + System.currentTimeMillis();
         mDataDb.createSavepoint(savePointId);
         final int listPosition = getRecyclerViewPosition(item);
+        mLastDeletedPosition = listPosition;
         mDataDb.deleteItem(item);
         requery();
         notifyItemRemoved(listPosition);
         notifyChangedLessonRange(listPosition);
         return savePointId;
     }
+
+
 
     protected void requery() {
         mData = mDataDb.getItemsForMetaId(mAdmissionPercentageMetaId, mLatestLessonFirst);
@@ -205,12 +221,18 @@ public class AdmissionPercentageAdapter extends RecyclerView.Adapter<AdmissionPe
     public void onBindViewHolder(Holder holder, int position) {
         if (holder instanceof InfoHolder) {
             InfoHolder infoHolder = (InfoHolder) holder;
-            infoHolder.title.setText(DBSubjects.getInstance().getItem(mSubjectId).name);
-            SubjectInfoCalculator.setAverageNeededAssignments(mContext, infoHolder.avgLeft, mSubjectId);
-            SubjectInfoCalculator.setCurrentPresentationPointStatus(mContext, infoHolder.prespoints, mSubjectId);
-            SubjectInfoCalculator.setVoteAverage(mContext, infoHolder.percentage, mSubjectId);
-            //TODO: create list of counters
-            //infoHolder.votedAssignments.setText(DBLessons.getInstance().getCompletedAssignmentCount(mSubjectId) + " " + mContext.getString(R.string.voted_assignments_info_card));
+            mMetaPojo.loadData(DBAdmissionPercentageData.getInstance(), mLatestLessonFirst);
+            mMetaPojo.calculateData();
+            infoHolder.title.setText(mMetaPojo.name);
+            setAverageNeededAssignments(infoHolder.avgLeft, mMetaPojo);
+            setVoteAverage(infoHolder.percentage, mMetaPojo);
+            List<AdmissionCounter> counterList = DBAdmissionCounters.getInstance().getItemsForSubject(mMetaPojo.subjectId);
+            //only show this
+            if(counterList.size() != 1)
+                infoHolder.prespoints.setVisibility(View.GONE);
+            else if (counterList.size() == 1)
+                setCurrentPresentationPointStatus(infoHolder.prespoints, counterList.get(0).id);
+            infoHolder.votedAssignments.setText(mMetaPojo.getFinishedAssignments() + " " + mContext.getString(R.string.voted_assignments_info_card));
         } else if (holder instanceof LessonHolder) {
             LessonHolder lessonHolder = (LessonHolder) holder;
             //adjust for the info view
@@ -235,6 +257,54 @@ public class AdmissionPercentageAdapter extends RecyclerView.Adapter<AdmissionPe
             lessonHolder.vote.setText(myVote + " " + mContext.getString(R.string.main_dialog_lesson_von) + " " + maxVote + voteString);
             lessonHolder.lessonId.setText(lessonIndex + mContext.getString(R.string.main_x_th_lesson));
         }
+    }
+
+    private void setCurrentPresentationPointStatus(TextView presentationPointsView, int counterId) {
+        AdmissionCounter counter = DBAdmissionCounters.getInstance().getItem(counterId);
+        int currentPoints = counter.currentValue;
+        int targetPoints = counter.targetValue;
+
+        //set text informing of current presentation point level, handling plural by the way.
+        presentationPointsView.setText(counter.counterName + ": " + currentPoints + " " + mContext.getString(R.string.main_dialog_lesson_von) + " " + targetPoints);
+    }
+
+    private void setVoteAverage(TextView averageVoteView, AdmissionPercentageMeta meta) {
+        float average = meta.getAverageFinished();
+
+        //no votes have been given
+        if (!meta.getHasLessons())
+            averageVoteView.setText(mContext.getString(R.string.infoview_vote_average_no_data));
+
+        //get minvote for section
+        int minVote = meta.targetPercentage;
+
+        //write percentage and color coding to summaryview
+        if (Float.isNaN(average))
+            averageVoteView.setText(mContext.getString(R.string.infoview_vote_average_no_data));
+        else
+            averageVoteView.setText(String.format("%.1f", average) + "%");
+
+        //color text in
+        averageVoteView.setTextColor(average >= minVote ? Color.argb(255, 153, 204, 0) : Color.argb(255, 204, 0, 0));//red
+    }
+
+    private void setAverageNeededAssignments(TextView averageNeededVotesView, AdmissionPercentageMeta meta) {
+        if (meta.getNumberOfLessonsLeft() == 0)
+            averageNeededVotesView.setText(mContext.getString(R.string.subject_fragment_reached_scheduled_lesson_count));
+        else if (meta.getNumberOfLessonsLeft() < 0)
+            averageNeededVotesView.setText(mContext.getString(R.string.subject_fragment_overshot_lesson_count));
+        else
+            averageNeededVotesView.setText(mContext.getString(R.string.subject_fragment_on_average) + " " +
+                    String.format("%.2f", meta.getNeededAssignmentsPerUebung()) + " " + mContext.getString(R.string.lesson_fragment_info_card_assignments_per_lesson_description));
+
+        if (meta.getEstimatedNumberOfAssignments() < 0)
+            averageNeededVotesView.setText(mContext.getString(R.string.subject_fragment_error_detected));
+
+        //set color
+        if (meta.getNeededAssignmentsPerUebung() > meta.estimatedAssignmentsPerLesson)
+            averageNeededVotesView.setTextColor(Color.argb(255, 204, 0, 0));//red
+        else
+            averageNeededVotesView.setTextColor(mContext.getResources().getColor(R.color.abc_primary_text_material_light));
     }
 
     @Override

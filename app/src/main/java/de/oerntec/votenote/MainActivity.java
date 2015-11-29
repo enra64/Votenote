@@ -438,11 +438,11 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
     }
 
     private void onPresentationPointsClick() {
-        MainDialogHelper.showPresentationPointDialog(mCurrentSelectedSubjectId, this);
+        MainDialogHelper.showPresentationPointDialog(this, mCurrentSelectedSubjectId);
     }
 
     private void onInfoClick() {
-        MainDialogHelper.showAllInfoDialog(this, mCurrentSelectedSubjectId);
+        MainDialogHelper.showAllInfoDialog(this, getCurrentAdmissionPercentageFragment().getAdmissionPercentageMetaId());
         //handy-dandy exception thrower for exception handling testing
         //Integer.valueOf("rip");
     }
@@ -455,7 +455,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         PreferenceManager.getDefaultSharedPreferences(this).edit().putBoolean(key, val).apply();
     }
 
-    public AdmissionPercentageFragment getCurrentFragment() {
+    public AdmissionPercentageFragment getCurrentAdmissionPercentageFragment() {
         LessonFragment currentLessonFragment = ((LessonFragment) getFragmentManager().findFragmentById(R.id.container));
         return currentLessonFragment.getCurrentFragment();
     }

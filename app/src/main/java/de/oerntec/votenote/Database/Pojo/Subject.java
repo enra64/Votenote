@@ -17,13 +17,22 @@
 * */
 package de.oerntec.votenote.Database.Pojo;
 
+import android.content.Context;
+import android.graphics.Color;
+import android.widget.TextView;
+
+import java.util.ArrayList;
 import java.util.List;
+
+import de.oerntec.votenote.Database.TableHelpers.DBAdmissionCounters;
+import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageData;
+import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageMeta;
+import de.oerntec.votenote.R;
 
 public class Subject {
     public String name;
     public int id;
     public List<AdmissionCounter> admissionCounterList = null;
-    public List<AdmissionPercentageData> admissionPercentageDataList = null;
     public List<AdmissionPercentageMeta> admissionPercentageMetaList = null;
 
 
@@ -32,12 +41,22 @@ public class Subject {
         this.id = id;
     }
 
-    public Subject(String name, int id, List<AdmissionCounter> admissionCounterList, List<AdmissionPercentageData> admissionPercentageDataList, List<AdmissionPercentageMeta> admissionPercentageMetaList) {
+    public Subject(String name, int id, List<AdmissionCounter> admissionCounterList, List<AdmissionPercentageMeta> admissionPercentageMetaList) {
         this.name = name;
         this.id = id;
         this.admissionCounterList = admissionCounterList;
-        this.admissionPercentageDataList = admissionPercentageDataList;
         this.admissionPercentageMetaList = admissionPercentageMetaList;
+    }
+
+    /**
+     * fill the lists that are usually empty containing all other pojos belonging to this subject
+     */
+    public void loadAllData(DBAdmissionCounters counterDb, DBAdmissionPercentageData dataDb, DBAdmissionPercentageMeta metaDb, boolean latestLessonFirst){
+        admissionCounterList = counterDb.getItemsForSubject(id);
+        admissionPercentageMetaList = metaDb.getItemsForSubject(id);
+        for(AdmissionPercentageMeta meta : admissionPercentageMetaList){
+            meta.loadData(dataDb, latestLessonFirst);
+        }
     }
 
     @Override
@@ -50,8 +69,6 @@ public class Subject {
         if (id != subject.id) return false;
         if (name != null ? !name.equals(subject.name) : subject.name != null) return false;
         if (admissionCounterList != null ? !admissionCounterList.equals(subject.admissionCounterList) : subject.admissionCounterList != null)
-            return false;
-        if (admissionPercentageDataList != null ? !admissionPercentageDataList.equals(subject.admissionPercentageDataList) : subject.admissionPercentageDataList != null)
             return false;
         return !(admissionPercentageMetaList != null ? !admissionPercentageMetaList.equals(subject.admissionPercentageMetaList) : subject.admissionPercentageMetaList != null);
     }
