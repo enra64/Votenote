@@ -77,7 +77,7 @@ public class DatabaseCreator extends SQLiteOpenHelper {
     private static final String CREATE_TABLE_ADMISSION_COUNTERS = "create table " + TABLE_NAME_ADMISSION_COUNTERS + "( " +
             ADMISSION_COUNTER_ID + " integer primary key," +
             ADMISSION_COUNTER_SUBJECT_ID + " integer, " +
-            ADMISSION_COUNTER_COUNTER_NAME + " text not null," +
+            ADMISSION_COUNTER_COUNTER_NAME + " TEXT DEFAULT 'Vortragspunkte'," +
             ADMISSION_COUNTER_CURRENT + " integer not null," +
             ADMISSION_COUNTER_TARGET + " integer not null," +
             "FOREIGN KEY (" + ADMISSION_COUNTER_SUBJECT_ID + ") REFERENCES " + TABLE_NAME_SUBJECTS + "(" + SUBJECTS_ID + ")" +
@@ -93,7 +93,7 @@ public class DatabaseCreator extends SQLiteOpenHelper {
             ");";
     private static final String CREATE_TABLE_ADMISSION_PERCENTAGES_META = "create table " + TABLE_NAME_ADMISSION_PERCENTAGES_META + "( " +
             ADMISSION_PERCENTAGES_META_ID + " integer primary key, " +
-            ADMISSION_PERCENTAGES_META_NAME + " text not null, " +
+            ADMISSION_PERCENTAGES_META_NAME + " text DEFAULT 'Votierungspunkte', " +
             ADMISSION_PERCENTAGES_META_SUBJECT_ID + " integer, " +
             ADMISSION_PERCENTAGES_META_TARGET_ASSIGNMENTS_PER_LESSON + " integer not null," +
             ADMISSION_PERCENTAGES_META_TARGET_LESSON_COUNT + " integer not null," +
@@ -135,6 +135,34 @@ public class DatabaseCreator extends SQLiteOpenHelper {
             database.execSQL(CREATE_TABLE_ADMISSION_COUNTERS);
             database.execSQL(CREATE_TABLE_ADMISSION_PERCENTAGES_META);
             database.execSQL(CREATE_TABLE_ADMISSION_PERCENTAGES_DATA);
+
+            //transfer subject information
+            database.execSQL("INSERT INTO " + TABLE_NAME_SUBJECTS + "(" + SUBJECTS_ID + "," + SUBJECTS_NAME + ")" +
+                    " SELECT _id, uebung_name FROM uebungen_gruppen");
+
+            //transfer counter information
+            database.execSQL("INSERT INTO " + TABLE_NAME_ADMISSION_COUNTERS +
+                    "(" + ADMISSION_COUNTER_SUBJECT_ID + ","
+                    + ADMISSION_COUNTER_CURRENT + ","
+                    + ADMISSION_COUNTER_TARGET + ")" +
+                    " SELECT _id, uebung_prespoints, uebung_max_prespoints FROM uebungen_gruppen");
+
+            //transfer percentage meta information
+            database.execSQL("INSERT INTO " + TABLE_NAME_ADMISSION_PERCENTAGES_META +
+                    "(" + ADMISSION_PERCENTAGES_META_SUBJECT_ID + ","
+                    + ADMISSION_PERCENTAGES_META_ID + ","
+                    + ADMISSION_PERCENTAGES_META_TARGET_ASSIGNMENTS_PER_LESSON + ","
+                    + ADMISSION_PERCENTAGES_META_TARGET_LESSON_COUNT + ","
+                    + ADMISSION_PERCENTAGES_META_TARGET_PERCENTAGE + ")" +
+                    " SELECT _id, _id, uebung_maxvotes_per_ueb, uebung_count, uebung_minvote FROM uebungen_gruppen");
+
+            //transfer lessons
+            database.execSQL("INSERT INTO " + TABLE_NAME_ADMISSION_PERCENTAGES_DATA +
+                        "(" + ADMISSION_PERCENTAGES_DATA_ADMISSION_PERCENTAGE_ID + ","
+                        + ADMISSION_PERCENTAGES_DATA_LESSON_ID + ","
+                        + ADMISSION_PERCENTAGES_DATA_AVAILABLE_ASSIGNMENTS + ","
+                        + ADMISSION_PERCENTAGES_DATA_FINISHED_ASSIGNMENTS + ")" +
+                    " SELECT typ_uebung, nummer_uebung, max_votierung, my_votierung FROM uebungen_eintraege");
         }
     }
 
