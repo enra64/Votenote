@@ -55,6 +55,10 @@ public class DBSubjects extends CrudDb<Subject> {
         throw new Error("not implemented");
     }
 
+    public void addItemWithId(Subject item){
+        addItemGetId(item, true);
+    }
+
     /**
      * Delete the group with the given name AND the given id
      * @return Number of affected rows.
@@ -69,19 +73,16 @@ public class DBSubjects extends CrudDb<Subject> {
             throw new AssertionError("deleted more than 1?");
     }
 
-    public int addItemGetId(Subject item) {
-        return addItemGetId(item.name);
+    public int addItemGetId(Subject item){
+        return addItemGetId(item, false);
     }
 
-    /**
-     * Adds a group with the given Parameters
-     * @param subjectName Name of the new Group
-     * @return -1 if the group name is not unique (violates constraint), the id of the added group otherwise
-     */
-    public int addItemGetId(String subjectName) {
+    public int addItemGetId(Subject item, boolean forceId) {
         //create values for insert or update
         ContentValues values = new ContentValues();
-        values.put(DatabaseCreator.SUBJECTS_NAME, subjectName);
+        values.put(DatabaseCreator.SUBJECTS_NAME, item.name);
+        if(forceId)
+            values.put(DatabaseCreator.SUBJECTS_ID, item.id);
 
         if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
             Log.i("DBGroups", "adding group");
@@ -106,6 +107,15 @@ public class DBSubjects extends CrudDb<Subject> {
         subjectIdCursor.close();
 
         return result;
+    }
+
+    /**
+     * Adds a group with the given Parameters
+     * @param subjectName Name of the new Group
+     * @return -1 if the group name is not unique (violates constraint), the id of the added group otherwise
+     */
+    public int addItemGetId(String subjectName) {
+        return addItemGetId(new Subject(subjectName, -1));
     }
 
     public int getNumberOfLessonsForSubject(int subjectId) {

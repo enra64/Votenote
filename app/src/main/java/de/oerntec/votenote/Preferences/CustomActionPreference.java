@@ -23,6 +23,7 @@ import android.util.AttributeSet;
 
 import de.oerntec.votenote.ImportExport.CsvExporter;
 import de.oerntec.votenote.ImportExport.BackupHelper;
+import de.oerntec.votenote.ImportExport.XmlImporter;
 
 public class CustomActionPreference extends Preference {
     String mActionKey;
@@ -43,6 +44,9 @@ public class CustomActionPreference extends Preference {
                 break;
             case "backup_import":
                 BackupHelper.importDialog(getContext());
+                break;
+            case "xml_import":
+                XmlImporter.importDialog(getContext());
                 break;
             default:
                 super.onClick();

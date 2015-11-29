@@ -55,6 +55,9 @@
         <de.oerntec.votenote.Preferences.CustomActionPreference
             android:key="backup_import"
             android:title="Backup importieren" />
+        <de.oerntec.votenote.Preferences.CustomActionPreference
+            android:key="xml_import"
+            android:title="Altes XML-Backup importieren" />
 
     </PreferenceCategory>
 

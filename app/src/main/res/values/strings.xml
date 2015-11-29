@@ -118,12 +118,6 @@
     <string name="drawer_choose_subject_to_edit">Wähle die Übung aus die du bearbeiten möchtest</string>
     <string name="diagram_show_x_axis_as_percentage">X-Achse als Prozentwert</string>
     <string name="subject_manager_dialog_subject_name">Name der Übung</string>
-    <string name="title_activity_subject_creation">SubjectCreationActivity</string>
-    <string name="action_settings">Settings</string>
-
-<!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="title_activity_lesson">LessonActivity</string>
-    <string name="section_format">Hello World from section: %1$d</string>
-
+    <string name="title_activity_subject_creation">Subject Creation</string>
+    <string name="action_settings">Einstellungen</string>
 </resources>
