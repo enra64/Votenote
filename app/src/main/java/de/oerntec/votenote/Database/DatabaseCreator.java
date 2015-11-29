@@ -140,10 +140,6 @@ public class DatabaseCreator extends SQLiteOpenHelper {
         }
     }
 
-    public void create12ForImport(){
-        OldDatabase.recreateOldSystem(getWritableDatabase());
-    }
-
     public void transferFrom12To13(SQLiteDatabase database){
         //transfer subject information
         database.execSQL("INSERT INTO " + TABLE_NAME_SUBJECTS + "(" + SUBJECTS_ID + "," + SUBJECTS_NAME + ")" +

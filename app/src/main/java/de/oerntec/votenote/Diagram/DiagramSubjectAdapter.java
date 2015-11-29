@@ -28,15 +28,21 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.List;
+
+import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMeta;
+import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageData;
+import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageMeta;
+import de.oerntec.votenote.Database.TableHelpers.DBSubjects;
 import de.oerntec.votenote.R;
 
 public class DiagramSubjectAdapter extends RecyclerView.Adapter<DiagramSubjectAdapter.SubjectHolder> {
     //private DBGroups mSubjectDb = DBGroups.getInstance();
 
     private AdapterListener mAdapterListener;
-    private Cursor mCursor;
     private int[] mColorArray;
     private Context mContext;
+    private List<AdmissionPercentageMeta> mData;
 
     public DiagramSubjectAdapter(Context context, int[] colorArray) {
         mAdapterListener = (AdapterListener) context;
@@ -46,11 +52,7 @@ public class DiagramSubjectAdapter extends RecyclerView.Adapter<DiagramSubjectAd
     }
 
     private void requery() {
-        if (mCursor != null)
-            mCursor.close();
-        mCursor = null;
-        //should be done asynchronously, but i guess that does not matter for 20 entries...
-        //mCursor = mSubjectDb.getAllGroupNames();
+        mData = DBAdmissionPercentageMeta.getInstance().getAllItems();
     }
 
     @Override
@@ -70,23 +72,23 @@ public class DiagramSubjectAdapter extends RecyclerView.Adapter<DiagramSubjectAd
 
     @Override
     public void onBindViewHolder(final SubjectHolder holder, final int position) {
-        mCursor.moveToPosition(position);
+        final AdmissionPercentageMeta data = mData.get(position);
 
         //load data
-        final int subjectId = mCursor.getInt(0);
-        String name = mCursor.getString(1);
+        String name = data.name;
+        final int metaId = data.id;
 
         //set tag for later identification avoiding all
-        holder.itemView.setTag(subjectId);
+        holder.itemView.setTag(data.id);
 
-        final boolean enoughLessons = false;//DBLessons.getInstance().getLessonCountForSubject(subjectId) > 1;
+        final boolean enoughLessons = DBAdmissionPercentageData.getInstance().getItemsForMetaId(metaId, false/*sorting does not matter here*/).size() > 1;
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (enoughLessons) {
                     holder.checkBox.setChecked(!holder.checkBox.isChecked());
-                    mAdapterListener.onClick(subjectId, holder.checkBox.isChecked(), mColorArray[position]);
+                    mAdapterListener.onClick(metaId, holder.checkBox.isChecked(), mColorArray[position]);
                 } else
                     Toast.makeText(mContext, mContext.getString(R.string.diagram_not_enough_entries), Toast.LENGTH_SHORT).show();
             }
@@ -101,14 +103,14 @@ public class DiagramSubjectAdapter extends RecyclerView.Adapter<DiagramSubjectAd
         holder.checkBox.setHighlightColor(mColorArray[position]);
 
         //set texts
-        holder.title.setText(name);
+        holder.title.setText(DBSubjects.getInstance().getItem(data.subjectId).name + ": " + name);
         holder.indicator.clearColorFilter();
         holder.indicator.setColorFilter(mColorArray[position]);
     }
 
     @Override
     public int getItemCount() {
-        return mCursor.getCount();
+        return mData.size();
     }
 
 

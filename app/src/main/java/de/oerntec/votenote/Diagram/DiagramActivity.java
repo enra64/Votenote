@@ -43,6 +43,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import de.oerntec.votenote.Database.Pojo.AdmissionPercentageData;
+import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageData;
+import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageMeta;
+import de.oerntec.votenote.MainActivity;
 import de.oerntec.votenote.R;
 import de.oerntec.votenote.TranslationHelper;
 
@@ -52,6 +56,7 @@ public class DiagramActivity extends AppCompatActivity implements DiagramSubject
     private Random r;
     private Map<Integer, LineGraphSeries<DataPoint>> lineGraphMap;
     private boolean usePercentageForXAxis = false;
+    private DBAdmissionPercentageMeta mMetaDb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,9 +72,8 @@ public class DiagramActivity extends AppCompatActivity implements DiagramSubject
         if (actionBar != null)
             actionBar.setDisplayHomeAsUpEnabled(true);
 
-        //get db connections
-        //mSubjectDb = DBGroups.getInstance();
-        //mLessonDb = DBLessons.getInstance();
+        //db instances
+        mMetaDb = DBAdmissionPercentageMeta.getInstance();
 
         //init random
         r = new Random();
@@ -104,7 +108,7 @@ public class DiagramActivity extends AppCompatActivity implements DiagramSubject
     }
 
     private int[] generateGoldenRatioColors() {
-        int subjectCount = 0;// mSubjectDb.getNumberOfSubjects();
+        int subjectCount = mMetaDb.getCount();
         float sat = .5f, val = .95f;
         float goldenFloat = 0.618033988749895f;
         int[] colorArray = new int[subjectCount];
@@ -119,16 +123,16 @@ public class DiagramActivity extends AppCompatActivity implements DiagramSubject
     }
 
     @Override
-    public void onClick(int subjectId, boolean enabled, int color) {
+    public void onClick(int metaId, boolean enabled, int color) {
         if (enabled) {
             //create new if not already created
-            if (!lineGraphMap.containsKey(subjectId)) {
-                LineGraphSeries<DataPoint> newGraphLine = getGroupLineGraph(subjectId, color);
-                lineGraphMap.put(subjectId, newGraphLine);
+            if (!lineGraphMap.containsKey(metaId)) {
+                LineGraphSeries<DataPoint> newGraphLine = getGroupLineGraph(metaId, color);
+                lineGraphMap.put(metaId, newGraphLine);
             }
-            mGraph.addSeries(lineGraphMap.get(subjectId));
+            mGraph.addSeries(lineGraphMap.get(metaId));
         } else
-            mGraph.removeSeries(lineGraphMap.get(subjectId));
+            mGraph.removeSeries(lineGraphMap.get(metaId));
 
         if (usePercentageForXAxis) {
             mGraph.getGridLabelRenderer().setNumHorizontalLabels(5);
@@ -160,26 +164,19 @@ public class DiagramActivity extends AppCompatActivity implements DiagramSubject
     /**
      * Creates a LineGraphSeries object containing the data points of the specified subject
      */
-    private LineGraphSeries<DataPoint> getGroupLineGraph(int subjectId, int color) {
-        //get cursor
-        Cursor allLessonsForSubject = null;//mLessonDb.getAllLessonsForSubject(subjectId);
+    private LineGraphSeries<DataPoint> getGroupLineGraph(int metaId, int color) {
+        List<AdmissionPercentageData> data = DBAdmissionPercentageData.getInstance().getItemsForMetaId(metaId, MainActivity.getPreference("reverse_lesson_sort", false));
 
         //add uebung data to graph
-        DataPoint[] dataPointArray = new DataPoint[allLessonsForSubject.getCount()];
+        DataPoint[] dataPointArray = new DataPoint[data.size()];
         int arrayCounter = 0;
 
-        //go back one so the loop works; the cursor gets moved to first position in getallLessons
-        allLessonsForSubject.moveToPrevious();
-
         if (usePercentageForXAxis)
-            while (allLessonsForSubject.moveToNext())
-                dataPointArray[arrayCounter++] = new DataPoint(100f * ((float) (allLessonsForSubject.getInt(0) - 1) / (float) (dataPointArray.length - 1)), 100 * ((float) allLessonsForSubject.getInt(1) / (float) allLessonsForSubject.getInt(2)));
+            for(AdmissionPercentageData d : data)
+                dataPointArray[arrayCounter++] = new DataPoint(100f * ((float) (d.lessonId - 1) / (float) (dataPointArray.length - 1)), 100 * ((float) d.finishedAssignments / (float) d.availableAssignments));
         else
-            while (allLessonsForSubject.moveToNext())
-                dataPointArray[arrayCounter++] = new DataPoint(allLessonsForSubject.getInt(0), 100 * ((float) allLessonsForSubject.getInt(1) / (float) allLessonsForSubject.getInt(2)));
-
-        //close cursor
-        allLessonsForSubject.close();
+            for(AdmissionPercentageData d : data)
+                dataPointArray[arrayCounter++] = new DataPoint(d.lessonId, 100 * ((float) d.finishedAssignments / (float) d.availableAssignments));
 
         LineGraphSeries<DataPoint> answer = new LineGraphSeries<>(dataPointArray);
 

@@ -203,4 +203,24 @@ public class DBAdmissionPercentageMeta extends CrudDb<AdmissionPercentageMeta> i
 
         return result;
     }
+
+    public List<AdmissionPercentageMeta> getAllItems() {
+        Cursor c = mDatabase.query(true, DatabaseCreator.TABLE_NAME_ADMISSION_PERCENTAGES_META, null, null,
+                null, null, null, DatabaseCreator.ADMISSION_PERCENTAGES_META_ID + " ASC", null);
+
+        List<AdmissionPercentageMeta> items = new LinkedList<>();
+
+        while (c.moveToNext())
+            items.add(new AdmissionPercentageMeta(
+                    c.getInt(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_META_ID)),
+                    c.getInt(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_META_SUBJECT_ID)),
+                    c.getInt(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_META_TARGET_ASSIGNMENTS_PER_LESSON)),
+                    c.getInt(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_META_TARGET_LESSON_COUNT)),
+                    c.getInt(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_META_TARGET_PERCENTAGE)),
+                    c.getString(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_META_NAME))
+            ));
+
+        c.close();
+        return items;
+    }
 }
