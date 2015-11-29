@@ -50,11 +50,11 @@
             android:key="csv_export"
             android:title="@string/pref_csv_export" />
         <de.oerntec.votenote.Preferences.CustomActionPreference
-            android:key="xml_export"
-            android:title="@string/pref_xml_export" />
+            android:key="backup_export"
+            android:title="Backup erstellen" />
         <de.oerntec.votenote.Preferences.CustomActionPreference
-            android:key="xml_import"
-            android:title="@string/pref_xml_import" />
+            android:key="backup_import"
+            android:title="Backup importieren" />
 
     </PreferenceCategory>
 

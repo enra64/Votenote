@@ -41,7 +41,7 @@ import de.oerntec.votenote.CardListHelpers.OnItemClickListener;
 import de.oerntec.votenote.CardListHelpers.RecyclerItemClickListener;
 import de.oerntec.votenote.CardListHelpers.SwipeDeletion;
 import de.oerntec.votenote.Database.Pojo.Subject;
-import de.oerntec.votenote.ImportExport.XmlImporter;
+import de.oerntec.votenote.ImportExport.BackupHelper;
 import de.oerntec.votenote.R;
 import de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.SubjectCreationActivity;
 import de.oerntec.votenote.TranslationHelper;
@@ -259,7 +259,7 @@ public class SubjectManagementActivity extends AppCompatActivity implements Swip
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_read_from_storage:
-                XmlImporter.importDialog(this);
+                BackupHelper.importDialog(this);
                 return true;
         }
         return super.onOptionsItemSelected(item);

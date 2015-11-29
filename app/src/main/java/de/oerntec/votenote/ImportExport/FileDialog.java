@@ -59,7 +59,7 @@ public class FileDialog {
     private static final int FileOpen = 0;
     private static final int FileSave = 1;
     private static final int FolderChoose = 2;
-    public String defaultFileName = "export.xml";
+    public String defaultFileName = "export.db";
     private int Select_type = FileSave;
     private String mSdcardDirectory = "";
     private Context mContext;
@@ -212,7 +212,7 @@ public class FileDialog {
                 } else if (Select_type == FileSave || Select_type == FileOpen) {
                     //avoid showing non-xml files for import
                     if (Select_type == FileOpen) {
-                        if (file.getName().contains(".xml"))
+                        if (file.getName().contains(".db"))
                             dirs.add(file.getName());
                     }
                     //show all files when exporting
