@@ -18,7 +18,6 @@
 package de.oerntec.votenote;
 
 import android.annotation.SuppressLint;
-import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
@@ -28,6 +27,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -312,6 +312,8 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         mCurrentSelectedSubjectId = mSubjectDb.getIdOfSubject(position);
         mCurrentSelectedPosition = position;
 
+
+
         mCurrentFragmentHasPrespoints = DBAdmissionCounters.getInstance().getItemsForSubject(mCurrentSelectedSubjectId).size() > 0;
         // update the menu_main content by replacing fragments
         if (ENABLE_DEBUG_LOG_CALLS)
@@ -342,11 +344,11 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
     }
 
     private void restoreActionBar() {
-        ActionBar actionBar = getActionBar();
+        ActionBar actionBar = getSupportActionBar();
         if (actionBar == null) return;
-        //noinspection deprecation
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
         actionBar.setDisplayShowTitleEnabled(true);
+
+        actionBar.setTitle(mSubjectDb.getItem(mCurrentSelectedSubjectId).name);
 
         //basically calls onCreateOptionsMenu
         invalidateOptionsMenu();
@@ -355,12 +357,6 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
-
-        //update title
-        ActionBar actionBar = getActionBar();
-        if (actionBar != null) {
-            actionBar.setDisplayShowTitleEnabled(true);
-        }
 
         //prepare animations
         final MenuItem presPointItem = menu.findItem(R.id.action_prespoints);

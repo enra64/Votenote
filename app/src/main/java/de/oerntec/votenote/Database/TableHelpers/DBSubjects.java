@@ -78,7 +78,6 @@ public class DBSubjects extends CrudDb<Subject> {
      * @param subjectName Name of the new Group
      * @return -1 if the group name is not unique (violates constraint), the id of the added group otherwise
      */
-    @Deprecated
     public int addItemGetId(String subjectName) {
         //create values for insert or update
         ContentValues values = new ContentValues();
@@ -171,7 +170,6 @@ public class DBSubjects extends CrudDb<Subject> {
         return getItem(item);
     }
 
-    @Deprecated
     public Subject getItem(int subjectId) {
         Cursor mCursor = mDatabase.query(
                 true,

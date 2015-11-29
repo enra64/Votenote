@@ -75,6 +75,9 @@ public class LessonFragment extends Fragment {
         mViewPager = (ViewPager) v.findViewById(R.id.fragment_lesson_tabbed_pager);
         mViewPager.setAdapter(mAdmissionPercentageAdapter);
 
+        if(mAdmissionPercentageAdapter.getCount() == 1)
+            mViewPager.findViewById(R.id.fragment_lesson_tabbed_pager_title_strip).setVisibility(View.GONE);
+
         return v;
     }
 

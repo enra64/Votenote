@@ -28,6 +28,8 @@ import android.widget.TextView;
 import java.util.List;
 
 import de.oerntec.votenote.Database.Pojo.Subject;
+import de.oerntec.votenote.Database.TableHelpers.DBAdmissionCounters;
+import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageMeta;
 import de.oerntec.votenote.Database.TableHelpers.DBSubjects;
 import de.oerntec.votenote.MainActivity;
 import de.oerntec.votenote.R;
@@ -97,11 +99,8 @@ public class SubjectAdapter extends RecyclerView.Adapter<SubjectAdapter.SubjectH
         SubjectHolder holder = new SubjectHolder(root);
         //set view ids
         holder.title = (TextView) root.findViewById(R.id.subject_manager_subject_card_title);
-        holder.scheduledPercentage = (TextView) root.findViewById(R.id.subject_manager_subject_card_needed_percentage);
-        holder.scheduledPresentationPoints = (TextView) root.findViewById(R.id.subject_manager_subject_card_presentation_points);
-        holder.scheduledLessons = (TextView) root.findViewById(R.id.subject_manager_subject_card_scheduled_lesson_count);
-        holder.scheduledAssignmentsPerLesson = (TextView) root.findViewById(R.id.subject_manager_subject_card_assignments_per_lesson);
-        //return the created holder
+        holder.counterCount = (TextView) root.findViewById(R.id.subject_manager_subject_card_counter_count);
+        holder.percentageCounterCount = (TextView) root.findViewById(R.id.subject_manager_subject_card_percentage_counter_count);
         return holder;
     }
 
@@ -115,20 +114,16 @@ public class SubjectAdapter extends RecyclerView.Adapter<SubjectAdapter.SubjectH
         //load strings
         int subjectId = item.id;
         String name = item.name;
-        String votePercentage = "todo";
-        String presPoints = "todo";
-        String lessonCount = "todo";
-        String assignmentsPerLesson = "todo";
+        int metaCount = DBAdmissionPercentageMeta.getInstance().getItemsForSubject(item.id).size();
+        int counterCount = DBAdmissionCounters.getInstance().getItemsForSubject(item.id).size();
 
         //set tag for later identification avoiding all
         holder.itemView.setTag(subjectId);
 
         //set texts
         holder.title.setText(name);
-        holder.scheduledPercentage.setText(votePercentage + "%");
-        holder.scheduledPresentationPoints.setText(presPoints + " " + mContext.getString(R.string.subjectmanager_set_prespoints));
-        holder.scheduledLessons.setText(lessonCount + " " + mContext.getString(R.string.subjectmanager_card_lesson_count));
-        holder.scheduledAssignmentsPerLesson.setText(assignmentsPerLesson + " " + mContext.getString(R.string.subjectmanager_assignments_per_lesson));
+        holder.counterCount.setText(counterCount + " Admission Counters");
+        holder.percentageCounterCount.setText(metaCount + " Percentage Admission Counters");
     }
 
     @Override
@@ -137,7 +132,7 @@ public class SubjectAdapter extends RecyclerView.Adapter<SubjectAdapter.SubjectH
     }
 
     static class SubjectHolder extends RecyclerView.ViewHolder {
-        TextView title, scheduledPercentage, scheduledPresentationPoints, scheduledLessons, scheduledAssignmentsPerLesson;
+        TextView title, percentageCounterCount, counterCount;
 
         public SubjectHolder(View itemView) {
             super(itemView);
