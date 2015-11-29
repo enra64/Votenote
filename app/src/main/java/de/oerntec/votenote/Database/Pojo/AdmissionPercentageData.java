@@ -31,6 +31,9 @@ public class AdmissionPercentageData {
         if (lessonId != that.lessonId) return false;
         if (finishedAssignments != that.finishedAssignments) return false;
         return availableAssignments == that.availableAssignments;
+    }
 
+    public String getCsvRepresentation(){
+        return lessonId+","+finishedAssignments+","+availableAssignments;
     }
 }

@@ -18,14 +18,20 @@
 package de.oerntec.votenote.ImportExport;
 
 import android.content.Context;
+import android.widget.Toast;
 
+import java.io.IOException;
 import java.util.List;
 
+import de.oerntec.votenote.Database.Pojo.AdmissionCounter;
+import de.oerntec.votenote.Database.Pojo.AdmissionPercentageData;
+import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMeta;
 import de.oerntec.votenote.Database.Pojo.Subject;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionCounters;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageData;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageMeta;
 import de.oerntec.votenote.Database.TableHelpers.DBSubjects;
+import de.oerntec.votenote.MainActivity;
 
 public class CsvExporter {
     public static FileDialog exportDialog(final Context activity) {
@@ -47,52 +53,46 @@ public class CsvExporter {
 
     private static void export(final String path, final Context activity) {
         //get database access
+        StringBuilder b = new StringBuilder();
+        String le = "\r\n";
+        String apmHeader = "Name,Required percentage for admission,Estimated Assignments per Lesson,Estimated Lesson Count";
+        String apdHeader = "Lesson,Finished Assignments,Available Assignments";
+        String acHeader = "Current points,Target point count";
+        List<Subject> subjects = getSubjects();
+        //separator for excel
+        b.append("sep=;").append(le);
+        for(Subject s : subjects){
+            b.append(s.name).append(le);
+            for(AdmissionPercentageMeta apm : s.admissionPercentageMetaList){
+                b.append(apmHeader).append(le);
+                b.append(apm.getCsvRepresentation()).append(le);
+                for(AdmissionPercentageData apd : apm.mDataList){
+                    b.append(apd.getCsvRepresentation()).append(le);
+                }
+            }
+            for(AdmissionCounter ac : s.admissionCounterList){
+                b.append(acHeader).append(le);
+                b.append(ac.getCsvRepresentation()).append(le);
+            }
+            b.append(le).append(le);
+        }
+        try {
+            Writer.writeToFile(b.toString(), path);
+        } catch (IOException e) {
+            Toast.makeText(activity, "Exception occured", Toast.LENGTH_LONG);
+            e.printStackTrace();
+        }
+    }
+
+    private static List<Subject> getSubjects(){
         final DBAdmissionPercentageData mApDataDb = DBAdmissionPercentageData.getInstance();
         final DBAdmissionPercentageMeta mApMetaDb = DBAdmissionPercentageMeta.getInstance();
         final DBAdmissionCounters mCountersDb = DBAdmissionCounters.getInstance();
         final DBSubjects mSubjectDb = DBSubjects.getInstance();
 
-        StringBuilder s = new StringBuilder();
-        //separator for excel
-        s.append("sep=;");
-        s.append("\r\n");
-
-        List<Subject> subjectList = mSubjectDb.getAllSubjects();
-/*
-        for (Subject subject : subjectList) {
-            s.append(subject.name);
-            s.append(": \r\n");
-
-            for(AdmissionPercentageMeta apm : mApMetaDb.getItemsForSubject(subject.id)){
-                s.append()
-            }
-
-            s.append(";;\r\n");
-            s.append("Nummer,Gemachte Aufgaben,Maximale Aufgaben");
-            s.append("\r\n");
-            Cursor entryCursor = entryDB.getAllLessonsForSubject(Integer.valueOf(subject.id));
-
-            if (entryCursor.getCount() > 0) {
-                //read db to string
-                do {
-                    s.append(entryCursor.getInt(0));
-                    s.append(";");
-                    s.append(entryCursor.getInt(1));
-                    s.append(";");
-                    s.append(entryCursor.getInt(2));
-                    s.append("\r\n");
-                } while (entryCursor.moveToNext());
-
-                //add some free lines
-                s.append("\r\n\r\n");
-            }
-        }
-        try {
-            Writer.writeToFile(s.toString(), path);
-            Toast.makeText(activity, activity.getString(R.string.import_result_ok), Toast.LENGTH_LONG).show();
-        } catch (IOException e) {
-            e.printStackTrace();
-            Toast.makeText(activity, activity.getString(R.string.import_result_bad), Toast.LENGTH_LONG).show();
-        }*/
+        List<Subject> result = mSubjectDb.getAllSubjects();
+        for(Subject s : result)
+            s.loadAllData(mCountersDb, mApDataDb, mApMetaDb, MainActivity.getPreference("reverse_lesson_sort", false));
+        return result;
     }
 }

@@ -127,6 +127,10 @@ public class AdmissionPercentageMeta implements NameAndIdPojo {
 
     }
 
+    public String getCsvRepresentation(){
+        return name+","+targetPercentage+"%,"+estimatedAssignmentsPerLesson+","+estimatedLessonCount;
+    }
+
     @Override
     public String getDisplayName() {
         return name + " - " + targetPercentage + "%";

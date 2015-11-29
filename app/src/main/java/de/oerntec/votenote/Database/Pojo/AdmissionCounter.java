@@ -17,6 +17,10 @@ public class AdmissionCounter implements Cloneable, NameAndIdPojo {
         this.targetValue = targetValue;
     }
 
+    public String getCsvRepresentation(){
+        return currentValue+","+targetValue;
+    }
+
     @Override
     public AdmissionCounter clone() {
         try {
