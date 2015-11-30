@@ -91,7 +91,7 @@ public class DatabaseCreator extends SQLiteOpenHelper {
             ADMISSION_COUNTER_COUNTER_NAME + " TEXT DEFAULT 'Vortragspunkte'," +
             ADMISSION_COUNTER_CURRENT + " integer not null," +
             ADMISSION_COUNTER_TARGET + " integer not null," +
-            "FOREIGN KEY (" + ADMISSION_COUNTER_SUBJECT_ID + ") REFERENCES " + TABLE_NAME_SUBJECTS + "(" + SUBJECTS_ID + ")" +
+            "FOREIGN KEY (" + ADMISSION_COUNTER_SUBJECT_ID + ") REFERENCES " + TABLE_NAME_SUBJECTS + "(" + SUBJECTS_ID + ") ON DELETE CASCADE" +
             ");";
     private static final String CREATE_TABLE_ADMISSION_PERCENTAGES_DATA =
             "create table " + TABLE_NAME_ADMISSION_PERCENTAGES_DATA + "( " +
@@ -99,7 +99,7 @@ public class DatabaseCreator extends SQLiteOpenHelper {
             ADMISSION_PERCENTAGES_DATA_FINISHED_ASSIGNMENTS + " integer not null," +
             ADMISSION_PERCENTAGES_DATA_ADMISSION_PERCENTAGE_ID + " integer, " +
             ADMISSION_PERCENTAGES_DATA_AVAILABLE_ASSIGNMENTS + " integer not null," +
-            "FOREIGN KEY (" + ADMISSION_PERCENTAGES_DATA_ADMISSION_PERCENTAGE_ID + ") REFERENCES " + TABLE_NAME_ADMISSION_PERCENTAGES_META + "(" + ADMISSION_PERCENTAGES_META_ID + "), " +
+            "FOREIGN KEY (" + ADMISSION_PERCENTAGES_DATA_ADMISSION_PERCENTAGE_ID + ") REFERENCES " + TABLE_NAME_ADMISSION_PERCENTAGES_META + "(" + ADMISSION_PERCENTAGES_META_ID + ") ON DELETE CASCADE, " +
             "PRIMARY KEY(" + ADMISSION_PERCENTAGES_DATA_LESSON_ID + ", " + ADMISSION_PERCENTAGES_DATA_ADMISSION_PERCENTAGE_ID + ")" + //primary key is meta id + lesson id
             ");";
     private static final String CREATE_TABLE_ADMISSION_PERCENTAGES_META = "create table " + TABLE_NAME_ADMISSION_PERCENTAGES_META + "( " +
@@ -109,7 +109,7 @@ public class DatabaseCreator extends SQLiteOpenHelper {
             ADMISSION_PERCENTAGES_META_TARGET_ASSIGNMENTS_PER_LESSON + " integer not null," +
             ADMISSION_PERCENTAGES_META_TARGET_LESSON_COUNT + " integer not null," +
             ADMISSION_PERCENTAGES_META_TARGET_PERCENTAGE + " integer not null," +
-            "FOREIGN KEY (" + ADMISSION_PERCENTAGES_META_SUBJECT_ID + ") REFERENCES " + TABLE_NAME_SUBJECTS + "(" + SUBJECTS_ID + ")" +
+            "FOREIGN KEY (" + ADMISSION_PERCENTAGES_META_SUBJECT_ID + ") REFERENCES " + TABLE_NAME_SUBJECTS + "(" + SUBJECTS_ID + ") ON DELETE CASCADE" +
             ");";
 
     private static final String CREATE_TABLE_LAST_VIEWED = "CREATE TABLE " + TABLE_NAME_LAST_VIEWED + "("+
