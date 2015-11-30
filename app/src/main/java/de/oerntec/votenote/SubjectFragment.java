@@ -17,11 +17,12 @@ import java.util.List;
 import de.oerntec.votenote.AdmissionPercentageFragmentStuff.AdmissionPercentageFragment;
 import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMeta;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageMeta;
+import de.oerntec.votenote.Database.TableHelpers.DBLastViewed;
 
-public class LessonFragment extends Fragment {
+public class SubjectFragment extends Fragment {
 
     private static final String ARG_SUBJECT_ID = "subject_id";
-    private static final String ARG_PERCENTAGE_ID = "meta_id";
+    private static final String ARG_SUBJECT_POSITION = "subject_position";
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
      * fragments for each of the sections. We use a
@@ -37,25 +38,33 @@ public class LessonFragment extends Fragment {
      */
     private ViewPager mViewPager;
 
+    /**
+     * subject id we are displaying
+     */
     private int mSubjectId;
+
+    /**
+     * whether the preference is activated or not
+     */
+    private boolean mSaveLastMetaId;
 
     /**
      * empty fragment constructor
      */
-    public LessonFragment(){}
+    public SubjectFragment(){}
 
     /**
      * static fragment factory
      * @param subjectId what subject is this fragment for
      * @return a newly instanced fragment
      */
-    public static LessonFragment newInstance(int subjectId, int metaId) {
+    public static SubjectFragment newInstance(int subjectId, int subjectPosition) {
         Bundle args = new Bundle();
         //put arguments into an intent
         args.putInt(ARG_SUBJECT_ID, subjectId);
-        args.putInt(ARG_PERCENTAGE_ID, metaId);
+        args.putInt(ARG_SUBJECT_POSITION, subjectPosition);
 
-        LessonFragment fragment = new LessonFragment();
+        SubjectFragment fragment = new SubjectFragment();
         fragment.setArguments(args);
         return fragment;
     }
@@ -84,6 +93,8 @@ public class LessonFragment extends Fragment {
         if(mAdmissionPercentageAdapter.getCount() == 1)
             mViewPager.findViewById(R.id.fragment_lesson_tabbed_pager_title_strip).setVisibility(View.GONE);
 
+        mSaveLastMetaId = MainActivity.getPreference("save_last_selected_meta_pos", true);
+
         return v;
     }
 
@@ -101,16 +112,31 @@ public class LessonFragment extends Fragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         List<AdmissionPercentageMeta> percentages = DBAdmissionPercentageMeta.getInstance().getItemsForSubject(mSubjectId);
+
+        final int subjectPosition = getArguments().getInt(ARG_SUBJECT_POSITION);
         if (percentages.size() > 0) {
-            if(getArguments().getInt(ARG_PERCENTAGE_ID) >= 0)
-                mViewPager.setCurrentItem(getArguments().getInt(ARG_PERCENTAGE_ID));
+            if(subjectPosition >= 0 && mSaveLastMetaId){
+                int lastSelectedMetaPosition = DBLastViewed.getInstance().getLastSelectedAdmissionCounterForSubjectPosition(subjectPosition);
+                mViewPager.setCurrentItem(lastSelectedMetaPosition, true);
+            }
             else
                 mViewPager.setCurrentItem(0);
         }
-    }
+        if(mSaveLastMetaId){
+            mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener(){
+                @Override
+                public void onPageScrollStateChanged(int state) {
+                }
+                @Override
+                public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                }
 
-    public void forceSelectPosition(int position) {
-        mViewPager.setCurrentItem(position, true);
+                @Override
+                public void onPageSelected(int position) {
+                    DBLastViewed.getInstance().saveSelection(subjectPosition, position);
+                }
+            });
+        }
     }
 
     /**

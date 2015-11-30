@@ -26,6 +26,10 @@ public class DBLastViewed {
         return mInstance;
     }
 
+    public static DBLastViewed getInstance(){
+        return mInstance;
+    }
+
     public int getLastSelectedSubjectPosition(){
         Cursor result = mDatabase.query(true,
                 DatabaseCreator.TABLE_NAME_LAST_VIEWED,
