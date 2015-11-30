@@ -21,6 +21,7 @@ import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageMeta;
 public class LessonFragment extends Fragment {
 
     private static final String ARG_SUBJECT_ID = "subject_id";
+    private static final String ARG_PERCENTAGE_ID = "meta_id";
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
      * fragments for each of the sections. We use a
@@ -48,10 +49,11 @@ public class LessonFragment extends Fragment {
      * @param subjectId what subject is this fragment for
      * @return a newly instanced fragment
      */
-    public static LessonFragment newInstance(int subjectId) {
+    public static LessonFragment newInstance(int subjectId, int metaId) {
         Bundle args = new Bundle();
         //put arguments into an intent
         args.putInt(ARG_SUBJECT_ID, subjectId);
+        args.putInt(ARG_PERCENTAGE_ID, metaId);
 
         LessonFragment fragment = new LessonFragment();
         fragment.setArguments(args);
@@ -64,6 +66,10 @@ public class LessonFragment extends Fragment {
         mSubjectId = getArguments().getInt(ARG_SUBJECT_ID, -1);
         if (mSubjectId == -1)
             throw new AssertionError("trying to load a non-existing subject!");
+    }
+
+    public int getSubjectId(){
+        return mSubjectId;
     }
 
     @Nullable
@@ -96,8 +102,15 @@ public class LessonFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         List<AdmissionPercentageMeta> percentages = DBAdmissionPercentageMeta.getInstance().getItemsForSubject(mSubjectId);
         if (percentages.size() > 0) {
-            mViewPager.setCurrentItem(0);
+            if(getArguments().getInt(ARG_PERCENTAGE_ID) >= 0)
+                mViewPager.setCurrentItem(getArguments().getInt(ARG_PERCENTAGE_ID));
+            else
+                mViewPager.setCurrentItem(0);
         }
+    }
+
+    public void forceSelectPosition(int position) {
+        mViewPager.setCurrentItem(position, true);
     }
 
     /**

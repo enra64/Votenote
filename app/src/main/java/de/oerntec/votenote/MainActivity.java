@@ -191,11 +191,12 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         if (ENABLE_DEBUG_LOG_CALLS)
             Log.i("state info", "oncreate");
 
-        int lastSelected = getPreference("last_selected_dbid", 0);
+        int lastSelected = getPreference("last_selected_subject_position", 0);
 
         //select the last selected item
-        if (lastSelected < mSubjectDb.getCount())
+        if (lastSelected < mSubjectDb.getCount()){
             mNavigationDrawerFragment.selectItem(lastSelected);
+        }
     }
 
     //http://stackoverflow.com/a/19968400
@@ -235,7 +236,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         int subjectCount = mSubjectDb.getCount();
 
         //check whether we possibly have subjects, but none is loaded for some reason
-        int lastSelected = getPreference("last_selected_dbid", -1);
+        int lastSelected = getPreference("last_selected_subject_position", -1);
         boolean hasValidLastSelected = lastSelected != -1 && lastSelected < subjectCount;
 
         Fragment checkFragment = getFragmentManager().findFragmentById(R.id.container);
@@ -312,7 +313,12 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         mCurrentSelectedSubjectId = mSubjectDb.getIdOfSubject(position);
         mCurrentSelectedPosition = position;
 
-
+        int lastSelected = getPreference("last_selected_subject_position", 0);
+        int lastSelectedPercentage;
+        if(position == lastSelected)
+            lastSelectedPercentage = getPreference("last_selected_meta_position", 0);
+        else
+            lastSelectedPercentage = -1;
 
         mCurrentFragmentHasPrespoints = DBAdmissionCounters.getInstance().getItemsForSubject(mCurrentSelectedSubjectId).size() > 0;
         // update the menu_main content by replacing fragments
@@ -321,7 +327,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         FragmentManager fragmentManager = getFragmentManager();
         fragmentManager
                 .beginTransaction()
-                .replace(R.id.container, LessonFragment.newInstance(mCurrentSelectedSubjectId)).commit();
+                .replace(R.id.container, LessonFragment.newInstance(mCurrentSelectedSubjectId, lastSelectedPercentage)).commit();
     }
 
     @Override
@@ -329,9 +335,11 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         super.onPause();
         //save where the user left
         if (mCurrentSelectedSubjectId != -1) {
-            setPreference("last_selected_dbid", mCurrentSelectedPosition);
+            int metaId = getCurrentAdmissionPercentageFragment().getAdmissionPercentageMetaId();
+            setPreference("last_selected_subject_position", mCurrentSelectedPosition);
+            setPreference("last_selected_meta_position", metaId);
             if (ENABLE_DEBUG_LOG_CALLS)
-                Log.i("last selected", "" + mCurrentSelectedPosition);
+                Log.i("last selected", "sid:" + mCurrentSelectedPosition + "apmid:"+metaId);
         }
     }
 
@@ -451,9 +459,12 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         PreferenceManager.getDefaultSharedPreferences(this).edit().putBoolean(key, val).apply();
     }
 
+    private LessonFragment getCurrentLessonFragment(){
+        return (LessonFragment) getFragmentManager().findFragmentById(R.id.container);
+    }
+    
     public AdmissionPercentageFragment getCurrentAdmissionPercentageFragment() {
-        LessonFragment currentLessonFragment = ((LessonFragment) getFragmentManager().findFragmentById(R.id.container));
-        return currentLessonFragment.getCurrentFragment();
+        return getCurrentLessonFragment().getCurrentFragment();
     }
 
     @Override
