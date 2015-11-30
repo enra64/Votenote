@@ -120,4 +120,6 @@
     <string name="subject_manager_dialog_subject_name">Name der Übung</string>
     <string name="title_activity_subject_creation">Subject Creation</string>
     <string name="action_settings">Einstellungen</string>
+    <string name="admission_counter_change_dialog_title">%1$s ändern</string>
+    <string name="lesson_dialog_fragment_picker_info_text">%1$d von %2$d Votierungen</string>
 </resources>

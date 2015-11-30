@@ -96,7 +96,7 @@ public class MainDialogHelper {
                         activity.getCurrentAdmissionPercentageFragment().reloadInfo();
                     }
                 }).setNegativeButton(activity.getString(R.string.dialog_button_abort), null);
-        b.setTitle(activity.getString(R.string.main_dialog_pres_title));
+        b.setTitle(activity.getString(R.string.admission_counter_change_dialog_title, item.counterName));
         b.create().show();
     }
 

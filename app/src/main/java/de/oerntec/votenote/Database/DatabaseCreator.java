@@ -38,11 +38,14 @@ public class DatabaseCreator extends SQLiteOpenHelper {
     public static final String TABLE_NAME_ADMISSION_COUNTERS = "admission_counters";
     public static final String TABLE_NAME_ADMISSION_PERCENTAGES_META = "admission_percentages_meta";
     public static final String TABLE_NAME_ADMISSION_PERCENTAGES_DATA = "admission_percentages_data";
+    public static final String TABLE_NAME_LAST_VIEWED = "last_viewed";
+
     /***********************************************************************************************
      * admission counter database start
      **********************************************************************************************/
     public static final String SUBJECTS_ID = "_id";
     public static final String SUBJECTS_NAME = "uebung_name";
+
     /***********************************************************************************************
      * admission counter database start
      **********************************************************************************************/
@@ -51,6 +54,7 @@ public class DatabaseCreator extends SQLiteOpenHelper {
     public static final String ADMISSION_COUNTER_COUNTER_NAME = "counter_name";
     public static final String ADMISSION_COUNTER_CURRENT = "current";
     public static final String ADMISSION_COUNTER_TARGET = "target";
+
     /***********************************************************************************************
      * admission percentage names database start
      **********************************************************************************************/
@@ -60,20 +64,27 @@ public class DatabaseCreator extends SQLiteOpenHelper {
     public static final String ADMISSION_PERCENTAGES_META_TARGET_PERCENTAGE = "target_percentage";
     public static final String ADMISSION_PERCENTAGES_META_TARGET_LESSON_COUNT = "target_lesson_count";
     public static final String ADMISSION_PERCENTAGES_META_TARGET_ASSIGNMENTS_PER_LESSON = "target_assignments_per_lesson";
+
     /***********************************************************************************************
      * admission percentage data database start
      **********************************************************************************************/
-    //public static final String ADMISSION_PERCENTAGES_DATA_ID = "rowid";
     public static final String ADMISSION_PERCENTAGES_DATA_LESSON_ID = "lesson_id";
     public static final String ADMISSION_PERCENTAGES_DATA_ADMISSION_PERCENTAGE_ID = "admission_percentage_id";
     public static final String ADMISSION_PERCENTAGES_DATA_FINISHED_ASSIGNMENTS = "finished_assignments";
     public static final String ADMISSION_PERCENTAGES_DATA_AVAILABLE_ASSIGNMENTS = "available_assignments";
+
+    public static final String LAST_VIEWED_TIMESTAMP = "timestamp";
+    public static final String LAST_VIEWED_SUBJECT_POSITION = "subject_id";
+    public static final String LAST_VIEWED_PERCENTAGE_META_POSITION = "meta_id";
+
+
     public static final int DATABASE_VERSION = 13;//switched to db v13 in commit 22.10.15 13:49
 
     //begin new database system
     private static final String CREATE_TABLE_SUBJECTS = "create table " + TABLE_NAME_SUBJECTS + "( " +
             SUBJECTS_ID + " integer primary key AUTOINCREMENT," + //autoincrement for more clearly defined behaviour
             SUBJECTS_NAME + " text not null UNIQUE);";
+
     private static final String CREATE_TABLE_ADMISSION_COUNTERS = "create table " + TABLE_NAME_ADMISSION_COUNTERS + "( " +
             ADMISSION_COUNTER_ID + " integer primary key," +
             ADMISSION_COUNTER_SUBJECT_ID + " integer, " +
@@ -100,6 +111,16 @@ public class DatabaseCreator extends SQLiteOpenHelper {
             ADMISSION_PERCENTAGES_META_TARGET_PERCENTAGE + " integer not null," +
             "FOREIGN KEY (" + ADMISSION_PERCENTAGES_META_SUBJECT_ID + ") REFERENCES " + TABLE_NAME_SUBJECTS + "(" + SUBJECTS_ID + ")" +
             ");";
+
+    private static final String CREATE_TABLE_LAST_VIEWED = "CREATE TABLE " + TABLE_NAME_LAST_VIEWED + "("+
+            LAST_VIEWED_PERCENTAGE_META_POSITION + " INTEGER, " +
+            LAST_VIEWED_SUBJECT_POSITION + " INTEGER, " +
+            LAST_VIEWED_TIMESTAMP + " DATETIME DEFAULT CURRENT_TIMESTAMP" +
+            "PRIMARY KEY(" + LAST_VIEWED_PERCENTAGE_META_POSITION + ", " + LAST_VIEWED_SUBJECT_POSITION + ")" +
+            "FOREIGN KEY (" + LAST_VIEWED_SUBJECT_POSITION + ") REFERENCES " + TABLE_NAME_SUBJECTS + "(" + SUBJECTS_ID + ") ON DELETE CASCADE" +
+            "FOREIGN KEY (" + LAST_VIEWED_PERCENTAGE_META_POSITION + ") REFERENCES " + TABLE_NAME_ADMISSION_PERCENTAGES_META + "(" + ADMISSION_PERCENTAGES_META_ID + ") ON DELETE CASCADE" +
+            ");";
+
     private static DatabaseCreator mSingletonInstance = null;
 
     private DatabaseCreator(Context context) {
@@ -117,6 +138,7 @@ public class DatabaseCreator extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase database) {
         //new system
         database.execSQL(CREATE_TABLE_SUBJECTS);
+        database.execSQL(CREATE_TABLE_LAST_VIEWED);
         database.execSQL(CREATE_TABLE_ADMISSION_COUNTERS);
         database.execSQL(CREATE_TABLE_ADMISSION_PERCENTAGES_META);
         database.execSQL(CREATE_TABLE_ADMISSION_PERCENTAGES_DATA);
@@ -133,6 +155,7 @@ public class DatabaseCreator extends SQLiteOpenHelper {
                 Log.w(DatabaseCreator.class.getName(), "creating new databases for multiple counters, percentages, new subject db");
             database.execSQL(CREATE_TABLE_SUBJECTS);
             database.execSQL(CREATE_TABLE_ADMISSION_COUNTERS);
+            database.execSQL(CREATE_TABLE_LAST_VIEWED);
             database.execSQL(CREATE_TABLE_ADMISSION_PERCENTAGES_META);
             database.execSQL(CREATE_TABLE_ADMISSION_PERCENTAGES_DATA);
 
@@ -171,6 +194,7 @@ public class DatabaseCreator extends SQLiteOpenHelper {
     }
 
     public void reset() {
+        getWritableDatabase().execSQL("DROP TABLE " + TABLE_NAME_LAST_VIEWED);
         getWritableDatabase().execSQL("DROP TABLE " + TABLE_NAME_SUBJECTS);
         getWritableDatabase().execSQL("DROP TABLE " + TABLE_NAME_ADMISSION_PERCENTAGES_META);
         getWritableDatabase().execSQL("DROP TABLE " + TABLE_NAME_ADMISSION_PERCENTAGES_DATA);

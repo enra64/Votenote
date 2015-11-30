@@ -151,7 +151,7 @@ public class LessonDialogFragment extends DialogFragment implements DialogInterf
                 .setTitle(getTitle())
                 .setPositiveButton("OK", this)
                 .setNegativeButton(R.string.dialog_button_abort, null);
-        if(mIsNewLesson)
+        if(mIsOldLesson)
             b.setNeutralButton(R.string.delete_button_text, this);
         return b.create();
     }
@@ -168,8 +168,7 @@ public class LessonDialogFragment extends DialogFragment implements DialogInterf
         applyPickerListeners();
 
         //set the current values of the pickers as explanation text
-        mInfoView.setText(mFinishedAssignmentsPicker.getValue() + " " + getActivity().getString(R.string.main_dialog_lesson_von)
-                + " " + mAvailableAssignmentsPicker.getValue() + " " + getActivity().getString(R.string.main_dialog_lesson_votes));
+        mInfoView.setText(getString(R.string.lesson_dialog_fragment_picker_info_text, mFinishedAssignmentsPicker.getValue(), mAvailableAssignmentsPicker.getValue()));
 
         mInfoView.setTextColor(Color.argb(255, 153, 204, 0));//green
     }
@@ -226,8 +225,7 @@ public class LessonDialogFragment extends DialogFragment implements DialogInterf
                     if (myVoteValue > maxVoteValue)
                         mAvailableAssignmentsPicker.setValue(myVoteValue);
                     //update info text
-                    mInfoView.setText(mFinishedAssignmentsPicker.getValue() + " " + getActivity().getString(R.string.main_dialog_lesson_von)
-                            + " " + mAvailableAssignmentsPicker.getValue() + " " + getActivity().getString(R.string.main_dialog_lesson_votes));
+                    mInfoView.setText(getString(R.string.lesson_dialog_fragment_picker_info_text, mFinishedAssignmentsPicker.getValue(), mAvailableAssignmentsPicker.getValue()));
                 }
             });
             mAvailableAssignmentsPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
@@ -239,8 +237,7 @@ public class LessonDialogFragment extends DialogFragment implements DialogInterf
                     if (myVoteValue > maxVoteValue)
                         mFinishedAssignmentsPicker.setValue(maxVoteValue);
                     //update info text
-                    mInfoView.setText(mFinishedAssignmentsPicker.getValue() + " " + getActivity().getString(R.string.main_dialog_lesson_von)
-                            + " " + mAvailableAssignmentsPicker.getValue() + " " + getActivity().getString(R.string.main_dialog_lesson_votes));
+                    mInfoView.setText(getString(R.string.lesson_dialog_fragment_picker_info_text, mFinishedAssignmentsPicker.getValue(), mAvailableAssignmentsPicker.getValue()));
                 }
             });
         }
@@ -253,8 +250,7 @@ public class LessonDialogFragment extends DialogFragment implements DialogInterf
                     //load new values
                     int myVoteValue = mFinishedAssignmentsPicker.getValue();
                     int maxVoteValue = mAvailableAssignmentsPicker.getValue();
-                    mInfoView.setText(myVoteValue + " " + getActivity().getString(R.string.main_dialog_lesson_von)
-                            + " " + maxVoteValue + " " + getActivity().getString(R.string.main_dialog_lesson_votes));
+                    mInfoView.setText(getString(R.string.lesson_dialog_fragment_picker_info_text, mFinishedAssignmentsPicker.getValue(), mAvailableAssignmentsPicker.getValue()));
                     boolean isValid = myVoteValue <= maxVoteValue;
                     ((AlertDialog)getDialog()).getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(isValid);
                     mInfoView.setTextColor(isValid ?

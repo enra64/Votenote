@@ -49,7 +49,7 @@ public class DBAdmissionPercentageData extends CrudDb<AdmissionPercentageData> {
     public static DBAdmissionPercentageData setupInstance(Context context) {
         if (mInstance == null)
             mInstance = new DBAdmissionPercentageData(context, DatabaseCreator.TABLE_NAME_ADMISSION_PERCENTAGES_DATA);
-        return (DBAdmissionPercentageData) mInstance;
+        return mInstance;
     }
 
     /**
