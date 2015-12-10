@@ -62,8 +62,8 @@
     <string name="past_lessons">Past lessons:</string>
     <string name="remaining_needed_assignments">Remaining required exercises:</string>
     <string name="voted_assignments">Voted assignments:</string>
-    <string name="pref_xml_import">Import XML backup</string>
-    <string name="pref_xml_export">Export XML backup</string>
+    <string name="pref_xml_import">Import backup</string>
+    <string name="pref_xml_export">Export backup</string>
     <string name="pref_lesson_sort_title">Lesson order</string>
     <string name="pref_lesson_sort">Show the most recent lesson first</string>
     <string name="pref_drawer_start_title">Drawer start</string>
@@ -114,4 +114,7 @@
     <string name="subject_manager_dialog_subject_name">Subject name</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_subject_creation">Subject Creation</string>
+    <string name="admission_counter_change_dialog_title">Change %1$s</string>
+    <string name="pref_summary_save_last_selected_meta_pos">Save the last selected percentage counter. The last selected subject is always saved</string>
+    <string name="pref_title_save_last_selected_meta_pos">Save last selected Positions</string>
 </resources>

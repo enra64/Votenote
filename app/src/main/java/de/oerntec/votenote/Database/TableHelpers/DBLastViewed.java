@@ -18,6 +18,7 @@ public class DBLastViewed {
     private DBLastViewed(Context context){
         DatabaseCreator dbHelper = DatabaseCreator.getInstance(context);
         mDatabase = dbHelper.getWritableDatabase();
+        dbHelper.createLastViewed(mDatabase);
     }
 
     public static DBLastViewed setupInstance(Context context) {
@@ -69,10 +70,10 @@ public class DBLastViewed {
     }
 
     private void updateMetaId(int subjectPosition, int apMetaPosition){
-        ContentValues v = new ContentValues();
-        v.put(DatabaseCreator.LAST_VIEWED_PERCENTAGE_META_POSITION, apMetaPosition);
+        ContentValues values = new ContentValues();
+        values.put(DatabaseCreator.LAST_VIEWED_PERCENTAGE_META_POSITION, apMetaPosition);
         mDatabase.update(DatabaseCreator.TABLE_NAME_LAST_VIEWED,
-                v,
+                values,
                 DatabaseCreator.LAST_VIEWED_SUBJECT_POSITION + "=?",
                 new String[] {String.valueOf(subjectPosition)}
         );

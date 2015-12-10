@@ -112,12 +112,12 @@ public class DatabaseCreator extends SQLiteOpenHelper {
             "FOREIGN KEY (" + ADMISSION_PERCENTAGES_META_SUBJECT_ID + ") REFERENCES " + TABLE_NAME_SUBJECTS + "(" + SUBJECTS_ID + ") ON DELETE CASCADE" +
             ");";
 
-    private static final String CREATE_TABLE_LAST_VIEWED = "CREATE TABLE " + TABLE_NAME_LAST_VIEWED + "("+
+    private static final String CREATE_TABLE_LAST_VIEWED = "CREATE TABLE IF NOT EXISTS " + TABLE_NAME_LAST_VIEWED + "(" +
             LAST_VIEWED_PERCENTAGE_META_POSITION + " INTEGER, " +
             LAST_VIEWED_SUBJECT_POSITION + " INTEGER, " +
-            LAST_VIEWED_TIMESTAMP + " DATETIME DEFAULT CURRENT_TIMESTAMP" +
-            "PRIMARY KEY(" + LAST_VIEWED_PERCENTAGE_META_POSITION + ", " + LAST_VIEWED_SUBJECT_POSITION + ")" +
-            "FOREIGN KEY (" + LAST_VIEWED_SUBJECT_POSITION + ") REFERENCES " + TABLE_NAME_SUBJECTS + "(" + SUBJECTS_ID + ") ON DELETE CASCADE" +
+            LAST_VIEWED_TIMESTAMP + " DATETIME DEFAULT CURRENT_TIMESTAMP, " +
+            "PRIMARY KEY(" + LAST_VIEWED_PERCENTAGE_META_POSITION + ", " + LAST_VIEWED_SUBJECT_POSITION + "), " +
+            "FOREIGN KEY (" + LAST_VIEWED_SUBJECT_POSITION + ") REFERENCES " + TABLE_NAME_SUBJECTS + "(" + SUBJECTS_ID + ") ON DELETE CASCADE, " +
             "FOREIGN KEY (" + LAST_VIEWED_PERCENTAGE_META_POSITION + ") REFERENCES " + TABLE_NAME_ADMISSION_PERCENTAGES_META + "(" + ADMISSION_PERCENTAGES_META_ID + ") ON DELETE CASCADE" +
             ");";
 
@@ -131,6 +131,38 @@ public class DatabaseCreator extends SQLiteOpenHelper {
         if (mSingletonInstance == null)
             mSingletonInstance = new DatabaseCreator(context);
         return mSingletonInstance;
+    }
+
+    /**
+     * Creates the specified <code>toFile</code> as a byte for byte copy of the
+     * <code>fromFile</code>. If <code>toFile</code> already exists, then it
+     * will be replaced with a copy of <code>fromFile</code>. The name and path
+     * of <code>toFile</code> will be that of <code>toFile</code>.<br/>
+     * <br/>
+     * <i> Note: <code>fromFile</code> and <code>toFile</code> will be closed by
+     * this function.</i>
+     *
+     * @param fromFile - FileInputStream for the file to copy from.
+     * @param toFile   - FileInputStream for the file to copy to.
+     */
+    public static void copyFile(FileInputStream fromFile, FileOutputStream toFile) throws IOException {
+        FileChannel fromChannel = null;
+        FileChannel toChannel = null;
+        try {
+            fromChannel = fromFile.getChannel();
+            toChannel = toFile.getChannel();
+            fromChannel.transferTo(0, fromChannel.size(), toChannel);
+        } finally {
+            try {
+                if (fromChannel != null) {
+                    fromChannel.close();
+                }
+            } finally {
+                if (toChannel != null) {
+                    toChannel.close();
+                }
+            }
+        }
     }
 
     // Method is called during creation of the database
@@ -161,6 +193,15 @@ public class DatabaseCreator extends SQLiteOpenHelper {
 
             transferFrom12To13(database);
         }
+    }
+
+    /**
+     * this method exists because i imported an old database file without this table during development.
+     * it is unnecessary during deployment
+     * @param db
+     */
+    public void createLastViewed(SQLiteDatabase db) {
+        db.execSQL(CREATE_TABLE_LAST_VIEWED);
     }
 
     public void transferFrom12To13(SQLiteDatabase database){
@@ -221,6 +262,8 @@ public class DatabaseCreator extends SQLiteOpenHelper {
             throw new FileNotFoundException("could not find source file");
     }
 
+    //http://stackoverflow.com/a/6542214
+
     public boolean exportDatabase(String dbPath) throws IOException {
         String path = getReadableDatabase().getPath();
         File source = new File(path);
@@ -231,45 +274,7 @@ public class DatabaseCreator extends SQLiteOpenHelper {
             // it as created.
             getWritableDatabase();
             return true;
-        }
-        else
+        } else
             throw new FileNotFoundException("could not find source file");
     }
-
-    //http://stackoverflow.com/a/6542214
-    /**
-     * Creates the specified <code>toFile</code> as a byte for byte copy of the
-     * <code>fromFile</code>. If <code>toFile</code> already exists, then it
-     * will be replaced with a copy of <code>fromFile</code>. The name and path
-     * of <code>toFile</code> will be that of <code>toFile</code>.<br/>
-     * <br/>
-     * <i> Note: <code>fromFile</code> and <code>toFile</code> will be closed by
-     * this function.</i>
-     *
-     * @param fromFile
-     *            - FileInputStream for the file to copy from.
-     * @param toFile
-     *            - FileInputStream for the file to copy to.
-     */
-    public static void copyFile(FileInputStream fromFile, FileOutputStream toFile) throws IOException {
-        FileChannel fromChannel = null;
-        FileChannel toChannel = null;
-        try {
-            fromChannel = fromFile.getChannel();
-            toChannel = toFile.getChannel();
-            fromChannel.transferTo(0, fromChannel.size(), toChannel);
-        } finally {
-            try {
-                if (fromChannel != null) {
-                    fromChannel.close();
-                }
-            } finally {
-                if (toChannel != null) {
-                    toChannel.close();
-                }
-            }
-        }
-    }
-
-
 }

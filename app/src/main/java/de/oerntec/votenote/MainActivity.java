@@ -334,9 +334,13 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         super.onPause();
         //save where the user left
         if (mCurrentSelectedSubjectId != -1) {
-            int metaId = getCurrentAdmissionPercentageFragment().getAdmissionPercentageMetaId();
-            if (ENABLE_DEBUG_LOG_CALLS)
-                Log.i("last selected", "sid:" + mCurrentSelectedPosition + "apmid:"+metaId);
+            AdmissionPercentageFragment currentAdmissionPercentageFragment = getCurrentAdmissionPercentageFragment();
+            if (currentAdmissionPercentageFragment != null) {
+                int metaId = currentAdmissionPercentageFragment.getAdmissionPercentageMetaId();
+                mLastViewedDb.saveSelection(mCurrentSelectedPosition, metaId);
+                if (ENABLE_DEBUG_LOG_CALLS)
+                    Log.i("main", "saved last selected subject pos " + mCurrentSelectedPosition + " meta pos " + metaId);
+            }
         }
     }
 
@@ -456,12 +460,14 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         PreferenceManager.getDefaultSharedPreferences(this).edit().putBoolean(key, val).apply();
     }
 
-    private SubjectFragment getCurrentLessonFragment(){
+    private SubjectFragment getCurrentSubjectFragment() {
         return (SubjectFragment) getFragmentManager().findFragmentById(R.id.container);
     }
     
     public AdmissionPercentageFragment getCurrentAdmissionPercentageFragment() {
-        return getCurrentLessonFragment().getCurrentFragment();
+        SubjectFragment currentSubjectFragment = getCurrentSubjectFragment();
+        if (currentSubjectFragment == null) return null;
+        return currentSubjectFragment.getCurrentFragment();
     }
 
     @Override
