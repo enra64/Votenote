@@ -264,6 +264,10 @@ public class DatabaseCreator extends SQLiteOpenHelper {
 
     //http://stackoverflow.com/a/6542214
 
+    public File getDbFile() {
+        return new File(getReadableDatabase().getPath());
+    }
+
     public boolean exportDatabase(String dbPath) throws IOException {
         String path = getReadableDatabase().getPath();
         File source = new File(path);

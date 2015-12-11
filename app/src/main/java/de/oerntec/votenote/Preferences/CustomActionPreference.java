@@ -18,11 +18,15 @@
 package de.oerntec.votenote.Preferences;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.preference.Preference;
+import android.support.v4.content.FileProvider;
 import android.util.AttributeSet;
 
-import de.oerntec.votenote.ImportExport.CsvExporter;
+import de.oerntec.votenote.Database.DatabaseCreator;
 import de.oerntec.votenote.ImportExport.BackupHelper;
+import de.oerntec.votenote.ImportExport.CsvExporter;
 import de.oerntec.votenote.ImportExport.XmlImporter;
 
 public class CustomActionPreference extends Preference {
@@ -40,7 +44,17 @@ public class CustomActionPreference extends Preference {
                 CsvExporter.exportDialog(getContext());
                 break;
             case "backup_export":
-                BackupHelper.exportDialog(getContext());
+                //BackupHelper.exportDialog(getContext());
+                final String auth = "de.oerntec.votenote.export_provider";
+                final Uri uri = FileProvider.getUriForFile(getContext(), auth, DatabaseCreator.getInstance(getContext()).getDbFile());
+                final String type = getContext().getContentResolver().getType(uri);
+
+                final Intent shareIntent = new Intent(Intent.ACTION_SEND);
+                shareIntent.setDataAndType(uri, type);
+                shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
+                shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                final Intent chooser = Intent.createChooser(shareIntent, "Export to");
+                getContext().startActivity(chooser);
                 break;
             case "backup_import":
                 BackupHelper.importDialog(getContext());

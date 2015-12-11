@@ -74,12 +74,24 @@
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <TextView
+        android:id="@+id/fileExport"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/textView5"
+        android:autoLink="web"
+        android:linksClickable="true"
+        android:text="Backup sharing:\nhttp://stackoverflow.com/a/20819742"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <TextView
         android:id="@+id/textView6"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/textView5"
         android:layout_alignStart="@+id/textView5"
-        android:layout_below="@+id/textView5"
+        android:layout_below="@+id/fileExport"
         android:layout_marginTop="7dp"
         android:text="GitHub"
         android:textAppearance="?android:attr/textAppearanceLarge" />
