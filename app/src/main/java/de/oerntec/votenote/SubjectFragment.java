@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -117,7 +118,10 @@ public class SubjectFragment extends Fragment {
         if (percentages.size() > 0) {
             if(subjectPosition >= 0 && mSaveLastMetaId){
                 int lastSelectedMetaPosition = DBLastViewed.getInstance().getLastSelectedAdmissionCounterForSubjectPosition(subjectPosition);
-                mViewPager.setCurrentItem(lastSelectedMetaPosition, true);
+                if(lastSelectedMetaPosition > 0 && lastSelectedMetaPosition < mAdmissionPercentageAdapter.getCount())
+                    mViewPager.setCurrentItem(lastSelectedMetaPosition, true);
+                else if(MainActivity.ENABLE_DEBUG_LOG_CALLS)
+                    Log.i("subject fragment", "invalid meta position");
             }
             else
                 mViewPager.setCurrentItem(0);

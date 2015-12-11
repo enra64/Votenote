@@ -318,8 +318,6 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
 
         mCurrentFragmentHasPrespoints = DBAdmissionCounters.getInstance().getItemsForSubject(mCurrentSelectedSubjectId).size() > 0;
 
-        mLastViewedDb.saveSelection(position, -1);
-
         // update the menu_main content by replacing fragments
         if (ENABLE_DEBUG_LOG_CALLS)
             Log.i("votenote main", "selected fragment " + position);
@@ -334,13 +332,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         super.onPause();
         //save where the user left
         if (mCurrentSelectedSubjectId != -1) {
-            AdmissionPercentageFragment currentAdmissionPercentageFragment = getCurrentAdmissionPercentageFragment();
-            if (currentAdmissionPercentageFragment != null) {
-                int metaId = currentAdmissionPercentageFragment.getAdmissionPercentageMetaId();
-                mLastViewedDb.saveSelection(mCurrentSelectedPosition, metaId);
-                if (ENABLE_DEBUG_LOG_CALLS)
-                    Log.i("main", "saved last selected subject pos " + mCurrentSelectedPosition + " meta pos " + metaId);
-            }
+
         }
     }
 
