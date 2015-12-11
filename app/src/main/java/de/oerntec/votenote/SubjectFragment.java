@@ -118,7 +118,7 @@ public class SubjectFragment extends Fragment {
         if (percentages.size() > 0) {
             if(subjectPosition >= 0 && mSaveLastMetaId){
                 int lastSelectedMetaPosition = DBLastViewed.getInstance().getLastSelectedAdmissionCounterForSubjectPosition(subjectPosition);
-                if(lastSelectedMetaPosition > 0 && lastSelectedMetaPosition < mAdmissionPercentageAdapter.getCount())
+                if(lastSelectedMetaPosition >= 0 && lastSelectedMetaPosition < mAdmissionPercentageAdapter.getCount())
                     mViewPager.setCurrentItem(lastSelectedMetaPosition, true);
                 else if(MainActivity.ENABLE_DEBUG_LOG_CALLS)
                     Log.i("subject fragment", "invalid meta position");

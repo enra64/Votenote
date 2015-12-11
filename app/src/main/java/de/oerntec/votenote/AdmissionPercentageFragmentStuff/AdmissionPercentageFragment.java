@@ -265,6 +265,6 @@ public class AdmissionPercentageFragment extends Fragment implements SwipeDeleti
 
     @Override
     public String toString() {
-        return "apc fragment id " + mPercentageMetaId + " name " + mMetaObject.getDisplayName();
+        return "";//"apc fragment id " + mPercentageMetaId + " name " + mMetaObject.getDisplayName();
     }
 }
