@@ -23,6 +23,9 @@ import android.net.Uri;
 import android.preference.Preference;
 import android.support.v4.content.FileProvider;
 import android.util.AttributeSet;
+import android.util.Log;
+
+import java.io.File;
 
 import de.oerntec.votenote.Database.DatabaseCreator;
 import de.oerntec.votenote.ImportExport.BackupHelper;
@@ -43,10 +46,12 @@ public class CustomActionPreference extends Preference {
             case "csv_export":
                 CsvExporter.exportDialog(getContext());
                 break;
-            case "backup_export":
-                //BackupHelper.exportDialog(getContext());
-                final String auth = "de.oerntec.votenote.export_provider";
-                final Uri uri = FileProvider.getUriForFile(getContext(), auth, DatabaseCreator.getInstance(getContext()).getDbFile());
+            case "backup_share":
+                final String authority = "de.oerntec.votenote.export_provider";
+                final File dbFile = DatabaseCreator.getInstance(getContext()).getDbFileBackup(getContext());
+                if(dbFile == null || !dbFile.exists())
+                    throw new AssertionError("db not found");
+                final Uri uri = FileProvider.getUriForFile(getContext(), authority, dbFile);
                 final String type = getContext().getContentResolver().getType(uri);
 
                 final Intent shareIntent = new Intent(Intent.ACTION_SEND);
@@ -55,6 +60,9 @@ public class CustomActionPreference extends Preference {
                 shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 final Intent chooser = Intent.createChooser(shareIntent, "Export to");
                 getContext().startActivity(chooser);
+                break;
+            case "backup_export":
+                BackupHelper.exportDialog(getContext());
                 break;
             case "backup_import":
                 BackupHelper.importDialog(getContext());

@@ -81,7 +81,8 @@ public class MainDialogHelper {
         final NumberPicker presPointPicker = (NumberPicker) inputView.findViewById(R.id.mainfragment_dialog_prespoints_picker);
 
         presPointPicker.setMinValue(0);
-        presPointPicker.setMaxValue(item.targetValue);
+        int maxValue = item.targetValue < 8 ? 8 : item.targetValue + 3;
+        presPointPicker.setMaxValue(maxValue);
         presPointPicker.setValue(item.currentValue);
 
 

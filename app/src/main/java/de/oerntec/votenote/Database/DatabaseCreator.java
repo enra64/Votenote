@@ -20,6 +20,8 @@ package de.oerntec.votenote.Database;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.os.Environment;
+import android.text.format.Time;
 import android.util.Log;
 
 import java.io.File;
@@ -247,10 +249,10 @@ public class DatabaseCreator extends SQLiteOpenHelper {
      * Copies the database file at the specified location over the current
      * internal application database.
      * */
-    public boolean importDatabase(String dbPath) throws IOException {
-        String path = getReadableDatabase().getPath();
-        File source = new File(dbPath);
-        File target = new File(path);
+    public boolean importDatabase(String externalDbPath) throws IOException {
+        String targetPath = getReadableDatabase().getPath();
+        File source = new File(externalDbPath);
+        File target = new File(targetPath);
         if (source.exists()) {
             copyFile(new FileInputStream(source), new FileOutputStream(target));
             // Access the copied database so SQLiteHelper will cache it and mark
@@ -264,18 +266,31 @@ public class DatabaseCreator extends SQLiteOpenHelper {
 
     //http://stackoverflow.com/a/6542214
 
-    public File getDbFile() {
-        return new File(getReadableDatabase().getPath());
+    public File getDbFileBackup(Context context) {
+        File source = new File(getReadableDatabase().getPath());
+        File targetDirectory = new File(context.getFilesDir().getPath() + "/rodb");
+        targetDirectory.mkdirs();
+        Time timeStamp = new Time();
+        timeStamp.setToNow();
+        String name = "Votenote Backup " + timeStamp.format("%Y_%m_%d_%H_%M_%S") + ".db";
+        File targetFile = new File(targetDirectory.getPath() + "/" + name);
+        try {
+            copyFile(new FileInputStream(source), new FileOutputStream(targetFile));
+        } catch (IOException e) {
+            e.printStackTrace();
+
+        }
+        if(!targetFile.isFile())
+            throw new AssertionError("wat (db bkp file no file)");
+        return targetFile;
     }
 
-    public boolean exportDatabase(String dbPath) throws IOException {
+    public boolean exportDatabase(String externalDbPath) throws IOException {
         String path = getReadableDatabase().getPath();
         File source = new File(path);
-        File target = new File(dbPath);
+        File target = new File(externalDbPath);
         if (source.exists()) {
             copyFile(new FileInputStream(source), new FileOutputStream(target));
-            // Access the copied database so SQLiteHelper will cache it and mark
-            // it as created.
             getWritableDatabase();
             return true;
         } else

@@ -56,14 +56,21 @@
             android:key="csv_export"
             android:title="@string/pref_csv_export" />
         <de.oerntec.votenote.Preferences.CustomActionPreference
+            android:key="backup_share"
+            android:title="Backup teilen"
+            android:summary="Zeigt Apps an, die das Backup verarbeiten"/>
+        <de.oerntec.votenote.Preferences.CustomActionPreference
             android:key="backup_export"
-            android:title="Backup erstellen" />
+            android:title="Backup erstellen"
+            android:summary="Speichert ein Backup auf der SD-Karte"/>
         <de.oerntec.votenote.Preferences.CustomActionPreference
             android:key="backup_import"
-            android:title="Backup importieren" />
+            android:title="Backup importieren"
+            android:summary="Lädt ein Backup von der SD-Karte"/>
         <de.oerntec.votenote.Preferences.CustomActionPreference
             android:key="xml_import"
-            android:title="Altes XML-Backup importieren" />
+            android:title="XML-Backup importieren"
+            android:summary="Backup von Votenote (Version 1.3.1 oder älter) von der SD-Karte importieren" />
 
     </PreferenceCategory>
 
