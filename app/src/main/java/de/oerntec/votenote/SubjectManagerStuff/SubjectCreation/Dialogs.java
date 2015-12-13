@@ -29,10 +29,11 @@ public class Dialogs {
         builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                callback.deleteAdmissionCounter(inCounter);
+                callback.deleteAdmissionCounter(inCounter.id);
             }
         });
         builder.setNegativeButton("Abort", null);
+        builder.show();
     }
 
     public static void showPercentageDeleteDialog(final AdmissionPercentageMeta inItem, Activity activity, final SubjectCreationActivityFragment callback) {
@@ -44,9 +45,10 @@ public class Dialogs {
         builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                callback.deleteAdmissionPercentage(inItem);
+                callback.deleteAdmissionPercentage(inItem.id);
             }
         });
         builder.setNegativeButton("Abort", null);
+        builder.show();
     }
 }

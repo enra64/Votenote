@@ -33,6 +33,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -41,7 +42,9 @@ import de.oerntec.votenote.CardListHelpers.OnItemClickListener;
 import de.oerntec.votenote.CardListHelpers.RecyclerItemClickListener;
 import de.oerntec.votenote.CardListHelpers.SwipeDeletion;
 import de.oerntec.votenote.Database.Pojo.Subject;
+import de.oerntec.votenote.Database.TableHelpers.DBSubjects;
 import de.oerntec.votenote.ImportExport.BackupHelper;
+import de.oerntec.votenote.MainActivity;
 import de.oerntec.votenote.R;
 import de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.SubjectCreationActivity;
 import de.oerntec.votenote.TranslationHelper;
@@ -76,22 +79,14 @@ public class SubjectManagementActivity extends AppCompatActivity implements Swip
     /**
      * handler for deleting lessons of subject
      */
-    Handler deletionHandler;
+    private Handler deletionHandler;
 
     /**
      * runnable created for deleting lessons of subject
      */
-    Runnable deletionRunnable;
+    private Runnable deletionRunnable;
 
-    /**
-     * save the deleted subject in showUndoBar to enable restoring it
-     */
-    private Subject undoBarSubject;
-
-    /**
-     * save the id of the deleted subject in showUndoBar to enable restoring it
-     */
-    private int undoBarSubjectPosition;
+    private String mLastDeletionSavepointId = null;
 
     /**
      * recyclerview holding all subjects
@@ -181,6 +176,13 @@ public class SubjectManagementActivity extends AppCompatActivity implements Swip
         });
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        //accept the deletion to release the savepoint if the undobar is ignored
+        acceptDeletion();
+    }
+
     private void showSubjectCreator(int subjectId) {
         showSubjectCreator(subjectId, -1);
     }
@@ -200,14 +202,16 @@ public class SubjectManagementActivity extends AppCompatActivity implements Swip
             super.onActivityResult(requestCode, resultCode, data);
             return;
         }
-
         if (resultCode == SUBJECT_CREATOR_RESULT_CHANGED) {
             int recyclerViewPosition = data.getIntExtra(SubjectCreationActivity.ARG_CREATOR_VIEW_POSITION, 0);
             //notify which item has changed
             mSubjectAdapter.notifyOfChangedSubject(recyclerViewPosition);
         } else if (resultCode == SUBJECT_CREATOR_RESULT_NEW) {
             //i have no idea where it was inserted, so fuck it, i'm recreating the adapter
-            reloadAdapter();
+            //reloadAdapter();
+            mSubjectAdapter.notifySubjectAdded();
+            if(MainActivity.ENABLE_DEBUG_LOG_CALLS)
+                Log.i("sma", "reloaded adapter to show new subject");
         } else if (resultCode == SUBJECT_CREATOR_RESULT_DELETE) {
             int recyclerViewPosition = data.getIntExtra(SubjectCreationActivity.ARG_CREATOR_VIEW_POSITION, 0);
             SwipeDeletion.executeProgrammaticSwipeDeletion(this, this, mSubjectList.getLayoutManager().getChildAt(recyclerViewPosition), recyclerViewPosition);
@@ -218,14 +222,11 @@ public class SubjectManagementActivity extends AppCompatActivity implements Swip
      * delete the subject, get a backup, show a undobar, and enable restoring the subject by tapping undo
      */
     public void showUndoSnackBar(final int subjectId, final int position) {
-        //delete subject, get backup
-        undoBarSubject = mSubjectAdapter.removeSubject(subjectId, position);
-        //save the old position
-        undoBarSubjectPosition = position;
-        //TODO: less fucked up way to save the positions in the recyclerview; currently done via 2 class variables :/
+        mLastDeletionSavepointId = "SP_REM_SUB_ID_" + subjectId;
+        DBSubjects.getInstance().createSavepoint(mLastDeletionSavepointId);
+        mSubjectAdapter.removeSubject(subjectId, position);
         //make snackbar
-        Snackbar
-                .make(findViewById(R.id.subject_manager_coordinator_layout), getString(R.string.undobar_deleted), Snackbar.LENGTH_LONG)
+        Snackbar.make(findViewById(R.id.subject_manager_coordinator_layout), getString(R.string.undobar_deleted), Snackbar.LENGTH_LONG)
                 .setAction("UNDO", new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -238,21 +239,27 @@ public class SubjectManagementActivity extends AppCompatActivity implements Swip
         deletionRunnable = new Runnable() {
             @Override
             public void run() {
-                //DBLessons.getInstance().deleteAllEntriesForGroup(subjectId);
-                //TODO: use on delete cascade for this, release savepoint here, abort in onUndo
+                acceptDeletion();
             }
         };
         deletionHandler.postDelayed(deletionRunnable, 3000);
     }
 
-    //dont do anything, as we only delete the lesson when the undo bar gets hidden
+    private void acceptDeletion(){
+        if(mLastDeletionSavepointId != null)
+            DBSubjects.getInstance().releaseSavepoint(mLastDeletionSavepointId);
+        mLastDeletionSavepointId = null;
+    }
+
     private void onUndo() {
-        if (undoBarSubject != null)
-            mSubjectAdapter.addSubject(undoBarSubject, undoBarSubjectPosition);
+        if(mLastDeletionSavepointId != null)
+            DBSubjects.getInstance().rollbackToSavepoint(mLastDeletionSavepointId);
+        else
+            throw new AssertionError("could not rollback subject deletion!");
         if (deletionHandler != null)
             deletionHandler.removeCallbacks(deletionRunnable);
-        undoBarSubject = null;
-        undoBarSubjectPosition = -1;
+        mLastDeletionSavepointId = null;
+        mSubjectAdapter.notifySubjectAdded();
     }
 
     @Override

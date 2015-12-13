@@ -9,9 +9,11 @@ import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMeta;
 public interface SubjectCreationDialogInterface {
     void admissionCounterFinished(int id, boolean isNew);
 
-    void deleteAdmissionCounter(AdmissionCounter deleted);
+    void deleteAdmissionCounter(int itemId);
 
     void admissionPercentageFinished(int id, boolean isNew);
 
-    void deleteAdmissionPercentage(AdmissionPercentageMeta deleted);
+    void deleteAdmissionPercentage(int itemId);
+
+    void dialogClosed();
 }

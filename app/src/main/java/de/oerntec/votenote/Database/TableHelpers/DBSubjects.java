@@ -43,11 +43,13 @@ public class DBSubjects extends CrudDb<Subject> {
     public static DBSubjects setupInstance(Context context) {
         if (mInstance == null)
             mInstance = new DBSubjects(context, DatabaseCreator.TABLE_NAME_SUBJECTS);
-        return (DBSubjects) mInstance;
+        return mInstance;
     }
 
     public static DBSubjects getInstance() {
-        return (DBSubjects) mInstance;
+        //if(mInstance == null)
+        //    throw new AssertionError("no instance available!");
+        return mInstance;
     }
 
     @Override
@@ -59,10 +61,6 @@ public class DBSubjects extends CrudDb<Subject> {
         addItemGetId(item, true);
     }
 
-    /**
-     * Delete the group with the given name AND the given id
-     * @return Number of affected rows.
-     */
     public void deleteItem(Subject delete) {
         if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
             Log.i("dbgroups:delete", "deleted " + delete.name + " at " + delete.id);

@@ -9,6 +9,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -18,8 +19,9 @@ import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageMeta;
 import de.oerntec.votenote.Helpers.NotEmptyWatcher;
 import de.oerntec.votenote.R;
 import de.oerntec.votenote.SubjectManagerStuff.SeekerListener;
+import de.oerntec.votenote.SubjectManagerStuff.SubjectManagementActivity;
 
-public class AdmissionPercentageFragment extends DialogFragment {
+public class AdmissionPercentageFragment extends DialogFragment implements DialogInterface.OnClickListener {
     private static final String SUBJECT_ID = "subject_id";
     private static final String ADMISSION_PERCENTAGE_ID = "ap_id";
     private static final String SUBJECT_IS_NEW = "subject_is_new";
@@ -32,11 +34,6 @@ public class AdmissionPercentageFragment extends DialogFragment {
     private EditText nameInput;
     private TextView requiredPercentageInfo, estimatedAssignmentsHelp, estimatedUebungCountHelp;
     private SeekBar requiredPercentageSeek, estimatedAssignmentsSeek, estimatedLessonCountSeek;
-
-    /**
-     * use this interface to notify the underlying fragment of an added item
-     */
-    private SubjectCreationDialogInterface mCallback;
 
     /*
     * load default values into these variables
@@ -113,38 +110,16 @@ public class AdmissionPercentageFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder b = new AlertDialog.Builder(getActivity())
-                .setView(createView(getActivity().getLayoutInflater()))
-                .setTitle("test")
-                .setPositiveButton("OK",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int whichButton) {
-                                //change the item we created at the beginning of this dialog to the actual values
-                                mDb.changeItem(new AdmissionPercentageMeta(
-                                        mAdmissionPercentageId,
-                                        mSubjectId,
-                                        estimatedAssignmentsSeek.getProgress(),
-                                        estimatedLessonCountSeek.getProgress(),
-                                        requiredPercentageSeek.getProgress(),
-                                        nameInput.getText().toString()));
-                                //commit
-                                mDb.releaseSavepoint(mSavepointId);
-                                //notify the host fragment that we changed an item
-                                SubjectCreationActivity host = (SubjectCreationActivity) getActivity();
-                                host.callCreatorFragmentForItemChange(mAdmissionPercentageId, true, mIsNew);
-                                //bail
-                                dialog.dismiss();
-                            }
-                        }
-                )
-                .setNegativeButton("Cancel",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int whichButton) {
-                                mDb.rollbackToSavepoint(mSavepointId);
-                                dialog.dismiss();
-                            }
-                        }
-                );
-        return b.create();
+            .setView(createView(getActivity().getLayoutInflater()))
+            .setTitle("totally no bug")
+            .setPositiveButton("OK", this)
+            .setNegativeButton("Cancel", this);
+        if(mIsOldPercentageCounter)
+            b.setNeutralButton("Delete", this);
+
+        AlertDialog d = b.create();
+        d.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+        return d;
     }
 
     @Override
@@ -182,10 +157,10 @@ public class AdmissionPercentageFragment extends DialogFragment {
         //display an error if the edittext is empty
         nameInput.addTextChangedListener(new NotEmptyWatcher(nameInput, ((AlertDialog) getDialog()).getButton(DialogInterface.BUTTON_POSITIVE)));
 
-        //only set the old name as text if it is not "subject name", so the user can correct his value
         if (mIsOldPercentageCounter)
             nameInput.setText(nameHint);
         else {
+            nameInput.setError("Must not be empty");
             ((AlertDialog) getDialog()).getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(false);
         }
 
@@ -215,5 +190,38 @@ public class AdmissionPercentageFragment extends DialogFragment {
         } else//if previously existing percentage counter
             title = "Change" + " " + nameHint;
         return title;
+    }
+
+    @Override
+    public void onClick(DialogInterface dialog, int which) {
+        int resultState = -1;
+        switch(which){
+            case DialogInterface.BUTTON_NEGATIVE:
+                mDb.rollbackToSavepoint(mSavepointId);
+                dialog.dismiss();
+                resultState =  SubjectCreationActivity.DIALOG_RESULT_DELETE;
+                break;
+            case DialogInterface.BUTTON_POSITIVE:
+                //change the item we created at the beginning of this dialog to the actual values
+                mDb.changeItem(new AdmissionPercentageMeta(
+                        mAdmissionPercentageId,
+                        mSubjectId,
+                        estimatedAssignmentsSeek.getProgress(),
+                        estimatedLessonCountSeek.getProgress(),
+                        requiredPercentageSeek.getProgress(),
+                        nameInput.getText().toString()));
+                //commit
+                mDb.releaseSavepoint(mSavepointId);
+                //notify the host fragment that we changed an item
+                resultState = mIsNew ? SubjectCreationActivity.DIALOG_RESULT_ADDED : SubjectCreationActivity.DIALOG_RESULT_CHANGED;
+                //bail
+                dialog.dismiss();
+                break;
+            case DialogInterface.BUTTON_NEUTRAL:
+                resultState = SubjectCreationActivity.DIALOG_RESULT_CLOSED;
+                break;
+        }
+        SubjectCreationActivity host = (SubjectCreationActivity) getActivity();
+        host.callCreatorFragmentForItemChange(-1, true, resultState);
     }
 }

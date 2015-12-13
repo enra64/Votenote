@@ -28,6 +28,7 @@ import de.oerntec.votenote.Database.PojoDatabase;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionCounters;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageMeta;
 import de.oerntec.votenote.Database.TableHelpers.DBSubjects;
+import de.oerntec.votenote.Helpers.General;
 import de.oerntec.votenote.Helpers.NotEmptyWatcher;
 import de.oerntec.votenote.R;
 import de.oerntec.votenote.SubjectManagerStuff.SubjectManagementActivity;
@@ -49,7 +50,7 @@ public class SubjectCreationActivityFragment extends Fragment implements Subject
     /**
      * DB for the subjects
      */
-    private final DBSubjects mSubjectDb = DBSubjects.getInstance();
+    private DBSubjects mSubjectDb;
 
     /**
      * Need direct database access to start/end transaction
@@ -148,6 +149,10 @@ public class SubjectCreationActivityFragment extends Fragment implements Subject
         //get a database
         DatabaseCreator dbHelper = DatabaseCreator.getInstance(getActivity().getApplicationContext());
         mDatabase = dbHelper.getWritableDatabase();
+
+        mSubjectDb = DBSubjects.getInstance();
+
+        if(mSubjectDb == null) throw new AssertionError("could not get a database instance?");
 
         //begin transaction on database to enable using commit and abort
         mDatabase.beginTransaction();
@@ -340,7 +345,10 @@ public class SubjectCreationActivityFragment extends Fragment implements Subject
         mDatabase.setTransactionSuccessful();
         mDatabase.endTransaction();
 
-        //reenable the change listeners
+        if(mSubjectHasBeenChanged)
+            setActivityResult(false);
+
+        //enable change listeners
         mOldSubjectName = newName;
         mSubjectHasBeenChanged = false;
     }
@@ -367,24 +375,32 @@ public class SubjectCreationActivityFragment extends Fragment implements Subject
     public void admissionCounterFinished(int id, boolean isNew) {
         mSubjectHasBeenChanged = true;
         mCounterAdapter.notifyOfChangeAtId(id);
+        dialogClosed();
     }
 
     @Override
-    public void deleteAdmissionCounter(AdmissionCounter delete) {
+    public void deleteAdmissionCounter(int itemId) {
         mSubjectHasBeenChanged = true;
-        mCounterAdapter.removeItem(delete.id);
+        mCounterAdapter.removeItem(itemId);
+        dialogClosed();
     }
 
     @Override
     public void admissionPercentageFinished(int id, boolean isNew) {
         mSubjectHasBeenChanged = true;
         mPercentageAdapter.notifyOfChangeAtId(id);
+        dialogClosed();
     }
 
     @Override
-    public void deleteAdmissionPercentage(AdmissionPercentageMeta delete) {
+    public void deleteAdmissionPercentage(int itemId) {
         mSubjectHasBeenChanged = true;
-        mPercentageAdapter.removeItem(delete.id);
+        mPercentageAdapter.removeItem(itemId);
+        dialogClosed();
+    }
+
+    public void dialogClosed(){
+        General.nukeKeyboard(getActivity());
     }
 
     @Override

@@ -17,6 +17,7 @@
 * */
 package de.oerntec.votenote.SubjectManagerStuff;
 
+import android.app.Activity;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -25,6 +26,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import de.oerntec.votenote.Database.Pojo.Subject;
@@ -35,27 +37,19 @@ import de.oerntec.votenote.MainActivity;
 import de.oerntec.votenote.R;
 
 public class SubjectAdapter extends RecyclerView.Adapter<SubjectAdapter.SubjectHolder> {
-    public static final int NEW_SUJBECT_CODE = -1;
-
-    private DBSubjects mSubjectDb = DBSubjects.getInstance();
+    private DBSubjects mSubjectDb;
     private Context mContext;
     private List<Subject> mData;
 
-    public SubjectAdapter(Context context) {
-        mContext = context;
+    public SubjectAdapter(Activity activity) {
+        mContext = activity;
+        mSubjectDb = DBSubjects.getInstance();
+        if(mSubjectDb == null){
+            if(MainActivity.ENABLE_DEBUG_LOG_CALLS)
+                Log.w("sub man adapter", "had to recreate dbsubjects instance??");
+            mSubjectDb = DBSubjects.setupInstance(activity.getApplicationContext());
+        }
         requery();
-    }
-
-    public int addSubject(Subject subject, int position) {
-        //add to database
-        int result = mSubjectDb.addItemGetId(subject.name);
-        subject.id = result;
-        mSubjectDb.changeItem(subject);
-        requery();
-        //the new lesson should be the first, because the cursor is desc sorted by id
-        if (result != -1)
-            notifyItemInserted(position == NEW_SUJBECT_CODE ? 0 : position);
-        return result;
     }
 
     /**
@@ -67,26 +61,36 @@ public class SubjectAdapter extends RecyclerView.Adapter<SubjectAdapter.SubjectH
         notifyItemChanged(recyclerViewPosition);
     }
 
-    /**
-     * save subject, delete, return backup
-     *
-     * @param subjectId            id in db
-     * @param recyclerViewPosition position in recyclerview
-     * @return subject backup
-     */
-    public Subject removeSubject(int subjectId, int recyclerViewPosition) {
-        Subject bkp = mSubjectDb.getItem(subjectId);
-        if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
-            Log.i("subject adapter", "attempting to remove " + subjectId + " " + bkp.name);
+    public void notifySubjectAdded(){
+        List<Subject> oldList = new ArrayList<>(mData);
+        requery();
+        List<Subject> newList = new ArrayList<>(mData);
+        //iterate over the subjects to find the first one that does not match, it must be the new one
+        int newIndex;
+        for(newIndex = 0; newIndex < oldList.size(); newIndex++)
+            if(!oldList.get(newIndex).equals(newList.get(newIndex)))
+                break;
 
+        if(newIndex > 0 || newIndex < mData.size()){
+            notifyItemInserted(newIndex);
+        }
+        else
+            throw new AssertionError("algo fail");
+    }
+
+    /**
+     * removes subject (with on delete cascade for basically everything else!)
+     */
+    public void removeSubject(int subjectId, int recyclerViewPosition) {
         notifyItemRemoved(recyclerViewPosition);
         notifyItemRangeChanged(recyclerViewPosition, getItemCount() - 1);
-        mSubjectDb.deleteItem(bkp);
+        mSubjectDb.deleteItem(mSubjectDb.getItem(subjectId));
         requery();
-        return bkp;
     }
 
     private void requery() {
+        if(mSubjectDb == null)
+            mSubjectDb = DBSubjects.getInstance();
         mData = mSubjectDb.getAllSubjects();
     }
 

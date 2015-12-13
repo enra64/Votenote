@@ -7,8 +7,14 @@ import android.support.v7.widget.Toolbar;
 
 import de.oerntec.votenote.Helpers.General;
 import de.oerntec.votenote.R;
+import de.oerntec.votenote.SubjectManagerStuff.SubjectManagementActivity;
 
 public class SubjectCreationActivity extends AppCompatActivity {
+    public static final int DIALOG_RESULT_CLOSED = 0;
+    public static final int DIALOG_RESULT_CHANGED = 1;
+    public static final int DIALOG_RESULT_ADDED = 2;
+    public static final int DIALOG_RESULT_DELETE = 3;
+
     /**
      * argument in intent bundle containing which id the fragment is for
      */
@@ -53,12 +59,30 @@ public class SubjectCreationActivity extends AppCompatActivity {
                 .replace(R.id.activity_subject_creation_fragment_container, currentSubjectFragment).commit();
     }
 
-    void callCreatorFragmentForItemChange(int itemId, boolean isPercentage, boolean isNew) {
+    void callCreatorFragmentForItemChange(int itemId, boolean isPercentage, int state) {
         SubjectCreationActivityFragment creator = (SubjectCreationActivityFragment) getFragmentManager().findFragmentById(R.id.activity_subject_creation_fragment_container);
-        if (isPercentage)
-            creator.admissionPercentageFinished(itemId, isNew);
-        else
-            creator.admissionCounterFinished(itemId, isNew);
+        switch (state){
+            case SubjectManagementActivity.SUBJECT_CREATOR_RESULT_NEW:
+                if (isPercentage)
+                    creator.admissionPercentageFinished(itemId, true);
+                else
+                    creator.admissionCounterFinished(itemId, true);
+                break;
+            case SubjectManagementActivity.SUBJECT_CREATOR_RESULT_CHANGED:
+                if (isPercentage)
+                    creator.admissionPercentageFinished(itemId, false);
+                else
+                    creator.admissionCounterFinished(itemId, false);
+                break;
+            case SubjectManagementActivity.SUBJECT_CREATOR_RESULT_DELETE:
+                if (isPercentage)
+                    creator.deleteAdmissionPercentage(itemId);
+                else
+                    creator.deleteAdmissionCounter(itemId);
+                break;
+            case DIALOG_RESULT_CLOSED:
+                creator.dialogClosed();
+        }
     }
 
     @Override

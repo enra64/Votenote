@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -17,7 +18,7 @@ import de.oerntec.votenote.Helpers.NotEmptyWatcher;
 import de.oerntec.votenote.R;
 import de.oerntec.votenote.SubjectManagerStuff.SeekerListener;
 
-public class AdmissionCounterFragment extends DialogFragment {
+public class AdmissionCounterFragment extends DialogFragment implements DialogInterface.OnClickListener {
     private static final String SUBJECT_ID = "subject_id";
     private static final String COUNTER_ID = "counter_id";
     private static final String COUNTER_IS_NEW = "subject_is_new";
@@ -87,40 +88,51 @@ public class AdmissionCounterFragment extends DialogFragment {
         AlertDialog.Builder b = new AlertDialog.Builder(getActivity())
                 .setView(createView(getActivity().getLayoutInflater()))
                 .setTitle(getTitle())
-                .setPositiveButton("OK",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int whichButton) {
-                                //default to zero points for a new counter
-                                int currentPoints = 0;
-                                if (mIsOld)
-                                    currentPoints = mDb.getItem(mSubjectId).currentValue;
-                                //change the item we created at the beginning of this dialog to the actual values
-                                mDb.changeItem(new AdmissionCounter(
-                                        mAdmissionCounterId,
-                                        mSubjectId,
-                                        mNameInput.getText().toString(),
-                                        currentPoints,
-                                        mTargetPointCountSeek.getProgress()
-                                ));
-                                //commit
-                                mDb.releaseSavepoint(mSavepointId);
-                                //notify the host fragment that we changed an item
-                                SubjectCreationActivity host = (SubjectCreationActivity) getActivity();
-                                host.callCreatorFragmentForItemChange(mAdmissionCounterId, false, mIsNew);
-                                //bail
-                                dialog.dismiss();
-                            }
-                        }
-                )
-                .setNegativeButton("Cancel",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int whichButton) {
-                                mDb.rollbackToSavepoint(mSavepointId);
-                                dialog.dismiss();
-                            }
-                        }
-                );
-        return b.create();
+                .setPositiveButton("OK", this)
+                .setNegativeButton("Cancel", this);
+        AlertDialog d = b.create();
+        if(mIsOld)
+            b.setNeutralButton("Delete", this);
+        d.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+        return d;
+    }
+
+    @Override
+    public void onClick(DialogInterface dialog, int which) {
+        int resultState = -1;
+        switch(which){
+            case DialogInterface.BUTTON_NEGATIVE:
+                mDb.rollbackToSavepoint(mSavepointId);
+                dialog.dismiss();
+                resultState =  SubjectCreationActivity.DIALOG_RESULT_DELETE;
+                break;
+            case DialogInterface.BUTTON_POSITIVE:
+                //default to zero points for a new counter
+                int currentPoints = 0;
+                if (mIsOld)
+                    currentPoints = mDb.getItem(mSubjectId).currentValue;
+                //change the item we created at the beginning of this dialog to the actual values
+                mDb.changeItem(new AdmissionCounter(
+                        mAdmissionCounterId,
+                        mSubjectId,
+                        mNameInput.getText().toString(),
+                        currentPoints,
+                        mTargetPointCountSeek.getProgress()
+                ));
+                //commit
+                mDb.releaseSavepoint(mSavepointId);
+                resultState = mIsNew ? SubjectCreationActivity.DIALOG_RESULT_ADDED : SubjectCreationActivity.DIALOG_RESULT_CHANGED;
+                //bail
+                dialog.dismiss();
+                break;
+            case DialogInterface.BUTTON_NEUTRAL:
+                resultState = SubjectCreationActivity.DIALOG_RESULT_CLOSED;
+                break;
+        }
+        SubjectCreationActivity host = (SubjectCreationActivity) getActivity();
+        if(host == null)
+            throw new AssertionError("why cant we find the host?");
+        host.callCreatorFragmentForItemChange(-1, false, resultState);
     }
 
     @Override
@@ -139,35 +151,11 @@ public class AdmissionCounterFragment extends DialogFragment {
         if (mIsOld)
             mNameInput.setText(inputCounter.counterName);
         else {
-            mNameInput.setHint("Add subject");
+            //mNameInput.setHint("Add subject");
             //since the field is empty, put an error here
             mNameInput.setError("Must not be empty");
             ((AlertDialog) getDialog()).getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(false);
         }
-    }
-
-    private AdmissionCounter save() {
-        int currentPoints;
-        //load old point state
-        if (mIsOld)
-            currentPoints = mDb.getItem(mAdmissionCounterId).currentValue;
-            //default starting point state
-        else
-            currentPoints = 0;
-
-        AdmissionCounter result = new AdmissionCounter(
-                mAdmissionCounterId,
-                mSubjectId,
-                mNameInput.getText().toString(),
-                currentPoints,
-                mTargetPointCountSeek.getProgress()
-        );
-        mDb.changeItem(result);
-        return result;
-    }
-
-    public void abort() {
-        mDb.rollbackToSavepoint(mSavepointId);
     }
 
     public String getTitle() {
