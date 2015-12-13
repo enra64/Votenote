@@ -196,7 +196,7 @@ public class AdmissionPercentageFragment extends DialogFragment implements Dialo
     public void onClick(DialogInterface dialog, int which) {
         int resultState = -1;
         switch(which){
-            case DialogInterface.BUTTON_NEGATIVE:
+            case DialogInterface.BUTTON_NEUTRAL:
                 mDb.rollbackToSavepoint(mSavepointId);
                 dialog.dismiss();
                 resultState =  SubjectCreationActivity.DIALOG_RESULT_DELETE;
@@ -217,11 +217,11 @@ public class AdmissionPercentageFragment extends DialogFragment implements Dialo
                 //bail
                 dialog.dismiss();
                 break;
-            case DialogInterface.BUTTON_NEUTRAL:
+            case DialogInterface.BUTTON_NEGATIVE:
                 resultState = SubjectCreationActivity.DIALOG_RESULT_CLOSED;
                 break;
         }
         SubjectCreationActivity host = (SubjectCreationActivity) getActivity();
-        host.callCreatorFragmentForItemChange(-1, true, resultState);
+        host.callCreatorFragmentForItemChange(mAdmissionPercentageId, true, resultState);
     }
 }

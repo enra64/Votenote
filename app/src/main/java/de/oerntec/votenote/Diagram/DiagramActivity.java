@@ -17,7 +17,6 @@
 * */
 package de.oerntec.votenote.Diagram;
 
-import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -46,9 +45,9 @@ import java.util.Random;
 import de.oerntec.votenote.Database.Pojo.AdmissionPercentageData;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageData;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageMeta;
+import de.oerntec.votenote.Helpers.General;
 import de.oerntec.votenote.MainActivity;
 import de.oerntec.votenote.R;
-import de.oerntec.votenote.TranslationHelper;
 
 
 public class DiagramActivity extends AppCompatActivity implements DiagramSubjectAdapter.AdapterListener {
@@ -62,7 +61,8 @@ public class DiagramActivity extends AppCompatActivity implements DiagramSubject
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        TranslationHelper.adjustLanguage(this);
+        General.adjustLanguage(this);
+        General.setupDatabaseInstances(getApplicationContext());
 
         setContentView(R.layout.diagramactivity);
 

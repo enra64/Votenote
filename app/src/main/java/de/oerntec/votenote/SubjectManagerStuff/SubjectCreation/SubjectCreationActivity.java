@@ -36,13 +36,13 @@ public class SubjectCreationActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_subject_creation);
 
-        //set action bar to toolbar
+        General.adjustLanguage(this);
+        General.setupDatabaseInstances(getApplicationContext());
+
         //set toolbar as support actionbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.subject_creation_activity_toolbar);
-        //if we can not get our toolbar, its rip time anyways
         setSupportActionBar(toolbar);
 
-        //are fucked anyway if this does not work, rather crash now
         //noinspection ConstantConditions
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -59,22 +59,29 @@ public class SubjectCreationActivity extends AppCompatActivity {
                 .replace(R.id.activity_subject_creation_fragment_container, currentSubjectFragment).commit();
     }
 
+    //double check available db instances, maybe the activity wont get created from scratch
+    @Override
+    protected void onStart() {
+        super.onStart();
+        General.setupDatabaseInstances(getApplicationContext());
+    }
+
     void callCreatorFragmentForItemChange(int itemId, boolean isPercentage, int state) {
         SubjectCreationActivityFragment creator = (SubjectCreationActivityFragment) getFragmentManager().findFragmentById(R.id.activity_subject_creation_fragment_container);
         switch (state){
-            case SubjectManagementActivity.SUBJECT_CREATOR_RESULT_NEW:
+            case DIALOG_RESULT_ADDED:
                 if (isPercentage)
                     creator.admissionPercentageFinished(itemId, true);
                 else
                     creator.admissionCounterFinished(itemId, true);
                 break;
-            case SubjectManagementActivity.SUBJECT_CREATOR_RESULT_CHANGED:
+            case DIALOG_RESULT_CHANGED:
                 if (isPercentage)
                     creator.admissionPercentageFinished(itemId, false);
                 else
                     creator.admissionCounterFinished(itemId, false);
                 break;
-            case SubjectManagementActivity.SUBJECT_CREATOR_RESULT_DELETE:
+            case DIALOG_RESULT_DELETE:
                 if (isPercentage)
                     creator.deleteAdmissionPercentage(itemId);
                 else

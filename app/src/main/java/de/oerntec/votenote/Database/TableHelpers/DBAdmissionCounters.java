@@ -165,7 +165,9 @@ public class DBAdmissionCounters extends CrudDb<AdmissionCounter> implements Poj
     @Deprecated
     public void deleteItem(int id) {
         String[] whereArgs = new String[]{String.valueOf(id)};
-        mDatabase.delete(DatabaseCreator.TABLE_NAME_ADMISSION_COUNTERS, DatabaseCreator.ADMISSION_COUNTER_ID + "=?", whereArgs);
+        int delCount = mDatabase.delete(DatabaseCreator.TABLE_NAME_ADMISSION_COUNTERS, DatabaseCreator.ADMISSION_COUNTER_ID + "=?", whereArgs);
+        if(delCount != 1)
+            throw new AssertionError("didnt delete exactly one item");
     }
 
     public void addItem(AdmissionCounter item) {

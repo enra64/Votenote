@@ -50,6 +50,7 @@ import de.oerntec.votenote.Database.TableHelpers.DBLastViewed;
 import de.oerntec.votenote.Database.TableHelpers.DBSubjects;
 import de.oerntec.votenote.Diagram.DiagramActivity;
 import de.oerntec.votenote.Dialogs.MainDialogHelper;
+import de.oerntec.votenote.Helpers.General;
 import de.oerntec.votenote.ImportExport.Writer;
 import de.oerntec.votenote.NavigationDrawer.NavigationDrawerFragment;
 import de.oerntec.votenote.SubjectManagerStuff.SubjectManagementActivity;
@@ -127,16 +128,13 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
      * navigation drawer.
      */
     public static NavigationDrawerFragment mNavigationDrawerFragment;
-    //database connection
-    private static DBSubjects mSubjectDb;
-    private static DBAdmissionPercentageMeta mPercentageMetaDb;
-    private static DBAdmissionPercentageData mPercentageDataDb;
-    private static DBAdmissionCounters mAdmissionCounterDb;
-    private static DBLastViewed mLastViewedDb;
 
-    private static int mCurrentSelectedSubjectId, mCurrentSelectedPosition;
+    private static int mCurrentSelectedSubjectId;
     private static MainActivity me;
     private boolean mCurrentFragmentHasPrespoints;
+
+    DBLastViewed mLastViewedDb;
+    DBSubjects mSubjectDb;
 
     public static void toast(String text) {
         Toast.makeText(me, text, Toast.LENGTH_SHORT).show();
@@ -159,12 +157,10 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         super.onCreate(savedInstanceState);
         me = this;
 
-        //database access
-        mSubjectDb = DBSubjects.setupInstance(getApplicationContext());
-        mAdmissionCounterDb = DBAdmissionCounters.setupInstance(getApplicationContext());
-        mPercentageDataDb = DBAdmissionPercentageData.setupInstance(getApplicationContext());
-        mPercentageMetaDb = DBAdmissionPercentageMeta.setupInstance(getApplicationContext());
-        mLastViewedDb = DBLastViewed.setupInstance(getApplicationContext());
+        General.setupDatabaseInstances(getApplicationContext());
+
+        mLastViewedDb = DBLastViewed.getInstance();
+        mSubjectDb = DBSubjects.getInstance();
 
         setContentView(R.layout.activity_main);
 
@@ -173,7 +169,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         //if we can not get our toolbar, its rip time anyways
         setSupportActionBar(toolbar);
 
-        TranslationHelper.adjustLanguage(this);
+        General.adjustLanguage(this);
 
         mNavigationDrawerFragment =
                 (NavigationDrawerFragment) getFragmentManager().findFragmentById(R.id.navigation_drawer);
@@ -314,7 +310,6 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
     public void onNavigationDrawerItemSelected(int position) {
         //keep track of what fragment is shown
         mCurrentSelectedSubjectId = mSubjectDb.getIdOfSubject(position);
-        mCurrentSelectedPosition = position;
 
         mCurrentFragmentHasPrespoints = DBAdmissionCounters.getInstance().getItemsForSubject(mCurrentSelectedSubjectId).size() > 0;
 

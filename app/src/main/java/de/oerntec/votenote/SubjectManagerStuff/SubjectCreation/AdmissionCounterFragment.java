@@ -90,9 +90,9 @@ public class AdmissionCounterFragment extends DialogFragment implements DialogIn
                 .setTitle(getTitle())
                 .setPositiveButton("OK", this)
                 .setNegativeButton("Cancel", this);
-        AlertDialog d = b.create();
         if(mIsOld)
             b.setNeutralButton("Delete", this);
+        AlertDialog d = b.create();
         d.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
         return d;
     }
@@ -101,7 +101,7 @@ public class AdmissionCounterFragment extends DialogFragment implements DialogIn
     public void onClick(DialogInterface dialog, int which) {
         int resultState = -1;
         switch(which){
-            case DialogInterface.BUTTON_NEGATIVE:
+            case DialogInterface.BUTTON_NEUTRAL:
                 mDb.rollbackToSavepoint(mSavepointId);
                 dialog.dismiss();
                 resultState =  SubjectCreationActivity.DIALOG_RESULT_DELETE;
@@ -125,14 +125,14 @@ public class AdmissionCounterFragment extends DialogFragment implements DialogIn
                 //bail
                 dialog.dismiss();
                 break;
-            case DialogInterface.BUTTON_NEUTRAL:
+            case DialogInterface.BUTTON_NEGATIVE:
                 resultState = SubjectCreationActivity.DIALOG_RESULT_CLOSED;
                 break;
         }
         SubjectCreationActivity host = (SubjectCreationActivity) getActivity();
         if(host == null)
             throw new AssertionError("why cant we find the host?");
-        host.callCreatorFragmentForItemChange(-1, false, resultState);
+        host.callCreatorFragmentForItemChange(mAdmissionCounterId, false, resultState);
     }
 
     @Override

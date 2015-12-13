@@ -41,13 +41,12 @@ import android.view.View;
 import de.oerntec.votenote.CardListHelpers.OnItemClickListener;
 import de.oerntec.votenote.CardListHelpers.RecyclerItemClickListener;
 import de.oerntec.votenote.CardListHelpers.SwipeDeletion;
-import de.oerntec.votenote.Database.Pojo.Subject;
 import de.oerntec.votenote.Database.TableHelpers.DBSubjects;
+import de.oerntec.votenote.Helpers.General;
 import de.oerntec.votenote.ImportExport.BackupHelper;
 import de.oerntec.votenote.MainActivity;
 import de.oerntec.votenote.R;
 import de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.SubjectCreationActivity;
-import de.oerntec.votenote.TranslationHelper;
 
 @SuppressLint("InflateParams")
 public class SubjectManagementActivity extends AppCompatActivity implements SwipeDeletion.UndoSnackBarHost {
@@ -103,7 +102,8 @@ public class SubjectManagementActivity extends AppCompatActivity implements Swip
         if (actionBar != null)
             actionBar.setDisplayHomeAsUpEnabled(true);
 
-        TranslationHelper.adjustLanguage(this);
+        General.adjustLanguage(this);
+        General.setupDatabaseInstances(getApplicationContext());
 
         //tutorial?
         if (!getPreference("tutorial_subjects_read", false)) {

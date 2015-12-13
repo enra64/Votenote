@@ -30,8 +30,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.widget.Toast;
 
+import de.oerntec.votenote.Helpers.General;
 import de.oerntec.votenote.R;
-import de.oerntec.votenote.TranslationHelper;
 
 
 public class PreferencesActivity extends AppCompatActivity {
@@ -71,7 +71,7 @@ public class PreferencesActivity extends AppCompatActivity {
             });
 
             //try to load already saved language choice
-            String languagePreference = TranslationHelper.adjustLanguage(getActivity());
+            String languagePreference = General.adjustLanguage(getActivity());
 
             //no preference given yet; fall back to default
             if ("default".equals(languagePreference))

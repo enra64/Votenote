@@ -101,7 +101,7 @@ public class DBAdmissionPercentageMeta extends CrudDb<AdmissionPercentageMeta> i
         Cursor c = mDatabase.query(true, DatabaseCreator.TABLE_NAME_ADMISSION_PERCENTAGES_META, null, DatabaseCreator.ADMISSION_PERCENTAGES_META_ID + "=?", whereArgs, null, null, null, null);
         AdmissionPercentageMeta returnValue = null;
         if (c.getCount() != 1)
-            throw new AssertionError("more than one item returned if we search via id is bad");
+            throw new AssertionError("more than one item returned if we search via id is bad, found " + c.getCount());
         if (c.moveToFirst())
             returnValue = new AdmissionPercentageMeta(
                     c.getInt(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_META_ID)),
@@ -150,7 +150,9 @@ public class DBAdmissionPercentageMeta extends CrudDb<AdmissionPercentageMeta> i
     @Deprecated
     public void deleteItem(int id) {
         String[] whereArgs = new String[]{String.valueOf(id)};
-        mDatabase.delete(DatabaseCreator.TABLE_NAME_ADMISSION_PERCENTAGES_META, DatabaseCreator.ADMISSION_PERCENTAGES_META_ID + "=?", whereArgs);
+        int delCount = mDatabase.delete(DatabaseCreator.TABLE_NAME_ADMISSION_PERCENTAGES_META, DatabaseCreator.ADMISSION_PERCENTAGES_META_ID + "=?", whereArgs);
+        if(delCount != 1)
+            throw new AssertionError("didnt delete exactly one item");
     }
 
     @Override
