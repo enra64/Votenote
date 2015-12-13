@@ -60,7 +60,7 @@
         <activity
             android:name=".SubjectManagerStuff.SubjectCreation.SubjectCreationActivity"
             android:label="@string/title_activity_subject_creation"
-            android:windowSoftInputMode="stateHidden"
+            android:windowSoftInputMode="stateAlwaysHidden"
             android:parentActivityName=".SubjectManagerStuff.SubjectManagementActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
