@@ -142,6 +142,7 @@ public class AdmissionCounterFragment extends DialogFragment implements DialogIn
 
         //set valid value on seekbar
         mTargetPointCountSeek.setProgress(inputCounter.targetValue);
+        mTargetPointCountCurrent.setText(String.valueOf(inputCounter.targetValue));
         mTargetPointCountSeek.setOnSeekBarChangeListener(new SeekerListener(mTargetPointCountCurrent));
 
         //add a watcher to set an error if the name is empty

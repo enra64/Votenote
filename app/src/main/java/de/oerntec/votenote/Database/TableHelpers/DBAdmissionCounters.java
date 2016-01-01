@@ -99,25 +99,25 @@ public class DBAdmissionCounters extends CrudDb<AdmissionCounter> implements Poj
      * @return AdmissionCounter object corresponding to the db values
      * @throws AssertionError if not exactly one AdmissionCounter is found
      */
-    @Deprecated
     public AdmissionCounter getItem(int id) {
         String[] whereArgs = {String.valueOf(id)};
-        Cursor mCursor = mDatabase.query(true,
+        Cursor cursor = mDatabase.query(true,
                 DatabaseCreator.TABLE_NAME_ADMISSION_COUNTERS,
                 null,
                 DatabaseCreator.ADMISSION_COUNTER_ID + "=?",
                 whereArgs, null, null, null, null);
         AdmissionCounter returnValue = null;
         //more than one item returned if we search via id is bad
-        if (mCursor.getCount() != 1)
+        if (cursor.getCount() != 1)
             throw new AssertionError("could not find item " + id);
-        if (mCursor.moveToFirst())
-            returnValue = new AdmissionCounter(mCursor.getInt(0),
-                    mCursor.getInt(1),
-                    mCursor.getString(2),
-                    mCursor.getInt(3),
-                    mCursor.getInt(4));
-        mCursor.close();
+        if (cursor.moveToFirst())
+            returnValue = new AdmissionCounter(
+                    cursor.getInt(cursor.getColumnIndex(DatabaseCreator.ADMISSION_COUNTER_ID)),
+                    cursor.getInt(cursor.getColumnIndex(DatabaseCreator.ADMISSION_COUNTER_SUBJECT_ID)),
+                    cursor.getString(cursor.getColumnIndex(DatabaseCreator.ADMISSION_COUNTER_COUNTER_NAME)),
+                    cursor.getInt(cursor.getColumnIndex(DatabaseCreator.ADMISSION_COUNTER_CURRENT)),
+                    cursor.getInt(cursor.getColumnIndex(DatabaseCreator.ADMISSION_COUNTER_TARGET)));
+        cursor.close();
         return returnValue;
     }
 
@@ -143,11 +143,12 @@ public class DBAdmissionCounters extends CrudDb<AdmissionCounter> implements Poj
 
         //endlosschleife
         while (cursor.moveToNext())
-            counters.add(new AdmissionCounter(cursor.getInt(0),
-                    cursor.getInt(1),
-                    cursor.getString(2),
-                    cursor.getInt(3),
-                    cursor.getInt(4)));
+            counters.add(new AdmissionCounter(
+                    cursor.getInt(cursor.getColumnIndex(DatabaseCreator.ADMISSION_COUNTER_ID)),
+                    cursor.getInt(cursor.getColumnIndex(DatabaseCreator.ADMISSION_COUNTER_SUBJECT_ID)),
+                    cursor.getString(cursor.getColumnIndex(DatabaseCreator.ADMISSION_COUNTER_COUNTER_NAME)),
+                    cursor.getInt(cursor.getColumnIndex(DatabaseCreator.ADMISSION_COUNTER_CURRENT)),
+                    cursor.getInt(cursor.getColumnIndex(DatabaseCreator.ADMISSION_COUNTER_TARGET))));
 
         cursor.close();
         return counters;
@@ -162,7 +163,6 @@ public class DBAdmissionCounters extends CrudDb<AdmissionCounter> implements Poj
      * Delete a counter
      * @param id the admission counter id to search for
      */
-    @Deprecated
     public void deleteItem(int id) {
         String[] whereArgs = new String[]{String.valueOf(id)};
         int delCount = mDatabase.delete(DatabaseCreator.TABLE_NAME_ADMISSION_COUNTERS, DatabaseCreator.ADMISSION_COUNTER_ID + "=?", whereArgs);
