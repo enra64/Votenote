@@ -47,8 +47,6 @@ public class DBSubjects extends CrudDb<Subject> {
     }
 
     public static DBSubjects getInstance() {
-        //if(mInstance == null)
-        //    throw new AssertionError("no instance available!");
         return mInstance;
     }
 
@@ -164,6 +162,10 @@ public class DBSubjects extends CrudDb<Subject> {
 
         mCursor.close();
         return subjects;
+    }
+
+    public boolean isEmpty() {
+        return getAllSubjects().size() == 0;
     }
 
 

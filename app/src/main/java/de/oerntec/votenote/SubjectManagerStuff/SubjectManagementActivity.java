@@ -105,8 +105,8 @@ public class SubjectManagementActivity extends AppCompatActivity implements Swip
         General.adjustLanguage(this);
         General.setupDatabaseInstances(getApplicationContext());
 
-        //tutorial?
-        if (!getPreference("tutorial_subjects_read", false)) {
+        //show tutorial if no subjects are present and the tutorial has not yet been read
+        if (DBSubjects.getInstance().isEmpty() && !getPreference("tutorial_subjects_read", false)) {
             Builder b = new AlertDialog.Builder(this, AlertDialog.THEME_DEVICE_DEFAULT_LIGHT);
             b.setTitle("Tutorial");
             b.setView(this.getLayoutInflater().inflate(R.layout.tutorial_subjects, null));
