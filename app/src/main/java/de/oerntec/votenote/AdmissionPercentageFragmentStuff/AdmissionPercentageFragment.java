@@ -19,9 +19,12 @@ package de.oerntec.votenote.AdmissionPercentageFragmentStuff;
 
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Fragment;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
@@ -93,10 +96,11 @@ public class AdmissionPercentageFragment extends Fragment implements SwipeDeleti
      */
     private DBAdmissionPercentageData mDataDb = DBAdmissionPercentageData.getInstance();
 
+    private boolean mEnableSwipeToDelete;
+
     /**
      * Returns a new instance of this fragment for the given section number.
      */
-
     public static AdmissionPercentageFragment newInstance(int percentageMetaId) {
         AdmissionPercentageFragment fragment = new AdmissionPercentageFragment();
         Bundle args = new Bundle();
@@ -139,9 +143,6 @@ public class AdmissionPercentageFragment extends Fragment implements SwipeDeleti
             return rootView;
         }
 
-        /*
-        DISPLAY GROUP INFO
-         */
         mAdapter = new AdmissionPercentageAdapter(getActivity(), mPercentageMetaId);
         //set adapter
         mLessonList.setAdapter(mAdapter);
@@ -156,6 +157,9 @@ public class AdmissionPercentageFragment extends Fragment implements SwipeDeleti
             if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
                 Log.e("Main Listview", "Received Empty allEntryCursor for group " + mMetaObject.getDisplayName() + " with id " + mPercentageMetaId);
 
+        mEnableSwipeToDelete = MainActivity.getPreference("enable_swipe_to_delete_lesson", true);
+        final boolean swipeToDeleteDialogShown = MainActivity.getPreference("enable_swipe_to_delete_lesson_dialog_shown", false);
+
         ItemTouchHelper.SimpleCallback swipeCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
             @Override
             public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
@@ -167,6 +171,8 @@ public class AdmissionPercentageFragment extends Fragment implements SwipeDeleti
                 //no swipey swipey for info view
                 if (viewHolder instanceof AdmissionPercentageAdapter.InfoHolder)
                     return 0;
+                if (!mEnableSwipeToDelete)
+                    return 0;
                 return super.getSwipeDirs(recyclerView, viewHolder);
             }
 
@@ -176,8 +182,12 @@ public class AdmissionPercentageFragment extends Fragment implements SwipeDeleti
                 Object viewTag = viewHolder.itemView.getTag();
                 if (viewTag != null) {
                     int lessonId = (Integer) viewTag;
-                    if (lessonId != 0)
-                        showUndoSnackBar(lessonId, mLessonList.getChildAdapterPosition(viewHolder.itemView));
+                    if (lessonId != 0) {
+                        if (swipeToDeleteDialogShown)
+                            showUndoSnackBar(lessonId, mLessonList.getChildAdapterPosition(viewHolder.itemView));
+                        else
+                            showSwipeToDeleteDialog();
+                    }
                 }
             }
         };
@@ -207,6 +217,27 @@ public class AdmissionPercentageFragment extends Fragment implements SwipeDeleti
 
         mRootView = rootView;
         return rootView;
+    }
+
+    private void showSwipeToDeleteDialog() {
+        AlertDialog.Builder b = new AlertDialog.Builder(getContext())
+                .setTitle(R.string.activate_swipe_to_delete_title)
+                .setMessage(R.string.swipe_to_delete_lesson_enable_feature_dialog_message)
+                .setPositiveButton(R.string.dialog_yes, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        PreferenceManager.getDefaultSharedPreferences(getContext()).edit().putBoolean("enable_swipe_to_delete_lesson", true).apply();
+                        PreferenceManager.getDefaultSharedPreferences(getContext()).edit().putBoolean("enable_swipe_to_delete_lesson_dialog_shown", true).apply();
+                    }
+                })
+                .setNegativeButton("Nein", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        PreferenceManager.getDefaultSharedPreferences(getContext()).edit().putBoolean("enable_swipe_to_delete_lesson", false).apply();
+                        PreferenceManager.getDefaultSharedPreferences(getContext()).edit().putBoolean("enable_swipe_to_delete_lesson_dialog_shown", true).apply();
+                    }
+                });
+        b.show();
     }
 
     public void reloadInfo() {

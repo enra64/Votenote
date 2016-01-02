@@ -124,4 +124,11 @@
     <string name="lesson_dialog_fragment_picker_info_text">%1$d von %2$d Votierungen</string>
     <string name="pref_summary_save_last_selected_meta_pos">Speichern, welcher Prozentzähler zuletzt aktiviert war. Die Übung wird auf jeden Fall gespeichert.</string>
     <string name="pref_title_save_last_selected_meta_pos">Gewählte Positionen speichern</string>
+    <string name="voted_assignments_w_placeholder_info_card">%1$d votierte Aufgaben</string>
+    <string name="number_of_done_assignments_lesson_card">%1$d von %2$d Votierungen</string>
+    <string name="x_th_lesson_lesson_card">%1$s. Übung</string>
+    <string name="activate_swipe_to_delete_title">Feature aktivieren?</string>
+    <string name="swipe_to_delete_lesson_enable_feature_dialog_message">Du hast versucht ein Element durch wischen zu löschen. Möchtest du dieses Feature aktiviert lassen?</string>
+    <string name="dialog_yes">Ja</string>
+    <string name="pref_swipe_to_delete_lesson">Löschen durch Swipen</string>
 </resources>

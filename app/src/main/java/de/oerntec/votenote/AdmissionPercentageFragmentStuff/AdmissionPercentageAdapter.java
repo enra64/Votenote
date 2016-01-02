@@ -226,7 +226,7 @@ public class AdmissionPercentageAdapter extends RecyclerView.Adapter<AdmissionPe
                 infoHolder.prespoints.setVisibility(View.GONE);
             else if (counterList.size() == 1)
                 setCurrentPresentationPointStatus(infoHolder.prespoints, counterList.get(0).id);
-            infoHolder.votedAssignments.setText(mMetaPojo.getFinishedAssignments() + " " + mContext.getString(R.string.voted_assignments_info_card));
+            infoHolder.votedAssignments.setText(mContext.getString(R.string.voted_assignments_w_placeholder_info_card, mMetaPojo.getFinishedAssignments()));
         } else if (holder instanceof LessonHolder) {
             LessonHolder lessonHolder = (LessonHolder) holder;
             //adjust for the info view
@@ -250,8 +250,9 @@ public class AdmissionPercentageAdapter extends RecyclerView.Adapter<AdmissionPe
             lessonHolder.itemView.setVisibility(View.VISIBLE);
 
             //set texts
-            lessonHolder.vote.setText(myVote + " " + mContext.getString(R.string.main_dialog_lesson_von) + " " + maxVote + voteString);
-            lessonHolder.lessonId.setText(lessonIndex + mContext.getString(R.string.main_x_th_lesson));
+            lessonHolder.vote.setText(mContext.getString(R.string.number_of_done_assignments_lesson_card, data.finishedAssignments, data.availableAssignments));
+            //lessonIndex + mContext.getString(R.string.main_x_th_lesson)
+            lessonHolder.lessonId.setText(mContext.getString(R.string.x_th_lesson_lesson_card, lessonIndex));
         } else
             throw new AssertionError("the view type is not lesson, but position is not 0 either");
     }

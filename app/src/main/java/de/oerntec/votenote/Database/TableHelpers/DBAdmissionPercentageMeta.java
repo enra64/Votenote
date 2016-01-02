@@ -53,7 +53,7 @@ public class DBAdmissionPercentageMeta extends CrudDb<AdmissionPercentageMeta> i
     public static DBAdmissionPercentageMeta setupInstance(Context context) {
         if (mInstance == null)
             mInstance = new DBAdmissionPercentageMeta(context, DatabaseCreator.TABLE_NAME_ADMISSION_PERCENTAGES_META);
-        return (DBAdmissionPercentageMeta) mInstance;
+        return mInstance;
     }
 
     /**
@@ -62,7 +62,7 @@ public class DBAdmissionPercentageMeta extends CrudDb<AdmissionPercentageMeta> i
      * @return the singleton instance
      */
     public static DBAdmissionPercentageMeta getInstance() {
-        return (DBAdmissionPercentageMeta) mInstance;
+        return mInstance;
     }
 
     @Override
@@ -95,7 +95,6 @@ public class DBAdmissionPercentageMeta extends CrudDb<AdmissionPercentageMeta> i
      * @return AdmissionCounter object corresponding to the db values
      * @throws AssertionError if not exactly one AdmissionCounters are found
      */
-    @Deprecated
     public AdmissionPercentageMeta getItem(int id) {
         String[] whereArgs = {String.valueOf(id)};
         Cursor c = mDatabase.query(true, DatabaseCreator.TABLE_NAME_ADMISSION_PERCENTAGES_META, null, DatabaseCreator.ADMISSION_PERCENTAGES_META_ID + "=?", whereArgs, null, null, null, null);

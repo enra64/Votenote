@@ -117,4 +117,8 @@
     <string name="admission_counter_change_dialog_title">Change %1$s</string>
     <string name="pref_summary_save_last_selected_meta_pos">Save the last selected percentage counter. The last selected subject is always saved</string>
     <string name="pref_title_save_last_selected_meta_pos">Save last selected Positions</string>
+    <string name="lesson_dialog_fragment_picker_info_text">%1$d of %2$d assignments</string>
+    <string name="voted_assignments_w_placeholder_info_card">%1$d voted Assignments</string>
+    <string name="number_of_done_assignments_lesson_card">%1$d of %2$d Votes</string>
+    <string name="x_th_lesson_lesson_card">%1$s. lesson</string>
 </resources>

@@ -33,6 +33,11 @@
             android:title="@string/pref_title_save_last_selected_meta_pos" />
 
         <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="enable_swipe_to_delete_lesson"
+            android:title="@string/pref_swipe_to_delete_lesson" />
+
+        <CheckBoxPreference
             android:defaultValue="false"
             android:key="enable_logging"
             android:summary="@string/pref_logging_sum"
@@ -57,20 +62,20 @@
             android:title="@string/pref_csv_export" />
         <de.oerntec.votenote.Preferences.CustomActionPreference
             android:key="backup_share"
-            android:title="Backup teilen"
-            android:summary="Zeigt Apps an, die das Backup verarbeiten"/>
+            android:summary="Zeigt Apps an, die das Backup verarbeiten"
+            android:title="Backup teilen" />
         <de.oerntec.votenote.Preferences.CustomActionPreference
             android:key="backup_export"
-            android:title="Backup erstellen"
-            android:summary="Speichert ein Backup auf der SD-Karte"/>
+            android:summary="Speichert ein Backup auf der SD-Karte"
+            android:title="Backup erstellen" />
         <de.oerntec.votenote.Preferences.CustomActionPreference
             android:key="backup_import"
-            android:title="Backup importieren"
-            android:summary="Lädt ein Backup von der SD-Karte"/>
+            android:summary="Lädt ein Backup von der SD-Karte"
+            android:title="Backup importieren" />
         <de.oerntec.votenote.Preferences.CustomActionPreference
             android:key="xml_import"
-            android:title="XML-Backup importieren"
-            android:summary="Backup von Votenote (Version 1.3.1 oder älter) von der SD-Karte importieren" />
+            android:summary="Backup von Votenote (Version 1.3.1 oder älter) von der SD-Karte importieren"
+            android:title="XML-Backup importieren" />
 
     </PreferenceCategory>
 
