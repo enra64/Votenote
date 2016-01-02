@@ -20,6 +20,7 @@ package de.oerntec.votenote.AdmissionPercentageFragmentStuff;
 import android.content.Context;
 import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -73,7 +74,7 @@ public class AdmissionPercentageAdapter extends RecyclerView.Adapter<AdmissionPe
     private List<AdmissionPercentageData> mData;
 
     private Context mContext;
-    private int mSubjectId, mAdmissionPercentageMetaId;
+    private int mAdmissionPercentageMetaId;
     private boolean mLatestLessonFirst;
 
     public AdmissionPercentageAdapter(Context context, int admissionPercentageMetaId) {
@@ -85,8 +86,6 @@ public class AdmissionPercentageAdapter extends RecyclerView.Adapter<AdmissionPe
         mAdmissionPercentageMetaId = admissionPercentageMetaId;
         //get the pojo object corresponding to this adapter
         mMetaPojo = mMetaDb.getItem(admissionPercentageMetaId);
-        //get the subject id
-        mSubjectId = mMetaPojo.subjectId;
         //do we want reverse sort?
         mLatestLessonFirst = MainActivity.getPreference("reverse_lesson_sort", false);
         requery();
@@ -108,12 +107,14 @@ public class AdmissionPercentageAdapter extends RecyclerView.Adapter<AdmissionPe
         notifyChangedLessonRange(recyclerViewPosition);
     }
 
-    public void reinstantiateLesson(){
+    public void reinstateLesson() {
         //reload database
         requery();
+        if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
+            Log.i("ap adapter", "reinstate at " + mLastDeletedPosition);
         //notify of changes
         notifyItemInserted(mLastDeletedPosition);
-        notifyChangedLessonRange(mLastDeletedPosition);
+        notifyChangedLessonRange(mLastDeletedPosition + 1);
     }
 
     /**
@@ -136,25 +137,21 @@ public class AdmissionPercentageAdapter extends RecyclerView.Adapter<AdmissionPe
     public String removeLesson(final AdmissionPercentageData item) {
         String savePointId = "delete_lesson_" + System.currentTimeMillis();
         mDataDb.createSavepoint(savePointId);
-        final int listPosition = getRecyclerViewPosition(item);
-        mLastDeletedPosition = listPosition;
+        final int recyclerViewPosition = getRecyclerViewPosition(item);
+        if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
+            Log.i("ap adapter", "delete pos " + recyclerViewPosition);
+        mLastDeletedPosition = recyclerViewPosition;
         mDataDb.deleteItem(item);
         requery();
-        notifyItemRemoved(listPosition);
-        notifyChangedLessonRange(listPosition);
+        notifyItemRemoved(recyclerViewPosition);
+        notifyChangedLessonRange(recyclerViewPosition);
         return savePointId;
     }
-
-
 
     protected void requery() {
         mData = mDataDb.getItemsForMetaId(mAdmissionPercentageMetaId, mLatestLessonFirst);
     }
 
-    /**
-     * Translates a lesson id to a list position: if not reverse sorted, just add 1 to the lesson id
-     * because of the infoview. else, get the item count and subtract the id.
-     */
     int getRecyclerViewPosition(AdmissionPercentageData item) {
         int listPosition;
         for (listPosition = 0; listPosition < mData.size(); listPosition++) {
@@ -162,10 +159,7 @@ public class AdmissionPercentageAdapter extends RecyclerView.Adapter<AdmissionPe
             if (apd.lessonId == item.lessonId && apd.admissionPercentageMetaId == item.admissionPercentageMetaId)
                 break;
         }
-        //beware of the infoview, the old lessonIds startes at 1
-        listPosition++;
-        return listPosition;
-        //return mLatestLessonFirst ? listPosition : getItemCount() - listPosition;
+        return listPosition + 1;
     }
 
     public AdmissionPercentageMeta getCurrentMeta() {
@@ -176,7 +170,6 @@ public class AdmissionPercentageAdapter extends RecyclerView.Adapter<AdmissionPe
 
     /**
      * Notify the recyclerview which items have changed
-     *
      * @param changedPosition the position the changed item had in the list
      */
     private void notifyChangedLessonRange(int changedPosition) {
@@ -184,7 +177,7 @@ public class AdmissionPercentageAdapter extends RecyclerView.Adapter<AdmissionPe
             notifyItemRangeChanged(0, changedPosition);
         else {
             notifyItemChanged(0);
-            notifyItemRangeChanged(changedPosition, getItemCount() - 1);
+            notifyItemRangeChanged(changedPosition, getItemCount() - changedPosition);
         }
     }
 
@@ -203,7 +196,7 @@ public class AdmissionPercentageAdapter extends RecyclerView.Adapter<AdmissionPe
             infoHolder.votedAssignments = (TextView) root.findViewById(R.id.subject_fragment_subject_card_completed_assignments);
             infoHolder.percentage = (TextView) root.findViewById(R.id.subject_fragment_subject_card_title_percentage);
             return infoHolder;
-        } else {
+        } else if (viewType == VIEW_TYPE_LESSON) {
             //inflate layout
             LayoutInflater inflater = LayoutInflater.from(parent.getContext());
             View root = inflater.inflate(R.layout.subject_fragment_card_lesson, parent, false);
@@ -214,12 +207,13 @@ public class AdmissionPercentageAdapter extends RecyclerView.Adapter<AdmissionPe
             lessonHolder.vote = (TextView) root.findViewById(R.id.subject_fragment_card_upper);
             lessonHolder.lessonId = (TextView) root.findViewById(R.id.subject_fragment_card_lower);
             return lessonHolder;
-        }
+        } else
+            throw new AssertionError("impossible view type requested!");
     }
 
     @Override
     public void onBindViewHolder(Holder holder, int position) {
-        if (holder instanceof InfoHolder) {
+        if (position == 0) {
             InfoHolder infoHolder = (InfoHolder) holder;
             mMetaPojo.loadData(DBAdmissionPercentageData.getInstance(), mLatestLessonFirst);
             mMetaPojo.calculateData();
@@ -238,6 +232,8 @@ public class AdmissionPercentageAdapter extends RecyclerView.Adapter<AdmissionPe
             //adjust for the info view
             position--;
 
+            if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
+                Log.i("ap adapter", "bind view at " + position);
             AdmissionPercentageData data = mData.get(position);
 
             //load strings
@@ -256,7 +252,8 @@ public class AdmissionPercentageAdapter extends RecyclerView.Adapter<AdmissionPe
             //set texts
             lessonHolder.vote.setText(myVote + " " + mContext.getString(R.string.main_dialog_lesson_von) + " " + maxVote + voteString);
             lessonHolder.lessonId.setText(lessonIndex + mContext.getString(R.string.main_x_th_lesson));
-        }
+        } else
+            throw new AssertionError("the view type is not lesson, but position is not 0 either");
     }
 
     private void setCurrentPresentationPointStatus(TextView presentationPointsView, int counterId) {
@@ -294,8 +291,7 @@ public class AdmissionPercentageAdapter extends RecyclerView.Adapter<AdmissionPe
         else if (meta.getNumberOfLessonsLeft() < 0)
             averageNeededVotesView.setText(mContext.getString(R.string.subject_fragment_overshot_lesson_count));
         else
-            averageNeededVotesView.setText(mContext.getString(R.string.subject_fragment_on_average) + " " +
-                    String.format("%.2f", meta.getNeededAssignmentsPerUebung()) + " " + mContext.getString(R.string.lesson_fragment_info_card_assignments_per_lesson_description));
+            averageNeededVotesView.setText(String.format("%s %s %s", mContext.getString(R.string.subject_fragment_on_average), String.format("%.2f", meta.getNeededAssignmentsPerUebung()), mContext.getString(R.string.lesson_fragment_info_card_assignments_per_lesson_description)));
 
         if (meta.getEstimatedNumberOfAssignments() < 0)
             averageNeededVotesView.setText(mContext.getString(R.string.subject_fragment_error_detected));
@@ -304,7 +300,7 @@ public class AdmissionPercentageAdapter extends RecyclerView.Adapter<AdmissionPe
         if (meta.getNeededAssignmentsPerUebung() > meta.estimatedAssignmentsPerLesson)
             averageNeededVotesView.setTextColor(Color.argb(255, 204, 0, 0));//red
         else
-            averageNeededVotesView.setTextColor(mContext.getResources().getColor(R.color.abc_primary_text_material_light));
+            averageNeededVotesView.setTextColor(mContext.getColor(R.color.abc_primary_text_material_light));
     }
 
     @Override
@@ -318,7 +314,6 @@ public class AdmissionPercentageAdapter extends RecyclerView.Adapter<AdmissionPe
     }
 
     static class Holder extends RecyclerView.ViewHolder {
-
         public Holder(View itemView) {
             super(itemView);
         }

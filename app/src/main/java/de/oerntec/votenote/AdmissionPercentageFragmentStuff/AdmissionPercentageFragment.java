@@ -22,7 +22,6 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
@@ -32,8 +31,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 
 import de.oerntec.votenote.CardListHelpers.OnItemClickListener;
 import de.oerntec.votenote.CardListHelpers.RecyclerItemClickListener;
@@ -226,17 +223,23 @@ public class AdmissionPercentageFragment extends Fragment implements SwipeDeleti
                 public void onClick(View view) {
                     onUndo();
                 }
-            }).show();
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                //pressing undo will reset the savepoint id, easier than killing off the handler
-                if(mLastRemovalSavePointId != null)
-                    mDataDb.releaseSavepoint(mLastRemovalSavePointId);
-            }
-        }, 2800);
+            })
+                .setCallback(new Snackbar.Callback() {
+                    @Override
+                    public void onDismissed(Snackbar snackbar, int event) {
+                        switch (event) {
+                            case DISMISS_EVENT_MANUAL:
+                            case DISMISS_EVENT_TIMEOUT:
+                                if (mLastRemovalSavePointId != null)
+                                    mDataDb.releaseSavepoint(mLastRemovalSavePointId);
+                            default:
+                                super.onDismissed(snackbar, event);
+                        }
+                    }
+                }).show();
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
@@ -248,7 +251,7 @@ public class AdmissionPercentageFragment extends Fragment implements SwipeDeleti
         if (mLastRemovalSavePointId != null) {
             DBAdmissionPercentageData.getInstance().rollbackToSavepoint(mLastRemovalSavePointId);
             mLastRemovalSavePointId = null;
-            mAdapter.reinstantiateLesson();
+            mAdapter.reinstateLesson();
         }
     }
 

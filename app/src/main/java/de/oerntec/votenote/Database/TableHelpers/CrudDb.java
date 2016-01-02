@@ -3,10 +3,13 @@ package de.oerntec.votenote.Database.TableHelpers;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import de.oerntec.votenote.Database.DatabaseCreator;
+import de.oerntec.votenote.MainActivity;
 
 public abstract class CrudDb<T> {
+    private static final boolean ENABLE_SAVEPOINT_LOG = false;
     /**
      * name of the table the crud table helper is for
      */
@@ -42,6 +45,9 @@ public abstract class CrudDb<T> {
      * @param id savepoint id, must not start iwth [0-9]
      */
     public void createSavepoint(String id) {
+        //noinspection ConstantConditions,PointlessBooleanExpression
+        if (MainActivity.ENABLE_DEBUG_LOG_CALLS && ENABLE_SAVEPOINT_LOG)
+            Log.i("db", "creating savepoint: " + id);
         mDatabase.execSQL(";SAVEPOINT " + id);
     }
 
@@ -51,6 +57,9 @@ public abstract class CrudDb<T> {
      * @param id savepoint id, must start with [A-Za-z]
      */
     public void rollbackToSavepoint(String id) {
+        //noinspection ConstantConditions,PointlessBooleanExpression
+        if (MainActivity.ENABLE_DEBUG_LOG_CALLS && ENABLE_SAVEPOINT_LOG)
+            Log.i("db", "rolling back to savepoint: " + id);
         mDatabase.execSQL(";ROLLBACK TO SAVEPOINT " + id);
     }
 
@@ -60,6 +69,9 @@ public abstract class CrudDb<T> {
      * @param id savepoint id, must not start with [0-9]
      */
     public void releaseSavepoint(String id) {
+        //noinspection ConstantConditions,PointlessBooleanExpression
+        if (MainActivity.ENABLE_DEBUG_LOG_CALLS && ENABLE_SAVEPOINT_LOG)
+            Log.i("db", "releasing savepoint: " + id);
         mDatabase.execSQL(";RELEASE SAVEPOINT " + id);
     }
 
