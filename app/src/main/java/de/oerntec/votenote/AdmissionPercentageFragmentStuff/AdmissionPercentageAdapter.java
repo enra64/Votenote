@@ -19,6 +19,7 @@ package de.oerntec.votenote.AdmissionPercentageFragmentStuff;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -301,7 +302,7 @@ public class AdmissionPercentageAdapter extends RecyclerView.Adapter<AdmissionPe
         if (meta.getNeededAssignmentsPerUebung() > meta.estimatedAssignmentsPerLesson)
             averageNeededVotesView.setTextColor(Color.argb(255, 204, 0, 0));//red
         else
-            averageNeededVotesView.setTextColor(mContext.getColor(R.color.abc_primary_text_material_light));
+            averageNeededVotesView.setTextColor(ContextCompat.getColor(mContext, R.color.abc_primary_text_material_light));
     }
 
     @Override
