@@ -127,20 +127,25 @@ public class SubjectFragment extends Fragment {
                 mViewPager.setCurrentItem(0);
         }
         if(mSaveLastMetaId){
-            mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener(){
-                @Override
-                public void onPageScrollStateChanged(int state) {
-                }
-                @Override
-                public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                }
+            if (DBAdmissionPercentageMeta.getInstance().getItemsForSubject(mSubjectId).size() > 1) {
+                mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+                    @Override
+                    public void onPageScrollStateChanged(int state) {
+                    }
 
-                @Override
-                public void onPageSelected(int position) {
-                    DBLastViewed.getInstance().saveSelection(subjectPosition, position);
-                }
-            });
-        }
+                    @Override
+                    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                    }
+
+                    @Override
+                    public void onPageSelected(int position) {//only called on change (eg first load not notified)
+                        DBLastViewed.getInstance().saveSelection(subjectPosition, position);
+                    }
+                });
+            } else
+                DBLastViewed.getInstance().saveSelection(subjectPosition, 0);
+        } else
+            DBLastViewed.getInstance().saveSelection(subjectPosition, 0);
     }
 
     /**

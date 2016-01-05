@@ -11,12 +11,12 @@ import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMeta;
 public class Dialogs {
 
     public static void showCounterDialog(FragmentManager fragmentManager, int subjectId, int counterId, boolean isNew) {
-        AdmissionCounterFragment fragment = AdmissionCounterFragment.newInstance(subjectId, counterId, isNew);
+        AdmissionCounterDialogFragment fragment = AdmissionCounterDialogFragment.newInstance(subjectId, counterId, isNew);
         fragment.show(fragmentManager, "ac_create_dialog");
     }
 
     public static void showPercentageDialog(FragmentManager fragmentManager, int subjectId, int counterId, boolean isNew) {
-        AdmissionPercentageFragment fragment = AdmissionPercentageFragment.newInstance(subjectId, counterId, isNew);
+        AdmissionPercentageDialogFragment fragment = AdmissionPercentageDialogFragment.newInstance(subjectId, counterId, isNew);
         fragment.show(fragmentManager, "ap_create_dialog");
     }
 

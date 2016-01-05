@@ -108,6 +108,10 @@ public class AdmissionPercentageAdapter extends RecyclerView.Adapter<AdmissionPe
         notifyChangedLessonRange(recyclerViewPosition);
     }
 
+    public void refreshItem(int swipedLessonId, int percentageMetaId) {
+        notifyItemChanged(getRecyclerViewPosition(new AdmissionPercentageData(percentageMetaId, swipedLessonId, -1, -1)));
+    }
+
     public void reinstateLesson() {
         //reload database
         requery();

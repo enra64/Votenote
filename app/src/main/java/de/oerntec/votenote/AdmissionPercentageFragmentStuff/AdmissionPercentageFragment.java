@@ -186,7 +186,7 @@ public class AdmissionPercentageFragment extends Fragment implements SwipeDeleti
                         if (swipeToDeleteDialogShown)
                             showUndoSnackBar(lessonId, mLessonList.getChildAdapterPosition(viewHolder.itemView));
                         else
-                            showSwipeToDeleteDialog();
+                            showSwipeToDeleteDialog(lessonId, mPercentageMetaId);
                     }
                 }
             }
@@ -219,25 +219,30 @@ public class AdmissionPercentageFragment extends Fragment implements SwipeDeleti
         return rootView;
     }
 
-    private void showSwipeToDeleteDialog() {
-        AlertDialog.Builder b = new AlertDialog.Builder(getContext())
+    private void showSwipeToDeleteDialog(final int swipedLessonId, final int percentageMetaId) {
+        AlertDialog.Builder b = new AlertDialog.Builder(getActivity())
                 .setTitle(R.string.activate_swipe_to_delete_title)
                 .setMessage(R.string.swipe_to_delete_lesson_enable_feature_dialog_message)
                 .setPositiveButton(R.string.dialog_yes, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        PreferenceManager.getDefaultSharedPreferences(getContext()).edit().putBoolean("enable_swipe_to_delete_lesson", true).apply();
-                        PreferenceManager.getDefaultSharedPreferences(getContext()).edit().putBoolean("enable_swipe_to_delete_lesson_dialog_shown", true).apply();
+                        saveSwipeToDeleteSelection(true, swipedLessonId, percentageMetaId);
                     }
                 })
                 .setNegativeButton("Nein", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        PreferenceManager.getDefaultSharedPreferences(getContext()).edit().putBoolean("enable_swipe_to_delete_lesson", false).apply();
-                        PreferenceManager.getDefaultSharedPreferences(getContext()).edit().putBoolean("enable_swipe_to_delete_lesson_dialog_shown", true).apply();
+                        saveSwipeToDeleteSelection(false, swipedLessonId, percentageMetaId);
                     }
                 });
         b.show();
+    }
+
+    private void saveSwipeToDeleteSelection(boolean enable, int swipedLessonId, int percentageMetaId) {
+        PreferenceManager.getDefaultSharedPreferences(getActivity()).edit().putBoolean("enable_swipe_to_delete_lesson", enable).apply();
+        PreferenceManager.getDefaultSharedPreferences(getActivity()).edit().putBoolean("enable_swipe_to_delete_lesson_dialog_shown", true).apply();
+        mEnableSwipeToDelete = enable;
+        mAdapter.refreshItem(swipedLessonId, percentageMetaId);
     }
 
     public void reloadInfo() {

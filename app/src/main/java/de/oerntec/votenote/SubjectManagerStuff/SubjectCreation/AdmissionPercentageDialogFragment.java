@@ -19,9 +19,8 @@ import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageMeta;
 import de.oerntec.votenote.Helpers.NotEmptyWatcher;
 import de.oerntec.votenote.R;
 import de.oerntec.votenote.SubjectManagerStuff.SeekerListener;
-import de.oerntec.votenote.SubjectManagerStuff.SubjectManagementActivity;
 
-public class AdmissionPercentageFragment extends DialogFragment implements DialogInterface.OnClickListener {
+public class AdmissionPercentageDialogFragment extends DialogFragment implements DialogInterface.OnClickListener {
     private static final String SUBJECT_ID = "subject_id";
     private static final String ADMISSION_PERCENTAGE_ID = "ap_id";
     private static final String SUBJECT_IS_NEW = "subject_is_new";
@@ -48,11 +47,11 @@ public class AdmissionPercentageFragment extends DialogFragment implements Dialo
 
     private boolean mIsOldPercentageCounter, mIsNew;
 
-    public AdmissionPercentageFragment() {
+    public AdmissionPercentageDialogFragment() {
     }
 
-    public static AdmissionPercentageFragment newInstance(int subjectId, int admissionCounterId, boolean isNew) {
-        AdmissionPercentageFragment fragment = new AdmissionPercentageFragment();
+    public static AdmissionPercentageDialogFragment newInstance(int subjectId, int admissionCounterId, boolean isNew) {
+        AdmissionPercentageDialogFragment fragment = new AdmissionPercentageDialogFragment();
         Bundle args = new Bundle();
         args.putInt(SUBJECT_ID, subjectId);
         args.putInt(ADMISSION_PERCENTAGE_ID, admissionCounterId);

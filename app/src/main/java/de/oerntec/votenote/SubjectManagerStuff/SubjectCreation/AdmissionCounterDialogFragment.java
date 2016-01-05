@@ -18,7 +18,7 @@ import de.oerntec.votenote.Helpers.NotEmptyWatcher;
 import de.oerntec.votenote.R;
 import de.oerntec.votenote.SubjectManagerStuff.SeekerListener;
 
-public class AdmissionCounterFragment extends DialogFragment implements DialogInterface.OnClickListener {
+public class AdmissionCounterDialogFragment extends DialogFragment implements DialogInterface.OnClickListener {
     private static final String SUBJECT_ID = "subject_id";
     private static final String COUNTER_ID = "counter_id";
     private static final String COUNTER_IS_NEW = "subject_is_new";
@@ -36,11 +36,11 @@ public class AdmissionCounterFragment extends DialogFragment implements DialogIn
 
     private boolean mIsOld, mIsNew;
 
-    public AdmissionCounterFragment() {
+    public AdmissionCounterDialogFragment() {
     }
 
-    public static AdmissionCounterFragment newInstance(int subjectId, int counterId, boolean isNew) {
-        AdmissionCounterFragment fragment = new AdmissionCounterFragment();
+    public static AdmissionCounterDialogFragment newInstance(int subjectId, int counterId, boolean isNew) {
+        AdmissionCounterDialogFragment fragment = new AdmissionCounterDialogFragment();
         Bundle args = new Bundle();
         args.putInt(SUBJECT_ID, subjectId);
         args.putInt(COUNTER_ID, counterId);
