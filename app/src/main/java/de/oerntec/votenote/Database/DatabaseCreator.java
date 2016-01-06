@@ -119,10 +119,19 @@ public class DatabaseCreator extends SQLiteOpenHelper {
             LAST_VIEWED_PERCENTAGE_META_POSITION + " INTEGER, " +
             LAST_VIEWED_SUBJECT_POSITION + " INTEGER, " +
             LAST_VIEWED_TIMESTAMP + " DATETIME DEFAULT CURRENT_TIMESTAMP, " +
-            "PRIMARY KEY(" + LAST_VIEWED_PERCENTAGE_META_POSITION + ", " + LAST_VIEWED_SUBJECT_POSITION + "), " +
+            "PRIMARY KEY (" + LAST_VIEWED_PERCENTAGE_META_POSITION + ", " + LAST_VIEWED_SUBJECT_POSITION + "), " +
             "FOREIGN KEY (" + LAST_VIEWED_SUBJECT_POSITION + ") REFERENCES " + TABLE_NAME_SUBJECTS + "(" + SUBJECTS_ID + ") ON DELETE CASCADE, " +
             "FOREIGN KEY (" + LAST_VIEWED_PERCENTAGE_META_POSITION + ") REFERENCES " + TABLE_NAME_ADMISSION_PERCENTAGES_META + "(" + ADMISSION_PERCENTAGES_META_ID + ") ON DELETE CASCADE" +
             ");";
+
+    private static final String ON_UPDATE_UPDATE_TIMESTAMP =
+            "CREATE TRIGGER update_time_trigger" +
+                    "  AFTER UPDATE ON " + TABLE_NAME_LAST_VIEWED + " FOR EACH ROW" +
+                    "  BEGIN " +
+                    "UPDATE " + TABLE_NAME_LAST_VIEWED +
+                    "  SET " + LAST_VIEWED_TIMESTAMP + " = current_timestamp" +
+                    "  WHERE ROWID = old.ROWID;" +
+                    "  END";
 
     private static DatabaseCreator mSingletonInstance = null;
 
@@ -171,12 +180,12 @@ public class DatabaseCreator extends SQLiteOpenHelper {
     // Method is called during creation of the database
     @Override
     public void onCreate(SQLiteDatabase database) {
-        //new system
         database.execSQL(CREATE_TABLE_SUBJECTS);
         database.execSQL(CREATE_TABLE_LAST_VIEWED);
         database.execSQL(CREATE_TABLE_ADMISSION_COUNTERS);
         database.execSQL(CREATE_TABLE_ADMISSION_PERCENTAGES_META);
         database.execSQL(CREATE_TABLE_ADMISSION_PERCENTAGES_DATA);
+        database.execSQL(ON_UPDATE_UPDATE_TIMESTAMP);
     }
 
     // Method is called during an upgrade of the database,
@@ -193,6 +202,7 @@ public class DatabaseCreator extends SQLiteOpenHelper {
             database.execSQL(CREATE_TABLE_LAST_VIEWED);
             database.execSQL(CREATE_TABLE_ADMISSION_PERCENTAGES_META);
             database.execSQL(CREATE_TABLE_ADMISSION_PERCENTAGES_DATA);
+            database.execSQL(ON_UPDATE_UPDATE_TIMESTAMP);
 
             transferFrom12To13(database);
         }
