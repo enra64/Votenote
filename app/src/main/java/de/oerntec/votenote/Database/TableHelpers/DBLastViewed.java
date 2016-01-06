@@ -18,7 +18,6 @@ public class DBLastViewed {
     private DBLastViewed(Context context){
         DatabaseCreator dbHelper = DatabaseCreator.getInstance(context);
         mDatabase = dbHelper.getWritableDatabase();
-        dbHelper.createLastViewed(mDatabase);
     }
 
     public static DBLastViewed setupInstance(Context context) {

@@ -265,7 +265,7 @@ public class DatabaseCreator extends SQLiteOpenHelper {
         //noinspection ResultOfMethodCallIgnored
         targetDirectory.mkdirs();
         SimpleDateFormat timeStamp = new SimpleDateFormat("y_MM_d_k_m_s", Locale.getDefault());
-        String name = "Votenote Backup " + timeStamp.format(Calendar.getInstance()) + ".db";
+        String name = "Votenote Backup " + timeStamp.format(Calendar.getInstance().getTime()) + ".db";
         File targetFile = new File(targetDirectory.getPath() + "/" + name);
         try {
             copyFile(new FileInputStream(source), new FileOutputStream(targetFile));
