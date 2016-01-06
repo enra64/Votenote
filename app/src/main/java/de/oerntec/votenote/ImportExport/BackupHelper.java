@@ -21,19 +21,10 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.util.Log;
-import android.util.Xml;
 import android.widget.Toast;
 
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
-
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.channels.FileChannel;
 
 import de.oerntec.votenote.Database.DatabaseCreator;
 import de.oerntec.votenote.Database.TableHelpers.DBSubjects;
@@ -68,12 +59,11 @@ public class BackupHelper {
                     @Override
                     public void onChosenDir(String chosenDir) {
                         try {
-                            DatabaseCreator.getInstance(context).importDatabase(chosenDir);
-                            Toast.makeText(context, context.getString(R.string.import_result_ok), Toast.LENGTH_LONG).show();
+                            handleFileType(chosenDir, context);
                             if (context instanceof SubjectManagementActivity)
                                 ((SubjectManagementActivity) context).reloadAdapter();
                         } catch (FileNotFoundException e){
-                            Toast.makeText(context, "source not found, no backup created!", Toast.LENGTH_LONG).show();
+                            Toast.makeText(context, "source file not found, no backup created!", Toast.LENGTH_LONG).show();
                         } catch (IOException e) {
                             e.printStackTrace();
                             Toast.makeText(context, context.getString(R.string.import_result_bad), Toast.LENGTH_LONG).show();
@@ -83,6 +73,17 @@ public class BackupHelper {
         );
         //You can change the default filename using the public variable "Default_File_Name"
         fileOpenDialog.chooseFile_or_Dir();
+    }
+
+    private static void handleFileType(String chosenDir, Context context) throws IOException {
+        if (chosenDir.contains("db")) {
+            DatabaseCreator.getInstance(context).importDatabase(chosenDir);
+            Toast.makeText(context, context.getString(R.string.import_result_ok), Toast.LENGTH_LONG).show();
+        } else if (chosenDir.contains("xml")) {
+            int result = XmlImporter.importXml(chosenDir, context) ? R.string.import_result_ok : R.string.import_result_bad;
+            Toast.makeText(context, context.getString(result), Toast.LENGTH_LONG).show();
+        } else
+            Toast.makeText(context, "Nur .xml oder .db unterstützt!", Toast.LENGTH_LONG).show();
     }
 
     public static void exportDialog(final Context context) {

@@ -23,14 +23,12 @@ import android.net.Uri;
 import android.preference.Preference;
 import android.support.v4.content.FileProvider;
 import android.util.AttributeSet;
-import android.util.Log;
 
 import java.io.File;
 
 import de.oerntec.votenote.Database.DatabaseCreator;
 import de.oerntec.votenote.ImportExport.BackupHelper;
 import de.oerntec.votenote.ImportExport.CsvExporter;
-import de.oerntec.votenote.ImportExport.XmlImporter;
 
 public class CustomActionPreference extends Preference {
     String mActionKey;
@@ -66,9 +64,6 @@ public class CustomActionPreference extends Preference {
                 break;
             case "backup_import":
                 BackupHelper.importDialog(getContext());
-                break;
-            case "xml_import":
-                XmlImporter.importDialog(getContext());
                 break;
             default:
                 super.onClick();

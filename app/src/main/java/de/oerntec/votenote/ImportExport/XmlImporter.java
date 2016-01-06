@@ -17,12 +17,9 @@
 * */
 package de.oerntec.votenote.ImportExport;
 
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.util.Log;
 import android.util.Xml;
-import android.widget.Toast;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -43,72 +40,24 @@ import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageData;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageMeta;
 import de.oerntec.votenote.Database.TableHelpers.DBSubjects;
 import de.oerntec.votenote.MainActivity;
-import de.oerntec.votenote.R;
-import de.oerntec.votenote.SubjectManagerStuff.SubjectManagementActivity;
 
 public class XmlImporter {
-    private static boolean success;
-    private static Context mContext;
-
-    public static void importDialog(final Context activity) {
-        mContext = activity;
-        //if there already are subjects, ask the user whether he truly wants to delete everything
-        if (DBSubjects.getInstance().getCount() > 0) {
-            AlertDialog.Builder b = new AlertDialog.Builder(activity);
-            b.setTitle(activity.getString(R.string.xml_import_dialog_title));
-            b.setMessage(activity.getString(R.string.xml_import_warning_message));
-            b.setPositiveButton(R.string.dialog_button_ok, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    startDialog(activity);
-                }
-            });
-            b.setNegativeButton(R.string.dialog_button_abort, null);
-            b.show();
-        } else
-            startDialog(activity);
-    }
-
-    private static void startDialog(final Context activity) {
-        FileDialog fileOpenDialog = new FileDialog(
-                activity,
-                "FileOpen..",
-                new FileDialog.FileDialogListener() {
-                    @Override
-                    public void onChosenDir(String chosenDir) {
-                        success = true;
-                        importXml(chosenDir);
-                        //check whether an exception was catched
-                        if (success)
-                            Toast.makeText(activity, activity.getString(R.string.import_result_ok), Toast.LENGTH_LONG).show();
-                        else
-                            Toast.makeText(activity, activity.getString(R.string.import_result_bad), Toast.LENGTH_LONG).show();
-
-                        if (activity instanceof SubjectManagementActivity) {
-                            ((SubjectManagementActivity) activity).reloadAdapter();
-                        }
-                    }
-                }
-        );
-        //You can change the default filename using the public variable "Default_File_Name"
-        fileOpenDialog.chooseFile_or_Dir();
-    }
-
-    private static void importXml(String filename) {
+    public static boolean importXml(String filename, Context context) {
         File file = new File(filename);
         InputStream inputStream;
-        DatabaseCreator.getInstance(mContext).reset();
+        DatabaseCreator.getInstance(context).reset();
         try {
             inputStream = new FileInputStream(file);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             MainActivity.toast("File not found!");
-            return;
+            return false;
         }
-        startParser(inputStream);
+        return startParser(inputStream);
     }
 
-    private static void startParser(InputStream in) {
+    private static boolean startParser(InputStream in) {
+        boolean success = true;
         try {
             XmlPullParser parser = Xml.newPullParser();
             parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
@@ -116,8 +65,8 @@ public class XmlImporter {
             parser.nextTag();
             parse(parser);
         } catch (XmlPullParserException | IOException e) {
-            success = false;
             e.printStackTrace();
+            success = false;
         } finally {
             try {
                 in.close();
@@ -126,6 +75,7 @@ public class XmlImporter {
                 success = false;
             }
         }
+        return success;
     }
 
     private static void parse(XmlPullParser parser) throws XmlPullParserException, IOException {

@@ -72,7 +72,7 @@
     <string name="tutorial_lessons_diagram">Show a diagram</string>
     <string name="tutorial_lessons_add">Add a lesson</string>
     <string name="tutorial_lessons_about">Show calculated values</string>
-    <string name="tutorial_import_description">Import XML backup</string>
+    <string name="tutorial_import_description">Import backup</string>
     <string name="xml_importer_file_not_found">File not found</string>
     <string name="xml_import_warning_message">All current lessons and subjects will be lost!</string>
     <string name="xml_import_dialog_title">Import</string>
@@ -121,4 +121,8 @@
     <string name="voted_assignments_w_placeholder_info_card">%1$d voted Assignments</string>
     <string name="number_of_done_assignments_lesson_card">%1$d of %2$d Votes</string>
     <string name="x_th_lesson_lesson_card">%1$s. lesson</string>
+    <string name="activate_swipe_to_delete_title">Activate feature</string>
+    <string name="dialog_yes">Yes</string>
+    <string name="pref_swipe_to_delete_lesson">Delete by swiping</string>
+    <string name="swipe_to_delete_lesson_enable_feature_dialog_message">You tried to delete an item by swiping. Keep this feature enabled?</string>
 </resources>

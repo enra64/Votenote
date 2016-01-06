@@ -212,7 +212,7 @@ public class FileDialog {
                 } else if (Select_type == FileSave || Select_type == FileOpen) {
                     //avoid showing non-xml files for import
                     if (Select_type == FileOpen) {
-                        if (file.getName().contains(".db"))
+                        if (file.getName().contains(".db") || file.getName().contains(".xml"))
                             dirs.add(file.getName());
                     }
                     //show all files when exporting
