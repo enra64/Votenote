@@ -21,7 +21,6 @@ import android.content.Context;
 import android.graphics.Color;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -115,8 +114,8 @@ public class AdmissionPercentageAdapter extends RecyclerView.Adapter<AdmissionPe
     public void reinstateLesson() {
         //reload database
         requery();
-        if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
-            Log.i("ap adapter", "reinstate at " + mLastDeletedPosition);
+        //if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
+        //    Log.i("ap adapter", "reinstate at " + mLastDeletedPosition);
         //notify of changes
         notifyItemInserted(mLastDeletedPosition);
         notifyChangedLessonRange(mLastDeletedPosition + 1);
@@ -143,8 +142,8 @@ public class AdmissionPercentageAdapter extends RecyclerView.Adapter<AdmissionPe
         String savePointId = "delete_lesson_" + System.currentTimeMillis();
         mDataDb.createSavepoint(savePointId);
         final int recyclerViewPosition = getRecyclerViewPosition(item);
-        if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
-            Log.i("ap adapter", "delete pos " + recyclerViewPosition);
+        //if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
+        //    Log.i("ap adapter", "delete pos " + recyclerViewPosition);
         mLastDeletedPosition = recyclerViewPosition;
         mDataDb.deleteItem(item);
         requery();
@@ -237,8 +236,8 @@ public class AdmissionPercentageAdapter extends RecyclerView.Adapter<AdmissionPe
             //adjust for the info view
             position--;
 
-            if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
-                Log.i("ap adapter", "bind view at " + position);
+            //if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
+            //    Log.i("ap adapter", "bind view at " + position);
             AdmissionPercentageData data = mData.get(position);
 
             //load strings

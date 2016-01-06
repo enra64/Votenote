@@ -44,8 +44,6 @@ import java.io.StringWriter;
 
 import de.oerntec.votenote.AdmissionPercentageFragmentStuff.AdmissionPercentageFragment;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionCounters;
-import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageData;
-import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageMeta;
 import de.oerntec.votenote.Database.TableHelpers.DBLastViewed;
 import de.oerntec.votenote.Database.TableHelpers.DBSubjects;
 import de.oerntec.votenote.Diagram.DiagramActivity;
@@ -131,10 +129,9 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
 
     private static int mCurrentSelectedSubjectId;
     private static MainActivity me;
-    private boolean mCurrentFragmentHasPrespoints;
-
     DBLastViewed mLastViewedDb;
     DBSubjects mSubjectDb;
+    private boolean mCurrentFragmentHasPrespoints;
 
     public static void toast(String text) {
         Toast.makeText(me, text, Toast.LENGTH_SHORT).show();
@@ -252,6 +249,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         //tutorials
         if (lessonCount == 0 && subjectCount > 0) {
             if (!getPreference("tutorial_lessons_read", false)) {
+                @SuppressWarnings("deprecation")
                 AlertDialog.Builder b = new AlertDialog.Builder(this, AlertDialog.THEME_DEVICE_DEFAULT_LIGHT);
                 b.setTitle("Tutorial");
                 b.setView(this.getLayoutInflater().inflate(R.layout.tutorial_lessons, null));
@@ -261,6 +259,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
             }
         } else if (subjectCount == 0) {
             if (!getPreference("tutorial_base_read", false)) {
+                @SuppressWarnings("deprecation")
                 AlertDialog.Builder b = new AlertDialog.Builder(this, AlertDialog.THEME_DEVICE_DEFAULT_LIGHT);
                 b.setTitle("Tutorial");
                 b.setMessage(getString(R.string.create_new_subject_command));
@@ -314,21 +313,12 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         mCurrentFragmentHasPrespoints = DBAdmissionCounters.getInstance().getItemsForSubject(mCurrentSelectedSubjectId).size() > 0;
 
         // update the menu_main content by replacing fragments
-        if (ENABLE_DEBUG_LOG_CALLS)
-            Log.i("votenote main", "selected fragment " + position);
+        //if (ENABLE_DEBUG_LOG_CALLS)
+        //    Log.i("votenote main", "selected fragment " + position);
         FragmentManager fragmentManager = getFragmentManager();
         fragmentManager
                 .beginTransaction()
                 .replace(R.id.container, SubjectFragment.newInstance(mCurrentSelectedSubjectId, position)).commit();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        //save where the user left
-        if (mCurrentSelectedSubjectId != -1) {
-
-        }
     }
 
     /**

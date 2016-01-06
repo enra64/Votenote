@@ -20,8 +20,6 @@ package de.oerntec.votenote.Database;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.os.Environment;
-import android.text.format.Time;
 import android.util.Log;
 
 import java.io.File;
@@ -30,6 +28,9 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Locale;
 
 import de.oerntec.votenote.MainActivity;
 
@@ -197,15 +198,6 @@ public class DatabaseCreator extends SQLiteOpenHelper {
         }
     }
 
-    /**
-     * this method exists because i imported an old database file without this table during development.
-     * it is unnecessary during deployment
-     * @param db
-     */
-    public void createLastViewed(SQLiteDatabase db) {
-        db.execSQL(CREATE_TABLE_LAST_VIEWED);
-    }
-
     public void transferFrom12To13(SQLiteDatabase database){
         //transfer subject information
         database.execSQL("INSERT INTO " + TABLE_NAME_SUBJECTS + "(" + SUBJECTS_ID + "," + SUBJECTS_NAME + ")" +
@@ -269,20 +261,29 @@ public class DatabaseCreator extends SQLiteOpenHelper {
     public File getDbFileBackup(Context context) {
         File source = new File(getReadableDatabase().getPath());
         File targetDirectory = new File(context.getFilesDir().getPath() + "/rodb");
+        removeOldBackups(targetDirectory);
+        //noinspection ResultOfMethodCallIgnored
         targetDirectory.mkdirs();
-        Time timeStamp = new Time();
-        timeStamp.setToNow();
-        String name = "Votenote Backup " + timeStamp.format("%Y_%m_%d_%H_%M_%S") + ".db";
+        SimpleDateFormat timeStamp = new SimpleDateFormat("y_MM_d_k_m_s", Locale.getDefault());
+        String name = "Votenote Backup " + timeStamp.format(Calendar.getInstance()) + ".db";
         File targetFile = new File(targetDirectory.getPath() + "/" + name);
         try {
             copyFile(new FileInputStream(source), new FileOutputStream(targetFile));
         } catch (IOException e) {
             e.printStackTrace();
-
         }
         if(!targetFile.isFile())
             throw new AssertionError("wat (db bkp file no file)");
         return targetFile;
+    }
+
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    private void removeOldBackups(File targetDirectory) {
+        if (targetDirectory.exists() && targetDirectory.isDirectory()) {
+            for (File f : targetDirectory.listFiles())
+                f.delete();
+        } else if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
+            Log.i("rodb del", "no old dir found");
     }
 
     public boolean exportDatabase(String externalDbPath) throws IOException {
