@@ -149,9 +149,6 @@ public class AdmissionPercentageFragment extends Fragment implements SwipeDeleti
 
         mMetaObject = mAdapter.getCurrentMeta();
 
-        if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
-            Log.i("ap fragemnt", toString());
-
         //LISTVIEW FOR uebung instances
         if (mAdapter.getItemCount() == 0)
             if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
@@ -251,7 +248,7 @@ public class AdmissionPercentageFragment extends Fragment implements SwipeDeleti
 
     public void showUndoSnackBar(final int lessonId, int lessonPosition) {
         //if another one has been deleted before this one, release that sp now
-        if (mLastRemovalSavePointId != null) mDataDb.releaseSavepoint(mLastRemovalSavePointId);
+        trySavepointRelease();
         //remove the lesson. creates a savepoint before that, returns the id
         mLastRemovalSavePointId = mAdapter.removeLesson(new AdmissionPercentageData(mPercentageMetaId, lessonId, -1, -1));
         if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
@@ -271,8 +268,7 @@ public class AdmissionPercentageFragment extends Fragment implements SwipeDeleti
                             case DISMISS_EVENT_MANUAL:
                             case DISMISS_EVENT_TIMEOUT:
                                 //DISMISS_EVENT_CONSECUTIVE: the consecutive remove hits after the next one is released, so that one wont find its savepoint
-                                if (mLastRemovalSavePointId != null)
-                                    mDataDb.releaseSavepoint(mLastRemovalSavePointId);
+                                trySavepointRelease();
                             default:
                                 super.onDismissed(snackbar, event);
                         }
@@ -285,6 +281,13 @@ public class AdmissionPercentageFragment extends Fragment implements SwipeDeleti
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         ((MainActivity) activity).onSectionAttached(getArguments().getInt(ARG_PERCENTAGE_META_ID));
+    }
+
+    private void trySavepointRelease() {
+        if (mLastRemovalSavePointId != null) {
+            mDataDb.releaseSavepoint(mLastRemovalSavePointId);
+            mLastRemovalSavePointId = null;
+        }
     }
 
     //dont do anything, as we only delete the lesson when the undo bar gets hidden

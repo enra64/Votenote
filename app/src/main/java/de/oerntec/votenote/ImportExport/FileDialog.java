@@ -59,6 +59,7 @@ public class FileDialog {
     private static final int FileOpen = 0;
     private static final int FileSave = 1;
     private static final int FolderChoose = 2;
+    private static final boolean ENABLE_FILE_DIALOG_LOG = false;
     public String defaultFileName = "export.db";
     private int Select_type = FileSave;
     private String mSdcardDirectory = "";
@@ -66,7 +67,6 @@ public class FileDialog {
     private String selectedFileName = defaultFileName;
     private EditText inputText;
     private TextView breadcrumbsText;
-
     private String m_dir = "";
     private List<String> mSubdirs = null;
     private FileDialogListener mSimpleFileDialogListener = null;
@@ -131,10 +131,13 @@ public class FileDialog {
         while (!dirFile.exists() || !dirFile.isDirectory()) {
             dir = dirFile.getParent();
             dirFile = new File(dir);
-            if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
+            //noinspection ConstantConditions,PointlessBooleanExpression
+            if (MainActivity.ENABLE_DEBUG_LOG_CALLS && ENABLE_FILE_DIALOG_LOG)
                 Log.d("~~~~~", "dir=" + dir);
         }
-        if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
+
+        //noinspection ConstantConditions,PointlessBooleanExpression
+        if (MainActivity.ENABLE_DEBUG_LOG_CALLS && ENABLE_FILE_DIALOG_LOG)
             Log.d("~~~~~", "dir=" + dir);
         //mSdcardDirectory
         try {
@@ -169,7 +172,8 @@ public class FileDialog {
             public boolean onKey(DialogInterface arg0, int keyCode, KeyEvent event) {
                 if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN) {
                     goToUpperLevel();
-                    if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
+                    //noinspection ConstantConditions,PointlessBooleanExpression
+                    if (MainActivity.ENABLE_DEBUG_LOG_CALLS && ENABLE_FILE_DIALOG_LOG)
                         Log.i("keylistener", "back");
                     return true;
                 }
@@ -198,7 +202,8 @@ public class FileDialog {
                     && !"/".equals(m_dir)) {
                 dirs.add("..");
             }
-            if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
+            //noinspection ConstantConditions,PointlessBooleanExpression
+            if (MainActivity.ENABLE_DEBUG_LOG_CALLS && ENABLE_FILE_DIALOG_LOG)
                 Log.d("~~~~", "m_dir=" + m_dir);
 
             if (!dirFile.exists() || !dirFile.isDirectory()) {
