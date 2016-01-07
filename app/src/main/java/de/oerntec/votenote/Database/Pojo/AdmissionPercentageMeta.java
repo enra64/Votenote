@@ -1,12 +1,9 @@
 package de.oerntec.votenote.Database.Pojo;
 
-import android.graphics.Color;
-
 import java.util.List;
 
 import de.oerntec.votenote.Database.NameAndIdPojo;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageData;
-import de.oerntec.votenote.R;
 
 /**
  * POJO class for representing the metadata available about an admission percentage counter
@@ -20,6 +17,15 @@ public class AdmissionPercentageMeta implements NameAndIdPojo {
     private boolean mDataCalculated = false;
     private float numberOfLessonsLeft, scheduledNumberOfAssignments, neededAssignmentsPerUebung, numberOfNeededAssignments,
             remainingNeededAssignments, numberOfFinishedAssignments, numberOfElapsedLessons;
+
+    public AdmissionPercentageMeta(int id, int subjectId, int estimatedAssignmentsPerLesson, int estimatedLessonCount, int targetPercentage, String name) {
+        this.id = id;
+        this.subjectId = subjectId;
+        this.estimatedAssignmentsPerLesson = estimatedAssignmentsPerLesson;
+        this.estimatedLessonCount = estimatedLessonCount;
+        this.targetPercentage = targetPercentage;
+        this.name = name;
+    }
 
     public float getNumberOfNeededAssignments() {
         if(!mDataCalculated) calculateData();
@@ -62,7 +68,7 @@ public class AdmissionPercentageMeta implements NameAndIdPojo {
     }
 
     public boolean getHasLessons(){
-        if(!mDataLoaded) throw new AssertionError("no data loaded");
+        if (!mDataLoaded) throw new AssertionError("pojo has not loaded data");
         return mDataList.size() > 0;
     }
 
@@ -70,7 +76,7 @@ public class AdmissionPercentageMeta implements NameAndIdPojo {
      * calculate the interesting numbers from the raw data, and save them in this meta object
      */
     public void calculateData() {
-        if(!mDataLoaded) throw new AssertionError("no data loaded");
+        if (!mDataLoaded) throw new AssertionError("pojo has not loaded data");
         scheduledNumberOfAssignments = estimatedAssignmentsPerLesson * estimatedLessonCount;
         numberOfNeededAssignments = (scheduledNumberOfAssignments * (float) targetPercentage) / 100f;
         numberOfFinishedAssignments = getFinishedAssignments();
@@ -82,7 +88,7 @@ public class AdmissionPercentageMeta implements NameAndIdPojo {
     }
 
     public int getFinishedAssignments(){
-        if(!mDataLoaded) throw new AssertionError("no data loaded");
+        if (!mDataLoaded) throw new AssertionError("pojo has not loaded data");
         int finishedAssignments = 0;
         for(AdmissionPercentageData d : mDataList)
             finishedAssignments += d.finishedAssignments;
@@ -93,24 +99,28 @@ public class AdmissionPercentageMeta implements NameAndIdPojo {
      * calculate the current average vote
      */
     public float getAverageFinished() {
-        if(!mDataLoaded) throw new AssertionError("no data loaded");
+        return getAverageFinished(0, 0);
+    }
+
+    public float getAverageFinished(int addToAvailable, int addToFinished) {
+        if (!mDataLoaded) throw new AssertionError("pojo has not loaded data");
         int availableAssignments = 0, finishedAssignments = 0;
         for(AdmissionPercentageData d : mDataList){
             availableAssignments += d.availableAssignments;
             finishedAssignments += d.finishedAssignments;
         }
-        return ((float) finishedAssignments / (float) availableAssignments) * 100.f;
+        finishedAssignments += addToFinished;
+        availableAssignments += addToAvailable;
+
+        //safeguard against weird numbers possibly produced by adding the values
+        finishedAssignments = finishedAssignments < 0 ? 0 : finishedAssignments;
+        availableAssignments = availableAssignments < 0 ? 0 : availableAssignments;
+        float avg = ((float) finishedAssignments / (float) availableAssignments) * 100.f;
+        //safeguard against weird numbers possibly produced by adding the values
+        return Float.isInfinite(avg) || Float.isNaN(avg) ? -1 : avg;
     }
 
-    public AdmissionPercentageMeta(int id, int subjectId, int estimatedAssignmentsPerLesson, int estimatedLessonCount, int targetPercentage, String name) {
-        this.id = id;
-        this.subjectId = subjectId;
-        this.estimatedAssignmentsPerLesson = estimatedAssignmentsPerLesson;
-        this.estimatedLessonCount = estimatedLessonCount;
-        this.targetPercentage = targetPercentage;
-        this.name = name;
-    }
-
+    @SuppressWarnings("SimplifiableIfStatement")
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

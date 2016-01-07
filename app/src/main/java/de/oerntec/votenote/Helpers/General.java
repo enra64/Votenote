@@ -4,9 +4,11 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.preference.PreferenceManager;
+import android.support.v4.content.ContextCompat;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.TextView;
 
 import java.util.Locale;
 
@@ -15,6 +17,7 @@ import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageData;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageMeta;
 import de.oerntec.votenote.Database.TableHelpers.DBLastViewed;
 import de.oerntec.votenote.Database.TableHelpers.DBSubjects;
+import de.oerntec.votenote.R;
 
 /**
  * General static helper function class
@@ -69,7 +72,6 @@ public class General {
 
     /**
      * Set up singletons for all databases
-     * @param context
      */
     public static void setupDatabaseInstances(Context context){
         //database access
@@ -78,5 +80,9 @@ public class General {
         DBAdmissionPercentageData.setupInstance(context);
         DBAdmissionPercentageMeta.setupInstance(context);
         DBLastViewed.setupInstance(context);
+    }
+
+    public static void applyClueColor(TextView textView, Context context, boolean isOk) {
+        textView.setTextColor(ContextCompat.getColor(context, isOk ? R.color.ok_green : R.color.warning_red));
     }
 }

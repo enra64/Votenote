@@ -56,4 +56,14 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         tools:ignore="HardcodedText" />
 
+    <TextView
+        android:id="@+id/subject_fragment_dialog_newentry_overall_percentage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/infoTextView"
+        android:layout_centerHorizontal="true"
+        android:text="45% insgesamt"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        tools:ignore="HardcodedText" />
+
 </RelativeLayout>

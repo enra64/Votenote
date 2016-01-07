@@ -58,7 +58,7 @@ public class DBAdmissionPercentageData extends CrudDb<AdmissionPercentageData> {
      * @return the singleton instance
      */
     public static DBAdmissionPercentageData getInstance() {
-        return (DBAdmissionPercentageData) mInstance;
+        return mInstance;
     }
 
     @Override
@@ -81,7 +81,6 @@ public class DBAdmissionPercentageData extends CrudDb<AdmissionPercentageData> {
             throw new AssertionError("no item was changed");
     }
 
-    @Deprecated
     public AdmissionPercentageData getItem(int lessonId, int apMetaId) {
         return getItem(new AdmissionPercentageData(apMetaId, lessonId, -1, -1));
     }

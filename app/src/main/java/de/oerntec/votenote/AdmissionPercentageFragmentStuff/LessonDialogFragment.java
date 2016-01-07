@@ -4,7 +4,6 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +15,7 @@ import de.oerntec.votenote.Database.Pojo.AdmissionPercentageData;
 import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMeta;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageData;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageMeta;
+import de.oerntec.votenote.Helpers.General;
 import de.oerntec.votenote.MainActivity;
 import de.oerntec.votenote.R;
 
@@ -81,6 +81,15 @@ public class LessonDialogFragment extends DialogFragment implements DialogInterf
     private NumberPicker mAvailableAssignmentsPicker;
 
     /**
+     * display the resulting overall percentage
+     */
+    private TextView mResultingPercentageView;
+
+    private AdmissionPercentageMeta mMetaItem;
+
+    private boolean mLiveUpdateResultingPercentage;
+
+    /**
      * default constructor
      */
     public LessonDialogFragment() {
@@ -114,10 +123,13 @@ public class LessonDialogFragment extends DialogFragment implements DialogInterf
             mLessonId = getArguments().getInt(ARG_LESSON_ID);
             mIsNewLesson = mLessonId == ADD_LESSON_CODE;
             mIsOldLesson = !mIsNewLesson;
+            mMetaItem = DBAdmissionPercentageMeta.getInstance().getItem(mMetaId);
+            mMetaItem.loadData(DBAdmissionPercentageData.getInstance(), MainActivity.getPreference("reverse_lesson_sort", false));
 
             //load shared settings
             mReverseLessonSort = MainActivity.getPreference("reverse_lesson_sort", false);
             mEnableDataAutoFix = MainActivity.getPreference("move_max_assignments_picker", true);
+            mLiveUpdateResultingPercentage = MainActivity.getPreference("live_resulting_percentage", true);
 
             //get database instance
             mDataDb = DBAdmissionPercentageData.getInstance();
@@ -130,7 +142,7 @@ public class LessonDialogFragment extends DialogFragment implements DialogInterf
     }
 
     /**
-     * Create the view and save references
+     * Called after onCreate
      */
     private View createView(LayoutInflater inflater) {
         //inflate rootView
@@ -140,6 +152,15 @@ public class LessonDialogFragment extends DialogFragment implements DialogInterf
         mInfoView = (TextView) rootView.findViewById(R.id.infoTextView);
         mFinishedAssignmentsPicker = (NumberPicker) rootView.findViewById(R.id.pickerMyVote);
         mAvailableAssignmentsPicker = (NumberPicker) rootView.findViewById(R.id.pickerMaxVote);
+        mResultingPercentageView = (TextView) rootView.findViewById(R.id.subject_fragment_dialog_newentry_overall_percentage);
+
+        if (mIsOldLesson)
+            mOldData = mDataDb.getItem(mLessonId, mMetaId);
+
+        if (!mLiveUpdateResultingPercentage)
+            mResultingPercentageView.setVisibility(View.GONE);
+        else
+            updateResultingPercentage(mOldData.finishedAssignments, mOldData.availableAssignments);
 
         return rootView;
     }
@@ -159,8 +180,6 @@ public class LessonDialogFragment extends DialogFragment implements DialogInterf
     @Override
     public void onStart() {
         super.onStart();
-        if(mIsOldLesson)
-            mOldData = mDataDb.getItem(mLessonId, mMetaId);
 
         //set appropriate title
         getDialog().setTitle(getTitle());
@@ -170,7 +189,9 @@ public class LessonDialogFragment extends DialogFragment implements DialogInterf
         //set the current values of the pickers as explanation text
         mInfoView.setText(getString(R.string.lesson_dialog_fragment_picker_info_text, mFinishedAssignmentsPicker.getValue(), mAvailableAssignmentsPicker.getValue()));
 
-        mInfoView.setTextColor(Color.argb(255, 153, 204, 0));//green
+        //if the autofixer is not enabled, make the text green, because green/red hints validity
+        if (!mEnableDataAutoFix)
+            General.applyClueColor(mInfoView, getActivity(), true);
     }
 
     /**
@@ -224,6 +245,7 @@ public class LessonDialogFragment extends DialogFragment implements DialogInterf
                     int maxVoteValue = mAvailableAssignmentsPicker.getValue();
                     if (myVoteValue > maxVoteValue)
                         mAvailableAssignmentsPicker.setValue(myVoteValue);
+                    updateResultingPercentage(myVoteValue, maxVoteValue);
                     //update info text
                     mInfoView.setText(getString(R.string.lesson_dialog_fragment_picker_info_text, mFinishedAssignmentsPicker.getValue(), mAvailableAssignmentsPicker.getValue()));
                 }
@@ -236,6 +258,7 @@ public class LessonDialogFragment extends DialogFragment implements DialogInterf
                     int maxVoteValue = mAvailableAssignmentsPicker.getValue();
                     if (myVoteValue > maxVoteValue)
                         mFinishedAssignmentsPicker.setValue(maxVoteValue);
+                    updateResultingPercentage(myVoteValue, maxVoteValue);
                     //update info text
                     mInfoView.setText(getString(R.string.lesson_dialog_fragment_picker_info_text, mFinishedAssignmentsPicker.getValue(), mAvailableAssignmentsPicker.getValue()));
                 }
@@ -253,14 +276,26 @@ public class LessonDialogFragment extends DialogFragment implements DialogInterf
                     mInfoView.setText(getString(R.string.lesson_dialog_fragment_picker_info_text, mFinishedAssignmentsPicker.getValue(), mAvailableAssignmentsPicker.getValue()));
                     boolean isValid = myVoteValue <= maxVoteValue;
                     ((AlertDialog)getDialog()).getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(isValid);
-                    mInfoView.setTextColor(isValid ?
-                            Color.argb(255, 153, 204, 0) :                            getActivity().getResources().getColor(R.color.warning_red));
+                    updateResultingPercentage(myVoteValue, maxVoteValue);
+                    General.applyClueColor(mInfoView, getActivity(), isValid);
                 }
             };
             //add change listener to update dialog explanation if pickers changed
             mAvailableAssignmentsPicker.setOnValueChangedListener(votePickerListener);
             mFinishedAssignmentsPicker.setOnValueChangedListener(votePickerListener);
         }
+    }
+
+    private void updateResultingPercentage(int myVote, int maxVote) {
+        if (!mLiveUpdateResultingPercentage)
+            return;
+        float newAvg;
+        if (mIsNewLesson)
+            newAvg = mMetaItem.getAverageFinished(maxVote, myVote);
+        else
+            newAvg = mMetaItem.getAverageFinished(maxVote - mOldData.availableAssignments, myVote - mOldData.finishedAssignments);
+        mResultingPercentageView.setText(String.format("%.1f%%", newAvg));
+        General.applyClueColor(mResultingPercentageView, getActivity(), newAvg >= mMetaItem.targetPercentage);
     }
 
     /**

@@ -266,6 +266,7 @@ public class AdmissionPercentageFragment extends Fragment implements SwipeDeleti
                         switch (event) {
                             case DISMISS_EVENT_MANUAL:
                             case DISMISS_EVENT_TIMEOUT:
+                            case DISMISS_EVENT_CONSECUTIVE:
                                 if (mLastRemovalSavePointId != null)
                                     mDataDb.releaseSavepoint(mLastRemovalSavePointId);
                             default:

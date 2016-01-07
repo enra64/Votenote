@@ -284,7 +284,7 @@ public class AdmissionPercentageAdapter extends RecyclerView.Adapter<AdmissionPe
         if (Float.isNaN(average))
             averageVoteView.setText(mContext.getString(R.string.infoview_vote_average_no_data));
         else
-            averageVoteView.setText(String.format("%.1f", average) + "%");
+            averageVoteView.setText(String.format("%.1f%%", average));
 
         //color text in
         averageVoteView.setTextColor(average >= minVote ? Color.argb(255, 153, 204, 0) : Color.argb(255, 204, 0, 0));//red
@@ -303,7 +303,7 @@ public class AdmissionPercentageAdapter extends RecyclerView.Adapter<AdmissionPe
 
         //set color
         if (meta.getNeededAssignmentsPerUebung() > meta.estimatedAssignmentsPerLesson)
-            averageNeededVotesView.setTextColor(Color.argb(255, 204, 0, 0));//red
+            averageNeededVotesView.setTextColor(ContextCompat.getColor(mContext, R.color.warning_red));
         else
             averageNeededVotesView.setTextColor(ContextCompat.getColor(mContext, R.color.abc_primary_text_material_light));
     }

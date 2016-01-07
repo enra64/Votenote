@@ -5,7 +5,7 @@
     <color name="colorControlHighlight">#64dd17</color>
     <color name="accent">#558b2f</color>
     <color name="textColorPrimary">#000</color>
-    <color name="fabColor">#8bc34a</color>
+    <color name="ok_green">#99CC00</color>
     <color name="textColorActionBar">#FFF</color>
     <color name="warning_red">#D50000</color>
 </resources>

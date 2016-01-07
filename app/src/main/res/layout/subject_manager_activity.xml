@@ -34,7 +34,7 @@
             android:layout_gravity="bottom|end"
             android:layout_margin="@dimen/add_fab_compat_margin"
             android:src="@drawable/ic_button_add"
-            support:backgroundTint="@color/fabColor"
+            support:backgroundTint="@color/colorPrimary"
             support:borderWidth="0dp"
             support:elevation="6dp"
             support:pressedTranslationZ="12dp" />
