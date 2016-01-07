@@ -159,8 +159,10 @@ public class LessonDialogFragment extends DialogFragment implements DialogInterf
 
         if (!mLiveUpdateResultingPercentage)
             mResultingPercentageView.setVisibility(View.GONE);
-        else
+        else if (mIsOldLesson)
             updateResultingPercentage(mOldData.finishedAssignments, mOldData.availableAssignments);
+        else
+            updateResultingPercentage(0, 0);
 
         return rootView;
     }

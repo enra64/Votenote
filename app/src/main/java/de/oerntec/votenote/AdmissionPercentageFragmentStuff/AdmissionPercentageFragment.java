@@ -250,23 +250,27 @@ public class AdmissionPercentageFragment extends Fragment implements SwipeDeleti
     }
 
     public void showUndoSnackBar(final int lessonId, int lessonPosition) {
+        //if another one has been deleted before this one, release that sp now
+        if (mLastRemovalSavePointId != null) mDataDb.releaseSavepoint(mLastRemovalSavePointId);
         //remove the lesson. creates a savepoint before that, returns the id
         mLastRemovalSavePointId = mAdapter.removeLesson(new AdmissionPercentageData(mPercentageMetaId, lessonId, -1, -1));
+        if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
+            Log.i("apf", "creating savepoint " + mLastRemovalSavePointId);
         Snackbar
-            .make(mRootView.findViewById(R.id.subject_fragment_coordinator_layout), getActivity().getString(R.string.undobar_deleted), Snackbar.LENGTH_LONG)
-            .setAction("UNDO", new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    onUndo();
-                }
-            })
+                .make(mRootView.findViewById(R.id.subject_fragment_coordinator_layout), getActivity().getString(R.string.undobar_deleted), Snackbar.LENGTH_LONG)
+                .setAction("UNDO", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        onUndo();
+                    }
+                })
                 .setCallback(new Snackbar.Callback() {
                     @Override
                     public void onDismissed(Snackbar snackbar, int event) {
                         switch (event) {
                             case DISMISS_EVENT_MANUAL:
                             case DISMISS_EVENT_TIMEOUT:
-                            case DISMISS_EVENT_CONSECUTIVE:
+                                //DISMISS_EVENT_CONSECUTIVE: the consecutive remove hits after the next one is released, so that one wont find its savepoint
                                 if (mLastRemovalSavePointId != null)
                                     mDataDb.releaseSavepoint(mLastRemovalSavePointId);
                             default:
@@ -301,10 +305,5 @@ public class AdmissionPercentageFragment extends Fragment implements SwipeDeleti
             throw new AssertionError("mLastClickedView must not be null here, because it must only be called from the dialogfragment");
         SwipeDeletion.executeProgrammaticSwipeDeletion(getActivity(), this, mLastClickedView, mAdapter.getRecyclerViewPosition(mOldData));
         mLastClickedView = null;
-    }
-
-    @Override
-    public String toString() {
-        return "";//"apc fragment id " + mPercentageMetaId + " name " + mMetaObject.getDisplayName();
     }
 }
