@@ -1,4 +1,4 @@
-package de.oerntec.votenote.SubjectManagerStuff.SubjectCreation;
+package de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.CreationFragment;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -17,6 +17,7 @@ import de.oerntec.votenote.Database.TableHelpers.DBAdmissionCounters;
 import de.oerntec.votenote.Helpers.NotEmptyWatcher;
 import de.oerntec.votenote.R;
 import de.oerntec.votenote.SubjectManagerStuff.SeekerListener;
+import de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.SubjectCreationActivity;
 
 public class AdmissionCounterDialogFragment extends DialogFragment implements DialogInterface.OnClickListener {
     private static final String SUBJECT_ID = "subject_id";

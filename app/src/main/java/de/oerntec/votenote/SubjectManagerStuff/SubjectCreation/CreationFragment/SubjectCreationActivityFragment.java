@@ -1,4 +1,4 @@
-package de.oerntec.votenote.SubjectManagerStuff.SubjectCreation;
+package de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.CreationFragment;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -31,6 +31,9 @@ import de.oerntec.votenote.Database.TableHelpers.DBSubjects;
 import de.oerntec.votenote.Helpers.General;
 import de.oerntec.votenote.Helpers.NotEmptyWatcher;
 import de.oerntec.votenote.R;
+import de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.Dialogs;
+import de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.SubjectCreationActivity;
+import de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.SubjectCreationDialogInterface;
 import de.oerntec.votenote.SubjectManagerStuff.SubjectManagementActivity;
 
 /**

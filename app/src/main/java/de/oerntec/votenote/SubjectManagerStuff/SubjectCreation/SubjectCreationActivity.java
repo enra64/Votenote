@@ -7,7 +7,7 @@ import android.support.v7.widget.Toolbar;
 
 import de.oerntec.votenote.Helpers.General;
 import de.oerntec.votenote.R;
-import de.oerntec.votenote.SubjectManagerStuff.SubjectManagementActivity;
+import de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.CreationFragment.SubjectCreationActivityFragment;
 
 public class SubjectCreationActivity extends AppCompatActivity {
     public static final int DIALOG_RESULT_CLOSED = 0;
@@ -66,7 +66,7 @@ public class SubjectCreationActivity extends AppCompatActivity {
         General.setupDatabaseInstances(getApplicationContext());
     }
 
-    void callCreatorFragmentForItemChange(int itemId, boolean isPercentage, int state) {
+    public void callCreatorFragmentForItemChange(int itemId, boolean isPercentage, int state) {
         SubjectCreationActivityFragment creator = (SubjectCreationActivityFragment) getFragmentManager().findFragmentById(R.id.activity_subject_creation_fragment_container);
         switch (state){
             case DIALOG_RESULT_ADDED:

@@ -15,7 +15,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 * */
-package de.oerntec.votenote.SubjectManagerStuff.SubjectCreation;
+package de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.CreationFragment;
 
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -43,21 +43,6 @@ public class SubjectCreatorAdapter<T extends NameAndIdPojo> extends RecyclerView
 
     public T getItemAtPosition(int position) {
         return mData.get(position);
-    }
-
-    /**
-     * Add the item to the database and the recyclerview
-     * @param item
-     * @return True if the item has been successfully inserted
-     */
-    public boolean addItem(T item) {
-        //add to database
-        int check = mDb.addItemGetId(item);
-        requery();
-        //the counters are ordered by their id ascending, so the latest counter should be the lowest
-        if (check >= 0)
-            notifyItemInserted(mData.size() - 1);
-        return check >= 0;
     }
 
     /**
