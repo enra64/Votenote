@@ -125,4 +125,8 @@
     <string name="swipe_to_delete_lesson_enable_feature_dialog_message">Du hast versucht ein Element durch wischen zu löschen. Möchtest du dieses Feature aktiviert lassen?</string>
     <string name="dialog_yes">Ja</string>
     <string name="pref_swipe_to_delete_lesson">Löschen durch Swipen</string>
+    <string name="minimum_points_text">%d Punkte Minimum</string>
+    <string name="percentage_card_assignments_per_lesson">%d Aufgaben pro Übung</string>
+    <string name="percentage_card_target_lesson_conut">~%d Übungen</string>
+    <string name="percentage_card_target_percentage">%d%% benötigt</string>
 </resources>
