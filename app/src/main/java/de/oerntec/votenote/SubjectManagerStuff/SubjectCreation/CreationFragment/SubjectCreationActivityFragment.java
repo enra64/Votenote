@@ -164,23 +164,17 @@ public class SubjectCreationActivityFragment extends Fragment implements Subject
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         //inflate view, extract views
         View input = inflater.inflate(R.layout.subject_manager_fragment_subject_settings, container, false);
-        mList = (RecyclerView) input.findViewById(R.id.subject_manager_admission_counter_list);
-
-        initializeList(mList);
-
-        return input;
-    }
-
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
 
         if (mIsOldSubject) {
             Subject oldData = mSubjectDb.getItem(mSubjectId);
             mOldSubjectName = oldData.name;
         }
-    }
 
+        mList = (RecyclerView) input.findViewById(R.id.subject_manager_admission_counter_list);
+        initializeList(mList);
+
+        return input;
+    }
 
     @SuppressWarnings("unchecked")
     private void initializeList(RecyclerView recyclerView) {
@@ -199,7 +193,7 @@ public class SubjectCreationActivityFragment extends Fragment implements Subject
             public void onItemClick(View view, int position) {
                 if (mAdapter.getItemViewType(position) == UnifiedCreatorAdapter.VIEW_COUNTER)
                     Dialogs.showCounterDialog(getFragmentManager(), mSubjectId, (int) view.getTag(), false);
-                else
+                else if (mAdapter.getItemViewType(position) == UnifiedCreatorAdapter.VIEW_PERCENTAGE)
                     Dialogs.showPercentageDialog(getFragmentManager(), mSubjectId, (int) view.getTag(), false);
             }
 
@@ -207,7 +201,7 @@ public class SubjectCreationActivityFragment extends Fragment implements Subject
                 if ((int) view.getTag() != ID_ADD_ITEM) {
                     if (mAdapter.getItemViewType(position) == UnifiedCreatorAdapter.VIEW_COUNTER)
                         Dialogs.showCounterDeleteDialog(mAdapter.getCounterPojoAtPosition(position), getActivity(), SubjectCreationActivityFragment.this);
-                    else
+                    else if (mAdapter.getItemViewType(position) == UnifiedCreatorAdapter.VIEW_PERCENTAGE)
                         Dialogs.showPercentageDeleteDialog(mAdapter.getPercentagePojoAtPosition(position), getActivity(), SubjectCreationActivityFragment.this);
                 }
             }

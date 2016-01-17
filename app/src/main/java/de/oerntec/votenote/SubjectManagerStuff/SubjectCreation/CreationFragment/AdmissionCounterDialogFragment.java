@@ -127,6 +127,7 @@ public class AdmissionCounterDialogFragment extends DialogFragment implements Di
                 dialog.dismiss();
                 break;
             case DialogInterface.BUTTON_NEGATIVE:
+                mDb.rollbackToSavepoint(mSavepointId);
                 resultState = SubjectCreationActivity.DIALOG_RESULT_CLOSED;
                 break;
         }

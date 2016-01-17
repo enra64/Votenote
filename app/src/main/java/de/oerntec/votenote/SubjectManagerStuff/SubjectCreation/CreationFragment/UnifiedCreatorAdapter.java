@@ -23,8 +23,8 @@ import de.oerntec.votenote.R;
 import de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.Dialogs;
 
 public class UnifiedCreatorAdapter extends RecyclerView.Adapter<UnifiedCreatorAdapter.ViewHolder> implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
-    private static final int VIEW_INFO = 0;
-    private static final int VIEW_PERCENTAGE = 1;
+    static final int VIEW_INFO = 0;
+    static final int VIEW_PERCENTAGE = 1;
     static final int VIEW_COUNTER = 2;
 
     private List<AdmissionCounter> mCounterData;
@@ -66,13 +66,13 @@ public class UnifiedCreatorAdapter extends RecyclerView.Adapter<UnifiedCreatorAd
                 mNameInput = (EditText) root.findViewById(R.id.subject_manager_fragment_main_card_name);
                 return infoHolder;
             case VIEW_COUNTER:
-                root = inflater.inflate(R.layout.subject_manager_fragment_main_card, parent, false);
+                root = inflater.inflate(R.layout.subject_manager_fragment_counter_card, parent, false);
                 CounterViewHolder counterHolder = new CounterViewHolder(root);
                 counterHolder.targetPoints = (TextView) root.findViewById(R.id.subject_manager_fragment_counter_card_target_count);
                 counterHolder.name = (TextView) root.findViewById(R.id.subject_manager_fragment_counter_card_name);
                 return counterHolder;
             case VIEW_PERCENTAGE:
-                root = inflater.inflate(R.layout.subject_manager_fragment_main_card, parent, false);
+                root = inflater.inflate(R.layout.subject_manager_fragment_percentage_card, parent, false);
                 PercentageViewHolder percentageHolder = new PercentageViewHolder(root);
                 percentageHolder.targetPercentage = (TextView) root.findViewById(R.id.subject_manager_fragment_percentage_card_target_percentage);
                 percentageHolder.targetLessonCount = (TextView) root.findViewById(R.id.subject_manager_fragment_percentage_card_target_lesson_count);
@@ -124,9 +124,10 @@ public class UnifiedCreatorAdapter extends RecyclerView.Adapter<UnifiedCreatorAd
     public int getItemViewType(int position) {
         if(position == 0)
             return VIEW_INFO;
-        if(position < mCounterData.size())
+        else if(position <= mCounterData.size())
             return VIEW_COUNTER;
-        return VIEW_PERCENTAGE;
+        else
+            return VIEW_PERCENTAGE;
     }
 
     private void requery() {
