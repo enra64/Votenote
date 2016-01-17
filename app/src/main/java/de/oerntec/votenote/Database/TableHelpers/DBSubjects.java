@@ -61,7 +61,7 @@ public class DBSubjects extends CrudDb<Subject> {
 
     public void deleteItem(Subject delete) {
         if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
-            Log.i("dbgroups:delete", "deleted " + delete.name + " at " + delete.id);
+            Log.i("dbsubjects", "deleted " + delete.name + " at " + delete.id);
         String whereClause = DatabaseCreator.SUBJECTS_NAME + "=?" + " AND " + DatabaseCreator.SUBJECTS_ID + "=?";
         String[] whereArgs = new String[]{delete.name, String.valueOf(delete.id)};
         int delCount = mDatabase.delete(DatabaseCreator.TABLE_NAME_SUBJECTS, whereClause, whereArgs);

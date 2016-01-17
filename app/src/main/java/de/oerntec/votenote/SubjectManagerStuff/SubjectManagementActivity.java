@@ -75,22 +75,14 @@ public class SubjectManagementActivity extends AppCompatActivity implements Swip
      */
     private static SubjectAdapter mSubjectAdapter;
 
-    /**
-     * handler for deleting lessons of subject
-     */
-    private Handler deletionHandler;
-
-    /**
-     * runnable created for deleting lessons of subject
-     */
-    private Runnable deletionRunnable;
-
     private String mLastDeletionSavepointId = null;
 
     /**
      * recyclerview holding all subjects
      */
     private RecyclerView mSubjectList;
+
+    private Snackbar mDeletionSnackbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -159,6 +151,8 @@ public class SubjectManagementActivity extends AppCompatActivity implements Swip
         mSubjectList.setAdapter(mSubjectAdapter);
         mSubjectList.addOnItemTouchListener(new RecyclerItemClickListener(this, mSubjectList, new OnItemClickListener() {
             public void onItemClick(View view, int position) {
+                if(mDeletionSnackbar != null)
+                    mDeletionSnackbar.dismiss();
                 showSubjectCreator((Integer) view.getTag(), position);
             }
 
@@ -226,29 +220,35 @@ public class SubjectManagementActivity extends AppCompatActivity implements Swip
         DBSubjects.getInstance().createSavepoint(mLastDeletionSavepointId);
         mSubjectAdapter.removeSubject(subjectId, position);
         //make snackbar
-        Snackbar.make(findViewById(R.id.subject_manager_coordinator_layout), getString(R.string.undobar_deleted), Snackbar.LENGTH_LONG)
-                .setAction("UNDO", new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        onUndo();
+        mDeletionSnackbar = Snackbar.make(findViewById(R.id.subject_manager_coordinator_layout), getString(R.string.undobar_deleted), Snackbar.LENGTH_LONG)
+            .setCallback(new Snackbar.Callback() {
+                @Override
+                public void onDismissed(Snackbar snackbar, int event) {
+                    switch(event){
+                        case DISMISS_EVENT_CONSECUTIVE:
+                        case DISMISS_EVENT_MANUAL:
+                        case DISMISS_EVENT_TIMEOUT:
+                            acceptDeletion();
+                            break;
+                        default:
+                            super.onDismissed(snackbar, event);
                     }
-                }).show();
-
-        //delete lessons too after snackbar delay to avoid them popping up later
-        deletionHandler = new Handler();
-        deletionRunnable = new Runnable() {
-            @Override
-            public void run() {
-                acceptDeletion();
-            }
-        };
-        deletionHandler.postDelayed(deletionRunnable, 3000);
+                }
+            })
+            .setAction("UNDO", new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onUndo();
+                }
+            });
+        mDeletionSnackbar.show();
     }
 
     private void acceptDeletion(){
         if(mLastDeletionSavepointId != null)
             DBSubjects.getInstance().releaseSavepoint(mLastDeletionSavepointId);
         mLastDeletionSavepointId = null;
+        mDeletionSnackbar = null;
     }
 
     private void onUndo() {
@@ -256,9 +256,8 @@ public class SubjectManagementActivity extends AppCompatActivity implements Swip
             DBSubjects.getInstance().rollbackToSavepoint(mLastDeletionSavepointId);
         else
             throw new AssertionError("could not rollback subject deletion!");
-        if (deletionHandler != null)
-            deletionHandler.removeCallbacks(deletionRunnable);
         mLastDeletionSavepointId = null;
+        mDeletionSnackbar = null;
         mSubjectAdapter.notifySubjectAdded();
     }
 

@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -30,6 +31,7 @@ import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageMeta;
 import de.oerntec.votenote.Database.TableHelpers.DBSubjects;
 import de.oerntec.votenote.Helpers.General;
 import de.oerntec.votenote.Helpers.NotEmptyWatcher;
+import de.oerntec.votenote.MainActivity;
 import de.oerntec.votenote.R;
 import de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.Dialogs;
 import de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.SubjectCreationActivity;
@@ -147,6 +149,8 @@ public class SubjectCreationActivityFragment extends Fragment implements Subject
         if(mSubjectDb == null) throw new AssertionError("could not get a database instance?");
 
         //begin transaction on database to enable using commit and abort
+        if(MainActivity.ENABLE_DEBUG_LOG_CALLS)
+            Log.i("creator fragment", "beginning transaction");
         mDatabase.beginTransaction();
     }
 
