@@ -232,6 +232,8 @@ public class SubjectCreationActivityFragment extends Fragment implements Subject
     }
 
     private void abort() {
+        if(MainActivity.ENABLE_DEBUG_LOG_CALLS)
+            Log.i("creator fragment", "ending transaction");
         mDatabase.endTransaction();
         getActivity().finish();
     }
@@ -259,8 +261,11 @@ public class SubjectCreationActivityFragment extends Fragment implements Subject
         //if the subject did not change, we dont need to show this dialog
         boolean hasEmptyName = "".equals(mAdapter.getCurrentName());
         if (!hasChanged()) {
-            if(mDatabase.inTransaction())
+            if(mDatabase.inTransaction()){
+                if(MainActivity.ENABLE_DEBUG_LOG_CALLS)
+                    Log.i("creator fragment", "ending transaction");
                 mDatabase.endTransaction();
+            }
             getActivity().finish();
             return;
         }
@@ -315,6 +320,8 @@ public class SubjectCreationActivityFragment extends Fragment implements Subject
         mSubjectDb.changeItem(new Subject(newName, mSubjectId));
         if (mDatabase == null)
             throw new AssertionError("no db reference?");
+        if(MainActivity.ENABLE_DEBUG_LOG_CALLS)
+            Log.i("creator fragment", "ending transaction successfully");
         mDatabase.setTransactionSuccessful();
         mDatabase.endTransaction();
 
