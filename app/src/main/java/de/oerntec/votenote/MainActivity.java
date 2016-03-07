@@ -322,14 +322,9 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
     }
 
     /**
-     * Gets the current section name from the database, and adds it to the view
-     *     * @param section datbase index+1
+     * Restores the action bar to the desired state (mostly title...) after selecting a new subject
      */
-    public void onSectionAttached(int section) {
-        restoreActionBar();
-    }
-
-    private void restoreActionBar() {
+    public void restoreActionBar() {
         ActionBar actionBar = getSupportActionBar();
         if (actionBar == null) return;
         actionBar.setDisplayShowTitleEnabled(true);

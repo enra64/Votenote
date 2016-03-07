@@ -111,6 +111,8 @@ public class SubjectFragment extends Fragment {
         //do we need to save that percentage counter we viewed last?
         mSaveLastMetaId = MainActivity.getPreference("save_last_selected_meta_pos", true);
 
+        ((MainActivity) getActivity()).restoreActionBar();
+
         return rootView;
     }
 

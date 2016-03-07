@@ -18,7 +18,6 @@
 package de.oerntec.votenote.AdmissionPercentageFragmentStuff;
 
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -262,13 +261,6 @@ public class AdmissionPercentageFragment extends Fragment implements SwipeDeleti
                         }
                     }
                 }).show();
-    }
-
-    @SuppressWarnings("deprecation")
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        ((MainActivity) activity).onSectionAttached(getArguments().getInt(ARG_PERCENTAGE_META_ID));
     }
 
     /**
