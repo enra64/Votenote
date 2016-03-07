@@ -216,10 +216,15 @@ public class XmlImporter {
         parser.require(XmlPullParser.END_TAG, null, "uebung_max_prespoints");
 
         parser.nextTag();
+        parser.require(XmlPullParser.START_TAG, null, "estimation_mode");
+        String estimationMode = readText(parser);
+        parser.require(XmlPullParser.END_TAG, null, "estimation_mode");
+
+        parser.nextTag();
         parser.require(XmlPullParser.END_TAG, null, "row");
 
         sDb.addItemWithId(new Subject(uebung_name, id));
-        mDb.addItem(new AdmissionPercentageMeta(id, id, uebung_maxvotes_per_ueb, uebung_count, uebung_minvote, "Votierungspunkte"));
+        mDb.addItem(new AdmissionPercentageMeta(id, id, uebung_maxvotes_per_ueb, uebung_count, uebung_minvote, "Votierungspunkte", estimationMode));
         cDb.addItem(new AdmissionCounter(-1, id, "Vortragspunkte", uebung_prespoints, uebung_max_prespoints));
     }
 

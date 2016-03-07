@@ -146,7 +146,7 @@ public class AdmissionPercentageDialogFragment extends DialogFragment implements
         //extract subject data
         nameHint = oldState.name;
         requiredPercentageHint = oldState.targetPercentage;
-        estimatedAssignmentsHint = oldState.estimatedAssignmentsPerLesson;
+        estimatedAssignmentsHint = oldState.userAssignmentsPerLessonEstimation;
         estimatedLessonCountHint = oldState.estimatedLessonCount;
     }
 

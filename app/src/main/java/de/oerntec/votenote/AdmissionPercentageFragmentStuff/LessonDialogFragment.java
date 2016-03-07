@@ -217,7 +217,7 @@ public class LessonDialogFragment extends DialogFragment implements DialogInterf
         if(mIsNewLesson){
             if(mIsFirstLesson){
                 AdmissionPercentageMeta metaItem = DBAdmissionPercentageMeta.getInstance().getItem(mMetaId);
-                currentAvailableAssignments = metaItem.estimatedAssignmentsPerLesson;
+                currentAvailableAssignments = metaItem.userAssignmentsPerLessonEstimation;
                 currentFinishedAssignments = currentAvailableAssignments / 2;
             } else {
                 AdmissionPercentageData lastEnteredLesson = mDataDb.getNewestItemForMetaId(mMetaId);

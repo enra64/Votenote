@@ -308,7 +308,7 @@ public class AdmissionPercentageAdapter extends RecyclerView.Adapter<AdmissionPe
             averageNeededVotesView.setText(mContext.getString(R.string.subject_fragment_error_detected));
 
         //set color
-        if (meta.getNeededAssignmentsPerUebung() > meta.estimatedAssignmentsPerLesson)
+        if (meta.getNeededAssignmentsPerUebung() > meta.getEstimatedAssignmentsPerLesson())
             averageNeededVotesView.setTextColor(ContextCompat.getColor(mContext, R.color.warning_red));
         else
             averageNeededVotesView.setTextColor(ContextCompat.getColor(mContext, R.color.abc_primary_text_material_light));
