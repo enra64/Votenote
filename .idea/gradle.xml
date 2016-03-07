@@ -5,7 +5,18 @@
       <GradleProjectSettings>
         <option name="distributionType" value="DEFAULT_WRAPPED" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
-        <option name="gradleHome" value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8" />
+        <option name="modules">
+          <set>
+            <option value="/media/arne/Dokumente/Development/Android/Votenote" />
+            <option value="/media/arne/Dokumente/Development/Android/Votenote/app" />
+          </set>
+        </option>
+        <option name="myModules">
+          <set>
+            <option value="/media/arne/Dokumente/Development/Android/Votenote" />
+            <option value="/media/arne/Dokumente/Development/Android/Votenote/app" />
+          </set>
+        </option>
       </GradleProjectSettings>
     </option>
   </component>

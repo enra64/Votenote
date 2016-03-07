@@ -26,25 +26,25 @@
 >
 
             <TextView
+                android:id="@+id/subject_manager_fragment_counter_card_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceLarge"
                 android:text="Vortragspunkte"
-                android:id="@+id/subject_manager_fragment_counter_card_name" />
+                android:textAppearance="?android:attr/textAppearanceLarge" />
 
             <TextView
+                android:id="@+id/subject_manager_fragment_counter_card_target_count"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
                 android:text="Mindestens 7 Punkte"
-                android:id="@+id/subject_manager_fragment_counter_card_target_count" />
+                android:textAppearance="?android:attr/textAppearanceMedium" />
 
         </LinearLayout>
 
         <ImageView
+            android:id="@+id/imageView14"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/imageView14"
             android:layout_alignParentRight="true"
             android:src="@drawable/icon_points_sign" />
 

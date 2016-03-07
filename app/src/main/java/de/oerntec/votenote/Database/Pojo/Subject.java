@@ -17,17 +17,11 @@
 * */
 package de.oerntec.votenote.Database.Pojo;
 
-import android.content.Context;
-import android.graphics.Color;
-import android.widget.TextView;
-
-import java.util.ArrayList;
 import java.util.List;
 
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionCounters;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageData;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageMeta;
-import de.oerntec.votenote.R;
 
 public class Subject {
     public String name;

@@ -26,39 +26,39 @@
 >
 
             <TextView
+                android:id="@+id/subject_manager_fragment_percentage_card_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceLarge"
                 android:text="Votierungspunkte"
-                android:id="@+id/subject_manager_fragment_percentage_card_name" />
+                android:textAppearance="?android:attr/textAppearanceLarge" />
 
             <TextView
+                android:id="@+id/subject_manager_fragment_percentage_card_target_percentage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
                 android:text="Mindestens 46%"
-                android:id="@+id/subject_manager_fragment_percentage_card_target_percentage" />
+                android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <TextView
+                android:id="@+id/subject_manager_fragment_percentage_card_assignments_per_lesson"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
                 android:text="3 Aufgaben pro Übung"
-                android:id="@+id/subject_manager_fragment_percentage_card_assignments_per_lesson" />
+                android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <TextView
+                android:id="@+id/subject_manager_fragment_percentage_card_target_lesson_count"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
                 android:text="705 Übungen"
-                android:id="@+id/subject_manager_fragment_percentage_card_target_lesson_count" />
+                android:textAppearance="?android:attr/textAppearanceMedium" />
 
         </LinearLayout>
 
         <ImageView
+            android:id="@+id/imageView14"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/imageView14"
             android:layout_alignParentRight="true"
             android:src="@drawable/icon_percentage" />
 
