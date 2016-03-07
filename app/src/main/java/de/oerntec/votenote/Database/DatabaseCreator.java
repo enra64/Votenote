@@ -17,6 +17,7 @@
 * */
 package de.oerntec.votenote.Database;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -65,8 +66,9 @@ public class DatabaseCreator extends SQLiteOpenHelper {
     public static final String ADMISSION_PERCENTAGES_META_SUBJECT_ID = "subject_id";
     public static final String ADMISSION_PERCENTAGES_META_NAME = "percentage_name";
     public static final String ADMISSION_PERCENTAGES_META_TARGET_PERCENTAGE = "target_percentage";
+    public static final String ADMISSION_PERCENTAGES_META_ESTIMATION_MODE = "estimation_mode";
     public static final String ADMISSION_PERCENTAGES_META_TARGET_LESSON_COUNT = "target_lesson_count";
-    public static final String ADMISSION_PERCENTAGES_META_TARGET_ASSIGNMENTS_PER_LESSON = "target_assignments_per_lesson";
+    public static final String ADMISSION_PERCENTAGES_META_USER_ESTIMATED_ASSIGNMENTS_PER_LESSON = "target_assignments_per_lesson";
 
     /***********************************************************************************************
      * admission percentage data database start
@@ -109,9 +111,10 @@ public class DatabaseCreator extends SQLiteOpenHelper {
             ADMISSION_PERCENTAGES_META_ID + " integer primary key, " +
             ADMISSION_PERCENTAGES_META_NAME + " text DEFAULT 'Votierungspunkte', " +
             ADMISSION_PERCENTAGES_META_SUBJECT_ID + " integer, " +
-            ADMISSION_PERCENTAGES_META_TARGET_ASSIGNMENTS_PER_LESSON + " integer not null," +
+            ADMISSION_PERCENTAGES_META_USER_ESTIMATED_ASSIGNMENTS_PER_LESSON + " integer not null," +
             ADMISSION_PERCENTAGES_META_TARGET_LESSON_COUNT + " integer not null," +
             ADMISSION_PERCENTAGES_META_TARGET_PERCENTAGE + " integer not null," +
+            ADMISSION_PERCENTAGES_META_ESTIMATION_MODE + " string NOT NULL DEFAULT 'user'," +
             "FOREIGN KEY (" + ADMISSION_PERCENTAGES_META_SUBJECT_ID + ") REFERENCES " + TABLE_NAME_SUBJECTS + "(" + SUBJECTS_ID + ") ON DELETE CASCADE" +
             ");";
 
@@ -195,20 +198,31 @@ public class DatabaseCreator extends SQLiteOpenHelper {
             Log.w(DatabaseCreator.class.getName(),
                 "Upgrading database from version " + oldVersion + " to " + newVersion + ", which will destroy all old data");
         if (oldVersion == 12 && newVersion == 13) {
-            if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
-                Log.w(DatabaseCreator.class.getName(), "creating new databases for multiple counters, percentages, new subject db");
-            database.execSQL(CREATE_TABLE_SUBJECTS);
-            database.execSQL(CREATE_TABLE_ADMISSION_COUNTERS);
-            database.execSQL(CREATE_TABLE_LAST_VIEWED);
-            database.execSQL(CREATE_TABLE_ADMISSION_PERCENTAGES_META);
-            database.execSQL(CREATE_TABLE_ADMISSION_PERCENTAGES_DATA);
-            database.execSQL(ON_UPDATE_UPDATE_TIMESTAMP);
-
             transferFrom12To13(database);
+        } else if (oldVersion == 12 && newVersion == 14) {
+            transferFrom12To13(database);
+            transferFrom13To14(database);
+        } else if (oldVersion == 13 && newVersion == 14) {
+            transferFrom13To14(database);
         }
     }
 
+    @SuppressLint("SQLiteString")
+    private void transferFrom13To14(SQLiteDatabase database) {
+        database.execSQL("ALTER TABLE " + TABLE_NAME_ADMISSION_PERCENTAGES_META + " ADD COLUMN " +
+                ADMISSION_PERCENTAGES_META_ESTIMATION_MODE + " STRING NOT NULL DEFAULT 'user'");
+    }
+
     public void transferFrom12To13(SQLiteDatabase database){
+        if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
+            Log.w(DatabaseCreator.class.getName(), "creating new databases for multiple counters, percentages, new subject db");
+        database.execSQL(CREATE_TABLE_SUBJECTS);
+        database.execSQL(CREATE_TABLE_ADMISSION_COUNTERS);
+        database.execSQL(CREATE_TABLE_LAST_VIEWED);
+        database.execSQL(CREATE_TABLE_ADMISSION_PERCENTAGES_META);
+        database.execSQL(CREATE_TABLE_ADMISSION_PERCENTAGES_DATA);
+        database.execSQL(ON_UPDATE_UPDATE_TIMESTAMP);
+
         //transfer subject information
         database.execSQL("INSERT INTO " + TABLE_NAME_SUBJECTS + "(" + SUBJECTS_ID + "," + SUBJECTS_NAME + ")" +
                 " SELECT _id, uebung_name FROM uebungen_gruppen");
@@ -224,7 +238,7 @@ public class DatabaseCreator extends SQLiteOpenHelper {
         database.execSQL("INSERT INTO " + TABLE_NAME_ADMISSION_PERCENTAGES_META +
                 "(" + ADMISSION_PERCENTAGES_META_SUBJECT_ID + ","
                 + ADMISSION_PERCENTAGES_META_ID + ","
-                + ADMISSION_PERCENTAGES_META_TARGET_ASSIGNMENTS_PER_LESSON + ","
+                + ADMISSION_PERCENTAGES_META_USER_ESTIMATED_ASSIGNMENTS_PER_LESSON + ","
                 + ADMISSION_PERCENTAGES_META_TARGET_LESSON_COUNT + ","
                 + ADMISSION_PERCENTAGES_META_TARGET_PERCENTAGE + ")" +
                 " SELECT _id, _id, uebung_maxvotes_per_ueb, uebung_count, uebung_minvote FROM uebungen_gruppen");

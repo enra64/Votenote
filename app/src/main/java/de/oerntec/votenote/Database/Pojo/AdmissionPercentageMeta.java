@@ -9,22 +9,33 @@ import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageData;
  * POJO class for representing the metadata available about an admission percentage counter
  */
 public class AdmissionPercentageMeta implements NameAndIdPojo {
-    public int id, subjectId, estimatedAssignmentsPerLesson, estimatedLessonCount, targetPercentage;
+    public int id, subjectId, estimatedLessonCount, targetPercentage, userAssignmentsPerLessonEstimation;
     public String name;
     public List<AdmissionPercentageData> mDataList;
+    public EstimationMode estimationMode = EstimationMode.undefined;
     private boolean mDataLoaded = false;
-
     private boolean mDataCalculated = false;
     private float numberOfLessonsLeft, scheduledNumberOfAssignments, neededAssignmentsPerUebung, numberOfNeededAssignments,
             remainingNeededAssignments, numberOfFinishedAssignments, numberOfElapsedLessons;
 
-    public AdmissionPercentageMeta(int id, int subjectId, int estimatedAssignmentsPerLesson, int estimatedLessonCount, int targetPercentage, String name) {
+    public AdmissionPercentageMeta(int id, int subjectId, int estimatedAssignmentsPerLesson, int estimatedLessonCount, int targetPercentage, String name, String mode) {
         this.id = id;
         this.subjectId = subjectId;
-        this.estimatedAssignmentsPerLesson = estimatedAssignmentsPerLesson;
         this.estimatedLessonCount = estimatedLessonCount;
+        this.userAssignmentsPerLessonEstimation = estimatedAssignmentsPerLesson;
         this.targetPercentage = targetPercentage;
         this.name = name;
+
+        switch (mode) {
+            case "user":
+                estimationMode = EstimationMode.user;
+            case "mean":
+                estimationMode = EstimationMode.mean;
+            case "worst":
+                estimationMode = EstimationMode.worst;
+            case "best":
+                estimationMode = EstimationMode.best;
+        }
     }
 
     public float getNumberOfNeededAssignments() {
@@ -76,8 +87,9 @@ public class AdmissionPercentageMeta implements NameAndIdPojo {
      * calculate the interesting numbers from the raw data, and save them in this meta object
      */
     public void calculateData() {
-        if (!mDataLoaded) throw new AssertionError("pojo has not loaded data");
-        scheduledNumberOfAssignments = estimatedAssignmentsPerLesson * estimatedLessonCount;
+        if (!mDataLoaded)
+            throw new AssertionError("pojo has not loaded data");
+        scheduledNumberOfAssignments = getEstimatedAssignmentsPerLesson() * estimatedLessonCount;
         numberOfNeededAssignments = (scheduledNumberOfAssignments * (float) targetPercentage) / 100f;
         numberOfFinishedAssignments = getFinishedAssignments();
         remainingNeededAssignments = numberOfNeededAssignments - numberOfFinishedAssignments;
@@ -87,12 +99,71 @@ public class AdmissionPercentageMeta implements NameAndIdPojo {
         mDataCalculated = true;
     }
 
+    /**
+     * This estimates a lesson count by returning one the best/worst/mean/given number of remaining assignments
+     */
+    public int getEstimatedAssignmentsPerLesson() {
+        switch (estimationMode) {
+            case user:
+                return userAssignmentsPerLessonEstimation;
+            case mean:
+                return getAvailableAssignments() / mDataList.size();
+            case best:
+                return getMinAvailableAssignments();
+            case worst:
+                return getMaxAvailableAssignments();
+            default:
+            case undefined:
+                throw new AssertionError("undefined estimation mode!");
+        }
+    }
+
+    public String getEstimationModeAsString() {
+        switch (estimationMode) {
+            case user:
+                return "user";
+            case mean:
+                return "mean";
+            case best:
+                return "best";
+            case worst:
+                return "worst";
+            default:
+            case undefined:
+                throw new AssertionError("undefined estimation mode!");
+        }
+    }
+
     public int getFinishedAssignments(){
         if (!mDataLoaded) throw new AssertionError("pojo has not loaded data");
         int finishedAssignments = 0;
         for(AdmissionPercentageData d : mDataList)
             finishedAssignments += d.finishedAssignments;
         return finishedAssignments;
+    }
+
+    public int getAvailableAssignments() {
+        if (!mDataLoaded) throw new AssertionError("pojo has not loaded data");
+        int availableAssignments = 0;
+        for (AdmissionPercentageData d : mDataList)
+            availableAssignments += d.availableAssignments;
+        return availableAssignments;
+    }
+
+    public int getMinAvailableAssignments() {
+        if (!mDataLoaded) throw new AssertionError("pojo has not loaded data");
+        int minAssignments = Integer.MAX_VALUE;
+        for (AdmissionPercentageData d : mDataList)
+            minAssignments = d.availableAssignments < minAssignments ? d.availableAssignments : minAssignments;
+        return minAssignments;
+    }
+
+    public int getMaxAvailableAssignments() {
+        if (!mDataLoaded) throw new AssertionError("pojo has not loaded data");
+        int maxAssignments = 0;
+        for (AdmissionPercentageData d : mDataList)
+            maxAssignments = d.availableAssignments > maxAssignments ? d.availableAssignments : maxAssignments;
+        return maxAssignments;
     }
 
     /**
@@ -130,7 +201,7 @@ public class AdmissionPercentageMeta implements NameAndIdPojo {
 
         if (id != that.id) return false;
         if (subjectId != that.subjectId) return false;
-        if (estimatedAssignmentsPerLesson != that.estimatedAssignmentsPerLesson) return false;
+        if (estimationMode != that.estimationMode) return false;
         if (estimatedLessonCount != that.estimatedLessonCount) return false;
         if (targetPercentage != that.targetPercentage) return false;
         return !(name != null ? !name.equals(that.name) : that.name != null);
@@ -138,7 +209,7 @@ public class AdmissionPercentageMeta implements NameAndIdPojo {
     }
 
     public String getCsvRepresentation(){
-        return name+","+targetPercentage+"%,"+estimatedAssignmentsPerLesson+","+estimatedLessonCount;
+        return name + "," + targetPercentage + "%," + getEstimatedAssignmentsPerLesson() + "," + estimatedLessonCount;
     }
 
     @Override
@@ -149,5 +220,13 @@ public class AdmissionPercentageMeta implements NameAndIdPojo {
     @Override
     public int getId() {
         return id;
+    }
+
+    public enum EstimationMode {
+        user,
+        mean,
+        best,
+        worst,
+        undefined
     }
 }
