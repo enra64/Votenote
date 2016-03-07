@@ -1,11 +1,11 @@
 package de.oerntec.votenote;
 
 
-import android.app.Fragment;
-import android.app.FragmentManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v13.app.FragmentPagerAdapter;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,10 +20,22 @@ import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMeta;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageMeta;
 import de.oerntec.votenote.Database.TableHelpers.DBLastViewed;
 
+/**
+ * This class shows **all** info available on a subject, including all percentage counters (swipe to the left/right) and all point counters
+ */
+
 public class SubjectFragment extends Fragment {
 
+    /**
+     * Argument name for the subject db id
+     */
     private static final String ARG_SUBJECT_ID = "subject_id";
+
+    /**
+     * argument name for the subject position in the navigation drawer
+     */
     private static final String ARG_SUBJECT_POSITION = "subject_position";
+
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
      * fragments for each of the sections. We use a
@@ -85,18 +97,21 @@ public class SubjectFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_lesson_tabbed, container, false);
-        mAdmissionPercentageAdapter = new AdmissionPercentageAdapter(getChildFragmentManager(), DBAdmissionPercentageMeta.getInstance(), mSubjectId);
+        View rootView = inflater.inflate(R.layout.fragment_lesson_tabbed, container, false);
 
-        mViewPager = (ViewPager) v.findViewById(R.id.fragment_lesson_tabbed_pager);
+        //create and assign an adapter for showing the individual admission percentage fragments
+        mViewPager = (ViewPager) rootView.findViewById(R.id.fragment_lesson_tabbed_pager);
+        mAdmissionPercentageAdapter = new AdmissionPercentageAdapter(getChildFragmentManager(), DBAdmissionPercentageMeta.getInstance(), mSubjectId);
         mViewPager.setAdapter(mAdmissionPercentageAdapter);
 
+        //hide the top bar showing the percentage counter titles if only one exists
         if(mAdmissionPercentageAdapter.getCount() == 1)
             mViewPager.findViewById(R.id.fragment_lesson_tabbed_pager_title_strip).setVisibility(View.GONE);
 
+        //do we need to save that percentage counter we viewed last?
         mSaveLastMetaId = MainActivity.getPreference("save_last_selected_meta_pos", true);
 
-        return v;
+        return rootView;
     }
 
     /**
@@ -115,11 +130,19 @@ public class SubjectFragment extends Fragment {
         List<AdmissionPercentageMeta> percentages = DBAdmissionPercentageMeta.getInstance().getItemsForSubject(mSubjectId);
 
         final int subjectPosition = getArguments().getInt(ARG_SUBJECT_POSITION);
+
+        //check whether the subject has percentage counters
         if (percentages.size() > 0) {
+            //is the subject position valid?
             if(subjectPosition >= 0 && mSaveLastMetaId){
+                //see whether we have a saved last viewed admission counter
                 int lastSelectedMetaPosition = DBLastViewed.getInstance().getLastSelectedAdmissionCounterForSubjectPosition(subjectPosition);
-                if(lastSelectedMetaPosition >= 0 && lastSelectedMetaPosition < mAdmissionPercentageAdapter.getCount())
+                //valid position?
+                if (lastSelectedMetaPosition >= 0
+                        && lastSelectedMetaPosition < mAdmissionPercentageAdapter.getCount())
+                    //valid last viewed admission percentage position -> view that
                     mViewPager.setCurrentItem(lastSelectedMetaPosition, true);
+                    //nah, log that
                 else if(MainActivity.ENABLE_DEBUG_LOG_CALLS)
                     Log.i("subject fragment", "invalid meta position");
             }
@@ -138,19 +161,22 @@ public class SubjectFragment extends Fragment {
                     }
 
                     @Override
-                    public void onPageSelected(int position) {//only called on change (eg first load not notified)
+                    public void onPageSelected(int position) {
+                        //only called on change (eg first load not notified)
                         DBLastViewed.getInstance().saveSelection(subjectPosition, position);
                     }
                 });
             } else
                 DBLastViewed.getInstance().saveSelection(subjectPosition, 0);
-        } else
+        } else {
             DBLastViewed.getInstance().saveSelection(subjectPosition, 0);
+        }
     }
 
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
-     * one of the sections/tabs/pages.
+     * one of the sections/tabs/pages, e.g. a fragment showing all info for a selected admission
+     * percentage counter
      */
     public class AdmissionPercentageAdapter extends FragmentPagerAdapter {
         private DBAdmissionPercentageMeta mMetaDb;

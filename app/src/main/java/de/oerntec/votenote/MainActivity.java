@@ -19,13 +19,13 @@ package de.oerntec.votenote;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.app.Fragment;
-import android.app.FragmentManager;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -235,7 +235,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         int lastSelected = mLastViewedDb.getLastSelectedSubjectPosition();
         boolean hasValidLastSelected = lastSelected >= 0 && lastSelected < subjectCount;
 
-        Fragment checkFragment = getFragmentManager().findFragmentById(R.id.container);
+        Fragment checkFragment = getSupportFragmentManager().findFragmentById(R.id.container);
         //check whether we have a fragment loaded
         if (!(checkFragment != null && checkFragment instanceof AdmissionPercentageFragment)) {
             //no! try to load a fragment
@@ -315,7 +315,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         // update the menu_main content by replacing fragments
         //if (ENABLE_DEBUG_LOG_CALLS)
         //    Log.i("votenote main", "selected fragment " + position);
-        FragmentManager fragmentManager = getFragmentManager();
+        FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager
                 .beginTransaction()
                 .replace(R.id.container, SubjectFragment.newInstance(mCurrentSelectedSubjectId, position)).commit();
@@ -334,7 +334,8 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         if (actionBar == null) return;
         actionBar.setDisplayShowTitleEnabled(true);
 
-        actionBar.setTitle(mSubjectDb.getItem(mCurrentSelectedSubjectId).name);
+        String title = mSubjectDb.getItem(mCurrentSelectedSubjectId).name;
+        actionBar.setTitle(title);
 
         //basically calls onCreateOptionsMenu
         invalidateOptionsMenu();
@@ -438,7 +439,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
     }
 
     private SubjectFragment getCurrentSubjectFragment() {
-        return (SubjectFragment) getFragmentManager().findFragmentById(R.id.container);
+        return (SubjectFragment) getSupportFragmentManager().findFragmentById(R.id.container);
     }
     
     public AdmissionPercentageFragment getCurrentAdmissionPercentageFragment() {

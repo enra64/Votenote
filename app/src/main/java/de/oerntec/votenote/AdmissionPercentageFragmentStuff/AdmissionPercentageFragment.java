@@ -20,13 +20,13 @@ package de.oerntec.votenote.AdmissionPercentageFragmentStuff;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Fragment;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
@@ -47,7 +47,7 @@ import de.oerntec.votenote.R;
 import de.oerntec.votenote.SubjectManagerStuff.SubjectManagementActivity;
 
 /**
- * A placeholder fragment containing a simple view.
+ * This fragment is used to display all lessons of a single admissionPercentageMeta item.
  */
 public class AdmissionPercentageFragment extends Fragment implements SwipeDeletion.UndoSnackBarHost {
     /**
@@ -121,12 +121,12 @@ public class AdmissionPercentageFragment extends Fragment implements SwipeDeleti
         //save the subject we are currently working for
         mPercentageMetaId = getArguments().getInt(ARG_PERCENTAGE_META_ID);
 
-        //inflate and find views
+        //inflate root view
         View rootView = inflater.inflate(R.layout.subject_fragment, container, false);
-        FloatingActionButton addFab = (FloatingActionButton) rootView.findViewById(R.id.subject_fragment_add_fab);
-        mLessonList = (RecyclerView) rootView.findViewById(R.id.subject_fragment_recyclerview);
+
 
         //config the recyclerview
+        mLessonList = (RecyclerView) rootView.findViewById(R.id.subject_fragment_recyclerview);
         mLessonList.setHasFixedSize(true);
 
         //give it a layout manager (whatever that is)
@@ -135,7 +135,7 @@ public class AdmissionPercentageFragment extends Fragment implements SwipeDeleti
         mLessonList.setLayoutManager(manager);
 
 
-        //if translatedSection is -1, no group has been added yet
+        //if translatedSection is -1, no group has been added yet, so show the subject manager
         if (mPercentageMetaId == -1) {
             Intent intent = new Intent(getActivity(), SubjectManagementActivity.class);
             intent.putExtra("firstGroup", true);
@@ -143,55 +143,54 @@ public class AdmissionPercentageFragment extends Fragment implements SwipeDeleti
             return rootView;
         }
 
+        //create and set adapter for the lesson list -> show lessons for this percentage counter
         mAdapter = new AdmissionPercentageAdapter(getActivity(), mPercentageMetaId);
-        //set adapter
         mLessonList.setAdapter(mAdapter);
 
+        //get the meta pojo containing available info on this percentage counter
         mMetaObject = mAdapter.getCurrentMeta();
 
-        //LISTVIEW FOR uebung instances
+        //log entry if no subjects are available
         if (mAdapter.getItemCount() == 0)
             if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
                 Log.e("Main Listview", "Received Empty allEntryCursor for group " + mMetaObject.getDisplayName() + " with id " + mPercentageMetaId);
 
+
+        enableOnClickForLessons();
+
+        enableSwipeToDelete();
+
         mEnableSwipeToDelete = MainActivity.getPreference("enable_swipe_to_delete_lesson", true);
-        final boolean swipeToDeleteDialogShown = MainActivity.getPreference("enable_swipe_to_delete_lesson_dialog_shown", false);
 
-        ItemTouchHelper.SimpleCallback swipeCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+        //find the add button and add a listener
+        FloatingActionButton addFab = (FloatingActionButton) rootView.findViewById(R.id.subject_fragment_add_fab);
+        addFab.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
-                return false;
+            public void onClick(View v) {
+                MainDialogHelper.showAddLessonDialog(getFragmentManager(), mPercentageMetaId);
             }
+        });
 
-            @Override
-            public int getSwipeDirs(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
-                //no swipey swipey for info view
-                if (viewHolder instanceof AdmissionPercentageAdapter.InfoHolder)
-                    return 0;
-                if (!mEnableSwipeToDelete)
-                    return 0;
-                return super.getSwipeDirs(recyclerView, viewHolder);
-            }
+        mRootView = rootView;
+        return rootView;
+    }
 
-            @Override
-            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-                //info view has no tag
-                Object viewTag = viewHolder.itemView.getTag();
-                if (viewTag != null) {
-                    int lessonId = (Integer) viewTag;
-                    if (lessonId != 0) {
-                        if (swipeToDeleteDialogShown)
-                            showUndoSnackBar(lessonId, mLessonList.getChildAdapterPosition(viewHolder.itemView));
-                        else
-                            showSwipeToDeleteDialog(lessonId, mPercentageMetaId);
-                    }
-                }
-            }
-        };
+    /**
+     * Instances a SwipeCallback to enable swipe to delete
+     */
+    private void enableSwipeToDelete() {
+        //check whether we already have asked whether to enable swipe to delete
+        boolean enableSwipeDisableDialog = !MainActivity.getPreference("enable_swipe_to_delete_lesson_dialog_shown", false);
 
-        final ItemTouchHelper itemTouchHelper = new ItemTouchHelper(swipeCallback);
+        final ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new SwipeCallback(enableSwipeDisableDialog));
         itemTouchHelper.attachToRecyclerView(mLessonList);
+    }
 
+    /**
+     * attach an onClick listener on the lesson list
+     */
+    private void enableOnClickForLessons() {
+        //onClick for lessons
         mLessonList.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), mLessonList, new OnItemClickListener() {
             public void onItemClick(View view, int position) {
                 if (position != 0){
@@ -203,17 +202,6 @@ public class AdmissionPercentageFragment extends Fragment implements SwipeDeleti
             public void onItemLongClick(final View view, int position) {
             }
         }));
-
-        //add listener to fab
-        addFab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                MainDialogHelper.showAddLessonDialog(getFragmentManager(), mPercentageMetaId);
-            }
-        });
-
-        mRootView = rootView;
-        return rootView;
     }
 
     private void showSwipeToDeleteDialog(final int swipedLessonId, final int percentageMetaId) {
@@ -283,6 +271,9 @@ public class AdmissionPercentageFragment extends Fragment implements SwipeDeleti
         ((MainActivity) activity).onSectionAttached(getArguments().getInt(ARG_PERCENTAGE_META_ID));
     }
 
+    /**
+     * Release the savepoint -> save()
+     */
     private void trySavepointRelease() {
         if (mLastRemovalSavePointId != null) {
             mDataDb.releaseSavepoint(mLastRemovalSavePointId);
@@ -290,7 +281,10 @@ public class AdmissionPercentageFragment extends Fragment implements SwipeDeleti
         }
     }
 
-    //dont do anything, as we only delete the lesson when the undo bar gets hidden
+    /**
+     * Initiate a rollback to the last savepoint, and delete it, so we know if we fuck up by some
+     * fancy ass null pointer exceptions. Also force the adapter to show that lesson again.
+     */
     private void onUndo() {
         if (mLastRemovalSavePointId != null) {
             DBAdmissionPercentageData.getInstance().rollbackToSavepoint(mLastRemovalSavePointId);
@@ -308,5 +302,42 @@ public class AdmissionPercentageFragment extends Fragment implements SwipeDeleti
             throw new AssertionError("mLastClickedView must not be null here, because it must only be called from the dialogfragment");
         SwipeDeletion.executeProgrammaticSwipeDeletion(getActivity(), this, mLastClickedView, mAdapter.getRecyclerViewPosition(mOldData));
         mLastClickedView = null;
+    }
+
+    private class SwipeCallback extends ItemTouchHelper.SimpleCallback {
+        boolean mEnableSwipeDisableDialog;
+
+        public SwipeCallback(boolean enableSwipeDisableDialog) {
+            super(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT);
+            mEnableSwipeDisableDialog = enableSwipeDisableDialog;
+        }
+
+        @Override
+        public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+            return false;
+        }
+
+        @Override
+        public int getSwipeDirs(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
+            //no swipey swipey for info view
+            if (viewHolder instanceof AdmissionPercentageAdapter.InfoHolder) return 0;
+            if (!mEnableSwipeToDelete) return 0;
+            return super.getSwipeDirs(recyclerView, viewHolder);
+        }
+
+        @Override
+        public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+            //info view has no tag
+            Object viewTag = viewHolder.itemView.getTag();
+            if (viewTag != null) {
+                int lessonId = (Integer) viewTag;
+                if (lessonId != 0) {
+                    if (mEnableSwipeDisableDialog)
+                        showUndoSnackBar(lessonId, mLessonList.getChildAdapterPosition(viewHolder.itemView));
+                    else
+                        showSwipeToDeleteDialog(lessonId, mPercentageMetaId);
+                }
+            }
+        }
     }
 }

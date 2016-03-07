@@ -166,6 +166,12 @@ public class AdmissionPercentageAdapter extends RecyclerView.Adapter<AdmissionPe
         return listPosition + 1;
     }
 
+    /**
+     * Get the admission percentage meta pojo containing the info corresponding to the admission
+     * percentage counter this adapter shows lessons for
+     *
+     * @return meta pojo
+     */
     public AdmissionPercentageMeta getCurrentMeta() {
         if (mMetaPojo == null)
             throw new AssertionError("the meta object has not been loaded yet");
