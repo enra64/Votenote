@@ -138,4 +138,6 @@
     <string name="estimation_name_user">Nutzer</string>
     <string name="estimation_name_worst">Worst case</string>
     <string name="keine_prozentz_hler_vorhanden_f_ge_in_den_einstellungen_welche_hinzu">Keine Prozentzähler vorhanden. Füge in den Einstellungen welche hinzu!</string>
+    <string name="name_des_percentagecounters">Name des Percentagecounters</string>
+    <string name="estimation_mode_title">Schätzungsmodus</string>
 </resources>

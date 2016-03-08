@@ -14,7 +14,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
             android:layout_marginTop="5dp"
-            android:text="Name des Percentagecounters"
+            android:text="@string/name_des_percentagecounters"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:textSize="20sp" />
 
@@ -147,7 +147,7 @@
             android:layout_alignStart="@+id/subject_manager_dialog_groupsettings_estimated_lesson_counter_description"
             android:layout_below="@+id/subject_manager_dialog_groupsettings_estimated_lesson_count_seekbar"
             android:layout_marginTop="10dp"
-            android:text="@string/subjectmanager_lesson_count"
+            android:text="@string/estimation_mode_title"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:textSize="20sp" />
 
