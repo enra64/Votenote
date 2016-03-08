@@ -26,16 +26,7 @@ public class AdmissionPercentageMeta implements NameAndIdPojo {
         this.targetPercentage = targetPercentage;
         this.name = name;
 
-        switch (mode) {
-            case "user":
-                estimationMode = EstimationMode.user;
-            case "mean":
-                estimationMode = EstimationMode.mean;
-            case "worst":
-                estimationMode = EstimationMode.worst;
-            case "best":
-                estimationMode = EstimationMode.best;
-        }
+        estimationMode = EstimationMode.valueOf(mode);
     }
 
     public float getNumberOfNeededAssignments() {
@@ -122,19 +113,7 @@ public class AdmissionPercentageMeta implements NameAndIdPojo {
     }
 
     public String getEstimationModeAsString() {
-        switch (estimationMode) {
-            case user:
-                return "user";
-            case mean:
-                return "mean";
-            case best:
-                return "best";
-            case worst:
-                return "worst";
-            default:
-            case undefined:
-                throw new AssertionError("undefined estimation mode!");
-        }
+        return estimationMode.name();
     }
 
     public int getFinishedAssignments(){
@@ -225,6 +204,9 @@ public class AdmissionPercentageMeta implements NameAndIdPojo {
         return id;
     }
 
+
+    //BEWARE: mEstimationModeSeekbar.setMax(EstimationMode.values().length - 1); in setValuesForViews
+    // in AdmissionPercentageDialogFragment relies on the undefined state to exist and be last!
     public enum EstimationMode {
         user,
         mean,

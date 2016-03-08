@@ -15,6 +15,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMeta;
+import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMeta.EstimationMode;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageMeta;
 import de.oerntec.votenote.Helpers.NotEmptyWatcher;
 import de.oerntec.votenote.R;
@@ -185,6 +186,13 @@ public class AdmissionPercentageDialogFragment extends DialogFragment implements
         initSeekbar(estimatedAssignmentsSeek, estimatedAssignmentsHelp, estimatedAssignmentsHint, 50);
         initSeekbar(estimatedLessonCountSeek, estimatedUebungCountHelp, estimatedLessonCountHint, 50);
 
+        int amountOfEstimationModes = EstimationMode.values().length - 2; // -1 for a) undefined and b) max is 1-indexed
+        mEstimationModeSeekbar.setMax(amountOfEstimationModes);
+
+        EstimationMode estimationMode = EstimationMode.valueOf(mEstimationModeHint);
+
+        mEstimationModeSeekbar.setProgress(estimationMode.ordinal());
+
         mEstimationModeSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -200,7 +208,7 @@ public class AdmissionPercentageDialogFragment extends DialogFragment implements
             }
         });
 
-        onEstimationModeChange(getEstimationModeInteger(mEstimationModeHint));
+        onEstimationModeChange(estimationMode.ordinal());
     }
 
     /**
@@ -210,40 +218,28 @@ public class AdmissionPercentageDialogFragment extends DialogFragment implements
      * @param desiredState the state the integer is supposed to represent
      * @return the integer representing the input estimation mode
      */
-    private int getEstimationModeInteger(String desiredState) {
-        switch (desiredState) {
-            case "user":
-                return 0;
-            case "mean":
-                return 1;
-            case "best":
-                return 2;
-            case "worst":
-                return 3;
-            default:
-                throw new AssertionError("undefined estimation mode!");
-        }
-
+    private EstimationMode getEstimationModeInteger(String desiredState) {
+        return EstimationMode.valueOf(desiredState);
     }
 
     private void onEstimationModeChange(int seekbarProgress) {
-        switch (seekbarProgress) {
-            case 0://user
+        switch (EstimationMode.values()[seekbarProgress]) {
+            case user://user
                 mCurrentEstimationMode = "user";
                 mEstimationModeCurrentValueTextView.setText(R.string.estimation_name_user);
                 mEstimationModeDescription.setText(R.string.estimation_description_user);
                 break;
-            case 1://mean
+            case mean://mean
                 mCurrentEstimationMode = "mean";
                 mEstimationModeCurrentValueTextView.setText(R.string.estimation_name_mean);
                 mEstimationModeDescription.setText(R.string.estimation_description_mean);
                 break;
-            case 2://worst
+            case worst://worst
                 mCurrentEstimationMode = "worst";
                 mEstimationModeCurrentValueTextView.setText(R.string.estimation_name_worst);
                 mEstimationModeDescription.setText(R.string.estimation_description_worst);
                 break;
-            case 3://best
+            case best://best
                 mCurrentEstimationMode = "best";
                 mEstimationModeCurrentValueTextView.setText(R.string.estimation_name_best);
                 mEstimationModeDescription.setText(R.string.estimation_description_best);
