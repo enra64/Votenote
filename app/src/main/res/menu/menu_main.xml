@@ -3,14 +3,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".MainActivity">
     <item
-        android:id="@+id/action_prespoints"
+        android:id="@+id/action_admission_counter"
         android:actionLayout="@layout/subject_fragment_action_presentation_points"
         android:icon="@drawable/ic_button_presentation_points"
         android:showAsAction="always"
         android:title="@string/action_set_prespoints"
         app:showAsAction="always" />
     <item
-        android:id="@+id/action_show_all_info"
+        android:id="@+id/action_percentage_counter"
         android:actionLayout="@layout/subject_fragment_action_info"
         android:icon="@drawable/ic_button_info"
         android:showAsAction="always"

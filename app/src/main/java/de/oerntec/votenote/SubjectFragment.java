@@ -215,7 +215,7 @@ public class SubjectFragment extends Fragment {
         public AdmissionPercentageFragment getFragmentInstance(Integer requestedPosition) {
             AdmissionPercentageFragment instance = mReferenceMap.get(requestedPosition);
             if(instance == null)
-                throw new AssertionError("could not find anything at " + requestedPosition);
+                throw new AssertionError("could not find an admission percentage fragment at " + requestedPosition);
             return instance;
         }
 

@@ -44,6 +44,7 @@ import java.io.StringWriter;
 
 import de.oerntec.votenote.AdmissionPercentageFragmentStuff.AdmissionPercentageFragment;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionCounters;
+import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageMeta;
 import de.oerntec.votenote.Database.TableHelpers.DBLastViewed;
 import de.oerntec.votenote.Database.TableHelpers.DBSubjects;
 import de.oerntec.votenote.Diagram.DiagramActivity;
@@ -131,7 +132,20 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
     private static MainActivity me;
     DBLastViewed mLastViewedDb;
     DBSubjects mSubjectDb;
-    private boolean mCurrentFragmentHasPrespoints;
+
+    /**
+     * set on subject fragment load
+     */
+    private boolean mCurrentSubjectHasAdmissionCounters;
+
+    /**
+     * set on subject fragment load
+     */
+    private boolean mCurrentSubjectHasPercentageCounters;
+
+    private boolean mLastKnownPercentageCounterInfoViewVisibility = true;
+
+    private boolean mLastKnownAdmissionCounterViewVisibility = true;
 
     public static void toast(String text) {
         Toast.makeText(me, text, Toast.LENGTH_SHORT).show();
@@ -310,7 +324,8 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         //keep track of what fragment is shown
         mCurrentSelectedSubjectId = mSubjectDb.getIdOfSubject(position);
 
-        mCurrentFragmentHasPrespoints = DBAdmissionCounters.getInstance().getItemsForSubject(mCurrentSelectedSubjectId).size() > 0;
+        mCurrentSubjectHasAdmissionCounters = DBAdmissionCounters.getInstance().getItemsForSubject(mCurrentSelectedSubjectId).size() > 0;
+        mCurrentSubjectHasPercentageCounters = DBAdmissionPercentageMeta.getInstance().getItemsForSubject(mCurrentSelectedSubjectId).size() > 0;
 
         // update the menu_main content by replacing fragments
         //if (ENABLE_DEBUG_LOG_CALLS)
@@ -336,60 +351,73 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         invalidateOptionsMenu();
     }
 
+    //called once to instantiate the menu
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
 
         //prepare animations
-        final MenuItem presPointItem = menu.findItem(R.id.action_prespoints);
-        final MenuItem infoItem = menu.findItem(R.id.action_show_all_info);
+        final MenuItem presPointItem = menu.findItem(R.id.action_admission_counter);
+        final MenuItem infoItem = menu.findItem(R.id.action_percentage_counter);
 
         presPointItem.setActionView(R.layout.subject_fragment_action_presentation_points);
         infoItem.setActionView(R.layout.subject_fragment_action_info);
 
         presPointItem.getActionView().setOnClickListener(this);
-        presPointItem.getActionView().setTag(R.id.action_prespoints);
+        presPointItem.getActionView().setTag(R.id.action_admission_counter);
         infoItem.getActionView().setOnClickListener(this);
-        infoItem.getActionView().setTag(R.id.action_show_all_info);
+        infoItem.getActionView().setTag(R.id.action_percentage_counter);
+
+
+        menu.findItem(R.id.action_admission_counter).setVisible(mLastKnownAdmissionCounterViewVisibility);
+        menu.findItem(R.id.action_percentage_counter).setVisible(mLastKnownPercentageCounterInfoViewVisibility);
+
         return true;
     }
 
-    /* Called whenever we call invalidateOptionsMenu() */
+    // Called whenever we call invalidateOptionsMenu(), whenever the menu is shown
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        final MenuItem presPointItem = menu.findItem(R.id.action_prespoints);
-        final MenuItem infoItem = menu.findItem(R.id.action_show_all_info);
+        final MenuItem admissionCountersItem = menu.findItem(R.id.action_admission_counter);
+        final MenuItem admissionPercentageItem = menu.findItem(R.id.action_percentage_counter);
 
-        View presPoints = presPointItem.getActionView();
-        final View info = infoItem.getActionView();
+        View admissionCounterActionView = admissionCountersItem.getActionView();
+        final View admissionPercentageActionView = admissionPercentageItem.getActionView();
 
-        Animation fade;
-        final boolean isVisibleAtEnd;
+        final boolean navDrawerClosing = !mNavigationDrawerFragment.isDrawerOpen();
 
-        if (mNavigationDrawerFragment.isDrawerOpen()) {
-            fade = AnimationUtils.loadAnimation(this, android.R.anim.fade_out);
-            isVisibleAtEnd = false;
-        } else {
-            fade = AnimationUtils.loadAnimation(this, android.R.anim.fade_in);
-            isVisibleAtEnd = true;
-        }
+        //fade in if the drawer is closing
+        Animation fade = AnimationUtils.loadAnimation(this, navDrawerClosing ?
+                android.R.anim.fade_in : android.R.anim.fade_out);
 
-        presPointItem.setVisible(mCurrentFragmentHasPrespoints);
+        //set both to last known state
+        //admissionPercentageItem.setVisible(mLastKnownPercentageCounterInfoViewVisibility);
+        //admissionCountersItem.setVisible(mLastKnownAdmissionCounterViewVisibility);
+
+        final boolean testPC = mCurrentSubjectHasPercentageCounters;
+        final boolean testAC = mCurrentSubjectHasAdmissionCounters;
 
         fade.setInterpolator(new AccelerateInterpolator());
-        fade.setDuration(350);
+        fade.setDuration(300);
 
         new Handler().postDelayed(new Runnable() {
             public void run() {
-                infoItem.setVisible(isVisibleAtEnd);
-                if (mCurrentFragmentHasPrespoints)
-                    presPointItem.setVisible(isVisibleAtEnd);
+                admissionPercentageItem.setVisible(navDrawerClosing && testPC);
+                admissionCountersItem.setVisible(navDrawerClosing && testAC);
             }
         }, fade.getDuration() - 10);
 
-        if (mCurrentFragmentHasPrespoints)
-            presPoints.startAnimation(fade);
-        info.startAnimation(fade);
+        if (mCurrentSubjectHasAdmissionCounters)
+            admissionCounterActionView.startAnimation(fade);
+        if (mCurrentSubjectHasPercentageCounters)
+            admissionPercentageActionView.startAnimation(fade);
+
+        //the new item state is visible if the relevant button should be shown and the nav drawer is
+        //closed
+        mLastKnownPercentageCounterInfoViewVisibility =
+                mCurrentSubjectHasPercentageCounters && navDrawerClosing;
+        mLastKnownAdmissionCounterViewVisibility =
+                mCurrentSubjectHasAdmissionCounters && navDrawerClosing;
 
         return true;
     }
@@ -398,10 +426,10 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_show_all_info:
+            case R.id.action_percentage_counter:
                 onInfoClick();
                 return true;
-            case R.id.action_prespoints:
+            case R.id.action_admission_counter:
                 onPresentationPointsClick();
                 return true;
             case R.id.action_show_diagram:
@@ -446,9 +474,9 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
     @Override
     public void onClick(View view) {
         int id = (int) view.getTag();
-        if (id == R.id.action_show_all_info)
+        if (id == R.id.action_percentage_counter)
             onInfoClick();
-        if (id == R.id.action_prespoints)
+        if (id == R.id.action_admission_counter)
             onPresentationPointsClick();
     }
 }
