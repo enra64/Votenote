@@ -89,12 +89,15 @@ public class AdmissionPercentageMeta implements NameAndIdPojo {
     public void calculateData() {
         if (!mDataLoaded)
             throw new AssertionError("pojo has not loaded data");
-        scheduledNumberOfAssignments = getEstimatedAssignmentsPerLesson() * estimatedLessonCount;
+        numberOfElapsedLessons = mDataList.size();
+        numberOfLessonsLeft = estimatedLessonCount - numberOfElapsedLessons;
+
+        scheduledNumberOfAssignments = getEstimatedAssignmentsPerLesson() * numberOfLessonsLeft +
+                getNumberOfAvailableAssignmentsEnteredSoFar();
+
         numberOfNeededAssignments = (scheduledNumberOfAssignments * (float) targetPercentage) / 100f;
         numberOfFinishedAssignments = getFinishedAssignments();
         remainingNeededAssignments = numberOfNeededAssignments - numberOfFinishedAssignments;
-        numberOfElapsedLessons = mDataList.size();
-        numberOfLessonsLeft = estimatedLessonCount - numberOfElapsedLessons;
         neededAssignmentsPerUebung = remainingNeededAssignments / numberOfLessonsLeft;
         mDataCalculated = true;
     }
@@ -107,7 +110,7 @@ public class AdmissionPercentageMeta implements NameAndIdPojo {
             case user:
                 return userAssignmentsPerLessonEstimation;
             case mean:
-                return getAvailableAssignments() / mDataList.size();
+                return getNumberOfAvailableAssignmentsEnteredSoFar() / mDataList.size();
             case best:
                 return getMinAvailableAssignments();
             case worst:
@@ -142,7 +145,7 @@ public class AdmissionPercentageMeta implements NameAndIdPojo {
         return finishedAssignments;
     }
 
-    public int getAvailableAssignments() {
+    public int getNumberOfAvailableAssignmentsEnteredSoFar() {
         if (!mDataLoaded) throw new AssertionError("pojo has not loaded data");
         int availableAssignments = 0;
         for (AdmissionPercentageData d : mDataList)
