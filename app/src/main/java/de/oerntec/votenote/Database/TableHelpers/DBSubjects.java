@@ -177,7 +177,7 @@ public class DBSubjects extends CrudDb<Subject> {
     }
 
     public Subject getItem(Subject item) {
-        return getItem(item);
+        return getItem(item.id);
     }
 
     public Subject getItem(int subjectId) {
