@@ -97,7 +97,7 @@ public class SubjectFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_lesson_tabbed, container, false);
+        View rootView = inflater.inflate(R.layout.subject_fragment, container, false);
 
         //create and assign an adapter for showing the individual admission percentage fragments
         mViewPager = (ViewPager) rootView.findViewById(R.id.fragment_lesson_tabbed_pager);
@@ -107,6 +107,14 @@ public class SubjectFragment extends Fragment {
         //hide the top bar showing the percentage counter titles if only one exists
         if(mAdmissionPercentageAdapter.getCount() == 1)
             mViewPager.findViewById(R.id.fragment_lesson_tabbed_pager_title_strip).setVisibility(View.GONE);
+
+        if (mAdmissionPercentageAdapter.getCount() == 0) {
+            rootView.findViewById(R.id.no_admission_percentage_counters_warner_text).setVisibility(View.VISIBLE);
+            mViewPager.setVisibility(View.GONE);
+        } else {
+            rootView.findViewById(R.id.no_admission_percentage_counters_warner_text).setVisibility(View.GONE);
+            mViewPager.setVisibility(View.VISIBLE);
+        }
 
         //do we need to save that percentage counter we viewed last?
         mSaveLastMetaId = MainActivity.getPreference("save_last_selected_meta_pos", true);

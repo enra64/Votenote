@@ -121,7 +121,7 @@ public class AdmissionPercentageFragment extends Fragment implements SwipeDeleti
         mPercentageMetaId = getArguments().getInt(ARG_PERCENTAGE_META_ID);
 
         //inflate root view
-        View rootView = inflater.inflate(R.layout.subject_fragment, container, false);
+        View rootView = inflater.inflate(R.layout.admission_percentage_fragment, container, false);
 
 
         //config the recyclerview
@@ -153,7 +153,6 @@ public class AdmissionPercentageFragment extends Fragment implements SwipeDeleti
         if (mAdapter.getItemCount() == 0)
             if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
                 Log.e("Main Listview", "Received Empty allEntryCursor for group " + mMetaObject.getDisplayName() + " with id " + mPercentageMetaId);
-
 
         enableOnClickForLessons();
 
