@@ -32,13 +32,24 @@ public class AdmissionPercentageDialogFragment extends DialogFragment implements
 
     //views needed for configuring a new percentage counter
     private EditText nameInput;
-    private TextView requiredPercentageInfo, estimatedAssignmentsHelp, estimatedUebungCountHelp;
-    private SeekBar requiredPercentageSeek, estimatedAssignmentsSeek, estimatedLessonCountSeek;
+    private TextView requiredPercentageInfo, estimatedAssignmentsHelp, estimatedUebungCountHelp, mEstimationModeDescription, mEstimationModeCurrentValueTextView;
+    private SeekBar requiredPercentageSeek, estimatedAssignmentsSeek, estimatedLessonCountSeek, mEstimationModeSeekbar;
 
     /*
     * load default values into these variables
     */
     private String nameHint;
+
+    /**
+     * Contains the currently set estimation mode; defaults (like the db) to user estimation.
+     */
+    private String mCurrentEstimationMode = "user";
+
+    /**
+     * Contains the old (if changing subject) or default value for estimation mode
+     */
+    private String mEstimationModeHint = "user";
+
     private int requiredPercentageHint = 50, estimatedAssignmentsHint = 5, estimatedLessonCountHint = 10;
 
     /**
@@ -82,7 +93,7 @@ public class AdmissionPercentageDialogFragment extends DialogFragment implements
 
             //create a new meta entry for this so we have an id to work with
             if (mIsNew)
-                mAdmissionPercentageId = mDb.addItemGetId(new AdmissionPercentageMeta(-1, mSubjectId, 0, 0, 0, "if you see this, i fucked up."));
+                mAdmissionPercentageId = mDb.addItemGetId(new AdmissionPercentageMeta(-1, mSubjectId, 0, 0, 0, "if you see this, i fucked up.", "undefined"));
         } else
             throw new AssertionError("why are there no arguments here?");
     }
@@ -101,6 +112,11 @@ public class AdmissionPercentageDialogFragment extends DialogFragment implements
 
         estimatedUebungCountHelp = (TextView) view.findViewById(R.id.subject_manager_dialog_groupsettings_estimated_lesson_count_current_value);
         estimatedLessonCountSeek = (SeekBar) view.findViewById(R.id.subject_manager_dialog_groupsettings_estimated_lesson_count_seekbar);
+
+        mEstimationModeCurrentValueTextView = (TextView) view.findViewById(R.id.subject_manager_fragment_percentage_creator_fragment_current_value);
+        mEstimationModeDescription = (TextView) view.findViewById(R.id.subject_manager_fragment_percentage_creator_fragment_estimation_current_value_description);
+        mEstimationModeSeekbar = (SeekBar) view.findViewById(R.id.subject_manager_fragment_percentage_creator_fragment_estimation_seekbar);
+
         return view;
     }
 
@@ -148,6 +164,7 @@ public class AdmissionPercentageDialogFragment extends DialogFragment implements
         requiredPercentageHint = oldState.targetPercentage;
         estimatedAssignmentsHint = oldState.userAssignmentsPerLessonEstimation;
         estimatedLessonCountHint = oldState.estimatedLessonCount;
+        mEstimationModeHint = oldState.getEstimationModeAsString();
     }
 
     /**
@@ -167,15 +184,82 @@ public class AdmissionPercentageDialogFragment extends DialogFragment implements
         initSeekbar(requiredPercentageSeek, requiredPercentageInfo, requiredPercentageHint, 100);
         initSeekbar(estimatedAssignmentsSeek, estimatedAssignmentsHelp, estimatedAssignmentsHint, 50);
         initSeekbar(estimatedLessonCountSeek, estimatedUebungCountHelp, estimatedLessonCountHint, 50);
+
+        mEstimationModeSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                onEstimationModeChange(progress);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+            }
+        });
+
+        onEstimationModeChange(getEstimationModeInteger(mEstimationModeHint));
     }
 
-    private void initSeekbar(SeekBar item, TextView currentValueView, int hint, int max) {
+    /**
+     * Somewhat ugly function translating from the database mode representation to an integer for
+     * the seekbar
+     *
+     * @param desiredState the state the integer is supposed to represent
+     * @return the integer representing the input estimation mode
+     */
+    private int getEstimationModeInteger(String desiredState) {
+        switch (desiredState) {
+            case "user":
+                return 0;
+            case "mean":
+                return 1;
+            case "best":
+                return 2;
+            case "worst":
+                return 3;
+            default:
+                throw new AssertionError("undefined estimation mode!");
+        }
+
+    }
+
+    private void onEstimationModeChange(int seekbarProgress) {
+        switch (seekbarProgress) {
+            case 0://user
+                mCurrentEstimationMode = "user";
+                mEstimationModeCurrentValueTextView.setText(R.string.estimation_name_user);
+                mEstimationModeDescription.setText(R.string.estimation_description_user);
+                break;
+            case 1://mean
+                mCurrentEstimationMode = "mean";
+                mEstimationModeCurrentValueTextView.setText(R.string.estimation_name_mean);
+                mEstimationModeDescription.setText(R.string.estimation_description_mean);
+                break;
+            case 2://worst
+                mCurrentEstimationMode = "worst";
+                mEstimationModeCurrentValueTextView.setText(R.string.estimation_name_worst);
+                mEstimationModeDescription.setText(R.string.estimation_description_worst);
+                break;
+            case 3://best
+                mCurrentEstimationMode = "best";
+                mEstimationModeCurrentValueTextView.setText(R.string.estimation_name_best);
+                mEstimationModeDescription.setText(R.string.estimation_description_best);
+                break;
+            default:
+                throw new AssertionError("unknown progress value!");
+        }
+    }
+
+    private void initSeekbar(SeekBar item, TextView currentValueView, int hintOrOldValue, int max) {
         //set the textview that displays the current value
-        currentValueView.setText(String.valueOf(hint));
+        currentValueView.setText(String.valueOf(hintOrOldValue));
         //configure the seekbar maximum
         item.setMax(max);
         //set seekbar progress
-        item.setProgress(hint);
+        item.setProgress(hintOrOldValue);
         //set listener to update current value view
         item.setOnSeekBarChangeListener(new SeekerListener(currentValueView));
     }
@@ -209,7 +293,8 @@ public class AdmissionPercentageDialogFragment extends DialogFragment implements
                         estimatedAssignmentsSeek.getProgress(),
                         estimatedLessonCountSeek.getProgress(),
                         requiredPercentageSeek.getProgress(),
-                        nameInput.getText().toString()));
+                        nameInput.getText().toString(),
+                        mCurrentEstimationMode));
                 //commit
                 mDb.releaseSavepoint(mSavepointId);
                 //notify the host fragment that we changed an item

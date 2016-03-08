@@ -129,4 +129,12 @@
     <string name="percentage_card_assignments_per_lesson">%d Aufgaben pro Übung</string>
     <string name="percentage_card_target_lesson_conut">~%d Übungen</string>
     <string name="percentage_card_target_percentage">%d%% benötigt</string>
+    <string name="estimation_description_best">Die kleinste für diesen Zähler gegebene Anzahl verfügbarer Aufgaben wird Anstelle von \"Aufgaben pro Übung\" genutzt. Sinnvollerweise sollte man hier Vorsicht walten lassen.</string>
+    <string name="estimation_description_mean">Die durchschnittliche für diesen Zähler gegebene Anzahl verfügbarer Aufgaben wird Anstelle von \"Aufgaben pro Übung\" genutzt.</string>
+    <string name="estimation_description_user">In diesem Modus wird zum Bestimmen der Aufgaben pro Übung der Wert von \"Aufgaben pro Übung\" genutzt.</string>
+    <string name="estimation_description_worst">Die größte für diesen Zähler gegebene Anzahl verfügbarer Aufgaben wird Anstelle von \"Aufgaben pro Übung\" genutzt.</string>
+    <string name="estimation_name_best">Best Case</string>
+    <string name="estimation_name_mean">Mittel</string>
+    <string name="estimation_name_user">Nutzer</string>
+    <string name="estimation_name_worst">Worst case</string>
 </resources>

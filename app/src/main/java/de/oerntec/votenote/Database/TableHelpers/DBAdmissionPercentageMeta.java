@@ -73,6 +73,7 @@ public class DBAdmissionPercentageMeta extends CrudDb<AdmissionPercentageMeta> i
         values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_USER_ESTIMATED_ASSIGNMENTS_PER_LESSON, newItem.userAssignmentsPerLessonEstimation);
         values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_TARGET_PERCENTAGE, newItem.targetPercentage);
         values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_TARGET_LESSON_COUNT, newItem.estimatedLessonCount);
+        values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_ESTIMATION_MODE, newItem.getEstimationModeAsString());
 
         String[] whereArgs = {String.valueOf(newItem.id)};
         int affectedRows = mDatabase.update(DatabaseCreator.TABLE_NAME_ADMISSION_PERCENTAGES_META, values, DatabaseCreator.ADMISSION_PERCENTAGES_META_ID + "=?", whereArgs);
@@ -181,7 +182,7 @@ public class DBAdmissionPercentageMeta extends CrudDb<AdmissionPercentageMeta> i
         values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_USER_ESTIMATED_ASSIGNMENTS_PER_LESSON, newItem.userAssignmentsPerLessonEstimation);
         values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_TARGET_PERCENTAGE, newItem.targetPercentage);
         values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_TARGET_LESSON_COUNT, newItem.estimatedLessonCount);
-        values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_ESTIMATION_MODE, newItem.estimatedLessonCount);
+        values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_ESTIMATION_MODE, newItem.getEstimationModeAsString());
 
         if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
             Log.i("DBAP-M", "adding meta item");

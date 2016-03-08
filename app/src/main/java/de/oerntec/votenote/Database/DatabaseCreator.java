@@ -82,8 +82,9 @@ public class DatabaseCreator extends SQLiteOpenHelper {
     public static final String LAST_VIEWED_SUBJECT_POSITION = "subject_id";
     public static final String LAST_VIEWED_PERCENTAGE_META_POSITION = "meta_id";
 
-
-    public static final int DATABASE_VERSION = 13;//switched to db v13 in commit 22.10.15 13:49
+    //switched to db v13 in commit 22.10.15 13:49
+    //db14: 8.3.16 14:22
+    public static final int DATABASE_VERSION = 14;
 
     //begin new database system
     private static final String CREATE_TABLE_SUBJECTS = "create table " + TABLE_NAME_SUBJECTS + "( " +
@@ -195,8 +196,7 @@ public class DatabaseCreator extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase database, int oldVersion, int newVersion) {
         if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
-            Log.w(DatabaseCreator.class.getName(),
-                "Upgrading database from version " + oldVersion + " to " + newVersion + ", which will destroy all old data");
+            Log.w(DatabaseCreator.class.getName(), "Upgrading database from version " + oldVersion + " to " + newVersion + ", which will destroy all old data");
         if (oldVersion == 12 && newVersion == 13) {
             transferFrom12To13(database);
         } else if (oldVersion == 12 && newVersion == 14) {

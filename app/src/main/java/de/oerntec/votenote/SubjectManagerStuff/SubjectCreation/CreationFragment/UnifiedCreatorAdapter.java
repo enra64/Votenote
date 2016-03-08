@@ -106,7 +106,7 @@ public class UnifiedCreatorAdapter extends RecyclerView.Adapter<UnifiedCreatorAd
                 PercentageViewHolder percentageHolder = (PercentageViewHolder) holder;
                 AdmissionPercentageMeta percentageData = getPercentagePojoAtPosition(position);
                 percentageHolder.itemView.setTag(percentageData.id);
-                percentageHolder.assignmentsPerLesson.setText(mContext.getString(R.string.percentage_card_assignments_per_lesson, percentageData.estimatedAssignmentsPerLesson));
+                percentageHolder.assignmentsPerLesson.setText(mContext.getString(R.string.percentage_card_assignments_per_lesson, percentageData.userAssignmentsPerLessonEstimation));
                 percentageHolder.name.setText(percentageData.name);
                 percentageHolder.targetLessonCount.setText(mContext.getString(R.string.percentage_card_target_lesson_conut, percentageData.estimatedLessonCount));
                 percentageHolder.targetPercentage.setText(mContext.getString(R.string.percentage_card_target_percentage, percentageData.targetPercentage));

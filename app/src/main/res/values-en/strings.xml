@@ -125,4 +125,16 @@
     <string name="dialog_yes">Yes</string>
     <string name="pref_swipe_to_delete_lesson">Delete by swiping</string>
     <string name="swipe_to_delete_lesson_enable_feature_dialog_message">You tried to delete an item by swiping. Keep this feature enabled?</string>
+    <string name="percentage_card_assignments_per_lesson">%d Assignments per lesson</string>
+    <string name="percentage_card_target_lesson_conut">~%d Lessons</string>
+    <string name="percentage_card_target_percentage">%d%% required</string>
+    <string name="minimum_points_text">%d minimum points</string>
+    <string name="estimation_name_best">Best case</string>
+    <string name="estimation_name_mean">Average</string>
+    <string name="estimation_name_user">User</string>
+    <string name="estimation_name_worst">Worst case</string>
+    <string name="estimation_description_best">The smallest value given for available assignments in this subject is used as \"assignments per lesson\".</string>
+    <string name="estimation_description_mean">The average value given for the number of available assignments in this subject is used as "assignments per lesson"</string>
+    <string name="estimation_description_user">Simply uses the "available assignments per lesson" value given here.</string>
+    <string name="estimation_description_worst">The largest value given for available assignments in this subject is used as "assignments per lesson".</string>
 </resources>
