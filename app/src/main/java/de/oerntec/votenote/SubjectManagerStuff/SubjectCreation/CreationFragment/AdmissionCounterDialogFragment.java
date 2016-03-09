@@ -17,7 +17,7 @@ import de.oerntec.votenote.Database.TableHelpers.DBAdmissionCounters;
 import de.oerntec.votenote.Helpers.NotEmptyWatcher;
 import de.oerntec.votenote.R;
 import de.oerntec.votenote.SubjectManagerStuff.SeekerListener;
-import de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.SubjectCreationActivity;
+import de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.SubjectOverview.SubjectCreationActivity;
 
 public class AdmissionCounterDialogFragment extends DialogFragment implements DialogInterface.OnClickListener {
     private static final String SUBJECT_ID = "subject_id";

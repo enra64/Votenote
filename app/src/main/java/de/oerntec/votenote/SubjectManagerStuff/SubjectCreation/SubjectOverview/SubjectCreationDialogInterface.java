@@ -1,4 +1,4 @@
-package de.oerntec.votenote.SubjectManagerStuff.SubjectCreation;
+package de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.SubjectOverview;
 
 /**
  * Interface to be able to give results from dedicated dialog classes

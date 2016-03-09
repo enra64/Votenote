@@ -1,7 +1,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.SubjectCreationActivity">
+    tools:context=".SubjectManagerStuff.SubjectCreation.SubjectOverview.SubjectCreationActivity">
     <item
         android:id="@+id/action_save"
         android:icon="@drawable/ic_button_save"

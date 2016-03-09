@@ -1,4 +1,4 @@
-package de.oerntec.votenote.SubjectManagerStuff.SubjectCreation;
+package de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.SubjectOverview;
 
 import android.app.FragmentManager;
 import android.os.Bundle;

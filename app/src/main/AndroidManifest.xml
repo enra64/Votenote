@@ -57,7 +57,7 @@
                 android:value="de.oerntec.votenote.MainActivity" />
         </activity>
         <activity
-            android:name=".SubjectManagerStuff.SubjectCreation.SubjectCreationActivity"
+            android:name=".SubjectManagerStuff.SubjectCreation.SubjectOverview.SubjectCreationActivity"
             android:label="@string/title_activity_subject_creation"
             android:parentActivityName=".SubjectManagerStuff.SubjectManagementActivity"
             android:windowSoftInputMode="stateAlwaysHidden">
@@ -65,7 +65,9 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="de.oerntec.votenote.SubjectManagerStuff.SubjectManagementActivity" />
         </activity>
-        <activity android:name=".SubjectManagerStuff.SubjectCreation.CreationFragment.AdmissionPercentageCreation.AdmissionPercentageCreationActivity"></activity>
+        <activity
+            android:name=".SubjectManagerStuff.SubjectCreation.CreationFragment.AdmissionPercentageCreation.AdmissionPercentageCreationActivity"
+            android:windowSoftInputMode="adjustNothing"></activity>
     </application>
 
 </manifest>

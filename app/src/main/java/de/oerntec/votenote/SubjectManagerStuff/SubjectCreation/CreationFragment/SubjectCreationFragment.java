@@ -27,9 +27,9 @@ import de.oerntec.votenote.MainActivity;
 import de.oerntec.votenote.R;
 import de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.CreationFragment.AdmissionPercentageCreation.AdmissionPercentageCreationActivity;
 import de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.CreationFragment.AdmissionPercentageCreation.AdmissionPercentageFragment;
-import de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.Dialogs;
-import de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.SubjectCreationActivity;
-import de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.SubjectCreationDialogInterface;
+import de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.SubjectOverview.Dialogs;
+import de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.SubjectOverview.SubjectCreationActivity;
+import de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.SubjectOverview.SubjectCreationDialogInterface;
 import de.oerntec.votenote.SubjectManagerStuff.SubjectManagementActivity;
 
 /**
@@ -389,25 +389,25 @@ public class SubjectCreationFragment extends Fragment implements SubjectCreation
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == AdmissionPercentageCreationActivity.RESULT_REQUEST_CODE_ADMISSION_PERCENTAGE_CREATOR) {
-            if (data.getExtras() == null) {
-                if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
-                    Log.w("subjectcreationfragment", "extras null for admission percentage result?");
-                return;
-            }
-            int itemId = data.getExtras().getInt(AdmissionPercentageFragment.ADMISSION_PERCENTAGE_ID);
-            switch (resultCode) {
-                case SubjectCreationActivity.DIALOG_RESULT_ADDED:
-                    admissionPercentageFinished(itemId, true);//true -> isNew
-                    break;
-                case SubjectCreationActivity.DIALOG_RESULT_CHANGED:
-                    admissionPercentageFinished(itemId, false);//false -> isNotNew
-                    break;
-                case SubjectCreationActivity.DIALOG_RESULT_DELETE:
-                    deleteAdmissionPercentage(itemId);
-                    break;
-                case SubjectCreationActivity.DIALOG_RESULT_CLOSED:
-                    dialogClosed();
-                    break;
+            //this happens on back button press
+            if (data == null)
+                dialogClosed();
+            else {
+                int itemId = data.getExtras().getInt(AdmissionPercentageFragment.ADMISSION_PERCENTAGE_ID);
+                switch (resultCode) {
+                    case SubjectCreationActivity.DIALOG_RESULT_ADDED:
+                        admissionPercentageFinished(itemId, true);//true -> isNew
+                        break;
+                    case SubjectCreationActivity.DIALOG_RESULT_CHANGED:
+                        admissionPercentageFinished(itemId, false);//false -> isNotNew
+                        break;
+                    case SubjectCreationActivity.DIALOG_RESULT_DELETE:
+                        deleteAdmissionPercentage(itemId);
+                        break;
+                    case SubjectCreationActivity.DIALOG_RESULT_CLOSED:
+                        dialogClosed();
+                        break;
+                }
             }
         }
     }
