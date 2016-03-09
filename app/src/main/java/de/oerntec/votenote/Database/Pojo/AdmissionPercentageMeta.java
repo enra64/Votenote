@@ -101,6 +101,8 @@ public class AdmissionPercentageMeta implements NameAndIdPojo {
             case user:
                 return userAssignmentsPerLessonEstimation;
             case mean:
+                if (mDataList.size() == 0)
+                    return userAssignmentsPerLessonEstimation;
                 return getNumberOfAvailableAssignmentsEnteredSoFar() / mDataList.size();
             case best:
                 return getMinAvailableAssignments();
@@ -206,7 +208,7 @@ public class AdmissionPercentageMeta implements NameAndIdPojo {
 
 
     //BEWARE: mEstimationModeSeekbar.setMax(EstimationMode.values().length - 1); in setValuesForViews
-    // in AdmissionPercentageDialogFragment relies on the undefined state to exist and be last!
+    // in AdmissionPercentageFragment relies on the undefined state to exist and be last!
     public enum EstimationMode {
         user,
         mean,

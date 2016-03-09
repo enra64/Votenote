@@ -1,15 +1,12 @@
-package de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.CreationFragment;
+package de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.CreationFragment.AdmissionPercentageCreation;
 
-import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.app.DialogFragment;
-import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.WindowManager;
+import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -22,10 +19,10 @@ import de.oerntec.votenote.R;
 import de.oerntec.votenote.SubjectManagerStuff.SeekerListener;
 import de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.SubjectCreationActivity;
 
-public class AdmissionPercentageDialogFragment extends DialogFragment implements DialogInterface.OnClickListener {
-    private static final String SUBJECT_ID = "subject_id";
-    private static final String ADMISSION_PERCENTAGE_ID = "ap_id";
-    private static final String SUBJECT_IS_NEW = "subject_is_new";
+public class AdmissionPercentageFragment extends Fragment implements Button.OnClickListener {
+    public static final String SUBJECT_ID = "subject_id";
+    public static final String ADMISSION_PERCENTAGE_ID = "ap_id";
+    public static final String SUBJECT_IS_NEW = "subject_is_new";
 
     private int mSubjectId, mAdmissionPercentageId;
 
@@ -58,13 +55,13 @@ public class AdmissionPercentageDialogFragment extends DialogFragment implements
      */
     private String mSavepointId;
 
-    private boolean mIsOldPercentageCounter, mIsNew;
+    private boolean mIsOldPercentageCounter, mIsNewPercentageCounter;
 
-    public AdmissionPercentageDialogFragment() {
+    public AdmissionPercentageFragment() {
     }
 
-    public static AdmissionPercentageDialogFragment newInstance(int subjectId, int admissionCounterId, boolean isNew) {
-        AdmissionPercentageDialogFragment fragment = new AdmissionPercentageDialogFragment();
+    public static AdmissionPercentageFragment newInstance(int subjectId, int admissionCounterId, boolean isNew) {
+        AdmissionPercentageFragment fragment = new AdmissionPercentageFragment();
         Bundle args = new Bundle();
         args.putInt(SUBJECT_ID, subjectId);
         args.putInt(ADMISSION_PERCENTAGE_ID, admissionCounterId);
@@ -74,18 +71,13 @@ public class AdmissionPercentageDialogFragment extends DialogFragment implements
     }
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-    }
-
-    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mSubjectId = getArguments().getInt(SUBJECT_ID);
             mAdmissionPercentageId = getArguments().getInt(ADMISSION_PERCENTAGE_ID);
-            mIsNew = getArguments().getBoolean(SUBJECT_IS_NEW);
-            mIsOldPercentageCounter = !mIsNew;
+            mIsNewPercentageCounter = getArguments().getBoolean(SUBJECT_IS_NEW);
+            mIsOldPercentageCounter = !mIsNewPercentageCounter;
             mDb = DBAdmissionPercentageMeta.getInstance();
 
             //create a savepoint now, so we can rollback if the user decides to abort
@@ -93,15 +85,25 @@ public class AdmissionPercentageDialogFragment extends DialogFragment implements
             mDb.createSavepoint(mSavepointId);
 
             //create a new meta entry for this so we have an id to work with
-            if (mIsNew)
+            if (mIsNewPercentageCounter)
                 mAdmissionPercentageId = mDb.addItemGetId(new AdmissionPercentageMeta(-1, mSubjectId, 0, 0, 0, "if you see this, i fucked up.", "undefined"));
+
+            //set the parent activity title
+            ((AdmissionPercentageCreationActivity) getActivity()).setToolbarTitle(getTitle());
+
+            //hide the delete button if this is a new subject
+            if (mIsNewPercentageCounter)
+                ((AdmissionPercentageCreationActivity) getActivity()).hideDeleteButton();
+
         } else
             throw new AssertionError("why are there no arguments here?");
     }
 
-    private View createView(LayoutInflater inflater) {
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        @SuppressLint("InflateParams") View view = inflater.inflate(R.layout.subject_manager_fragment_percentage_creator_fragment, null, false);
+        View view = inflater.inflate(R.layout.subject_manager_fragment_percentage_creator_fragment, container, false);
 
         nameInput = (EditText) view.findViewById(R.id.subject_manager_dialog_groupsettings_edit_name);
 
@@ -121,40 +123,19 @@ public class AdmissionPercentageDialogFragment extends DialogFragment implements
         return view;
     }
 
-    /**
-     * called after onCreate, before onCreateView
-     */
-    @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
-        AlertDialog.Builder b = new AlertDialog.Builder(getActivity())
-            .setView(createView(getActivity().getLayoutInflater()))
-            .setTitle("totally no bug")
-            .setPositiveButton("OK", this)
-            .setNegativeButton("Cancel", this);
-        if(mIsOldPercentageCounter)
-            b.setNeutralButton("Delete", this);
-
-        AlertDialog d = b.create();
-        d.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
-        return d;
-    }
-
     @Override
     public void onStart() {
         super.onStart();
         if (mIsOldPercentageCounter)
             loadOldSubjectValues();
         setValuesForViews();
-
-        //set title now, all old data has been loaded
-        getDialog().setTitle(getTitle());
     }
 
     /**
      * Load default values or values from old subject data
      */
     private void loadOldSubjectValues() {
-        if (mIsNew)
+        if (mIsNewPercentageCounter)
             throw new AssertionError("this is a new subject, we cannot load data for it!");
 
         //try to get old subject data; returns null if no subject is found
@@ -173,13 +154,13 @@ public class AdmissionPercentageDialogFragment extends DialogFragment implements
      */
     private void setValuesForViews() {
         //display an error if the edittext is empty
-        nameInput.addTextChangedListener(new NotEmptyWatcher(nameInput, ((AlertDialog) getDialog()).getButton(DialogInterface.BUTTON_POSITIVE)));
+        nameInput.addTextChangedListener(new NotEmptyWatcher(nameInput, ((AdmissionPercentageCreationActivity) getActivity()).getSaveButton()));
 
         if (mIsOldPercentageCounter)
             nameInput.setText(nameHint);
         else {
             nameInput.setError("Must not be empty");
-            ((AlertDialog) getDialog()).getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(false);
+            ((AdmissionPercentageCreationActivity) getActivity()).getSaveButton().setEnabled(false);
         }
 
         initSeekbar(requiredPercentageSeek, requiredPercentageInfo, requiredPercentageHint, 100);
@@ -262,7 +243,7 @@ public class AdmissionPercentageDialogFragment extends DialogFragment implements
 
     private String getTitle() {
         String title;
-        if (mIsNew) {
+        if (mIsNewPercentageCounter) {
             if (mDb.getCount() == 0)
                 title = "Add your first percentage counter";//need a better name
             else
@@ -273,15 +254,14 @@ public class AdmissionPercentageDialogFragment extends DialogFragment implements
     }
 
     @Override
-    public void onClick(DialogInterface dialog, int which) {
+    public void onClick(View v) {
         int resultState = -1;
-        switch(which){
-            case DialogInterface.BUTTON_NEUTRAL:
+        switch (v.getId()) {
+            case R.id.activity_admission_percentage_creation_delete_button:
                 mDb.rollbackToSavepoint(mSavepointId);
-                dialog.dismiss();
                 resultState =  SubjectCreationActivity.DIALOG_RESULT_DELETE;
                 break;
-            case DialogInterface.BUTTON_POSITIVE:
+            case R.id.activity_admission_percentage_creation_save_button:
                 //change the item we created at the beginning of this dialog to the actual values
                 mDb.changeItem(new AdmissionPercentageMeta(
                         mAdmissionPercentageId,
@@ -294,16 +274,18 @@ public class AdmissionPercentageDialogFragment extends DialogFragment implements
                 //commit
                 mDb.releaseSavepoint(mSavepointId);
                 //notify the host fragment that we changed an item
-                resultState = mIsNew ? SubjectCreationActivity.DIALOG_RESULT_ADDED : SubjectCreationActivity.DIALOG_RESULT_CHANGED;
-                //bail
-                dialog.dismiss();
+                if (mIsNewPercentageCounter)
+                    resultState = SubjectCreationActivity.DIALOG_RESULT_ADDED;
+                else
+                    resultState = SubjectCreationActivity.DIALOG_RESULT_CHANGED;
                 break;
-            case DialogInterface.BUTTON_NEGATIVE:
+            case R.id.activity_admission_percentage_creation_cancel_button:
                 mDb.rollbackToSavepoint(mSavepointId);
                 resultState = SubjectCreationActivity.DIALOG_RESULT_CLOSED;
                 break;
         }
-        SubjectCreationActivity host = (SubjectCreationActivity) getActivity();
-        host.callCreatorFragmentForItemChange(mAdmissionPercentageId, true, resultState);
+        //TODO: need to call basically this, but via startActivityForResult from subjectCreation
+        AdmissionPercentageCreationActivity host = (AdmissionPercentageCreationActivity) getActivity();
+        host.callCreatorFragmentForItemChange(resultState);
     }
 }

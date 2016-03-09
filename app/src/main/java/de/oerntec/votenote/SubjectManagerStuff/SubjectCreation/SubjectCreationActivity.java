@@ -7,7 +7,7 @@ import android.support.v7.widget.Toolbar;
 
 import de.oerntec.votenote.Helpers.General;
 import de.oerntec.votenote.R;
-import de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.CreationFragment.SubjectCreationActivityFragment;
+import de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.CreationFragment.SubjectCreationFragment;
 
 public class SubjectCreationActivity extends AppCompatActivity {
     public static final int DIALOG_RESULT_CLOSED = 0;
@@ -29,7 +29,7 @@ public class SubjectCreationActivity extends AppCompatActivity {
     /**
      * save the current fragment here to avoid lookups
      */
-    private static SubjectCreationActivityFragment currentSubjectFragment;
+    private static SubjectCreationFragment currentSubjectFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +50,7 @@ public class SubjectCreationActivity extends AppCompatActivity {
         int subjectId = getIntent().getExtras().getInt(ARG_CREATOR_SUBJECT_ID, -1);
         int subjectPosition = getIntent().getExtras().getInt(ARG_CREATOR_VIEW_POSITION, -1);
 
-        currentSubjectFragment = SubjectCreationActivityFragment.newInstance(subjectId, subjectPosition);
+        currentSubjectFragment = SubjectCreationFragment.newInstance(subjectId, subjectPosition);
 
         //load fragment
         FragmentManager fragmentManager = getFragmentManager();
@@ -67,7 +67,7 @@ public class SubjectCreationActivity extends AppCompatActivity {
     }
 
     public void callCreatorFragmentForItemChange(int itemId, boolean isPercentage, int state) {
-        SubjectCreationActivityFragment creator = (SubjectCreationActivityFragment) getFragmentManager().findFragmentById(R.id.activity_subject_creation_fragment_container);
+        SubjectCreationFragment creator = (SubjectCreationFragment) getFragmentManager().findFragmentById(R.id.activity_subject_creation_fragment_container);
         switch (state){
             case DIALOG_RESULT_ADDED:
                 if (isPercentage)

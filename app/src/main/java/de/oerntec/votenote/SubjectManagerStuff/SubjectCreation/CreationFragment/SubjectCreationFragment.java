@@ -25,15 +25,18 @@ import de.oerntec.votenote.Database.TableHelpers.DBSubjects;
 import de.oerntec.votenote.Helpers.General;
 import de.oerntec.votenote.MainActivity;
 import de.oerntec.votenote.R;
+import de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.CreationFragment.AdmissionPercentageCreation.AdmissionPercentageCreationActivity;
+import de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.CreationFragment.AdmissionPercentageCreation.AdmissionPercentageFragment;
 import de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.Dialogs;
 import de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.SubjectCreationActivity;
 import de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.SubjectCreationDialogInterface;
 import de.oerntec.votenote.SubjectManagerStuff.SubjectManagementActivity;
 
 /**
- * A placeholder fragment containing a simple view.
+ * This fragment holds the actual ui/ux for creating a new subject, as opposed to the subject creation
+ * activity, which merely contains this
  */
-public class SubjectCreationActivityFragment extends Fragment implements SubjectCreationDialogInterface {
+public class SubjectCreationFragment extends Fragment implements SubjectCreationDialogInterface {
     /**
      * Lesson should be added, not changed
      */
@@ -92,16 +95,16 @@ public class SubjectCreationActivityFragment extends Fragment implements Subject
      */
     private String mOldSubjectName = "";
 
-    public SubjectCreationActivityFragment() {
+    public SubjectCreationFragment() {
     }
 
-    public static SubjectCreationActivityFragment newInstance(int subjectId, int subjectPosition) {
+    public static SubjectCreationFragment newInstance(int subjectId, int subjectPosition) {
         Bundle args = new Bundle();
         //put arguments into an intent
         args.putInt(SubjectCreationActivity.ARG_CREATOR_SUBJECT_ID, subjectId);
         args.putInt(SubjectCreationActivity.ARG_CREATOR_VIEW_POSITION, subjectPosition);
 
-        SubjectCreationActivityFragment fragment = new SubjectCreationActivityFragment();
+        SubjectCreationFragment fragment = new SubjectCreationFragment();
         fragment.setArguments(args);
         return fragment;
     }
@@ -182,26 +185,35 @@ public class SubjectCreationActivityFragment extends Fragment implements Subject
         manager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(manager);
 
-        mAdapter = new UnifiedCreatorAdapter(getActivity(), getFragmentManager(), mIsNewSubject ? null : mOldSubjectName, mSubjectId);
+        mAdapter = new UnifiedCreatorAdapter(getActivity(), this, getFragmentManager(), mIsNewSubject ? null : mOldSubjectName, mSubjectId);
         recyclerView.setAdapter(mAdapter);
 
         recyclerView.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), recyclerView, new OnItemClickListener() {
             public void onItemClick(View view, int position) {
                 if (mAdapter.getItemViewType(position) == UnifiedCreatorAdapter.VIEW_COUNTER)
                     Dialogs.showCounterDialog(getFragmentManager(), mSubjectId, (int) view.getTag(), false);
-                else if (mAdapter.getItemViewType(position) == UnifiedCreatorAdapter.VIEW_PERCENTAGE)
-                    Dialogs.showPercentageDialog(getFragmentManager(), mSubjectId, (int) view.getTag(), false);
+                else if (mAdapter.getItemViewType(position) == UnifiedCreatorAdapter.VIEW_PERCENTAGE) {
+                    openAdmissionPercentageCreationActivity((int) view.getTag(), false);
+                }
             }
 
             public void onItemLongClick(final View view, int position) {
                 if ((int) view.getTag() != ID_ADD_ITEM) {
                     if (mAdapter.getItemViewType(position) == UnifiedCreatorAdapter.VIEW_COUNTER)
-                        Dialogs.showCounterDeleteDialog(mAdapter.getCounterPojoAtPosition(position), getActivity(), SubjectCreationActivityFragment.this);
+                        Dialogs.showCounterDeleteDialog(mAdapter.getCounterPojoAtPosition(position), getActivity(), SubjectCreationFragment.this);
                     else if (mAdapter.getItemViewType(position) == UnifiedCreatorAdapter.VIEW_PERCENTAGE)
-                        Dialogs.showPercentageDeleteDialog(mAdapter.getPercentagePojoAtPosition(position), getActivity(), SubjectCreationActivityFragment.this);
+                        Dialogs.showPercentageDeleteDialog(mAdapter.getPercentagePojoAtPosition(position), getActivity(), SubjectCreationFragment.this);
                 }
             }
         }));
+    }
+
+    void openAdmissionPercentageCreationActivity(int admissionPercentageId, boolean isNew) {
+        Intent intent = new Intent(getActivity(), AdmissionPercentageCreationActivity.class);
+        intent.putExtra(AdmissionPercentageFragment.SUBJECT_ID, mSubjectId);
+        intent.putExtra(AdmissionPercentageFragment.ADMISSION_PERCENTAGE_ID, admissionPercentageId);
+        intent.putExtra(AdmissionPercentageFragment.SUBJECT_IS_NEW, isNew);
+        startActivityForResult(intent, AdmissionPercentageCreationActivity.RESULT_REQUEST_CODE_ADMISSION_PERCENTAGE_CREATOR);
     }
 
     @Override
@@ -360,7 +372,10 @@ public class SubjectCreationActivityFragment extends Fragment implements Subject
     @Override
     public void admissionPercentageFinished(int id, boolean isNew) {
         mSubjectHasBeenChanged = true;
-        mAdapter.notifyOfChangeAtId(id, true);
+        if (isNew)
+            mAdapter.notifyIdAdded(id, true);
+        else
+            mAdapter.notifyOfChangeAtId(id, true);
         dialogClosed();
     }
 
@@ -369,6 +384,32 @@ public class SubjectCreationActivityFragment extends Fragment implements Subject
         mSubjectHasBeenChanged = true;
         mAdapter.removePercentage(itemId);
         dialogClosed();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == AdmissionPercentageCreationActivity.RESULT_REQUEST_CODE_ADMISSION_PERCENTAGE_CREATOR) {
+            if (data.getExtras() == null) {
+                if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
+                    Log.w("subjectcreationfragment", "extras null for admission percentage result?");
+                return;
+            }
+            int itemId = data.getExtras().getInt(AdmissionPercentageFragment.ADMISSION_PERCENTAGE_ID);
+            switch (resultCode) {
+                case SubjectCreationActivity.DIALOG_RESULT_ADDED:
+                    admissionPercentageFinished(itemId, true);//true -> isNew
+                    break;
+                case SubjectCreationActivity.DIALOG_RESULT_CHANGED:
+                    admissionPercentageFinished(itemId, false);//false -> isNotNew
+                    break;
+                case SubjectCreationActivity.DIALOG_RESULT_DELETE:
+                    deleteAdmissionPercentage(itemId);
+                    break;
+                case SubjectCreationActivity.DIALOG_RESULT_CLOSED:
+                    dialogClosed();
+                    break;
+            }
+        }
     }
 
     public void dialogClosed(){

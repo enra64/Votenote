@@ -40,13 +40,20 @@ public class UnifiedCreatorAdapter extends RecyclerView.Adapter<UnifiedCreatorAd
     private Context mContext;
     private FragmentManager mFragmentManager;
 
-    public UnifiedCreatorAdapter(Context context, FragmentManager fragmentManager, String subjectName, int subjectId){
+    /**
+     * Instance of the calling subject creation fragment, because we want to create the intents for
+     * admission percentage counters there
+     */
+    private SubjectCreationFragment mSubjectCreationFragment;
+
+    public UnifiedCreatorAdapter(Context context, SubjectCreationFragment subjectCreationFragment, FragmentManager fragmentManager, String subjectName, int subjectId) {
         mContext = context;
         mCounterDb = DBAdmissionCounters.getInstance();
         mPercentageDb = DBAdmissionPercentageMeta.getInstance();
         mSubjectName = subjectName;
         mSubjectId = subjectId;
         mFragmentManager = fragmentManager;
+        mSubjectCreationFragment = subjectCreationFragment;
         requery();
     }
 
@@ -173,13 +180,18 @@ public class UnifiedCreatorAdapter extends RecyclerView.Adapter<UnifiedCreatorAd
         notifyItemChanged(isPercentage ? convertPercentageIdToPosition(id) : convertCounterIdToPosition(id));
     }
 
+    public void notifyIdAdded(int id, boolean isPercentage) {
+        requery();
+        notifyItemInserted(isPercentage ? convertPercentageIdToPosition(id) : convertCounterIdToPosition(id));
+    }
+
     @Override
     public void onClick(View v) {
         if(v.getId() == R.id.subject_manager_fragment_main_card_add_percentage_counter){
-            Dialogs.showPercentageDialog(mFragmentManager, mSubjectId, SubjectCreationActivityFragment.ID_ADD_ITEM, true);
+            mSubjectCreationFragment.openAdmissionPercentageCreationActivity(SubjectCreationFragment.ID_ADD_ITEM, true);
         }
         else{
-            Dialogs.showCounterDialog(mFragmentManager, mSubjectId, SubjectCreationActivityFragment.ID_ADD_ITEM, true);
+            Dialogs.showCounterDialog(mFragmentManager, mSubjectId, SubjectCreationFragment.ID_ADD_ITEM, true);
         }
     }
 

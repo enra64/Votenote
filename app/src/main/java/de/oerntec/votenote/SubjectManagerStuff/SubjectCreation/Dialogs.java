@@ -8,8 +8,7 @@ import android.content.DialogInterface;
 import de.oerntec.votenote.Database.Pojo.AdmissionCounter;
 import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMeta;
 import de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.CreationFragment.AdmissionCounterDialogFragment;
-import de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.CreationFragment.AdmissionPercentageDialogFragment;
-import de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.CreationFragment.SubjectCreationActivityFragment;
+import de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.CreationFragment.SubjectCreationFragment;
 
 public class Dialogs {
 
@@ -18,12 +17,7 @@ public class Dialogs {
         fragment.show(fragmentManager, "ac_create_dialog");
     }
 
-    public static void showPercentageDialog(FragmentManager fragmentManager, int subjectId, int counterId, boolean isNew) {
-        AdmissionPercentageDialogFragment fragment = AdmissionPercentageDialogFragment.newInstance(subjectId, counterId, isNew);
-        fragment.show(fragmentManager, "ap_create_dialog");
-    }
-
-    public static void showCounterDeleteDialog(final AdmissionCounter inCounter, Activity activity, final SubjectCreationActivityFragment callback) {
+    public static void showCounterDeleteDialog(final AdmissionCounter inCounter, Activity activity, final SubjectCreationFragment callback) {
         if (inCounter.id < 0)
             throw new AssertionError("negative deleted counter id??");
         final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
@@ -39,7 +33,7 @@ public class Dialogs {
         builder.show();
     }
 
-    public static void showPercentageDeleteDialog(final AdmissionPercentageMeta inItem, Activity activity, final SubjectCreationActivityFragment callback) {
+    public static void showPercentageDeleteDialog(final AdmissionPercentageMeta inItem, Activity activity, final SubjectCreationFragment callback) {
         if (inItem.id < 0)
             throw new AssertionError("negative deleted counter id??");
         final AlertDialog.Builder builder = new AlertDialog.Builder(activity);

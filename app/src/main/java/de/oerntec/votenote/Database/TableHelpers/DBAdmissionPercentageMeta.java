@@ -153,8 +153,10 @@ public class DBAdmissionPercentageMeta extends CrudDb<AdmissionPercentageMeta> i
     public void deleteItem(int id) {
         String[] whereArgs = new String[]{String.valueOf(id)};
         int delCount = mDatabase.delete(DatabaseCreator.TABLE_NAME_ADMISSION_PERCENTAGES_META, DatabaseCreator.ADMISSION_PERCENTAGES_META_ID + "=?", whereArgs);
-        if(delCount != 1)
-            throw new AssertionError("didnt delete exactly one item");
+        if (delCount > 1)
+            throw new AssertionError("deleted more than one item!");
+        else if (delCount == 0)
+            throw new AssertionError("could not find item to delete!");
     }
 
     @Override
