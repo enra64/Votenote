@@ -66,6 +66,8 @@ public class DatabaseCreator extends SQLiteOpenHelper {
     public static final String ADMISSION_PERCENTAGES_META_SUBJECT_ID = "subject_id";
     public static final String ADMISSION_PERCENTAGES_META_NAME = "percentage_name";
     public static final String ADMISSION_PERCENTAGES_META_TARGET_PERCENTAGE = "target_percentage";
+    public static final String ADMISSION_PERCENTAGES_META_BONUS_TARGET_PERCENTAGE = "bonus_target_percentage";
+    public static final String ADMISSION_PERCENTAGES_META_BONUS_TARGET_PERCENTAGE_ENABLED = "bonus_target_percentage_enabled";
     public static final String ADMISSION_PERCENTAGES_META_ESTIMATION_MODE = "estimation_mode";
     public static final String ADMISSION_PERCENTAGES_META_TARGET_LESSON_COUNT = "target_lesson_count";
     public static final String ADMISSION_PERCENTAGES_META_USER_ESTIMATED_ASSIGNMENTS_PER_LESSON = "target_assignments_per_lesson";
@@ -84,7 +86,8 @@ public class DatabaseCreator extends SQLiteOpenHelper {
 
     //switched to db v13 in commit 22.10.15 13:49
     //db14: 8.3.16 14:22
-    public static final int DATABASE_VERSION = 14;
+    //db15: 9.3.16 20:58
+    public static final int DATABASE_VERSION = 15;
 
     //begin new database system
     private static final String CREATE_TABLE_SUBJECTS = "create table " + TABLE_NAME_SUBJECTS + "( " +
@@ -115,7 +118,9 @@ public class DatabaseCreator extends SQLiteOpenHelper {
             ADMISSION_PERCENTAGES_META_USER_ESTIMATED_ASSIGNMENTS_PER_LESSON + " integer not null," +
             ADMISSION_PERCENTAGES_META_TARGET_LESSON_COUNT + " integer not null," +
             ADMISSION_PERCENTAGES_META_TARGET_PERCENTAGE + " integer not null," +
-            ADMISSION_PERCENTAGES_META_ESTIMATION_MODE + " string NOT NULL DEFAULT 'user'," +
+            ADMISSION_PERCENTAGES_META_BONUS_TARGET_PERCENTAGE + " integer not null default 50," +//v15
+            ADMISSION_PERCENTAGES_META_BONUS_TARGET_PERCENTAGE_ENABLED + " boolean not null DEFAULT 0 CHECK (" + ADMISSION_PERCENTAGES_META_BONUS_TARGET_PERCENTAGE_ENABLED + " IN (0,1))" +//v15
+            ADMISSION_PERCENTAGES_META_ESTIMATION_MODE + " string NOT NULL DEFAULT 'user'," + //v14
             "FOREIGN KEY (" + ADMISSION_PERCENTAGES_META_SUBJECT_ID + ") REFERENCES " + TABLE_NAME_SUBJECTS + "(" + SUBJECTS_ID + ") ON DELETE CASCADE" +
             ");";
 
@@ -196,15 +201,38 @@ public class DatabaseCreator extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase database, int oldVersion, int newVersion) {
         if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
-            Log.w(DatabaseCreator.class.getName(), "Upgrading database from version " + oldVersion + " to " + newVersion + ", which will destroy all old data");
+            Log.w(DatabaseCreator.class.getName(), "Upgrading database from version " + oldVersion + " to " + newVersion + ", which is basically pray'n'spray");
+        //12 to 13
         if (oldVersion == 12 && newVersion == 13) {
             transferFrom12To13(database);
-        } else if (oldVersion == 12 && newVersion == 14) {
+        }
+
+        //12/13 to 14
+        else if (oldVersion == 12 && newVersion == 14) {
             transferFrom12To13(database);
             transferFrom13To14(database);
         } else if (oldVersion == 13 && newVersion == 14) {
             transferFrom13To14(database);
         }
+
+        //12/13/14 to 15
+        else if (oldVersion == 14 && newVersion == 15) {
+            transferFrom14To15(database);
+        } else if (oldVersion == 13 && newVersion == 15) {
+            transferFrom13To14(database);
+            transferFrom14To15(database);
+        } else if (oldVersion == 12 && newVersion == 15) {
+            transferFrom12To13(database);
+            transferFrom13To14(database);
+            transferFrom14To15(database);
+        }
+    }
+
+    private void transferFrom14To15(SQLiteDatabase database) {
+        database.execSQL("ALTER TABLE " + TABLE_NAME_ADMISSION_PERCENTAGES_META + " ADD COLUMN " +
+                ADMISSION_PERCENTAGES_META_BONUS_TARGET_PERCENTAGE + " integer not null default 50");
+        database.execSQL("ALTER TABLE " + TABLE_NAME_ADMISSION_PERCENTAGES_META + " ADD COLUMN " +
+                ADMISSION_PERCENTAGES_META_BONUS_TARGET_PERCENTAGE_ENABLED + " boolean not null DEFAULT 0 CHECK (" + ADMISSION_PERCENTAGES_META_BONUS_TARGET_PERCENTAGE_ENABLED + " IN (0,1))");
     }
 
     @SuppressLint("SQLiteString")

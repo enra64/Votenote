@@ -7,6 +7,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -30,8 +32,33 @@ public class AdmissionPercentageFragment extends Fragment implements Button.OnCl
 
     //views needed for configuring a new percentage counter
     private EditText nameInput;
-    private TextView requiredPercentageInfo, estimatedAssignmentsHelp, estimatedUebungCountHelp, mEstimationModeDescription, mEstimationModeCurrentValueTextView;
-    private SeekBar requiredPercentageSeek, estimatedAssignmentsSeek, estimatedLessonCountSeek, mEstimationModeSeekbar;
+    private TextView mRequiredPercentageCurrentValueTextView, mEstimatedAssignmentsPerLessonCurrentValueTextView, mEstimatedLessonCountCurrentValueTextView, mEstimationModeDescription, mEstimationModeCurrentValueTextView;
+    private SeekBar mRequiredPercentageSeekBar, mEstimatedAssignmentsPerLessonSeekBar, mEstimatedLessonCountSeekBar, mEstimationModeSeekbar;
+
+    /**
+     * SeekBar for choosing the value of the required percentage for getting a bonus
+     */
+    private SeekBar mBonusRequiredPercentageSeekBar;
+
+    /**
+     * CheckBox to enable the bonus percentage system
+     */
+    private CheckBox mBonusRequiredPercentageActivationCheckBox;
+
+    /**
+     * TextView to show the currently chosen bonus value
+     */
+    private TextView mBonusRequiredPercentageCurrentValueTextView;
+
+    /**
+     * Integer containing the default or the old value for the bonus percentage
+     */
+    private int mBonusRequiredPercentageHint = 50;
+
+    /**
+     * Boolean containing the default/old activation state for the bonus percentage seekbar
+     */
+    private boolean mBonusRequiredPercentageEnabledHint = false;
 
     /*
     * load default values into these variables
@@ -86,10 +113,7 @@ public class AdmissionPercentageFragment extends Fragment implements Button.OnCl
 
             //create a new meta entry for this so we have an id to work with
             if (mIsNewPercentageCounter)
-                mAdmissionPercentageId = mDb.addItemGetId(new AdmissionPercentageMeta(-1, mSubjectId, 0, 0, 0, "if you see this, i fucked up.", "undefined"));
-
-            //set the parent activity title
-            ((AdmissionPercentageCreationActivity) getActivity()).setToolbarTitle(getTitle());
+                mAdmissionPercentageId = mDb.addItemGetId(new AdmissionPercentageMeta(-1, mSubjectId, 0, 0, 0, "if you see this, i fucked up.", "undefined", 0, false));
 
             //hide the delete button if this is a new subject
             if (mIsNewPercentageCounter)
@@ -107,18 +131,22 @@ public class AdmissionPercentageFragment extends Fragment implements Button.OnCl
 
         nameInput = (EditText) view.findViewById(R.id.subject_manager_dialog_groupsettings_edit_name);
 
-        requiredPercentageInfo = (TextView) view.findViewById(R.id.subject_manager_dialog_groupsettings_required_percentage_current_value);
-        requiredPercentageSeek = (SeekBar) view.findViewById(R.id.subject_manager_dialog_groupsettings_required_percentage_seekbar);
+        mRequiredPercentageCurrentValueTextView = (TextView) view.findViewById(R.id.subject_manager_dialog_groupsettings_required_percentage_current_value);
+        mRequiredPercentageSeekBar = (SeekBar) view.findViewById(R.id.subject_manager_dialog_groupsettings_required_percentage_seekbar);
 
-        estimatedAssignmentsHelp = (TextView) view.findViewById(R.id.subject_manager_dialog_groupsettings_estimated_assignments_per_lesson_current_value);
-        estimatedAssignmentsSeek = (SeekBar) view.findViewById(R.id.subject_manager_dialog_groupsettings_estimated_assignments_per_lesson_seekbar);
+        mEstimatedAssignmentsPerLessonCurrentValueTextView = (TextView) view.findViewById(R.id.subject_manager_dialog_groupsettings_estimated_assignments_per_lesson_current_value);
+        mEstimatedAssignmentsPerLessonSeekBar = (SeekBar) view.findViewById(R.id.subject_manager_dialog_groupsettings_estimated_assignments_per_lesson_seekbar);
 
-        estimatedUebungCountHelp = (TextView) view.findViewById(R.id.subject_manager_dialog_groupsettings_estimated_lesson_count_current_value);
-        estimatedLessonCountSeek = (SeekBar) view.findViewById(R.id.subject_manager_dialog_groupsettings_estimated_lesson_count_seekbar);
+        mEstimatedLessonCountCurrentValueTextView = (TextView) view.findViewById(R.id.subject_manager_dialog_groupsettings_estimated_lesson_count_current_value);
+        mEstimatedLessonCountSeekBar = (SeekBar) view.findViewById(R.id.subject_manager_dialog_groupsettings_estimated_lesson_count_seekbar);
 
         mEstimationModeCurrentValueTextView = (TextView) view.findViewById(R.id.subject_manager_fragment_percentage_creator_fragment_current_value);
         mEstimationModeDescription = (TextView) view.findViewById(R.id.subject_manager_fragment_percentage_creator_fragment_estimation_current_value_description);
         mEstimationModeSeekbar = (SeekBar) view.findViewById(R.id.subject_manager_fragment_percentage_creator_fragment_estimation_seekbar);
+
+        mBonusRequiredPercentageActivationCheckBox = (CheckBox) view.findViewById(R.id.subject_manager_fragment_percentage_creator_fragment_bonus_vote_checkbox);
+        mBonusRequiredPercentageSeekBar = (SeekBar) view.findViewById(R.id.subject_manager_fragment_percentage_creator_fragment_bonus_vote_seek_bar);
+        mBonusRequiredPercentageCurrentValueTextView = (TextView) view.findViewById(R.id.subject_manager_fragment_percentage_creator_fragment_bonus_vote_current_value);
 
         return view;
     }
@@ -143,10 +171,15 @@ public class AdmissionPercentageFragment extends Fragment implements Button.OnCl
 
         //extract subject data
         nameHint = oldState.name;
-        requiredPercentageHint = oldState.targetPercentage;
+        requiredPercentageHint = oldState.baselineTargetPercentage;
         estimatedAssignmentsHint = oldState.userAssignmentsPerLessonEstimation;
         estimatedLessonCountHint = oldState.estimatedLessonCount;
         mEstimationModeHint = oldState.getEstimationModeAsString();
+        mBonusRequiredPercentageHint = oldState.bonusTargetPercentage;
+        mBonusRequiredPercentageEnabledHint = oldState.bonusTargetPercentageEnabled;
+
+        //set the parent activity title
+        ((AdmissionPercentageCreationActivity) getActivity()).setToolbarTitle(getTitle());
     }
 
     /**
@@ -156,17 +189,40 @@ public class AdmissionPercentageFragment extends Fragment implements Button.OnCl
         //display an error if the edittext is empty
         nameInput.addTextChangedListener(new NotEmptyWatcher(nameInput, ((AdmissionPercentageCreationActivity) getActivity()).getSaveButton()));
 
+        //set old name as hint
         if (mIsOldPercentageCounter)
             nameInput.setText(nameHint);
-        else {
+
+        //show the user he has to enter a name
+        if (mIsNewPercentageCounter) {
             nameInput.setError("Must not be empty");
             ((AdmissionPercentageCreationActivity) getActivity()).getSaveButton().setEnabled(false);
         }
 
-        initSeekbar(requiredPercentageSeek, requiredPercentageInfo, requiredPercentageHint, 100);
-        initSeekbar(estimatedAssignmentsSeek, estimatedAssignmentsHelp, estimatedAssignmentsHint, 50);
-        initSeekbar(estimatedLessonCountSeek, estimatedUebungCountHelp, estimatedLessonCountHint, 50);
+        initSeekbar(mRequiredPercentageSeekBar, mRequiredPercentageCurrentValueTextView, requiredPercentageHint, 100);
+        initSeekbar(mBonusRequiredPercentageSeekBar, mBonusRequiredPercentageCurrentValueTextView, mBonusRequiredPercentageHint, 100);
 
+        initSeekbar(mEstimatedAssignmentsPerLessonSeekBar, mEstimatedAssignmentsPerLessonCurrentValueTextView, estimatedAssignmentsHint, 50);
+        initSeekbar(mEstimatedLessonCountSeekBar, mEstimatedLessonCountCurrentValueTextView, estimatedLessonCountHint, 50);
+
+        initEstimationModeSeekbar();
+
+        initBonusCheckBox();
+    }
+
+    private void initBonusCheckBox() {
+        mBonusRequiredPercentageActivationCheckBox.setChecked(mBonusRequiredPercentageEnabledHint);
+        mBonusRequiredPercentageSeekBar.setEnabled(mBonusRequiredPercentageEnabledHint);
+
+        mBonusRequiredPercentageActivationCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                mBonusRequiredPercentageSeekBar.setEnabled(isChecked);
+            }
+        });
+    }
+
+    private void initEstimationModeSeekbar() {
         int amountOfEstimationModes = EstimationMode.values().length - 2; // -1 for a) undefined and b) max is 1-indexed
         mEstimationModeSeekbar.setMax(amountOfEstimationModes);
 
@@ -190,17 +246,6 @@ public class AdmissionPercentageFragment extends Fragment implements Button.OnCl
         });
 
         onEstimationModeChange(estimationMode.ordinal());
-    }
-
-    /**
-     * Somewhat ugly function translating from the database mode representation to an integer for
-     * the seekbar
-     *
-     * @param desiredState the state the integer is supposed to represent
-     * @return the integer representing the input estimation mode
-     */
-    private EstimationMode getEstimationModeInteger(String desiredState) {
-        return EstimationMode.valueOf(desiredState);
     }
 
     private void onEstimationModeChange(int seekbarProgress) {
@@ -266,11 +311,13 @@ public class AdmissionPercentageFragment extends Fragment implements Button.OnCl
                 mDb.changeItem(new AdmissionPercentageMeta(
                         mAdmissionPercentageId,
                         mSubjectId,
-                        estimatedAssignmentsSeek.getProgress(),
-                        estimatedLessonCountSeek.getProgress(),
-                        requiredPercentageSeek.getProgress(),
+                        mEstimatedAssignmentsPerLessonSeekBar.getProgress(),
+                        mEstimatedLessonCountSeekBar.getProgress(),
+                        mRequiredPercentageSeekBar.getProgress(),
                         nameInput.getText().toString(),
-                        mCurrentEstimationMode));
+                        mCurrentEstimationMode,
+                        mBonusRequiredPercentageSeekBar.getProgress(),
+                        mBonusRequiredPercentageActivationCheckBox.isChecked()));
                 //commit
                 mDb.releaseSavepoint(mSavepointId);
                 //notify the host fragment that we changed an item
@@ -284,7 +331,6 @@ public class AdmissionPercentageFragment extends Fragment implements Button.OnCl
                 resultState = SubjectCreationActivity.DIALOG_RESULT_CLOSED;
                 break;
         }
-        //TODO: need to call basically this, but via startActivityForResult from subjectCreation
         AdmissionPercentageCreationActivity host = (AdmissionPercentageCreationActivity) getActivity();
         host.callCreatorFragmentForItemChange(resultState);
     }

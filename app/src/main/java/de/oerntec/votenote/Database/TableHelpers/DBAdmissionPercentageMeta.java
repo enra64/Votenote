@@ -71,9 +71,12 @@ public class DBAdmissionPercentageMeta extends CrudDb<AdmissionPercentageMeta> i
         values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_NAME, newItem.name);
         values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_SUBJECT_ID, newItem.subjectId);
         values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_USER_ESTIMATED_ASSIGNMENTS_PER_LESSON, newItem.userAssignmentsPerLessonEstimation);
-        values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_TARGET_PERCENTAGE, newItem.targetPercentage);
+        values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_TARGET_PERCENTAGE, newItem.baselineTargetPercentage);
         values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_TARGET_LESSON_COUNT, newItem.estimatedLessonCount);
         values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_ESTIMATION_MODE, newItem.getEstimationModeAsString());
+
+        values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_BONUS_TARGET_PERCENTAGE, newItem.bonusTargetPercentage);
+        values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_BONUS_TARGET_PERCENTAGE_ENABLED, newItem.bonusTargetPercentageEnabled);
 
         String[] whereArgs = {String.valueOf(newItem.id)};
         int affectedRows = mDatabase.update(DatabaseCreator.TABLE_NAME_ADMISSION_PERCENTAGES_META, values, DatabaseCreator.ADMISSION_PERCENTAGES_META_ID + "=?", whereArgs);
@@ -110,10 +113,18 @@ public class DBAdmissionPercentageMeta extends CrudDb<AdmissionPercentageMeta> i
                     c.getInt(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_META_TARGET_LESSON_COUNT)),
                     c.getInt(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_META_TARGET_PERCENTAGE)),
                     c.getString(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_META_NAME)),
-                    c.getString(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_META_ESTIMATION_MODE))
+                    c.getString(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_META_ESTIMATION_MODE)),
+                    c.getInt(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_META_BONUS_TARGET_PERCENTAGE)),
+                    getBoolean(c.getInt(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_META_BONUS_TARGET_PERCENTAGE_ENABLED)))
             );
         c.close();
         return returnValue;
+    }
+
+    private boolean getBoolean(int bool) {
+        if (bool != 0 && bool != 1)
+            throw new AssertionError("boolean does not work as i expected");
+        return bool != 0;
     }
 
     /**
@@ -137,7 +148,9 @@ public class DBAdmissionPercentageMeta extends CrudDb<AdmissionPercentageMeta> i
                     c.getInt(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_META_TARGET_LESSON_COUNT)),
                     c.getInt(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_META_TARGET_PERCENTAGE)),
                     c.getString(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_META_NAME)),
-                    c.getString(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_META_ESTIMATION_MODE))
+                    c.getString(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_META_ESTIMATION_MODE)),
+                    c.getInt(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_META_BONUS_TARGET_PERCENTAGE)),
+                    getBoolean(c.getInt(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_META_BONUS_TARGET_PERCENTAGE_ENABLED)))
             ));
 
         c.close();
@@ -182,9 +195,13 @@ public class DBAdmissionPercentageMeta extends CrudDb<AdmissionPercentageMeta> i
         values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_NAME, newItem.name);
         values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_SUBJECT_ID, newItem.subjectId);
         values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_USER_ESTIMATED_ASSIGNMENTS_PER_LESSON, newItem.userAssignmentsPerLessonEstimation);
-        values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_TARGET_PERCENTAGE, newItem.targetPercentage);
+        values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_TARGET_PERCENTAGE, newItem.baselineTargetPercentage);
         values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_TARGET_LESSON_COUNT, newItem.estimatedLessonCount);
+
         values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_ESTIMATION_MODE, newItem.getEstimationModeAsString());
+
+        values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_BONUS_TARGET_PERCENTAGE, newItem.bonusTargetPercentage);
+        values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_BONUS_TARGET_PERCENTAGE_ENABLED, newItem.bonusTargetPercentageEnabled);
 
         if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
             Log.i("DBAP-M", "adding meta item");
@@ -225,7 +242,9 @@ public class DBAdmissionPercentageMeta extends CrudDb<AdmissionPercentageMeta> i
                     c.getInt(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_META_TARGET_LESSON_COUNT)),
                     c.getInt(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_META_TARGET_PERCENTAGE)),
                     c.getString(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_META_NAME)),
-                    c.getString(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_META_ESTIMATION_MODE))
+                    c.getString(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_META_ESTIMATION_MODE)),
+                    c.getInt(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_META_BONUS_TARGET_PERCENTAGE)),
+                    getBoolean(c.getInt(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_META_BONUS_TARGET_PERCENTAGE_ENABLED)))
             ));
 
         c.close();

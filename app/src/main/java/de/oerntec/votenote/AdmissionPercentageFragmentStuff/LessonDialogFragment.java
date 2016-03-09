@@ -297,7 +297,7 @@ public class LessonDialogFragment extends DialogFragment implements DialogInterf
         else
             newAvg = mMetaItem.getAverageFinished(maxVote - mOldData.availableAssignments, myVote - mOldData.finishedAssignments);
         mResultingPercentageView.setText(String.format("%.1f%%", newAvg));
-        General.applyClueColor(mResultingPercentageView, getActivity(), newAvg >= mMetaItem.targetPercentage);
+        General.applyClueColor(mResultingPercentageView, getActivity(), newAvg >= mMetaItem.baselineTargetPercentage);
     }
 
     /**

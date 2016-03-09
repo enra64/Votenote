@@ -236,7 +236,7 @@ public class AdmissionPercentageAdapter extends RecyclerView.Adapter<AdmissionPe
                 infoHolder.prespoints.setVisibility(View.GONE);
             else if (counterList.size() == 1)
                 setCurrentPresentationPointStatus(infoHolder.prespoints, counterList.get(0).id);
-            infoHolder.votedAssignments.setText(mContext.getString(R.string.voted_assignments_w_placeholder_info_card, mMetaPojo.getFinishedAssignments()));
+            infoHolder.votedAssignments.setText(mContext.getString(R.string.voted_assignments_w_placeholder_info_card, mMetaPojo.getFinishedAssignmentsCount()));
         } else if (holder instanceof LessonHolder) {
             LessonHolder lessonHolder = (LessonHolder) holder;
             //adjust for the info view
@@ -284,7 +284,7 @@ public class AdmissionPercentageAdapter extends RecyclerView.Adapter<AdmissionPe
             averageVoteView.setText(mContext.getString(R.string.infoview_vote_average_no_data));
 
         //get minvote for section
-        int minVote = meta.targetPercentage;
+        int minVote = meta.baselineTargetPercentage;
 
         //write percentage and color coding to summaryview
         if (Float.isNaN(average))

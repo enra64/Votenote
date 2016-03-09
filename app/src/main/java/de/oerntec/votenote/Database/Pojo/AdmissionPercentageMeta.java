@@ -9,7 +9,9 @@ import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageData;
  * POJO class for representing the metadata available about an admission percentage counter
  */
 public class AdmissionPercentageMeta implements NameAndIdPojo {
-    public int id, subjectId, estimatedLessonCount, targetPercentage, userAssignmentsPerLessonEstimation;
+    public int id, subjectId, estimatedLessonCount, baselineTargetPercentage, userAssignmentsPerLessonEstimation, bonusTargetPercentage;
+    public boolean bonusTargetPercentageEnabled;
+
     public String name;
     public List<AdmissionPercentageData> mDataList;
     public EstimationMode estimationMode = EstimationMode.undefined;
@@ -18,13 +20,18 @@ public class AdmissionPercentageMeta implements NameAndIdPojo {
     private float numberOfLessonsLeft, scheduledNumberOfAssignments, neededAssignmentsPerUebung, numberOfNeededAssignments,
             remainingNeededAssignments, numberOfFinishedAssignments, numberOfElapsedLessons;
 
-    public AdmissionPercentageMeta(int id, int subjectId, int estimatedAssignmentsPerLesson, int estimatedLessonCount, int targetPercentage, String name, String mode) {
+    public AdmissionPercentageMeta(int id, int subjectId, int estimatedAssignmentsPerLesson,
+                                   int estimatedLessonCount, int baselineTargetPercentage,
+                                   String name, String mode,
+                                   int bonusTargetPercentage, boolean bonusTargetPercentageEnabled) {
         this.id = id;
         this.subjectId = subjectId;
         this.estimatedLessonCount = estimatedLessonCount;
         this.userAssignmentsPerLessonEstimation = estimatedAssignmentsPerLesson;
-        this.targetPercentage = targetPercentage;
+        this.baselineTargetPercentage = baselineTargetPercentage;
         this.name = name;
+        this.bonusTargetPercentageEnabled = bonusTargetPercentageEnabled;
+        this.bonusTargetPercentage = bonusTargetPercentage;
 
         estimationMode = EstimationMode.valueOf(mode);
     }
@@ -86,11 +93,43 @@ public class AdmissionPercentageMeta implements NameAndIdPojo {
         scheduledNumberOfAssignments = getEstimatedAssignmentsPerLesson() * numberOfLessonsLeft +
                 getNumberOfAvailableAssignmentsEnteredSoFar();
 
-        numberOfNeededAssignments = (scheduledNumberOfAssignments * (float) targetPercentage) / 100f;
-        numberOfFinishedAssignments = getFinishedAssignments();
+        numberOfFinishedAssignments = getFinishedAssignmentsCount();
+
+        float localTargetPercentage;
+
+        //decide whether to use the bonus or the baseline required percentage
+        if (bonusTargetPercentageEnabled) {
+            float neededAssignmentsForBonus = calcNeededAssignmentsPerLesson(bonusTargetPercentage);
+
+            // if we need to do more exercises per lesson than we estimate there are per lesson,
+            // use the baseline target percentage as the target.
+            if (neededAssignmentsForBonus > getEstimatedAssignmentsPerLesson())
+                localTargetPercentage = baselineTargetPercentage;
+                // if not, we can still achieve the bonus
+                // points, so we use the bonus target percentage as the target.
+            else
+                localTargetPercentage = bonusTargetPercentage;
+        }
+        //bonus percentage is disabled, so use the baseline target percentage
+        else
+            localTargetPercentage = baselineTargetPercentage;
+
+
+        numberOfNeededAssignments = (scheduledNumberOfAssignments * localTargetPercentage) / 100f;
         remainingNeededAssignments = numberOfNeededAssignments - numberOfFinishedAssignments;
         neededAssignmentsPerUebung = remainingNeededAssignments / numberOfLessonsLeft;
+
         mDataCalculated = true;
+    }
+
+    /**
+     * This just calculates how many assignments are needed per lesson, but does not write it anywhere,
+     * so we can check whether the bonus target percentage may still be hit
+     */
+    private float calcNeededAssignmentsPerLesson(float target) {
+        float numberOfNeededAssignments = (scheduledNumberOfAssignments * (float) target) / 100f;
+        float remainingNeededAssignments = numberOfNeededAssignments - numberOfFinishedAssignments;
+        return remainingNeededAssignments / numberOfLessonsLeft;
     }
 
     /**
@@ -118,7 +157,7 @@ public class AdmissionPercentageMeta implements NameAndIdPojo {
         return estimationMode.name();
     }
 
-    public int getFinishedAssignments(){
+    public int getFinishedAssignmentsCount() {
         if (!mDataLoaded) throw new AssertionError("pojo has not loaded data");
         int finishedAssignments = 0;
         for(AdmissionPercentageData d : mDataList)
@@ -187,18 +226,18 @@ public class AdmissionPercentageMeta implements NameAndIdPojo {
         if (subjectId != that.subjectId) return false;
         if (estimationMode != that.estimationMode) return false;
         if (estimatedLessonCount != that.estimatedLessonCount) return false;
-        if (targetPercentage != that.targetPercentage) return false;
+        if (baselineTargetPercentage != that.baselineTargetPercentage) return false;
         return !(name != null ? !name.equals(that.name) : that.name != null);
 
     }
 
     public String getCsvRepresentation(){
-        return name + "," + targetPercentage + "%," + getEstimatedAssignmentsPerLesson() + "," + estimatedLessonCount;
+        return name + "," + baselineTargetPercentage + "%," + getEstimatedAssignmentsPerLesson() + "," + estimatedLessonCount;
     }
 
     @Override
     public String getDisplayName() {
-        return name + " - " + targetPercentage + "%";
+        return name + " - " + baselineTargetPercentage + "%";
     }
 
     @Override

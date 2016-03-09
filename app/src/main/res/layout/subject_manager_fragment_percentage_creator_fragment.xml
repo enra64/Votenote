@@ -185,6 +185,57 @@
             android:text="Small Text"
             android:textAppearance="?android:attr/textAppearanceSmall" />
 
+        <RelativeLayout
+            android:id="@+id/relativeLayout8"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/subject_manager_fragment_percentage_creator_fragment_estimation_current_value_description"
+            android:layout_alignStart="@+id/subject_manager_fragment_percentage_creator_fragment_estimation_current_value_description"
+            android:layout_below="@+id/subject_manager_fragment_percentage_creator_fragment_estimation_current_value_description"
+            android:layout_marginTop="10dp">
+
+            <CheckBox
+                android:id="@+id/subject_manager_fragment_percentage_creator_fragment_bonus_vote_checkbox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true" />
+
+            <TextView
+                android:id="@+id/subject_manager_fragment_percentage_creator_fragment_checkbox_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toEndOf="@+id/subject_manager_fragment_percentage_creator_fragment_bonus_vote_checkbox"
+                android:layout_toRightOf="@+id/subject_manager_fragment_percentage_creator_fragment_bonus_vote_checkbox"
+                android:text="Bonus-Votierungsgrenze"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textSize="20sp" />
+        </RelativeLayout>
+
+        <SeekBar
+            android:id="@+id/subject_manager_fragment_percentage_creator_fragment_bonus_vote_seek_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/relativeLayout8" />
+
+        <TextView
+            android:id="@+id/subject_manager_fragment_percentage_creator_fragment_bonus_vote_current_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/subject_manager_fragment_percentage_creator_fragment_bonus_vote_seek_bar"
+            android:layout_alignEnd="@+id/subject_manager_fragment_percentage_creator_fragment_current_value"
+            android:layout_alignRight="@+id/subject_manager_fragment_percentage_creator_fragment_current_value"
+            android:text="50"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textColor="@android:color/secondary_text_dark"
+            android:textSize="20sp" />
+
     </RelativeLayout>
 
 </FrameLayout>

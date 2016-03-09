@@ -107,7 +107,7 @@ public class MainDialogHelper {
 
         String scheduledWork = activity.getString(R.string.maximum_possible_assignments) + " " + meta.getEstimatedNumberOfAssignments();
         String numberOfNeededAssignmentsString = activity.getString(R.string.needed_work_count) + " " + meta.getNumberOfNeededAssignments();
-        String numberOfVotedAssignmentsString = activity.getString(R.string.voted_assignments) + " " + meta.getFinishedAssignments();
+        String numberOfVotedAssignmentsString = activity.getString(R.string.voted_assignments) + " " + meta.getFinishedAssignmentsCount();
         String remainingNeededAssignmentsString = activity.getString(R.string.remaining_needed_assignments) + " " + meta.getRemainingNeededAssignments();
         String numberOfElapsedLessonsString = activity.getString(R.string.past_lessons) + " " + meta.getNumberOfElapsedLessons();
         String numberOfLessonsLeftString = activity.getString(R.string.future_lessons) + " " + meta.getNumberOfLessonsLeft();
