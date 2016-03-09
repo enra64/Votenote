@@ -96,14 +96,14 @@ public class AdmissionPercentageMeta implements NameAndIdPojo {
     /**
      * This estimates a lesson count by returning one the best/worst/mean/given number of remaining assignments
      */
-    public int getEstimatedAssignmentsPerLesson() {
+    public float getEstimatedAssignmentsPerLesson() {
         switch (estimationMode) {
             case user:
                 return userAssignmentsPerLessonEstimation;
             case mean:
                 if (mDataList.size() == 0)
                     return userAssignmentsPerLessonEstimation;
-                return getNumberOfAvailableAssignmentsEnteredSoFar() / mDataList.size();
+                return (float) getNumberOfAvailableAssignmentsEnteredSoFar() / (float) mDataList.size();
             case best:
                 return getMinAvailableAssignments();
             case worst:
