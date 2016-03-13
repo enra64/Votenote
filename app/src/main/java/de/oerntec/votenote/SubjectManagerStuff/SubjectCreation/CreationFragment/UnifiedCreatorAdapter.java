@@ -15,7 +15,7 @@ import android.widget.TextView;
 import java.util.List;
 
 import de.oerntec.votenote.Database.Pojo.AdmissionCounter;
-import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMeta;
+import de.oerntec.votenote.Database.Pojo.PercentageMetaStuff.AdmissionPercentageMeta;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionCounters;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageMeta;
 import de.oerntec.votenote.R;
@@ -115,7 +115,7 @@ public class UnifiedCreatorAdapter extends RecyclerView.Adapter<UnifiedCreatorAd
                 percentageHolder.itemView.setTag(percentageData.id);
                 percentageHolder.assignmentsPerLesson.setText(mContext.getString(R.string.percentage_card_assignments_per_lesson, percentageData.userAssignmentsPerLessonEstimation));
                 percentageHolder.name.setText(percentageData.name);
-                percentageHolder.targetLessonCount.setText(mContext.getString(R.string.percentage_card_target_lesson_conut, percentageData.estimatedLessonCount));
+                percentageHolder.targetLessonCount.setText(mContext.getString(R.string.percentage_card_target_lesson_conut, percentageData.userLessonCountEstimation));
                 percentageHolder.targetPercentage.setText(mContext.getString(R.string.percentage_card_target_percentage, percentageData.baselineTargetPercentage));
                 break;
         }

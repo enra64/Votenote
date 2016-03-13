@@ -27,9 +27,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+
 import java.util.List;
 
-import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMeta;
+import de.oerntec.votenote.Database.Pojo.PercentageMetaStuff.AdmissionPercentageMeta;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageData;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageMeta;
 import de.oerntec.votenote.Database.TableHelpers.DBSubjects;

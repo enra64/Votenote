@@ -4,19 +4,18 @@ import java.util.List;
 
 import de.oerntec.votenote.Database.Pojo.AdmissionPercentageData;
 
-import static de.oerntec.votenote.Database.Pojo.PercentageMetaStuff.AdmissionPercentageMetaNew.*;
-import static de.oerntec.votenote.Database.Pojo.PercentageMetaStuff.SubjectInfoCalculationResult.*;
+import static de.oerntec.votenote.Database.Pojo.PercentageMetaStuff.AdmissionPercentageMeta.*;
 
 /**
  * This class pulls the calculation functions from the old admission percentage meta object into a
  * static helper to declutter the pojo and make the calculation functions easier to read and check.
  */
-public class SubjectInfoCalculator {
-    public static SubjectInfoCalculationResult calculateAll(AdmissionPercentageMetaNew item){
+public class AdmissionPercentageCalculator {
+    public static AdmissionPercentageCalculationResult calculateAll(AdmissionPercentageMeta item){
         if (!item.mDataLoaded)
             throw new AssertionError("pojo has not loaded data");
 
-        SubjectInfoCalculationResult result = new SubjectInfoCalculationResult();
+        AdmissionPercentageCalculationResult result = new AdmissionPercentageCalculationResult();
 
         result.numberOfPastLessons = item.lessonCount();
         result.numberOfFutureLessons = item.userLessonCountEstimation - result.numberOfPastLessons;
@@ -33,12 +32,12 @@ public class SubjectInfoCalculator {
     }
 
     private static EstimationModeDependentResults calculateEstimationModeDependentResults(EstimationMode mode,
-                                                                                          SubjectInfoCalculationResult independentResults,
-                                                                                          AdmissionPercentageMetaNew item){
+                                                                                          AdmissionPercentageCalculationResult independentResults,
+                                                                                          AdmissionPercentageMeta item){
         EstimationModeDependentResults results = new EstimationModeDependentResults();
-        results.estimatedAssignmentsPerLesson = getEstimatedAssignmentsPerLesson(item, mode);
+        results.numberOfAssignmentsEstimatedPerLesson = getEstimatedAssignmentsPerLesson(item, mode);
 
-        results.scheduledNumberOfAssignments = getEstimatedAssignmentsPerLesson(item) * independentResults.numberOfFutureLessons +
+        results.numberOfEstimatedOverallAssignments = getEstimatedAssignmentsPerLesson(item) * independentResults.numberOfFutureLessons +
                 independentResults.numberOfPastAvailableAssignments;
 
         //default to baseline target percentage
@@ -58,7 +57,7 @@ public class SubjectInfoCalculator {
             }
         }
 
-        results.numberOfNeededAssignments = (results.scheduledNumberOfAssignments * localTargetPercentage) / 100f;
+        results.numberOfNeededAssignments = (results.numberOfEstimatedOverallAssignments * localTargetPercentage) / 100f;
         results.numberOfRemainingNeededAssignments = results.numberOfNeededAssignments - independentResults.numberOfFinishedAssignments;
         results.numberOfAssignmentsNeededPerLesson = results.numberOfRemainingNeededAssignments / independentResults.numberOfFutureLessons;
 
@@ -97,7 +96,7 @@ public class SubjectInfoCalculator {
      * This just calculates how many assignments are needed per lesson, but does not write it anywhere,
      * so we can check whether the bonus target percentage may still be hit
      */
-    public static float calcNeededAssignmentsPerLesson(AdmissionPercentageMetaNew item, float target, float numberOfFutureLessons) {
+    public static float calcNeededAssignmentsPerLesson(AdmissionPercentageMeta item, float target, float numberOfFutureLessons) {
         float numberOfNeededAssignments = (item.userAssignmentsPerLessonEstimation * target) / 100f;
         float remainingNeededAssignments = numberOfNeededAssignments - getNumberOfPastFinishedAssignments(item.mDataList);
         return remainingNeededAssignments / numberOfFutureLessons;
@@ -107,7 +106,7 @@ public class SubjectInfoCalculator {
      * This estimates a lesson count by returning the number of assignments per lesson estimated
      * accordingly to the item estimation mode
      */
-    public static float getEstimatedAssignmentsPerLesson(AdmissionPercentageMetaNew item) {
+    public static float getEstimatedAssignmentsPerLesson(AdmissionPercentageMeta item) {
         return getEstimatedAssignmentsPerLesson(item, item.estimationMode);
     }
 
@@ -115,7 +114,7 @@ public class SubjectInfoCalculator {
      * This estimates a lesson count by returning the number of assignments per lesson estimated
      * accordingly to the given estimation mode
      */
-    private static float getEstimatedAssignmentsPerLesson(AdmissionPercentageMetaNew item, EstimationMode estimationMode) {
+    private static float getEstimatedAssignmentsPerLesson(AdmissionPercentageMeta item, EstimationMode estimationMode) {
         switch (estimationMode) {
             case user:
                 return item.userAssignmentsPerLessonEstimation;

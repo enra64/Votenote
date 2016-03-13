@@ -1,12 +1,10 @@
 package de.oerntec.votenote.Database.Pojo.PercentageMetaStuff;
 
-import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMeta;
-
 /**
  * This class holds all information regarding the estimation concerning a single admission percentage
  * counter.
  */
-public class SubjectInfoCalculationResult {
+public class AdmissionPercentageCalculationResult {
     public float   numberOfPastLessons,
             numberOfFutureLessons,
             numberOfPastAvailableAssignments,
@@ -16,4 +14,20 @@ public class SubjectInfoCalculationResult {
                                             worstEstimation,
                                             meanEstimation,
                                             userEstimation;
+
+    public EstimationModeDependentResults getEstimationDependentResults(AdmissionPercentageMeta.EstimationMode mode){
+        switch (mode){
+            case user:
+                return userEstimation;
+            case mean:
+                return meanEstimation;
+            case best:
+                return bestEstimation;
+            case worst:
+                return worstEstimation;
+            default:
+            case undefined:
+                throw new AssertionError("unknown estimation mode requested");
+        }
+    }
 }

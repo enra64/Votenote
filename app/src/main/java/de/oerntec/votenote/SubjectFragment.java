@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import de.oerntec.votenote.AdmissionPercentageFragmentStuff.AdmissionPercentageFragment;
-import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMeta;
+import de.oerntec.votenote.Database.Pojo.PercentageMetaStuff.AdmissionPercentageMeta;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageMeta;
 import de.oerntec.votenote.Database.TableHelpers.DBLastViewed;
 

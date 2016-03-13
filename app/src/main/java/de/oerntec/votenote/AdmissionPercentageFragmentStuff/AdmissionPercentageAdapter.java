@@ -30,7 +30,7 @@ import java.util.List;
 
 import de.oerntec.votenote.Database.Pojo.AdmissionCounter;
 import de.oerntec.votenote.Database.Pojo.AdmissionPercentageData;
-import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMeta;
+import de.oerntec.votenote.Database.Pojo.PercentageMetaStuff.*;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionCounters;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageData;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageMeta;
@@ -226,9 +226,9 @@ public class AdmissionPercentageAdapter extends RecyclerView.Adapter<AdmissionPe
         if (position == 0) {
             InfoHolder infoHolder = (InfoHolder) holder;
             mMetaPojo.loadData(DBAdmissionPercentageData.getInstance(), mLatestLessonFirst);
-            mMetaPojo.calculateData();
+            AdmissionPercentageCalculationResult result = AdmissionPercentageCalculator.calculateAll(mMetaPojo);
             infoHolder.title.setText(mMetaPojo.name);
-            setAverageNeededAssignments(infoHolder.avgLeft, mMetaPojo);
+            setAverageNeededAssignments(infoHolder.avgLeft, mMetaPojo, result);
             setVoteAverage(infoHolder.percentage, mMetaPojo);
             List<AdmissionCounter> counterList = DBAdmissionCounters.getInstance().getItemsForSubject(mMetaPojo.subjectId);
             //only show this
@@ -236,7 +236,7 @@ public class AdmissionPercentageAdapter extends RecyclerView.Adapter<AdmissionPe
                 infoHolder.prespoints.setVisibility(View.GONE);
             else if (counterList.size() == 1)
                 setCurrentPresentationPointStatus(infoHolder.prespoints, counterList.get(0).id);
-            infoHolder.votedAssignments.setText(mContext.getString(R.string.voted_assignments_w_placeholder_info_card, mMetaPojo.getFinishedAssignmentsCount()));
+            infoHolder.votedAssignments.setText(mContext.getString(R.string.voted_assignments_w_placeholder_info_card, (int) result.numberOfFinishedAssignments));
         } else if (holder instanceof LessonHolder) {
             LessonHolder lessonHolder = (LessonHolder) holder;
             //adjust for the info view
@@ -280,7 +280,7 @@ public class AdmissionPercentageAdapter extends RecyclerView.Adapter<AdmissionPe
         float average = meta.getAverageFinished();
 
         //no votes have been given
-        if (!meta.getHasLessons())
+        if (!meta.hasLessons())
             averageVoteView.setText(mContext.getString(R.string.infoview_vote_average_no_data));
 
         //get minvote for section
@@ -296,22 +296,43 @@ public class AdmissionPercentageAdapter extends RecyclerView.Adapter<AdmissionPe
         averageVoteView.setTextColor(average >= minVote ? Color.argb(255, 153, 204, 0) : Color.argb(255, 204, 0, 0));//red
     }
 
-    private void setAverageNeededAssignments(TextView averageNeededVotesView, AdmissionPercentageMeta meta) {
-        if (meta.getNumberOfLessonsLeft() == 0)
+    private void setAverageNeededAssignments(TextView averageNeededVotesView,
+                                             AdmissionPercentageMeta meta,
+                                             AdmissionPercentageCalculationResult result) {
+        EstimationModeDependentResults dependentResults = result.getEstimationDependentResults(meta.estimationMode);
+
+        if (result.numberOfFutureLessons == 0)
             averageNeededVotesView.setText(mContext.getString(R.string.subject_fragment_reached_scheduled_lesson_count));
-        else if (meta.getNumberOfLessonsLeft() < 0)
+        else if (result.numberOfFutureLessons < 0)
             averageNeededVotesView.setText(mContext.getString(R.string.subject_fragment_overshot_lesson_count));
         else
-            averageNeededVotesView.setText(String.format("%s %s %s", mContext.getString(R.string.subject_fragment_on_average), String.format("%.2f", meta.getNeededAssignmentsPerUebung()), mContext.getString(R.string.lesson_fragment_info_card_assignments_per_lesson_description)));
+            averageNeededVotesView.setText(String.format("%s %s %s", mContext.getString(R.string.subject_fragment_on_average),
+                    String.format("%.2f", dependentResults.numberOfNeededAssignments), mContext.getString(R.string.lesson_fragment_info_card_assignments_per_lesson_description)));
 
-        if (meta.getEstimatedNumberOfAssignments() < 0)
+        if (dependentResults.numberOfEstimatedOverallAssignments < 0)
             averageNeededVotesView.setText(mContext.getString(R.string.subject_fragment_error_detected));
 
-        //set color
-        if (meta.getNeededAssignmentsPerUebung() > meta.getEstimatedAssignmentsPerLesson())
-            averageNeededVotesView.setTextColor(ContextCompat.getColor(mContext, R.color.warning_red));
-        else
-            averageNeededVotesView.setTextColor(ContextCompat.getColor(mContext, R.color.abc_primary_text_material_light));
+        if (meta.bonusTargetPercentageEnabled) {
+            if(dependentResults.bonusReachable &&
+                    dependentResults.numberOfAssignmentsNeededPerLesson < dependentResults.numberOfAssignmentsEstimatedPerLesson){
+                averageNeededVotesView.setTextColor(ContextCompat.getColor(mContext, R.color.abc_primary_text_material_light));
+            }
+            else if(!dependentResults.bonusReachable &&
+                    dependentResults.numberOfAssignmentsNeededPerLesson <= dependentResults.numberOfAssignmentsEstimatedPerLesson){
+                averageNeededVotesView.setTextColor(ContextCompat.getColor(mContext, R.color.warning_orange));
+            } else if(!dependentResults.bonusReachable &&
+                    dependentResults.numberOfAssignmentsNeededPerLesson > dependentResults.numberOfAssignmentsEstimatedPerLesson){
+                averageNeededVotesView.setTextColor(ContextCompat.getColor(mContext, R.color.warning_red));
+            }
+        }
+        else{
+            if(dependentResults.numberOfAssignmentsNeededPerLesson < dependentResults.numberOfAssignmentsEstimatedPerLesson){
+                averageNeededVotesView.setTextColor(ContextCompat.getColor(mContext, R.color.abc_primary_text_material_light));
+            }
+            else if(dependentResults.numberOfAssignmentsNeededPerLesson > dependentResults.numberOfAssignmentsEstimatedPerLesson){
+                averageNeededVotesView.setTextColor(ContextCompat.getColor(mContext, R.color.warning_red));
+            }
+        }
     }
 
     @Override

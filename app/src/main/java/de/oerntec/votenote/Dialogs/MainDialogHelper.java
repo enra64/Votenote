@@ -27,10 +27,7 @@ import java.util.List;
 
 import de.oerntec.votenote.AdmissionPercentageFragmentStuff.LessonDialogFragment;
 import de.oerntec.votenote.Database.Pojo.AdmissionCounter;
-import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMeta;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionCounters;
-import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageData;
-import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageMeta;
 import de.oerntec.votenote.MainActivity;
 import de.oerntec.votenote.R;
 
@@ -99,29 +96,5 @@ public class MainDialogHelper {
                 }).setNegativeButton(activity.getString(R.string.dialog_button_abort), null);
         b.setTitle(activity.getString(R.string.admission_counter_change_dialog_title, item.counterName));
         b.create().show();
-    }
-
-    public static void showAllInfoDialog(MainActivity activity, int metaId) {
-        AdmissionPercentageMeta meta = DBAdmissionPercentageMeta.getInstance().getItem(metaId);
-        meta.loadData(DBAdmissionPercentageData.getInstance(), MainActivity.getPreference("reverse_lesson_sort", true));
-
-        String scheduledWork = activity.getString(R.string.maximum_possible_assignments) + " " + meta.getEstimatedNumberOfAssignments();
-        String numberOfNeededAssignmentsString = activity.getString(R.string.needed_work_count) + " " + meta.getNumberOfNeededAssignments();
-        String numberOfVotedAssignmentsString = activity.getString(R.string.voted_assignments) + " " + meta.getFinishedAssignmentsCount();
-        String remainingNeededAssignmentsString = activity.getString(R.string.remaining_needed_assignments) + " " + meta.getRemainingNeededAssignments();
-        String numberOfElapsedLessonsString = activity.getString(R.string.past_lessons) + " " + meta.getNumberOfElapsedLessons();
-        String numberOfLessonsLeftString = activity.getString(R.string.future_lessons) + " " + meta.getNumberOfLessonsLeft();
-        String neededAssignmentsPerUebungString = activity.getString(R.string.assignments_per_lesson_for_exam) + " " + meta.getNeededAssignmentsPerUebung();
-
-        AlertDialog.Builder b = new AlertDialog.Builder(activity)
-                .setPositiveButton(R.string.dialog_button_ok, null)
-                .setTitle(meta.name + ":");
-        b.setItems(new String[]{scheduledWork,
-                numberOfNeededAssignmentsString,
-                numberOfVotedAssignmentsString,
-                remainingNeededAssignmentsString,
-                numberOfElapsedLessonsString,
-                numberOfLessonsLeftString,
-                neededAssignmentsPerUebungString}, null).show();
     }
 }

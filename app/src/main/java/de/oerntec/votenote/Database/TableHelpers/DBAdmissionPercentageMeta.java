@@ -27,7 +27,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import de.oerntec.votenote.Database.DatabaseCreator;
-import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMeta;
+import de.oerntec.votenote.Database.Pojo.PercentageMetaStuff.AdmissionPercentageMeta;
 import de.oerntec.votenote.Database.PojoDatabase;
 import de.oerntec.votenote.MainActivity;
 
@@ -72,7 +72,7 @@ public class DBAdmissionPercentageMeta extends CrudDb<AdmissionPercentageMeta> i
         values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_SUBJECT_ID, newItem.subjectId);
         values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_USER_ESTIMATED_ASSIGNMENTS_PER_LESSON, newItem.userAssignmentsPerLessonEstimation);
         values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_TARGET_PERCENTAGE, newItem.baselineTargetPercentage);
-        values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_TARGET_LESSON_COUNT, newItem.estimatedLessonCount);
+        values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_TARGET_LESSON_COUNT, newItem.userLessonCountEstimation);
         values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_ESTIMATION_MODE, newItem.getEstimationModeAsString());
 
         values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_BONUS_TARGET_PERCENTAGE, newItem.bonusTargetPercentage);
@@ -196,7 +196,7 @@ public class DBAdmissionPercentageMeta extends CrudDb<AdmissionPercentageMeta> i
         values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_SUBJECT_ID, newItem.subjectId);
         values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_USER_ESTIMATED_ASSIGNMENTS_PER_LESSON, newItem.userAssignmentsPerLessonEstimation);
         values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_TARGET_PERCENTAGE, newItem.baselineTargetPercentage);
-        values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_TARGET_LESSON_COUNT, newItem.estimatedLessonCount);
+        values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_TARGET_LESSON_COUNT, newItem.userLessonCountEstimation);
 
         values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_ESTIMATION_MODE, newItem.getEstimationModeAsString());
 

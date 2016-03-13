@@ -19,6 +19,7 @@ package de.oerntec.votenote.Database.Pojo;
 
 import java.util.List;
 
+import de.oerntec.votenote.Database.Pojo.PercentageMetaStuff.AdmissionPercentageMeta;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionCounters;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageData;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageMeta;

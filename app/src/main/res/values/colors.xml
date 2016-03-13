@@ -8,4 +8,5 @@
     <color name="ok_green">#99CC00</color>
     <color name="textColorActionBar">#FFF</color>
     <color name="warning_red">#D50000</color>
+    <color name="warning_orange">#FF6D00</color>
 </resources>

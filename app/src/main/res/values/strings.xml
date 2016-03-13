@@ -146,4 +146,7 @@
     <string name="keine_prozentz_hler_vorhanden_f_ge_in_den_einstellungen_welche_hinzu">Keine Prozentzähler vorhanden. Füge in den Einstellungen welche hinzu!</string>
     <string name="name_des_percentagecounters">Name des Percentagecounters</string>
     <string name="estimation_mode_title">Schätzungsmodus</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

@@ -26,7 +26,7 @@ import java.util.List;
 
 import de.oerntec.votenote.Database.Pojo.AdmissionCounter;
 import de.oerntec.votenote.Database.Pojo.AdmissionPercentageData;
-import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMeta;
+import de.oerntec.votenote.Database.Pojo.PercentageMetaStuff.AdmissionPercentageMeta;
 import de.oerntec.votenote.Database.Pojo.Subject;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionCounters;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageData;
@@ -56,7 +56,7 @@ public class CsvExporter {
         //get database access
         StringBuilder b = new StringBuilder();
         String le = "\r\n";
-        String apmHeader = "Name,Required percentage for admission,Estimated Assignments per Lesson,Estimated Lesson Count";
+        String apmHeader = "Name,Required percentage for admission,Bonus Percentage for admission,Bonus Percentage enabled,Estimation mode,User Estimated Assignments per Lesson,Estimated Lesson Count";
         String apdHeader = "Lesson,Finished Assignments,Available Assignments";
         String acHeader = "Current points,Target point count";
         List<Subject> subjects = getSubjects();

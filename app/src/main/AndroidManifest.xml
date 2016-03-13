@@ -57,6 +57,15 @@
                 android:value="de.oerntec.votenote.MainActivity" />
         </activity>
         <activity
+            android:name=".AdmissionPercentageOverview.AdmissionPercentageOverviewActivity"
+            android:label="Info"
+            android:windowSoftInputMode="stateAlwaysHidden"
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="de.oerntec.votenote.MainActivity" />
+        </activity>
+        <activity
             android:name=".SubjectManagerStuff.SubjectCreation.SubjectOverview.SubjectCreationActivity"
             android:label="@string/title_activity_subject_creation"
             android:parentActivityName=".SubjectManagerStuff.SubjectManagementActivity"

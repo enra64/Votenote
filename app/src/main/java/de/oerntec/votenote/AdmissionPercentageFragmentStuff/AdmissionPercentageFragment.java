@@ -31,18 +31,22 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import de.oerntec.votenote.AdmissionPercentageOverview.AdmissionPercentageOverviewActivity;
+import de.oerntec.votenote.AdmissionPercentageOverview.AdmissionPercentageOverviewFragment;
 import de.oerntec.votenote.CardListHelpers.OnItemClickListener;
 import de.oerntec.votenote.CardListHelpers.RecyclerItemClickListener;
 import de.oerntec.votenote.CardListHelpers.SwipeDeletion;
 import de.oerntec.votenote.Database.Pojo.AdmissionPercentageData;
-import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMeta;
+import de.oerntec.votenote.Database.Pojo.PercentageMetaStuff.AdmissionPercentageMeta;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageData;
 import de.oerntec.votenote.Dialogs.MainDialogHelper;
 import de.oerntec.votenote.MainActivity;
 import de.oerntec.votenote.R;
+import de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.CreationFragment.AdmissionPercentageCreation.AdmissionPercentageCreationActivity;
 import de.oerntec.votenote.SubjectManagerStuff.SubjectManagementActivity;
 
 /**
@@ -73,7 +77,7 @@ public class AdmissionPercentageFragment extends Fragment implements SwipeDeleti
     /**
      * The percentage meta id all data in this fragment has
      */
-    private int mPercentageMetaId;
+    private int mAdmissionPercentageMetaId;
 
     /**
      * POJO object to hold the admission percentage meta data from fragment start
@@ -109,7 +113,7 @@ public class AdmissionPercentageFragment extends Fragment implements SwipeDeleti
     }
 
     public int getAdmissionPercentageMetaId(){
-        return mPercentageMetaId;
+        return mAdmissionPercentageMetaId;
     }
 
     /* MAIN FRAGMENT BUILDING
@@ -118,7 +122,7 @@ public class AdmissionPercentageFragment extends Fragment implements SwipeDeleti
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         //save the subject we are currently working for
-        mPercentageMetaId = getArguments().getInt(ARG_PERCENTAGE_META_ID);
+        mAdmissionPercentageMetaId = getArguments().getInt(ARG_PERCENTAGE_META_ID);
 
         //inflate root view
         View rootView = inflater.inflate(R.layout.admission_percentage_fragment, container, false);
@@ -135,7 +139,7 @@ public class AdmissionPercentageFragment extends Fragment implements SwipeDeleti
 
 
         //if translatedSection is -1, no group has been added yet, so show the subject manager
-        if (mPercentageMetaId == -1) {
+        if (mAdmissionPercentageMetaId == -1) {
             Intent intent = new Intent(getActivity(), SubjectManagementActivity.class);
             intent.putExtra("firstGroup", true);
             getActivity().startActivityForResult(intent, MainActivity.ADD_FIRST_SUBJECT_REQUEST);
@@ -143,7 +147,7 @@ public class AdmissionPercentageFragment extends Fragment implements SwipeDeleti
         }
 
         //create and set adapter for the lesson list -> show lessons for this percentage counter
-        mAdapter = new AdmissionPercentageAdapter(getActivity(), mPercentageMetaId);
+        mAdapter = new AdmissionPercentageAdapter(getActivity(), mAdmissionPercentageMetaId);
         mLessonList.setAdapter(mAdapter);
 
         //get the meta pojo containing available info on this percentage counter
@@ -152,7 +156,7 @@ public class AdmissionPercentageFragment extends Fragment implements SwipeDeleti
         //log entry if no subjects are available
         if (mAdapter.getItemCount() == 0)
             if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
-                Log.e("Main Listview", "Received Empty allEntryCursor for group " + mMetaObject.getDisplayName() + " with id " + mPercentageMetaId);
+                Log.e("Main Listview", "Received Empty allEntryCursor for group " + mMetaObject.getDisplayName() + " with id " + mAdmissionPercentageMetaId);
 
         enableOnClickForLessons();
 
@@ -165,12 +169,29 @@ public class AdmissionPercentageFragment extends Fragment implements SwipeDeleti
         addFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                MainDialogHelper.showAddLessonDialog(getFragmentManager(), mPercentageMetaId);
+                MainDialogHelper.showAddLessonDialog(getFragmentManager(), mAdmissionPercentageMetaId);
             }
         });
 
         mRootView = rootView;
         return rootView;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId() == R.id.action_percentage_counter){
+            showInfoActivity();
+            //handy-dandy exception thrower for exception handling testing
+            //Integer.valueOf("rip");
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    public void showInfoActivity(){
+        Intent intent = new Intent(getActivity(), AdmissionPercentageOverviewActivity.class);
+        intent.putExtra(AdmissionPercentageOverviewFragment.PARAMETER_NAME_ADMISSION_PERCENTAGE_COUNTER_ID, mAdmissionPercentageMetaId);
+        startActivity(intent);
     }
 
     /**
@@ -193,7 +214,7 @@ public class AdmissionPercentageFragment extends Fragment implements SwipeDeleti
             public void onItemClick(View view, int position) {
                 if (position != 0){
                     mLastClickedView = view;
-                    MainDialogHelper.showChangeLessonDialog(getFragmentManager(), mPercentageMetaId, (Integer) view.getTag());
+                    MainDialogHelper.showChangeLessonDialog(getFragmentManager(), mAdmissionPercentageMetaId, (Integer) view.getTag());
                 }
             }
 
@@ -236,7 +257,7 @@ public class AdmissionPercentageFragment extends Fragment implements SwipeDeleti
         //if another one has been deleted before this one, release that sp now
         trySavepointRelease();
         //remove the lesson. creates a savepoint before that, returns the id
-        mLastRemovalSavePointId = mAdapter.removeLesson(new AdmissionPercentageData(mPercentageMetaId, lessonId, -1, -1));
+        mLastRemovalSavePointId = mAdapter.removeLesson(new AdmissionPercentageData(mAdmissionPercentageMetaId, lessonId, -1, -1));
         if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
             Log.i("apf", "creating savepoint " + mLastRemovalSavePointId);
         Snackbar
@@ -326,7 +347,7 @@ public class AdmissionPercentageFragment extends Fragment implements SwipeDeleti
                     if (mEnableSwipeDisableDialog)
                         showUndoSnackBar(lessonId, mLessonList.getChildAdapterPosition(viewHolder.itemView));
                     else
-                        showSwipeToDeleteDialog(lessonId, mPercentageMetaId);
+                        showSwipeToDeleteDialog(lessonId, mAdmissionPercentageMetaId);
                 }
             }
         }

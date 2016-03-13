@@ -13,8 +13,7 @@ import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMeta;
-import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMeta.EstimationMode;
+import de.oerntec.votenote.Database.Pojo.PercentageMetaStuff.AdmissionPercentageMeta;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageMeta;
 import de.oerntec.votenote.Helpers.NotEmptyWatcher;
 import de.oerntec.votenote.R;
@@ -173,7 +172,7 @@ public class AdmissionPercentageFragment extends Fragment implements Button.OnCl
         nameHint = oldState.name;
         requiredPercentageHint = oldState.baselineTargetPercentage;
         estimatedAssignmentsHint = oldState.userAssignmentsPerLessonEstimation;
-        estimatedLessonCountHint = oldState.estimatedLessonCount;
+        estimatedLessonCountHint = oldState.userLessonCountEstimation;
         mEstimationModeHint = oldState.getEstimationModeAsString();
         mBonusRequiredPercentageHint = oldState.bonusTargetPercentage;
         mBonusRequiredPercentageEnabledHint = oldState.bonusTargetPercentageEnabled;
@@ -223,10 +222,10 @@ public class AdmissionPercentageFragment extends Fragment implements Button.OnCl
     }
 
     private void initEstimationModeSeekbar() {
-        int amountOfEstimationModes = EstimationMode.values().length - 2; // -1 for a) undefined and b) max is 1-indexed
+        int amountOfEstimationModes = AdmissionPercentageMeta.EstimationMode.values().length - 2; // -1 for a) undefined and b) max is 1-indexed
         mEstimationModeSeekbar.setMax(amountOfEstimationModes);
 
-        EstimationMode estimationMode = EstimationMode.valueOf(mEstimationModeHint);
+        AdmissionPercentageMeta.EstimationMode estimationMode = AdmissionPercentageMeta.EstimationMode.valueOf(mEstimationModeHint);
 
         mEstimationModeSeekbar.setProgress(estimationMode.ordinal());
 
@@ -249,7 +248,7 @@ public class AdmissionPercentageFragment extends Fragment implements Button.OnCl
     }
 
     private void onEstimationModeChange(int seekbarProgress) {
-        switch (EstimationMode.values()[seekbarProgress]) {
+        switch (AdmissionPercentageMeta.EstimationMode.values()[seekbarProgress]) {
             case user://user
                 mCurrentEstimationMode = "user";
                 mEstimationModeCurrentValueTextView.setText(R.string.estimation_name_user);

@@ -33,7 +33,7 @@ import java.io.InputStream;
 import de.oerntec.votenote.Database.DatabaseCreator;
 import de.oerntec.votenote.Database.Pojo.AdmissionCounter;
 import de.oerntec.votenote.Database.Pojo.AdmissionPercentageData;
-import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMeta;
+import de.oerntec.votenote.Database.Pojo.PercentageMetaStuff.AdmissionPercentageMeta;
 import de.oerntec.votenote.Database.Pojo.Subject;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionCounters;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageData;

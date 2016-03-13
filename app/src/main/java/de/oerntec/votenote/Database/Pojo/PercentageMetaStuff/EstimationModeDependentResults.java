@@ -5,8 +5,8 @@ package de.oerntec.votenote.Database.Pojo.PercentageMetaStuff;
  * which mode is used.
  */
 public class EstimationModeDependentResults{
-        public float    scheduledNumberOfAssignments,
-                        estimatedAssignmentsPerLesson,
+        public float    numberOfEstimatedOverallAssignments,
+                        numberOfAssignmentsEstimatedPerLesson,
                         numberOfNeededAssignments,
                         numberOfRemainingNeededAssignments,
                         numberOfAssignmentsNeededPerLesson;

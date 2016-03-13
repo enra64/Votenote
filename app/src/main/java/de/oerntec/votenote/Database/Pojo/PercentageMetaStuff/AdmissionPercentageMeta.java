@@ -9,7 +9,7 @@ import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageData;
 /**
  * POJO class for representing the metadata available about an admission percentage counter
  */
-public class AdmissionPercentageMetaNew implements NameAndIdPojo {
+public class AdmissionPercentageMeta implements NameAndIdPojo {
     /**
      * Database ID. Given in constructor.
      */
@@ -67,10 +67,10 @@ public class AdmissionPercentageMetaNew implements NameAndIdPojo {
      */
     boolean mDataLoaded = false;
 
-    public AdmissionPercentageMetaNew(int id, int subjectId, int estimatedAssignmentsPerLesson,
-                                      int userLessonCountEstimation, int baselineTargetPercentage,
-                                      String name, String mode,
-                                      int bonusTargetPercentage, boolean bonusTargetPercentageEnabled) {
+    public AdmissionPercentageMeta(int id, int subjectId, int estimatedAssignmentsPerLesson,
+                                   int userLessonCountEstimation, int baselineTargetPercentage,
+                                   String name, String mode,
+                                   int bonusTargetPercentage, boolean bonusTargetPercentageEnabled) {
         this.id = id;
         this.subjectId = subjectId;
         this.userLessonCountEstimation = userLessonCountEstimation;
@@ -80,7 +80,7 @@ public class AdmissionPercentageMetaNew implements NameAndIdPojo {
         this.bonusTargetPercentageEnabled = bonusTargetPercentageEnabled;
         this.bonusTargetPercentage = bonusTargetPercentage;
 
-        estimationMode = EstimationMode.valueOf(mode);
+        this.estimationMode = EstimationMode.valueOf(mode);
     }
 
     public void loadData(DBAdmissionPercentageData dataDb, boolean latestLessonFirst){
@@ -133,7 +133,7 @@ public class AdmissionPercentageMetaNew implements NameAndIdPojo {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        AdmissionPercentageMetaNew that = (AdmissionPercentageMetaNew) o;
+        AdmissionPercentageMeta that = (AdmissionPercentageMeta) o;
 
         if (id != that.id) return false;
         if (subjectId != that.subjectId) return false;
@@ -144,10 +144,6 @@ public class AdmissionPercentageMetaNew implements NameAndIdPojo {
 
     }
 
-    public String getCsvRepresentation(){
-        return name + "," + baselineTargetPercentage + "%," + getEstimatedAssignmentsPerLesson() + "," + userLessonCountEstimation;
-    }
-
     @Override
     public String getDisplayName() {
         return name + " - " + baselineTargetPercentage + "%";
@@ -156,6 +152,16 @@ public class AdmissionPercentageMetaNew implements NameAndIdPojo {
     @Override
     public int getId() {
         return id;
+    }
+
+    public String getCsvRepresentation() {
+        return name + "," +
+                baselineTargetPercentage + "%," +
+                bonusTargetPercentage + "%," +
+                (bonusTargetPercentageEnabled ? "true" : "false") + "," +
+                estimationMode.name() + "," +
+                userAssignmentsPerLessonEstimation + "," +
+                userLessonCountEstimation + "";
     }
 
 

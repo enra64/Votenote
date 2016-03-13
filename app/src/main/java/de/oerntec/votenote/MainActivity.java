@@ -52,6 +52,7 @@ import de.oerntec.votenote.Dialogs.MainDialogHelper;
 import de.oerntec.votenote.Helpers.General;
 import de.oerntec.votenote.ImportExport.Writer;
 import de.oerntec.votenote.NavigationDrawer.NavigationDrawerFragment;
+import de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.CreationFragment.AdmissionPercentageCreation.AdmissionPercentageCreationActivity;
 import de.oerntec.votenote.SubjectManagerStuff.SubjectManagementActivity;
 
 /*
@@ -426,9 +427,6 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_percentage_counter:
-                onInfoClick();
-                return true;
             case R.id.action_admission_counter:
                 onPresentationPointsClick();
                 return true;
@@ -445,12 +443,6 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
 
     private void onPresentationPointsClick() {
         MainDialogHelper.showPresentationPointDialog(this, mCurrentSelectedSubjectId);
-    }
-
-    private void onInfoClick() {
-        MainDialogHelper.showAllInfoDialog(this, getCurrentAdmissionPercentageFragment().getAdmissionPercentageMetaId());
-        //handy-dandy exception thrower for exception handling testing
-        //Integer.valueOf("rip");
     }
 
     private void setPreference(String key, int val) {
@@ -475,7 +467,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
     public void onClick(View view) {
         int id = (int) view.getTag();
         if (id == R.id.action_percentage_counter)
-            onInfoClick();
+            getCurrentAdmissionPercentageFragment().showInfoActivity();
         if (id == R.id.action_admission_counter)
             onPresentationPointsClick();
     }
