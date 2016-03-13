@@ -231,6 +231,8 @@ public class LessonDialogFragment extends DialogFragment implements DialogInterf
 
         setPicker(mAvailableAssignmentsPicker, 0, currentAvailableAssignments * 2, currentAvailableAssignments);
         setPicker(mFinishedAssignmentsPicker, 0, currentAvailableAssignments * 2, currentFinishedAssignments);
+
+        updateResultingPercentage(currentFinishedAssignments, currentAvailableAssignments);
     }
 
     /**
@@ -288,14 +290,17 @@ public class LessonDialogFragment extends DialogFragment implements DialogInterf
         }
     }
 
-    private void updateResultingPercentage(int myVote, int maxVote) {
+    /**
+     * Update the resulting percentage based on the available/finished picker values
+     */
+    private void updateResultingPercentage(int finishedCount, int availableCount) {
         if (!mLiveUpdateResultingPercentage)
             return;
         float newAvg;
         if (mIsNewLesson)
-            newAvg = mMetaItem.getAverageFinished(maxVote, myVote);
+            newAvg = mMetaItem.getAverageFinished(availableCount, finishedCount);
         else
-            newAvg = mMetaItem.getAverageFinished(maxVote - mOldData.availableAssignments, myVote - mOldData.finishedAssignments);
+            newAvg = mMetaItem.getAverageFinished(availableCount - mOldData.availableAssignments, finishedCount - mOldData.finishedAssignments);
         mResultingPercentageView.setText(String.format("%.1f%%", newAvg));
         General.applyClueColor(mResultingPercentageView, getActivity(), newAvg >= mMetaItem.baselineTargetPercentage);
     }
