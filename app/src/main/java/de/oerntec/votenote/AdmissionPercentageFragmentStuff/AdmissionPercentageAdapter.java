@@ -284,7 +284,8 @@ public class AdmissionPercentageAdapter extends RecyclerView.Adapter<AdmissionPe
             averageVoteView.setText(mContext.getString(R.string.infoview_vote_average_no_data));
 
         //get minvote for section
-        int minVote = meta.baselineTargetPercentage;
+        int baselineTargetPercentage = meta.baselineTargetPercentage;
+        int bonusTargetPercentage = meta.bonusTargetPercentage;
 
         //write percentage and color coding to summaryview
         if (Float.isNaN(average))
@@ -293,7 +294,16 @@ public class AdmissionPercentageAdapter extends RecyclerView.Adapter<AdmissionPe
             averageVoteView.setText(String.format("%.1f%%", average));
 
         //color text in
-        averageVoteView.setTextColor(average >= minVote ? Color.argb(255, 153, 204, 0) : Color.argb(255, 204, 0, 0));//red
+        if(!meta.bonusTargetPercentageEnabled)
+            averageVoteView.setTextColor(average >= baselineTargetPercentage ? Color.argb(255, 153, 204, 0) : Color.argb(255, 204, 0, 0));//red
+        else{
+            if(average < baselineTargetPercentage)
+                averageVoteView.setTextColor(ContextCompat.getColor(mContext, R.color.warning_red));
+            else if (average < bonusTargetPercentage)
+                averageVoteView.setTextColor(ContextCompat.getColor(mContext, R.color.warning_orange));
+            else
+                averageVoteView.setTextColor(ContextCompat.getColor(mContext, R.color.ok_green));
+        }
     }
 
     private void setAverageNeededAssignments(TextView averageNeededVotesView,
@@ -307,7 +317,7 @@ public class AdmissionPercentageAdapter extends RecyclerView.Adapter<AdmissionPe
             averageNeededVotesView.setText(mContext.getString(R.string.subject_fragment_overshot_lesson_count));
         else
             averageNeededVotesView.setText(String.format("%s %s %s", mContext.getString(R.string.subject_fragment_on_average),
-                    String.format("%.2f", dependentResults.numberOfNeededAssignments), mContext.getString(R.string.lesson_fragment_info_card_assignments_per_lesson_description)));
+                    String.format("%.2f", dependentResults.numberOfAssignmentsNeededPerLesson), mContext.getString(R.string.lesson_fragment_info_card_assignments_per_lesson_description)));
 
         if (dependentResults.numberOfEstimatedOverallAssignments < 0)
             averageNeededVotesView.setText(mContext.getString(R.string.subject_fragment_error_detected));
