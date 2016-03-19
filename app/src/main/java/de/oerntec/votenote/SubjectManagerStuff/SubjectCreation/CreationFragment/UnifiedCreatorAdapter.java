@@ -7,9 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.Switch;
 import android.widget.TextView;
 
 import java.util.List;
@@ -21,7 +19,7 @@ import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageMeta;
 import de.oerntec.votenote.R;
 import de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.SubjectOverview.Dialogs;
 
-public class UnifiedCreatorAdapter extends RecyclerView.Adapter<UnifiedCreatorAdapter.ViewHolder> implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
+public class UnifiedCreatorAdapter extends RecyclerView.Adapter<UnifiedCreatorAdapter.ViewHolder> implements View.OnClickListener {
     static final int VIEW_INFO = 0;
     static final int VIEW_PERCENTAGE = 1;
     static final int VIEW_COUNTER = 2;
@@ -65,7 +63,6 @@ public class UnifiedCreatorAdapter extends RecyclerView.Adapter<UnifiedCreatorAd
             case VIEW_INFO:
                 root = inflater.inflate(R.layout.subject_manager_fragment_main_card, parent, false);
                 InfoViewHolder infoHolder = new InfoViewHolder(root);
-                infoHolder.notificationSwitch = (Switch) root.findViewById(R.id.subject_manager_fragment_main_card_notification_switch);
                 infoHolder.percentageAddButton = (Button) root.findViewById(R.id.subject_manager_fragment_main_card_add_percentage_counter);
                 infoHolder.counterAddButton = (Button) root.findViewById(R.id.subject_manager_fragment_main_card_add_counter);
                 infoHolder.name = (EditText) root.findViewById(R.id.subject_manager_fragment_main_card_name);
@@ -100,7 +97,6 @@ public class UnifiedCreatorAdapter extends RecyclerView.Adapter<UnifiedCreatorAd
                 infoHolder.itemView.setTag(-1);
                 infoHolder.counterAddButton.setOnClickListener(this);
                 infoHolder.percentageAddButton.setOnClickListener(this);
-                infoHolder.notificationSwitch.setOnCheckedChangeListener(this);
                 break;
             case VIEW_COUNTER:
                 CounterViewHolder counterHolder = (CounterViewHolder) holder;
@@ -195,11 +191,6 @@ public class UnifiedCreatorAdapter extends RecyclerView.Adapter<UnifiedCreatorAd
         }
     }
 
-    @Override
-    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-        //TODO: notifcation logic
-    }
-
     public AdmissionCounter getCounterPojoAtPosition(int position) {
         return mCounterData.get(position - 1);
     }
@@ -223,7 +214,6 @@ public class UnifiedCreatorAdapter extends RecyclerView.Adapter<UnifiedCreatorAd
 
     public class InfoViewHolder extends ViewHolder {
         public EditText name;
-        public Switch notificationSwitch;
         public Button percentageAddButton, counterAddButton;
 
         public InfoViewHolder(View itemView) {

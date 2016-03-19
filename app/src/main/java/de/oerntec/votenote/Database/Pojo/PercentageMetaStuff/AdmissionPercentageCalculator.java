@@ -4,7 +4,7 @@ import java.util.List;
 
 import de.oerntec.votenote.Database.Pojo.AdmissionPercentageData;
 
-import static de.oerntec.votenote.Database.Pojo.PercentageMetaStuff.AdmissionPercentageMeta.*;
+import static de.oerntec.votenote.Database.Pojo.PercentageMetaStuff.AdmissionPercentageMeta.EstimationMode;
 
 /**
  * This class pulls the calculation functions from the old admission percentage meta object into a
@@ -37,7 +37,7 @@ public class AdmissionPercentageCalculator {
         EstimationModeDependentResults results = new EstimationModeDependentResults();
         results.numberOfAssignmentsEstimatedPerLesson = getEstimatedAssignmentsPerLesson(item, mode);
 
-        results.numberOfEstimatedOverallAssignments = getEstimatedAssignmentsPerLesson(item) * independentResults.numberOfFutureLessons +
+        results.numberOfEstimatedOverallAssignments = getEstimatedAssignmentsPerLesson(item, mode) * independentResults.numberOfFutureLessons +
                 independentResults.numberOfPastAvailableAssignments;
 
         //default to baseline target percentage
@@ -79,17 +79,17 @@ public class AdmissionPercentageCalculator {
     }
 
     private static int getMinimumPastAvailableAssignments(List<AdmissionPercentageData> mDataList) {
-        int minAssignments = Integer.MAX_VALUE;
+        int minAvailableAssignments = Integer.MAX_VALUE;
         for (AdmissionPercentageData d : mDataList)
-            minAssignments = d.availableAssignments < minAssignments ? d.availableAssignments : minAssignments;
-        return minAssignments;
+            minAvailableAssignments = d.availableAssignments < minAvailableAssignments ? d.availableAssignments : minAvailableAssignments;
+        return minAvailableAssignments;
     }
 
     private static int getMaximumPastAvailableAssignments(List<AdmissionPercentageData> mDataList) {
-        int maxAssignments = 0;
+        int maxAvailableAssignments = 0;
         for (AdmissionPercentageData d : mDataList)
-            maxAssignments = d.availableAssignments > maxAssignments ? d.availableAssignments : maxAssignments;
-        return maxAssignments;
+            maxAvailableAssignments = d.availableAssignments > maxAvailableAssignments ? d.availableAssignments : maxAvailableAssignments;
+        return maxAvailableAssignments;
     }
 
     /**

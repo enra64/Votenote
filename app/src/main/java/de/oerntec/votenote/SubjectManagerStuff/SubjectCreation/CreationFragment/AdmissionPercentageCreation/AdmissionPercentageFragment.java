@@ -3,6 +3,7 @@ package de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.CreationFragment
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,16 +12,24 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.SeekBar;
+import android.widget.Switch;
 import android.widget.TextView;
+
+import com.github.jjobes.slidedaytimepicker.SlideDayTimeListener;
+import com.github.jjobes.slidedaytimepicker.SlideDayTimePicker;
+
+import java.util.Calendar;
 
 import de.oerntec.votenote.Database.Pojo.PercentageMetaStuff.AdmissionPercentageMeta;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageMeta;
 import de.oerntec.votenote.Helpers.NotEmptyWatcher;
+import de.oerntec.votenote.Helpers.Notifications.NotificationGeneralHelper;
+import de.oerntec.votenote.MainActivity;
 import de.oerntec.votenote.R;
 import de.oerntec.votenote.SubjectManagerStuff.SeekerListener;
 import de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.SubjectOverview.SubjectCreationActivity;
 
-public class AdmissionPercentageFragment extends Fragment implements Button.OnClickListener {
+public class AdmissionPercentageFragment extends Fragment implements Button.OnClickListener, CompoundButton.OnCheckedChangeListener {
     public static final String SUBJECT_ID = "subject_id";
     public static final String ADMISSION_PERCENTAGE_ID = "ap_id";
     public static final String SUBJECT_IS_NEW = "subject_is_new";
@@ -33,6 +42,12 @@ public class AdmissionPercentageFragment extends Fragment implements Button.OnCl
     private EditText nameInput;
     private TextView mRequiredPercentageCurrentValueTextView, mEstimatedAssignmentsPerLessonCurrentValueTextView, mEstimatedLessonCountCurrentValueTextView, mEstimationModeDescription, mEstimationModeCurrentValueTextView;
     private SeekBar mRequiredPercentageSeekBar, mEstimatedAssignmentsPerLessonSeekBar, mEstimatedLessonCountSeekBar, mEstimationModeSeekbar;
+
+
+    /**
+     * Switch to set notification enabled setting
+     */
+    private Switch mNotificationEnabledSwitch;
 
     /**
      * SeekBar for choosing the value of the required percentage for getting a bonus
@@ -48,6 +63,25 @@ public class AdmissionPercentageFragment extends Fragment implements Button.OnCl
      * TextView to show the currently chosen bonus value
      */
     private TextView mBonusRequiredPercentageCurrentValueTextView;
+
+
+    /**
+     * whether or not the recurring notifications are enabled
+     */
+    private boolean mNotificationEnabledHint = false;
+
+    /**
+     * If it exists, this string contains the old recurrence string
+     */
+    private String mNotificationRecurrenceStringHint = "";
+
+    /**
+     * This string is:
+     * empty, if there was no recurrence string and none was set
+     * ==hint, if the old recurrence string was not changed,
+     * the new recurrence string
+     */
+    private String mNotificationRecurrenceStringCurrent;
 
     /**
      * Integer containing the default or the old value for the bonus percentage
@@ -112,7 +146,7 @@ public class AdmissionPercentageFragment extends Fragment implements Button.OnCl
 
             //create a new meta entry for this so we have an id to work with
             if (mIsNewPercentageCounter)
-                mAdmissionPercentageId = mDb.addItemGetId(new AdmissionPercentageMeta(-1, mSubjectId, 0, 0, 0, "if you see this, i fucked up.", "undefined", 0, false));
+                mAdmissionPercentageId = mDb.addItemGetId(new AdmissionPercentageMeta(-1, mSubjectId, 0, 0, 0, "if you see this, i fucked up.", "undefined", 0, false, "", false));
 
             //hide the delete button if this is a new subject
             if (mIsNewPercentageCounter)
@@ -147,6 +181,8 @@ public class AdmissionPercentageFragment extends Fragment implements Button.OnCl
         mBonusRequiredPercentageSeekBar = (SeekBar) view.findViewById(R.id.subject_manager_fragment_percentage_creator_fragment_bonus_vote_seek_bar);
         mBonusRequiredPercentageCurrentValueTextView = (TextView) view.findViewById(R.id.subject_manager_fragment_percentage_creator_fragment_bonus_vote_current_value);
 
+        mNotificationEnabledSwitch = (Switch) view.findViewById(R.id.subject_manager_fragment_percentage_creator_fragment_notification_switch);
+
         return view;
     }
 
@@ -176,6 +212,10 @@ public class AdmissionPercentageFragment extends Fragment implements Button.OnCl
         mEstimationModeHint = oldState.getEstimationModeAsString();
         mBonusRequiredPercentageHint = oldState.bonusTargetPercentage;
         mBonusRequiredPercentageEnabledHint = oldState.bonusTargetPercentageEnabled;
+
+        mNotificationEnabledHint = oldState.notificationEnabled;
+        mNotificationRecurrenceStringHint = oldState.notificationRecurrenceString;
+        mNotificationRecurrenceStringCurrent = mNotificationRecurrenceStringHint;
 
         //set the parent activity title
         ((AdmissionPercentageCreationActivity) getActivity()).setToolbarTitle(getTitle());
@@ -207,6 +247,9 @@ public class AdmissionPercentageFragment extends Fragment implements Button.OnCl
         initEstimationModeSeekbar();
 
         initBonusCheckBox();
+
+        mNotificationEnabledSwitch.setChecked(mNotificationEnabledHint);
+        mNotificationEnabledSwitch.setOnCheckedChangeListener(this);
     }
 
     private void initBonusCheckBox() {
@@ -303,7 +346,7 @@ public class AdmissionPercentageFragment extends Fragment implements Button.OnCl
         switch (v.getId()) {
             case R.id.activity_admission_percentage_creation_delete_button:
                 mDb.rollbackToSavepoint(mSavepointId);
-                resultState =  SubjectCreationActivity.DIALOG_RESULT_DELETE;
+                resultState = SubjectCreationActivity.DIALOG_RESULT_DELETE;
                 break;
             case R.id.activity_admission_percentage_creation_save_button:
                 //change the item we created at the beginning of this dialog to the actual values
@@ -316,7 +359,10 @@ public class AdmissionPercentageFragment extends Fragment implements Button.OnCl
                         nameInput.getText().toString(),
                         mCurrentEstimationMode,
                         mBonusRequiredPercentageSeekBar.getProgress(),
-                        mBonusRequiredPercentageActivationCheckBox.isChecked()));
+                        mBonusRequiredPercentageActivationCheckBox.isChecked(),
+                        mNotificationRecurrenceStringCurrent,
+                        mNotificationEnabledSwitch.isChecked()
+                ));
                 //commit
                 mDb.releaseSavepoint(mSavepointId);
                 //notify the host fragment that we changed an item
@@ -332,5 +378,53 @@ public class AdmissionPercentageFragment extends Fragment implements Button.OnCl
         }
         AdmissionPercentageCreationActivity host = (AdmissionPercentageCreationActivity) getActivity();
         host.callCreatorFragmentForItemChange(resultState);
+    }
+
+    @Override
+    public void onCheckedChanged(final CompoundButton buttonView, boolean isChecked) {
+        if (isChecked) {
+            SlideDayTimePicker.Builder builder = new SlideDayTimePicker.Builder(getFragmentManager());
+
+            builder.setListener(new SlideDayTimeListener() {
+                @Override
+                public void onDayTimeSet(int day, int hour, int minute) {
+                    mNotificationRecurrenceStringCurrent = day + ":" + hour + ":" + minute;
+                    NotificationGeneralHelper.setAlarmForNotification(getActivity(),
+                            mSubjectId,
+                            mAdmissionPercentageId,
+                            day,
+                            hour,
+                            minute);
+
+                    if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
+                        Log.i("votenote alarms", "added notification");
+                }
+
+                @Override
+                public void onDayTimeCancel() {
+                    buttonView.setChecked(false);
+                }
+            });
+
+            builder.setIs24HourTime(true);
+            builder.setIndicatorColor(R.color.colorPrimary);
+
+            if (mNotificationRecurrenceStringHint != null && !mNotificationRecurrenceStringHint.isEmpty()) {
+                String[] dowTime = mNotificationRecurrenceStringHint.split(":");
+                builder.setInitialDay(Integer.parseInt(dowTime[0]))
+                        .setInitialHour(Integer.parseInt(dowTime[1]))
+                        .setInitialMinute(Integer.parseInt(dowTime[2]));
+            } else {
+                builder.setInitialDay(Calendar.MONDAY)
+                        .setInitialHour(9)
+                        .setInitialMinute(0);
+            }
+
+            builder.build().show();
+        } else {
+            NotificationGeneralHelper.removeAlarmForNotification(getActivity(), mSubjectId, mAdmissionPercentageId);
+            if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
+                Log.i("votenote alarms", "removed notification");
+        }
     }
 }

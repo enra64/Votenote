@@ -57,6 +57,16 @@ public class AdmissionPercentageMeta implements NameAndIdPojo {
     public EstimationMode estimationMode = EstimationMode.undefined;
 
     /**
+     * Are recurring notifications dis- or enabled?
+     */
+    public boolean notificationEnabled;
+
+    /**
+     * This String contains the recurrance data according to the dow/time picker library used
+     */
+    public String notificationRecurrenceString;
+
+    /**
      * If the data has been loaded, this list contains all lessons in this apm, simplifying data
      * calculation
      */
@@ -70,15 +80,20 @@ public class AdmissionPercentageMeta implements NameAndIdPojo {
     public AdmissionPercentageMeta(int id, int subjectId, int estimatedAssignmentsPerLesson,
                                    int userLessonCountEstimation, int baselineTargetPercentage,
                                    String name, String mode,
-                                   int bonusTargetPercentage, boolean bonusTargetPercentageEnabled) {
+                                   int bonusTargetPercentage, boolean bonusTargetPercentageEnabled,
+                                   String notificationRecurrenceString, boolean notificationEnabled) {
         this.id = id;
         this.subjectId = subjectId;
         this.userLessonCountEstimation = userLessonCountEstimation;
         this.userAssignmentsPerLessonEstimation = estimatedAssignmentsPerLesson;
         this.baselineTargetPercentage = baselineTargetPercentage;
         this.name = name;
+
         this.bonusTargetPercentageEnabled = bonusTargetPercentageEnabled;
         this.bonusTargetPercentage = bonusTargetPercentage;
+
+        this.notificationRecurrenceString = notificationRecurrenceString;
+        this.notificationEnabled = notificationEnabled;
 
         this.estimationMode = EstimationMode.valueOf(mode);
     }
@@ -162,6 +177,10 @@ public class AdmissionPercentageMeta implements NameAndIdPojo {
                 estimationMode.name() + "," +
                 userAssignmentsPerLessonEstimation + "," +
                 userLessonCountEstimation + "";
+    }
+
+    public String getRecurrenceRule() {
+        return notificationRecurrenceString;
     }
 
 

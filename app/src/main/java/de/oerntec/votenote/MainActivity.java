@@ -19,12 +19,13 @@ package de.oerntec.votenote;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -52,7 +53,6 @@ import de.oerntec.votenote.Dialogs.MainDialogHelper;
 import de.oerntec.votenote.Helpers.General;
 import de.oerntec.votenote.ImportExport.Writer;
 import de.oerntec.votenote.NavigationDrawer.NavigationDrawerFragment;
-import de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.CreationFragment.AdmissionPercentageCreation.AdmissionPercentageCreationActivity;
 import de.oerntec.votenote.SubjectManagerStuff.SubjectManagementActivity;
 
 /*
@@ -202,11 +202,43 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         if (ENABLE_DEBUG_LOG_CALLS)
             Log.i("state info", "oncreate");
 
-        int lastSelected = mLastViewedDb.getLastSelectedSubjectPosition();
+        considerAutoSelect();
+    }
 
+    /**
+     * Either select the last selected subject, or force select the subject given in the intent
+     */
+    private void considerAutoSelect() {
+        int admissionPercentageId = getIntent().getIntExtra("admission_percentage_id_notification_action", -2);
+        int subjectId = getIntent().getIntExtra("subject_id_notification_action", -2);
+        int notificationId = getIntent().getIntExtra("notification_id", -2);
+
+        //force via intent
+        if (admissionPercentageId != -2 && subjectId != -2) {
+            if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
+                Log.i("vn autoselect", "mainactivity started via notification action");
+            mNavigationDrawerFragment.forceAdmissionPercentageFragmentDialogById(subjectId, admissionPercentageId);
+
+            //the action was clicked, but some genius decided not to make an autodismiss api -> we
+            //saved the notification id in the intent to kill it now
+            NotificationManager notificationManager =
+                    (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            notificationManager.cancel(notificationId);
+
+        }
         //select the last selected item
-        if (lastSelected >= 0 && lastSelected < mSubjectDb.getCount()){
-            mNavigationDrawerFragment.selectItem(lastSelected);
+        else {
+            int subjectCount = mSubjectDb.getCount();
+            int lastSelected = mLastViewedDb.getLastSelectedSubjectPosition();
+
+            boolean hasValidLastSelected = lastSelected >= 0 && lastSelected < subjectCount;
+
+            //try to load last selected fragment
+            if (hasValidLastSelected)
+                mNavigationDrawerFragment.selectItem(lastSelected);
+                //we dont have a valid last selected point.. maybe we can at least load something?
+            else if (subjectCount > 0)
+                mNavigationDrawerFragment.selectItem(0);
         }
     }
 
@@ -246,20 +278,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         int lessonCount = mSubjectDb.getNumberOfLessonsForSubject(mCurrentSelectedSubjectId);
         int subjectCount = mSubjectDb.getCount();
 
-        //check whether we possibly have subjects, but none is loaded for some reason
-        int lastSelected = mLastViewedDb.getLastSelectedSubjectPosition();
-        boolean hasValidLastSelected = lastSelected >= 0 && lastSelected < subjectCount;
-
-        Fragment checkFragment = getSupportFragmentManager().findFragmentById(R.id.container);
-        //check whether we have a fragment loaded
-        if (!(checkFragment != null && checkFragment instanceof AdmissionPercentageFragment)) {
-            //no! try to load a fragment
-            if (hasValidLastSelected)
-                mNavigationDrawerFragment.selectItem(lastSelected);
-                //we dont have a valid last selected point.. maybe we can at least load something?
-            else if (subjectCount > 0)
-                mNavigationDrawerFragment.selectItem(0);
-        }
+        considerAutoSelect();
 
         //tutorials
         if (lessonCount == 0 && subjectCount > 0) {
@@ -322,19 +341,30 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
 
     @Override
     public void onNavigationDrawerItemSelected(int position) {
+        onNavigationDrawerItemSelected(position, -1, false);
+    }
+
+    @Override
+    public void onNavigationDrawerItemSelected(int position, int admissionPercentageId, boolean forceLessonAddDialog) {
         //keep track of what fragment is shown
         mCurrentSelectedSubjectId = mSubjectDb.getIdOfSubject(position);
 
         mCurrentSubjectHasAdmissionCounters = DBAdmissionCounters.getInstance().getItemsForSubject(mCurrentSelectedSubjectId).size() > 0;
         mCurrentSubjectHasPercentageCounters = DBAdmissionPercentageMeta.getInstance().getItemsForSubject(mCurrentSelectedSubjectId).size() > 0;
 
-        // update the menu_main content by replacing fragments
-        //if (ENABLE_DEBUG_LOG_CALLS)
-        //    Log.i("votenote main", "selected fragment " + position);
+        SubjectFragment newFragment;
+
+        //force show a certain admission percentage counter
+        if (admissionPercentageId == -1)
+            newFragment = SubjectFragment.newInstance(mCurrentSelectedSubjectId, position);
+        else
+            newFragment = SubjectFragment.newInstance(mCurrentSelectedSubjectId, position, admissionPercentageId, forceLessonAddDialog);
+
+
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager
                 .beginTransaction()
-                .replace(R.id.container, SubjectFragment.newInstance(mCurrentSelectedSubjectId, position)).commit();
+                .replace(R.id.container, newFragment).commit();
     }
 
     /**

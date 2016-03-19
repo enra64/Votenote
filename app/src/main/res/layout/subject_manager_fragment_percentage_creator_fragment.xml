@@ -31,13 +31,32 @@
             android:textSize="20sp" />
 
         <TextView
+            android:id="@+id/subject_manager_fragment_percentage_creator_fragment_notification_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/subject_manager_dialog_groupsettings_edit_name"
+            android:layout_alignStart="@+id/subject_manager_dialog_groupsettings_edit_name"
+            android:layout_below="@+id/subject_manager_dialog_groupsettings_edit_name"
+            android:layout_marginBottom="6dp"
+            android:layout_marginTop="10dp"
+            android:text="@string/votierungserinnerung"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+
+        <Switch
+            android:id="@+id/subject_manager_fragment_percentage_creator_fragment_notification_switch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/subject_manager_fragment_percentage_creator_fragment_notification_title"
+            android:layout_alignEnd="@+id/subject_manager_dialog_groupsettings_edit_name"
+            android:layout_alignRight="@+id/subject_manager_dialog_groupsettings_edit_name" />
+
+        <TextView
             android:id="@+id/subject_manager_dialog_groupsettings_estimated_assignments_per_lesson_description"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignLeft="@+id/subject_manager_dialog_groupsettings_min_votes_scrollview"
-            android:layout_alignStart="@+id/subject_manager_dialog_groupsettings_min_votes_scrollview"
+            android:layout_alignLeft="@+id/subject_manager_dialog_groupsettings_edit_name"
+            android:layout_alignStart="@+id/subject_manager_dialog_groupsettings_edit_name"
             android:layout_below="@+id/subject_manager_dialog_groupsettings_required_percentage_seekbar"
-            android:layout_marginTop="10dp"
             android:text="@string/subjectmanager_assignments_per_lesson"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:textSize="20sp" />
@@ -54,25 +73,17 @@
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:textSize="20sp" />
 
-        <HorizontalScrollView
-            android:id="@+id/subject_manager_dialog_groupsettings_min_votes_scrollview"
+        <TextView
+            android:id="@+id/subject_manager_dialog_groupsettings_required_percentage_description"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignLeft="@+id/subject_manager_dialog_groupsettings_edit_name"
-            android:layout_alignStart="@+id/subject_manager_dialog_groupsettings_edit_name"
-            android:layout_below="@+id/subject_manager_dialog_groupsettings_edit_name"
+            android:layout_alignLeft="@+id/subject_manager_dialog_groupsettings_estimated_assignments_per_lesson_description"
+            android:layout_alignStart="@+id/subject_manager_dialog_groupsettings_estimated_assignments_per_lesson_description"
+            android:layout_below="@+id/subject_manager_fragment_percentage_creator_fragment_notification_title"
             android:layout_marginTop="10dp"
-            android:layout_toLeftOf="@+id/subject_manager_dialog_groupsettings_required_percentage_current_value"
-            android:layout_toStartOf="@+id/subject_manager_dialog_groupsettings_required_percentage_current_value">
-
-            <TextView
-                android:id="@+id/subject_manager_dialog_groupsettings_required_percentage_description"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/subjectmanager_needed_work"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:textSize="20sp" />
-        </HorizontalScrollView>
+            android:text="@string/subjectmanager_needed_work"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textSize="20sp" />
 
         <TextView
             android:id="@+id/subject_manager_dialog_groupsettings_estimated_lesson_count_current_value"
@@ -80,6 +91,7 @@
             android:layout_height="wrap_content"
             android:layout_above="@+id/subject_manager_dialog_groupsettings_estimated_lesson_count_seekbar"
             android:layout_alignEnd="@+id/subject_manager_dialog_groupsettings_required_percentage_current_value"
+            android:layout_alignRight="@+id/subject_manager_dialog_groupsettings_required_percentage_current_value"
             android:text="50"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:textColor="@android:color/secondary_text_dark"
@@ -91,6 +103,7 @@
             android:layout_height="wrap_content"
             android:layout_above="@+id/subject_manager_dialog_groupsettings_estimated_assignments_per_lesson_seekbar"
             android:layout_alignEnd="@+id/subject_manager_dialog_groupsettings_required_percentage_current_value"
+            android:layout_alignRight="@+id/subject_manager_dialog_groupsettings_required_percentage_current_value"
             android:text="50"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:textColor="@android:color/secondary_text_dark"
@@ -100,9 +113,9 @@
             android:id="@+id/subject_manager_dialog_groupsettings_required_percentage_current_value"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/subject_manager_dialog_groupsettings_min_votes_scrollview"
-            android:layout_alignEnd="@+id/subject_manager_dialog_groupsettings_edit_name"
-            android:layout_alignRight="@+id/subject_manager_dialog_groupsettings_edit_name"
+            android:layout_above="@+id/subject_manager_dialog_groupsettings_required_percentage_seekbar"
+            android:layout_alignEnd="@+id/subject_manager_fragment_percentage_creator_fragment_notification_switch"
+            android:layout_alignRight="@+id/subject_manager_fragment_percentage_creator_fragment_notification_switch"
             android:text="100%"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:textColor="@android:color/secondary_text_dark"
@@ -117,7 +130,7 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentRight="true"
             android:layout_alignParentStart="true"
-            android:layout_below="@+id/subject_manager_dialog_groupsettings_min_votes_scrollview" />
+            android:layout_below="@+id/subject_manager_dialog_groupsettings_required_percentage_description" />
 
         <SeekBar
             android:id="@+id/subject_manager_dialog_groupsettings_estimated_assignments_per_lesson_seekbar"
@@ -146,7 +159,6 @@
             android:layout_alignLeft="@+id/subject_manager_dialog_groupsettings_estimated_lesson_counter_description"
             android:layout_alignStart="@+id/subject_manager_dialog_groupsettings_estimated_lesson_counter_description"
             android:layout_below="@+id/subject_manager_dialog_groupsettings_estimated_lesson_count_seekbar"
-            android:layout_marginTop="10dp"
             android:text="@string/estimation_mode_title"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:textSize="20sp" />
@@ -189,10 +201,10 @@
             android:id="@+id/relativeLayout8"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignLeft="@+id/subject_manager_fragment_percentage_creator_fragment_estimation_current_value_description"
-            android:layout_alignStart="@+id/subject_manager_fragment_percentage_creator_fragment_estimation_current_value_description"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
             android:layout_below="@+id/subject_manager_fragment_percentage_creator_fragment_estimation_current_value_description"
-            android:layout_marginTop="10dp">
+            android:layout_marginTop="12dp">
 
             <CheckBox
                 android:id="@+id/subject_manager_fragment_percentage_creator_fragment_bonus_vote_checkbox"

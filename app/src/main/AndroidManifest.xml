@@ -59,8 +59,8 @@
         <activity
             android:name=".AdmissionPercentageOverview.AdmissionPercentageOverviewActivity"
             android:label="Info"
-            android:windowSoftInputMode="stateAlwaysHidden"
-            android:parentActivityName=".MainActivity">
+            android:parentActivityName=".MainActivity"
+            android:windowSoftInputMode="stateAlwaysHidden">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="de.oerntec.votenote.MainActivity" />
@@ -77,6 +77,18 @@
         <activity
             android:name=".SubjectManagerStuff.SubjectCreation.CreationFragment.AdmissionPercentageCreation.AdmissionPercentageCreationActivity"
             android:windowSoftInputMode="adjustNothing"></activity>
+
+        <receiver android:name=".Helpers.Notifications.NotificationAlarmReceiver">
+            <intent-filter>
+                <action android:name="de.oerntec.votenote.notifications" />
+            </intent-filter>
+        </receiver>
+
+        <receiver android:name=".Helpers.Notifications.RebootReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
