@@ -202,7 +202,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         if (ENABLE_DEBUG_LOG_CALLS)
             Log.i("state info", "oncreate");
 
-        considerAutoSelect();
+        //considerAutoSelect();
     }
 
     /**

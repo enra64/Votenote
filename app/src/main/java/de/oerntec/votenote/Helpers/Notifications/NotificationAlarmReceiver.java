@@ -6,6 +6,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 
 import de.oerntec.votenote.Database.TableHelpers.DBSubjects;
 import de.oerntec.votenote.MainActivity;
@@ -23,6 +24,9 @@ public class NotificationAlarmReceiver extends BroadcastReceiver {
 
         if (admissionPercentageId == -1) throw new AssertionError("bad admission percentage id");
         if (subjectId == -1) throw new AssertionError("bad subject id");
+
+        if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
+            Log.i("not_al", "received notification alarm key_abc");
 
         // prepare intent which is triggered if the
         // notification is selected

@@ -41,23 +41,19 @@ public class NotificationGeneralHelper {
         return calendar;
     }
 
-    public static void cancelNotification(int id) {
-
-    }
-
     public static PendingIntent getAlarmPendingIntent(Context context, int subjectId, int admissionPercentageId) {
         Intent intent = new Intent(context, NotificationAlarmReceiver.class);
         intent.setAction("de.oerntec.votenote.notifications");
         intent.putExtra("subject_id_notification", subjectId);
         intent.putExtra("admission_percentage_id_notification", admissionPercentageId);
 
-        return PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        return PendingIntent.getBroadcast(context, subjectId * 4096 + admissionPercentageId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
     public static void removeAlarmForNotification(Context context, int subjectId, int admissionPercentageId) {
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
-        PendingIntent p = NotificationGeneralHelper.getAlarmPendingIntent(
+        PendingIntent p = getAlarmPendingIntent(
                 context,
                 subjectId,
                 admissionPercentageId);
@@ -68,10 +64,12 @@ public class NotificationGeneralHelper {
     public static void setAlarmForNotification(Context context, int subjectId, int admissionPercentageId, int day, int hour, int minute) {
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
+        // as of api 19, everything is inexact, so the user will get the notification up to 10
+        // minutes later than scheduled
         alarmManager.setInexactRepeating(AlarmManager.RTC,
                 NotificationGeneralHelper.getCalendar(day, hour, minute).getTimeInMillis(),
                 AlarmManager.INTERVAL_DAY * 7,
-                NotificationGeneralHelper.getAlarmPendingIntent(
+                getAlarmPendingIntent(
                         context,
                         subjectId,
                         admissionPercentageId));
