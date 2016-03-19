@@ -111,7 +111,7 @@ public class AdmissionCounterDialogFragment extends DialogFragment implements Di
                 //default to zero points for a new counter
                 int currentPoints = 0;
                 if (mIsOld)
-                    currentPoints = mDb.getItem(mSubjectId).currentValue;
+                    currentPoints = mDb.getItem(mAdmissionCounterId).currentValue;
                 //change the item we created at the beginning of this dialog to the actual values
                 mDb.changeItem(new AdmissionCounter(
                         mAdmissionCounterId,

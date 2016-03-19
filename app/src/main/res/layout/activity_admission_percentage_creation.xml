@@ -8,68 +8,18 @@
         android:id="@+id/subject_creation_activity_toolbar_toolbar"
         layout="@layout/toolbar" />
 
-    <View
+    <include
+        android:id="@+id/subject_creation_activity_buttonbar"
+        layout="@layout/giant_dialog_button_bar"
         android:layout_width="match_parent"
-        android:layout_height="1dip"
-        android:layout_above="@+id/footer"
-        android:layout_marginLeft="4dip"
-        android:layout_marginRight="4dip"
-        android:background="?android:attr/dividerVertical" />
-
-    <LinearLayout
-        android:id="@+id/footer"
-        style="?android:buttonBarStyle"
-        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:orientation="horizontal">
-
-
-        <Button
-            android:id="@+id/activity_admission_percentage_creation_delete_button"
-            style="?android:attr/borderlessButtonStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/delete_button_text" />
-
-        <View
-            android:layout_width="1dip"
-            android:layout_height="match_parent"
-            android:layout_marginBottom="4dip"
-            android:layout_marginTop="4dip"
-            android:background="?android:attr/dividerVertical" />
-
-        <Button
-            android:id="@+id/activity_admission_percentage_creation_save_button"
-            style="?android:attr/borderlessButtonStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/dialog_button_ok" />
-
-        <View
-            android:layout_width="1dip"
-            android:layout_height="match_parent"
-            android:layout_marginBottom="4dip"
-            android:layout_marginTop="4dip"
-            android:background="?android:attr/dividerVertical" />
-
-
-        <Button
-            android:id="@+id/activity_admission_percentage_creation_cancel_button"
-            style="?android:attr/borderlessButtonStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/dialog_button_abort" />
-    </LinearLayout>
+        android:layout_alignParentBottom="true" />
 
     <ScrollView
         android:id="@+id/scrollView2"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/footer"
+        android:layout_above="@+id/subject_creation_activity_buttonbar"
         android:layout_below="@+id/subject_creation_activity_toolbar_toolbar">
 
         <FrameLayout

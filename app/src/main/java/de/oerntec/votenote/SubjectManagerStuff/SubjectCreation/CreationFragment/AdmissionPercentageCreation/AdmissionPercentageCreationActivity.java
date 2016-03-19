@@ -45,13 +45,13 @@ public class AdmissionPercentageCreationActivity extends AppCompatActivity {
                 .commit();
 
         //set fragment to be the listener for our buttons
-        findViewById(R.id.activity_admission_percentage_creation_save_button).setOnClickListener(mContentFragment);
-        findViewById(R.id.activity_admission_percentage_creation_cancel_button).setOnClickListener(mContentFragment);
-        findViewById(R.id.activity_admission_percentage_creation_delete_button).setOnClickListener(mContentFragment);
+        findViewById(R.id.giant_ok_button).setOnClickListener(mContentFragment);
+        findViewById(R.id.giant_cancel_button).setOnClickListener(mContentFragment);
+        findViewById(R.id.giant_delete_button).setOnClickListener(mContentFragment);
     }
 
     void hideDeleteButton() {
-        findViewById(R.id.activity_admission_percentage_creation_delete_button).setVisibility(View.GONE);
+        findViewById(R.id.giant_delete_button).setVisibility(View.GONE);
     }
 
     void setToolbarTitle(String title) {
@@ -62,7 +62,7 @@ public class AdmissionPercentageCreationActivity extends AppCompatActivity {
     }
 
     Button getSaveButton() {
-        return (Button) findViewById(R.id.activity_admission_percentage_creation_save_button);
+        return (Button) findViewById(R.id.giant_ok_button);
     }
 
     public void callCreatorFragmentForItemChange(int resultState) {

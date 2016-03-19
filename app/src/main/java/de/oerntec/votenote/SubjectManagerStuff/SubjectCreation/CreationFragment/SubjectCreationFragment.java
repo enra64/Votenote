@@ -16,6 +16,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import de.oerntec.votenote.CardListHelpers.OnItemClickListener;
 import de.oerntec.votenote.CardListHelpers.RecyclerItemClickListener;
@@ -36,7 +37,7 @@ import de.oerntec.votenote.SubjectManagerStuff.SubjectManagementActivity;
  * This fragment holds the actual ui/ux for creating a new subject, as opposed to the subject creation
  * activity, which merely contains this
  */
-public class SubjectCreationFragment extends Fragment implements SubjectCreationDialogInterface {
+public class SubjectCreationFragment extends Fragment implements SubjectCreationDialogInterface, View.OnClickListener {
     /**
      * Lesson should be added, not changed
      */
@@ -94,6 +95,12 @@ public class SubjectCreationFragment extends Fragment implements SubjectCreation
      * initialised as empty string, because if you create a new subject the name is empty
      */
     private String mOldSubjectName = "";
+
+    /**
+     * This is the delete button in the giant action bar, we need a class variable in case this is a
+     * new subject and we want to hide it
+     */
+    private Button mDeleteButton;
 
     public SubjectCreationFragment() {
     }
@@ -153,10 +160,8 @@ public class SubjectCreationFragment extends Fragment implements SubjectCreation
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_subject_creation, menu);
 
-        if (mIsNewSubject) {
-            menu.findItem(R.id.action_delete).setEnabled(false);
-            menu.findItem(R.id.action_delete).setVisible(false);
-        }
+        if (mIsNewSubject)
+            mDeleteButton.setVisibility(View.GONE);
     }
 
     @Override
@@ -169,8 +174,16 @@ public class SubjectCreationFragment extends Fragment implements SubjectCreation
             mOldSubjectName = oldData.name;
         }
 
-        mList = (RecyclerView) input.findViewById(R.id.subject_manager_admission_counter_list);
+        //this is the list containing both admission counters and admission percentage counters
+        mList = (RecyclerView) input.findViewById(R.id.subject_creator_unified_counter_list);
         initializeList(mList);
+
+        //find the giant button bar and attach the listeners
+        input.findViewById(R.id.giant_delete_button).setOnClickListener(this);
+        input.findViewById(R.id.giant_cancel_button).setOnClickListener(this);
+
+        mDeleteButton = (Button) input.findViewById(R.id.giant_ok_button);
+        mDeleteButton.setOnClickListener(this);
 
         return input;
     }
@@ -222,22 +235,15 @@ public class SubjectCreationFragment extends Fragment implements SubjectCreation
             case android.R.id.home:
                 showBackConfirmation();
                 return true;
-            case R.id.action_delete:
-                deleteCurrentSubject();
-                return true;
-            case R.id.action_save:
-                saveData();
-                return true;
-            case R.id.action_abort:
-                abort();
-                return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private void abort() {
+
+    private void abortAndClose() {
         if(MainActivity.ENABLE_DEBUG_LOG_CALLS)
             Log.i("creator fragment", "ending transaction");
+
         mDatabase.endTransaction();
         getActivity().finish();
     }
@@ -273,7 +279,7 @@ public class SubjectCreationFragment extends Fragment implements SubjectCreation
             getActivity().finish();
             return;
         }
-        //create dialog
+        //create dialog if data was changed
         AlertDialog.Builder b = new AlertDialog.Builder(getActivity());
         b.setTitle("Speichern?");
         b.setMessage("Möchtest du deine Änderungen speichern?");
@@ -282,20 +288,13 @@ public class SubjectCreationFragment extends Fragment implements SubjectCreation
         b.setPositiveButton("Speichern", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                //save data first
-                saveData();
-
-                //set the result, delete is false, change is determined by mIsNewSubject
-                setActivityResult(false);
-
-                //close the activity containing this fragment
-                getActivity().finish();
+                saveAndClose();
             }
         });
         b.setNegativeButton("Verwerfen", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                abort();
+                abortAndClose();
             }
         });
         b.setNeutralButton("Abbrechen", null);
@@ -319,7 +318,7 @@ public class SubjectCreationFragment extends Fragment implements SubjectCreation
     /**
      * Write the new data out to db
      */
-    private void saveData() {
+    private void saveAndClose() {
         String newName = mAdapter.getCurrentName();
         mSubjectDb.changeItem(new Subject(newName, mSubjectId));
         if (mDatabase == null)
@@ -329,12 +328,16 @@ public class SubjectCreationFragment extends Fragment implements SubjectCreation
         mDatabase.setTransactionSuccessful();
         mDatabase.endTransaction();
 
-        if(mSubjectHasBeenChanged)
+        if (hasChanged())
             setActivityResult(false);
 
-        //enable change listeners
-        mOldSubjectName = newName;
-        mSubjectHasBeenChanged = false;
+        // enable change listeners
+        //mOldSubjectName = newName;
+        //mSubjectHasBeenChanged = false;
+
+        // because we may have some ugly problems if we simply open a new transaction to be able to
+        // continue editing, we simply kill the activity...
+        getActivity().finish();
     }
 
     /**
@@ -414,5 +417,20 @@ public class SubjectCreationFragment extends Fragment implements SubjectCreation
 
     public void dialogClosed(){
         General.nukeKeyboard(getActivity());
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.giant_cancel_button:
+                abortAndClose();
+                break;
+            case R.id.giant_delete_button:
+                deleteCurrentSubject();
+                break;
+            case R.id.giant_ok_button:
+                saveAndClose();
+                break;
+        }
     }
 }

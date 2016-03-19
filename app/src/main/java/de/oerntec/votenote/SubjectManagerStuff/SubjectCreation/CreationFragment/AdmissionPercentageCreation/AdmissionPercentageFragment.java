@@ -344,11 +344,11 @@ public class AdmissionPercentageFragment extends Fragment implements Button.OnCl
     public void onClick(View v) {
         int resultState = -1;
         switch (v.getId()) {
-            case R.id.activity_admission_percentage_creation_delete_button:
+            case R.id.giant_delete_button:
                 mDb.rollbackToSavepoint(mSavepointId);
                 resultState = SubjectCreationActivity.DIALOG_RESULT_DELETE;
                 break;
-            case R.id.activity_admission_percentage_creation_save_button:
+            case R.id.giant_ok_button:
                 //change the item we created at the beginning of this dialog to the actual values
                 mDb.changeItem(new AdmissionPercentageMeta(
                         mAdmissionPercentageId,
@@ -371,7 +371,7 @@ public class AdmissionPercentageFragment extends Fragment implements Button.OnCl
                 else
                     resultState = SubjectCreationActivity.DIALOG_RESULT_CHANGED;
                 break;
-            case R.id.activity_admission_percentage_creation_cancel_button:
+            case R.id.giant_cancel_button:
                 mDb.rollbackToSavepoint(mSavepointId);
                 resultState = SubjectCreationActivity.DIALOG_RESULT_CLOSED;
                 break;
