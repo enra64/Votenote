@@ -51,6 +51,7 @@ import de.oerntec.votenote.Database.TableHelpers.DBSubjects;
 import de.oerntec.votenote.Diagram.DiagramActivity;
 import de.oerntec.votenote.Dialogs.MainDialogHelper;
 import de.oerntec.votenote.Helpers.General;
+import de.oerntec.votenote.Helpers.Notifications.NotificationAlarmReceiver;
 import de.oerntec.votenote.ImportExport.Writer;
 import de.oerntec.votenote.NavigationDrawer.NavigationDrawerFragment;
 import de.oerntec.votenote.SubjectManagerStuff.SubjectManagementActivity;
@@ -147,6 +148,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
     private boolean mLastKnownPercentageCounterInfoViewVisibility = true;
 
     private boolean mLastKnownAdmissionCounterViewVisibility = true;
+    private int notificationId = 1;
 
     public static void toast(String text) {
         Toast.makeText(me, text, Toast.LENGTH_SHORT).show();
@@ -205,27 +207,46 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         //considerAutoSelect();
     }
 
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        handleIntent(intent);
+    }
+
+    private void handleIntent(Intent intent) {
+        int admissionPercentageId = intent.getIntExtra("admission_percentage_id_notification_action", -2);
+        int subjectId = intent.getIntExtra("subject_id_notification_action", -2);
+        int notificationId = intent.getIntExtra("notification_id", -2);
+
+        if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
+            Log.i("vn autoselect", "mainactivity started via notification action");
+        mNavigationDrawerFragment.forceAdmissionPercentageFragmentDialogById(subjectId, admissionPercentageId);
+
+        //the action was clicked, but some genius decided not to make an autodismiss api -> we
+        //saved the notification id in the intent to kill it now
+        NotificationManager notificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.cancel(notificationId);
+
+        // remove the intent data, so that when the activity gets started again, the auto select
+        // does not recognize it
+        intent.removeExtra("notification_id");
+        intent.removeExtra("subject_id_notification_action");
+        intent.removeExtra("admission_percentage_id_notification_action");
+    }
+
     /**
      * Either select the last selected subject, or force select the subject given in the intent
      */
     private void considerAutoSelect() {
         int admissionPercentageId = getIntent().getIntExtra("admission_percentage_id_notification_action", -2);
         int subjectId = getIntent().getIntExtra("subject_id_notification_action", -2);
-        int notificationId = getIntent().getIntExtra("notification_id", -2);
 
-        //force via intent
-        if (admissionPercentageId != -2 && subjectId != -2) {
-            if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
-                Log.i("vn autoselect", "mainactivity started via notification action");
-            mNavigationDrawerFragment.forceAdmissionPercentageFragmentDialogById(subjectId, admissionPercentageId);
+        boolean isIntentGiven = admissionPercentageId != -2 && subjectId != -2;
 
-            //the action was clicked, but some genius decided not to make an autodismiss api -> we
-            //saved the notification id in the intent to kill it now
-            NotificationManager notificationManager =
-                    (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-            notificationManager.cancel(notificationId);
-
-        }
+        //handle the given intent
+        if (isIntentGiven)
+            handleIntent(getIntent());
         //select the last selected item
         else {
             int subjectCount = mSubjectDb.getCount();
@@ -453,7 +474,6 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         return true;
     }
 
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -461,7 +481,12 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
                 onPresentationPointsClick();
                 return true;
             case R.id.action_show_diagram:
-                onDiagramClick();
+                Intent testIntent = new Intent();
+                testIntent.putExtra("admission_percentage_id_notification", notificationId);
+                testIntent.putExtra("subject_id_notification", notificationId++);
+                new NotificationAlarmReceiver().onReceive(this, testIntent);
+                // TODO: revert
+                //onDiagramClick();
                 return true;
         }
         return super.onOptionsItemSelected(item);

@@ -25,9 +25,6 @@ public class NotificationAlarmReceiver extends BroadcastReceiver {
         if (admissionPercentageId == -1) throw new AssertionError("bad admission percentage id");
         if (subjectId == -1) throw new AssertionError("bad subject id");
 
-        if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
-            Log.i("not_al", "received notification alarm key_abc");
-
         // prepare intent which is triggered if the
         // notification is selected
         Intent notificationIntent = new Intent(context, MainActivity.class);
@@ -40,7 +37,14 @@ public class NotificationAlarmReceiver extends BroadcastReceiver {
         notificationIntent.putExtra("notification_id", id);
 
         // use System.currentTimeMillis() to have a unique ID for the pending intent
-        PendingIntent pIntent = PendingIntent.getActivity(context, (int) System.currentTimeMillis(), notificationIntent, 0);
+        PendingIntent pIntent = PendingIntent.getActivity(
+                context,
+                id,
+                notificationIntent,
+                0);
+
+        if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
+            Log.i("not_al", "received notification alarm key_abc, notification id " + id);
 
         // build notification
         // the addAction re-use the same intent to keep the example short
