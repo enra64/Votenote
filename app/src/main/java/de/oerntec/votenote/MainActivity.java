@@ -51,7 +51,6 @@ import de.oerntec.votenote.Database.TableHelpers.DBSubjects;
 import de.oerntec.votenote.Diagram.DiagramActivity;
 import de.oerntec.votenote.Dialogs.MainDialogHelper;
 import de.oerntec.votenote.Helpers.General;
-import de.oerntec.votenote.Helpers.Notifications.NotificationAlarmReceiver;
 import de.oerntec.votenote.ImportExport.Writer;
 import de.oerntec.votenote.NavigationDrawer.NavigationDrawerFragment;
 import de.oerntec.votenote.SubjectManagerStuff.SubjectManagementActivity;
@@ -486,12 +485,11 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
                 onPresentationPointsClick();
                 return true;
             case R.id.action_show_diagram:
-                Intent testIntent = new Intent();
-                testIntent.putExtra("admission_percentage_id_notification", notificationId);
-                testIntent.putExtra("subject_id_notification", notificationId++);
-                new NotificationAlarmReceiver().onReceive(this, testIntent);
-                // TODO: revert
-                //onDiagramClick();
+                //Intent testIntent = new Intent();
+                //testIntent.putExtra("admission_percentage_id_notification", notificationId);
+                //testIntent.putExtra("subject_id_notification", notificationId++);
+                //new NotificationAlarmReceiver().onReceive(this, testIntent);
+                onDiagramClick();
                 return true;
         }
         return super.onOptionsItemSelected(item);
