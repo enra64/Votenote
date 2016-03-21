@@ -11,15 +11,15 @@ import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import de.oerntec.votenote.Database.Pojo.AdmissionPercentageData;
-import de.oerntec.votenote.Database.Pojo.PercentageMetaStuff.AdmissionPercentageMeta;
+import de.oerntec.votenote.Database.Pojo.AdmissionPercentageDataPojo;
+import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMetaStuff.AdmissionPercentageMetaPojo;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageData;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageMeta;
 import de.oerntec.votenote.Helpers.General;
 import de.oerntec.votenote.MainActivity;
 import de.oerntec.votenote.R;
 
-public class LessonDialogFragment extends DialogFragment implements DialogInterface.OnClickListener {
+public class AddLessonDialogFragment extends DialogFragment implements DialogInterface.OnClickListener {
     private static final String ARG_AP_META_ID = "apmetaid";
     private static final String ARG_LESSON_ID = "lessonid";
 
@@ -63,7 +63,7 @@ public class LessonDialogFragment extends DialogFragment implements DialogInterf
     /**
      * If and only if this is an old subject, this contains the old data
      */
-    private AdmissionPercentageData mOldData;
+    private AdmissionPercentageDataPojo mOldData;
 
     /**
      * text view used to display information about the current picker status
@@ -85,14 +85,14 @@ public class LessonDialogFragment extends DialogFragment implements DialogInterf
      */
     private TextView mResultingPercentageView;
 
-    private AdmissionPercentageMeta mMetaItem;
+    private AdmissionPercentageMetaPojo mMetaItem;
 
     private boolean mLiveUpdateResultingPercentage;
 
     /**
      * default constructor
      */
-    public LessonDialogFragment() {
+    public AddLessonDialogFragment() {
     }
 
     /**
@@ -102,8 +102,8 @@ public class LessonDialogFragment extends DialogFragment implements DialogInterf
      * @param lessonID lesson id to identify the lesson
      * @return new instance
      */
-    public static LessonDialogFragment newInstance(final int apMetaId, final int lessonID) {
-        LessonDialogFragment fragment = new LessonDialogFragment();
+    public static AddLessonDialogFragment newInstance(final int apMetaId, final int lessonID) {
+        AddLessonDialogFragment fragment = new AddLessonDialogFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_AP_META_ID, apMetaId);
         args.putInt(ARG_LESSON_ID, lessonID);
@@ -216,11 +216,11 @@ public class LessonDialogFragment extends DialogFragment implements DialogInterf
 
         if(mIsNewLesson){
             if(mIsFirstLesson){
-                AdmissionPercentageMeta metaItem = DBAdmissionPercentageMeta.getInstance().getItem(mMetaId);
+                AdmissionPercentageMetaPojo metaItem = DBAdmissionPercentageMeta.getInstance().getItem(mMetaId);
                 currentAvailableAssignments = metaItem.userAssignmentsPerLessonEstimation;
                 currentFinishedAssignments = currentAvailableAssignments / 2;
             } else {
-                AdmissionPercentageData lastEnteredLesson = mDataDb.getNewestItemForMetaId(mMetaId);
+                AdmissionPercentageDataPojo lastEnteredLesson = mDataDb.getNewestItemForMetaId(mMetaId);
                 currentAvailableAssignments = lastEnteredLesson.availableAssignments;
                 currentFinishedAssignments = lastEnteredLesson.finishedAssignments;
             }
@@ -325,7 +325,7 @@ public class LessonDialogFragment extends DialogFragment implements DialogInterf
                 int finishedAssignments = mFinishedAssignmentsPicker.getValue();
                 int availableAssignments = mAvailableAssignmentsPicker.getValue();
                 if (finishedAssignments <= availableAssignments) {
-                    AdmissionPercentageData val = new AdmissionPercentageData(ADD_LESSON_CODE, mMetaId, ADD_LESSON_CODE, finishedAssignments, availableAssignments);
+                    AdmissionPercentageDataPojo val = new AdmissionPercentageDataPojo(ADD_LESSON_CODE, mMetaId, ADD_LESSON_CODE, finishedAssignments, availableAssignments);
                     //add lesson, id and lesson id will be added automatically
                     if (mIsNewLesson)
                         ((MainActivity) getActivity()).getCurrentAdmissionPercentageFragment().mAdapter.addLesson(val);

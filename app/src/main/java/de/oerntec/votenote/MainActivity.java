@@ -218,15 +218,20 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         int subjectId = intent.getIntExtra("subject_id_notification_action", -2);
         int notificationId = intent.getIntExtra("notification_id", -2);
 
+        boolean isNotificationIntent = admissionPercentageId != -2 && subjectId != -2 && notificationId != -2;
+
         if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
             Log.i("vn autoselect", "mainactivity started via notification action");
-        mNavigationDrawerFragment.forceAdmissionPercentageFragmentDialogById(subjectId, admissionPercentageId);
 
-        //the action was clicked, but some genius decided not to make an autodismiss api -> we
-        //saved the notification id in the intent to kill it now
-        NotificationManager notificationManager =
-                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.cancel(notificationId);
+        if (isNotificationIntent) {
+            mNavigationDrawerFragment.forceAdmissionPercentageFragmentDialogById(subjectId, admissionPercentageId);
+
+            //the action was clicked, but some genius decided not to make an autodismiss api -> we
+            //saved the notification id in the intent to kill it now
+            NotificationManager notificationManager =
+                    (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            notificationManager.cancel(notificationId);
+        }
 
         // remove the intent data, so that when the activity gets started again, the auto select
         // does not recognize it

@@ -148,6 +148,8 @@
     <string name="estimation_mode_title">Schätzungsmodus</string>
     <string name="votierungserinnerung">Votierungserinnerung</string>
     <string name="notification_title_vote">Votierung</string>
-    <string name="notification_text">Für %s muss eine Votierung eingetragen werden.</string>
+    <string name="notification_text">Für %1$s muss eine Votierung eingetragen werden.</string>
     <string name="notifcation_action">Votieren</string>
+    <string name="percentage_creator_notification_activated_toast">Erinnerung aktiviert!</string>
+    <string name="subject_creator_notification_deactivated_toast">Erinnerung deaktiviert!</string>
 </resources>

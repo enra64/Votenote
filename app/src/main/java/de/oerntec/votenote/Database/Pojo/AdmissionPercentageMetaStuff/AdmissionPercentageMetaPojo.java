@@ -1,15 +1,15 @@
-package de.oerntec.votenote.Database.Pojo.PercentageMetaStuff;
+package de.oerntec.votenote.Database.Pojo.AdmissionPercentageMetaStuff;
 
 import java.util.List;
 
 import de.oerntec.votenote.Database.NameAndIdPojo;
-import de.oerntec.votenote.Database.Pojo.AdmissionPercentageData;
+import de.oerntec.votenote.Database.Pojo.AdmissionPercentageDataPojo;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageData;
 
 /**
  * POJO class for representing the metadata available about an admission percentage counter
  */
-public class AdmissionPercentageMeta implements NameAndIdPojo {
+public class AdmissionPercentageMetaPojo implements NameAndIdPojo {
     /**
      * Database ID. Given in constructor.
      */
@@ -70,22 +70,28 @@ public class AdmissionPercentageMeta implements NameAndIdPojo {
      * If the data has been loaded, this list contains all lessons in this apm, simplifying data
      * calculation
      */
-    public List<AdmissionPercentageData> mDataList;
+    public List<AdmissionPercentageDataPojo> mDataList;
 
     /**
      * Has the lesson list been populated?
      */
     boolean mDataLoaded = false;
 
-    public AdmissionPercentageMeta(int id, int subjectId, int estimatedAssignmentsPerLesson,
-                                   int userLessonCountEstimation, int baselineTargetPercentage,
-                                   String name, String mode,
-                                   int bonusTargetPercentage, boolean bonusTargetPercentageEnabled,
-                                   String notificationRecurrenceString, boolean notificationEnabled) {
+    public AdmissionPercentageMetaPojo(int id,
+                                       int subjectId,
+                                       int userAssignmentsPerLessonEstimation,
+                                       int userLessonCountEstimation,
+                                       int baselineTargetPercentage,
+                                       String name,
+                                       String mode,
+                                       int bonusTargetPercentage,
+                                       boolean bonusTargetPercentageEnabled,
+                                       String notificationRecurrenceString,
+                                       boolean notificationEnabled) {
         this.id = id;
         this.subjectId = subjectId;
         this.userLessonCountEstimation = userLessonCountEstimation;
-        this.userAssignmentsPerLessonEstimation = estimatedAssignmentsPerLesson;
+        this.userAssignmentsPerLessonEstimation = userAssignmentsPerLessonEstimation;
         this.baselineTargetPercentage = baselineTargetPercentage;
         this.name = name;
 
@@ -127,36 +133,45 @@ public class AdmissionPercentageMeta implements NameAndIdPojo {
     public float getAverageFinished(int addToAvailable, int addToFinished) {
         if (!mDataLoaded) throw new AssertionError("pojo has not loaded data");
         int availableAssignments = 0, finishedAssignments = 0;
-        for(AdmissionPercentageData d : mDataList){
+        for (AdmissionPercentageDataPojo d : mDataList) {
             availableAssignments += d.availableAssignments;
             finishedAssignments += d.finishedAssignments;
         }
-        finishedAssignments += addToFinished;
+
         availableAssignments += addToAvailable;
+        finishedAssignments += addToFinished;
 
         //safeguard against weird numbers possibly produced by adding the values
+        // i have no idea why that should happen
         finishedAssignments = finishedAssignments < 0 ? 0 : finishedAssignments;
         availableAssignments = availableAssignments < 0 ? 0 : availableAssignments;
+
         float avg = ((float) finishedAssignments / (float) availableAssignments) * 100.f;
-        //safeguard against weird numbers possibly produced by adding the values
+        //safeguard against division by zero etc.
         return Float.isInfinite(avg) || Float.isNaN(avg) ? -1 : avg;
     }
 
-    @SuppressWarnings("SimplifiableIfStatement")
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        AdmissionPercentageMeta that = (AdmissionPercentageMeta) o;
+        AdmissionPercentageMetaPojo that = (AdmissionPercentageMetaPojo) o;
 
         if (id != that.id) return false;
         if (subjectId != that.subjectId) return false;
-        if (estimationMode != that.estimationMode) return false;
         if (userLessonCountEstimation != that.userLessonCountEstimation) return false;
         if (baselineTargetPercentage != that.baselineTargetPercentage) return false;
-        return !(name != null ? !name.equals(that.name) : that.name != null);
-
+        if (userAssignmentsPerLessonEstimation != that.userAssignmentsPerLessonEstimation)
+            return false;
+        if (bonusTargetPercentage != that.bonusTargetPercentage) return false;
+        if (bonusTargetPercentageEnabled != that.bonusTargetPercentageEnabled) return false;
+        if (notificationEnabled != that.notificationEnabled) return false;
+        if (mDataLoaded != that.mDataLoaded) return false;
+        if (!name.equals(that.name)) return false;
+        if (estimationMode != that.estimationMode) return false;
+        if (!notificationRecurrenceString.equals(that.notificationRecurrenceString)) return false;
+        return mDataList != null ? mDataList.equals(that.mDataList) : that.mDataList == null;
     }
 
     @Override
@@ -179,12 +194,7 @@ public class AdmissionPercentageMeta implements NameAndIdPojo {
                 userLessonCountEstimation + "";
     }
 
-    public String getRecurrenceRule() {
-        return notificationRecurrenceString;
-    }
-
-
-    //BEWARE: mEstimationModeSeekbar.setMax(EstimationMode.values().length - 1); in setValuesForViews
+    // BEWARE: mEstimationModeSeekbar.setMax(EstimationMode.values().length - 2); in setValuesForViews
     // in AdmissionPercentageFragment relies on the undefined state to exist and be last!
     public enum EstimationMode {
         user,

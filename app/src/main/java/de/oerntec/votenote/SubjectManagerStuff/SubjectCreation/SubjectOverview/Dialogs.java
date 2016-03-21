@@ -6,7 +6,7 @@ import android.app.FragmentManager;
 import android.content.DialogInterface;
 
 import de.oerntec.votenote.Database.Pojo.AdmissionCounter;
-import de.oerntec.votenote.Database.Pojo.PercentageMetaStuff.AdmissionPercentageMeta;
+import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMetaStuff.AdmissionPercentageMetaPojo;
 import de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.CreationFragment.AdmissionCounterDialogFragment;
 import de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.CreationFragment.SubjectCreationFragment;
 
@@ -33,7 +33,7 @@ public class Dialogs {
         builder.show();
     }
 
-    public static void showPercentageDeleteDialog(final AdmissionPercentageMeta inItem, Activity activity, final SubjectCreationFragment callback) {
+    public static void showPercentageDeleteDialog(final AdmissionPercentageMetaPojo inItem, Activity activity, final SubjectCreationFragment callback) {
         if (inItem.id < 0)
             throw new AssertionError("negative deleted counter id??");
         final AlertDialog.Builder builder = new AlertDialog.Builder(activity);

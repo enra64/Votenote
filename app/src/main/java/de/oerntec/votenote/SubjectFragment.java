@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import de.oerntec.votenote.AdmissionPercentageFragmentStuff.AdmissionPercentageFragment;
-import de.oerntec.votenote.Database.Pojo.PercentageMetaStuff.AdmissionPercentageMeta;
+import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMetaStuff.AdmissionPercentageMetaPojo;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageMeta;
 import de.oerntec.votenote.Database.TableHelpers.DBLastViewed;
 import de.oerntec.votenote.Dialogs.MainDialogHelper;
@@ -168,7 +168,7 @@ public class SubjectFragment extends Fragment {
      * get the position in the adapter via the id
      */
     private int getPositionFromId(int id) {
-        List<AdmissionPercentageMeta> data = DBAdmissionPercentageMeta.getInstance().getItemsForSubject(mSubjectId);
+        List<AdmissionPercentageMetaPojo> data = DBAdmissionPercentageMeta.getInstance().getItemsForSubject(mSubjectId);
         for (int position = 0; position < data.size(); position++)
             if (id == data.get(position).id)
                 return position;
@@ -195,7 +195,7 @@ public class SubjectFragment extends Fragment {
      * load either the last selected, the default, or the forced admission percentage fragment
      */
     private void loadAppropriateAdmissionPercentageFragment() {
-        List<AdmissionPercentageMeta> percentages = DBAdmissionPercentageMeta.getInstance().getItemsForSubject(mSubjectId);
+        List<AdmissionPercentageMetaPojo> percentages = DBAdmissionPercentageMeta.getInstance().getItemsForSubject(mSubjectId);
         final int subjectPosition = getArguments().getInt(ARG_SUBJECT_POSITION);
 
         if (mForceAdmissionPercentageFragmentLoad) {
@@ -263,7 +263,7 @@ public class SubjectFragment extends Fragment {
      */
     public class AdmissionPercentageAdapter extends FragmentPagerAdapter {
         private DBAdmissionPercentageMeta mMetaDb;
-        private List<AdmissionPercentageMeta> mData;
+        private List<AdmissionPercentageMetaPojo> mData;
         private int mSubjectId;
         private HashMap<Integer, AdmissionPercentageFragment> mReferenceMap;
 

@@ -14,10 +14,10 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.oerntec.votenote.Database.Pojo.PercentageMetaStuff.AdmissionPercentageCalculationResult;
-import de.oerntec.votenote.Database.Pojo.PercentageMetaStuff.AdmissionPercentageCalculator;
-import de.oerntec.votenote.Database.Pojo.PercentageMetaStuff.AdmissionPercentageMeta;
-import de.oerntec.votenote.Database.Pojo.PercentageMetaStuff.EstimationModeDependentResults;
+import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMetaStuff.AdmissionPercentageCalculationResult;
+import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMetaStuff.AdmissionPercentageCalculator;
+import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMetaStuff.AdmissionPercentageMetaPojo;
+import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMetaStuff.EstimationModeDependentResults;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageData;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageMeta;
 import de.oerntec.votenote.MainActivity;
@@ -31,7 +31,7 @@ import de.oerntec.votenote.R;
 public class AdmissionPercentageOverviewFragment extends Fragment {
     public static final String PARAMETER_NAME_ADMISSION_PERCENTAGE_COUNTER_ID = "admission_counter_id";
 
-    private AdmissionPercentageMeta mAdmissionCounterMetaPojo;
+    private AdmissionPercentageMetaPojo mAdmissionCounterMetaPojo;
 
     private ListView mDataListView;
     private SeekBar mEstimationModeSeekBar;
@@ -81,10 +81,10 @@ public class AdmissionPercentageOverviewFragment extends Fragment {
 
     private void fillContentList(AdmissionPercentageCalculationResult data) {
         //this is the order as in the ordinals of the enum
-        mContentList.add(createSingleList(data, AdmissionPercentageMeta.EstimationMode.user));
-        mContentList.add(createSingleList(data, AdmissionPercentageMeta.EstimationMode.mean));
-        mContentList.add(createSingleList(data, AdmissionPercentageMeta.EstimationMode.best));
-        mContentList.add(createSingleList(data, AdmissionPercentageMeta.EstimationMode.worst));
+        mContentList.add(createSingleList(data, AdmissionPercentageMetaPojo.EstimationMode.user));
+        mContentList.add(createSingleList(data, AdmissionPercentageMetaPojo.EstimationMode.mean));
+        mContentList.add(createSingleList(data, AdmissionPercentageMetaPojo.EstimationMode.best));
+        mContentList.add(createSingleList(data, AdmissionPercentageMetaPojo.EstimationMode.worst));
     }
 
     private void setAdapterDataset(int enumerationOrdinal){
@@ -94,7 +94,7 @@ public class AdmissionPercentageOverviewFragment extends Fragment {
     }
 
     private void onEstimationModeChange(int seekbarProgress) {
-        switch (AdmissionPercentageMeta.EstimationMode.values()[seekbarProgress]) {
+        switch (AdmissionPercentageMetaPojo.EstimationMode.values()[seekbarProgress]) {
             case user://user
                 mCurrentEstimationMode = "user";
                 mEstimationModeCurrentValueTextView.setText(R.string.estimation_name_user);
@@ -117,7 +117,7 @@ public class AdmissionPercentageOverviewFragment extends Fragment {
         setAdapterDataset(seekbarProgress);
     }
 
-    private ArrayList<String> createSingleList(AdmissionPercentageCalculationResult data, AdmissionPercentageMeta.EstimationMode mode) {
+    private ArrayList<String> createSingleList(AdmissionPercentageCalculationResult data, AdmissionPercentageMetaPojo.EstimationMode mode) {
         ArrayList<String> list = new ArrayList<>(11);
 
         //independent results
@@ -160,7 +160,7 @@ public class AdmissionPercentageOverviewFragment extends Fragment {
         mDataListView.setAdapter(mAdapter);
 
         //seekbar initialisation
-        mEstimationModeSeekBar.setMax(AdmissionPercentageMeta.EstimationMode.values().length - 2);
+        mEstimationModeSeekBar.setMax(AdmissionPercentageMetaPojo.EstimationMode.values().length - 2);
         mEstimationModeSeekBar.setProgress(mAdmissionCounterMetaPojo.estimationMode.ordinal());
         mEstimationModeSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override

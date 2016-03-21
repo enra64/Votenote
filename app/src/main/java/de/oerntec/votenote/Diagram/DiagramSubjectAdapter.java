@@ -27,10 +27,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-
 import java.util.List;
 
-import de.oerntec.votenote.Database.Pojo.PercentageMetaStuff.AdmissionPercentageMeta;
+import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMetaStuff.AdmissionPercentageMetaPojo;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageData;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageMeta;
 import de.oerntec.votenote.Database.TableHelpers.DBSubjects;
@@ -42,7 +41,7 @@ public class DiagramSubjectAdapter extends RecyclerView.Adapter<DiagramSubjectAd
     private AdapterListener mAdapterListener;
     private int[] mColorArray;
     private Context mContext;
-    private List<AdmissionPercentageMeta> mData;
+    private List<AdmissionPercentageMetaPojo> mData;
 
     public DiagramSubjectAdapter(Context context, int[] colorArray) {
         mAdapterListener = (AdapterListener) context;
@@ -72,7 +71,7 @@ public class DiagramSubjectAdapter extends RecyclerView.Adapter<DiagramSubjectAd
 
     @Override
     public void onBindViewHolder(final SubjectHolder holder, final int position) {
-        final AdmissionPercentageMeta data = mData.get(position);
+        final AdmissionPercentageMetaPojo data = mData.get(position);
 
         //load data
         String name = data.name;

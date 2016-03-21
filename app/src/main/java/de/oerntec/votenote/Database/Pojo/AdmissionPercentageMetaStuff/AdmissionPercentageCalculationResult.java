@@ -1,4 +1,4 @@
-package de.oerntec.votenote.Database.Pojo.PercentageMetaStuff;
+package de.oerntec.votenote.Database.Pojo.AdmissionPercentageMetaStuff;
 
 /**
  * This class holds all information regarding the estimation concerning a single admission percentage
@@ -15,7 +15,7 @@ public class AdmissionPercentageCalculationResult {
                                             meanEstimation,
                                             userEstimation;
 
-    public EstimationModeDependentResults getEstimationDependentResults(AdmissionPercentageMeta.EstimationMode mode){
+    public EstimationModeDependentResults getEstimationDependentResults(AdmissionPercentageMetaPojo.EstimationMode mode) {
         switch (mode){
             case user:
                 return userEstimation;

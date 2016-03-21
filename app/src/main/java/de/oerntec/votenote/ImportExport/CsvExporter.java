@@ -25,8 +25,8 @@ import java.io.IOException;
 import java.util.List;
 
 import de.oerntec.votenote.Database.Pojo.AdmissionCounter;
-import de.oerntec.votenote.Database.Pojo.AdmissionPercentageData;
-import de.oerntec.votenote.Database.Pojo.PercentageMetaStuff.AdmissionPercentageMeta;
+import de.oerntec.votenote.Database.Pojo.AdmissionPercentageDataPojo;
+import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMetaStuff.AdmissionPercentageMetaPojo;
 import de.oerntec.votenote.Database.Pojo.Subject;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionCounters;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageData;
@@ -64,12 +64,12 @@ public class CsvExporter {
         b.append("sep=;").append(le);
         for(Subject s : subjects){
             b.append("Subject:").append(s.name).append(le);
-            for(AdmissionPercentageMeta apm : s.admissionPercentageMetaList){
+            for (AdmissionPercentageMetaPojo apm : s.admissionPercentageMetaPojoList) {
                 b.append("Admission Percentage:");
                 b.append(apmHeader).append(le);
                 b.append(apm.getCsvRepresentation()).append(le);
                 b.append(apdHeader).append(le);
-                for(AdmissionPercentageData apd : apm.mDataList)
+                for (AdmissionPercentageDataPojo apd : apm.mDataList)
                     b.append(apd.getCsvRepresentation()).append(le);
             }
             for(AdmissionCounter ac : s.admissionCounterList){

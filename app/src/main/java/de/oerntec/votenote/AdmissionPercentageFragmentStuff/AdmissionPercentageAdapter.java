@@ -29,8 +29,11 @@ import android.widget.TextView;
 import java.util.List;
 
 import de.oerntec.votenote.Database.Pojo.AdmissionCounter;
-import de.oerntec.votenote.Database.Pojo.AdmissionPercentageData;
-import de.oerntec.votenote.Database.Pojo.PercentageMetaStuff.*;
+import de.oerntec.votenote.Database.Pojo.AdmissionPercentageDataPojo;
+import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMetaStuff.AdmissionPercentageCalculationResult;
+import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMetaStuff.AdmissionPercentageCalculator;
+import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMetaStuff.AdmissionPercentageMetaPojo;
+import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMetaStuff.EstimationModeDependentResults;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionCounters;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageData;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageMeta;
@@ -61,7 +64,7 @@ public class AdmissionPercentageAdapter extends RecyclerView.Adapter<AdmissionPe
     /**
      * The meta pojo belonging to the given admission percentage meta id
      */
-    private AdmissionPercentageMeta mMetaPojo;
+    private AdmissionPercentageMetaPojo mMetaPojo;
 
     /**
      * Holds the position of the item that was last deleted, so we know what to do for an undo
@@ -71,7 +74,7 @@ public class AdmissionPercentageAdapter extends RecyclerView.Adapter<AdmissionPe
     /**
      * List of current data objects
      */
-    private List<AdmissionPercentageData> mData;
+    private List<AdmissionPercentageDataPojo> mData;
 
     private Context mContext;
     private int mAdmissionPercentageMetaId;
@@ -95,7 +98,7 @@ public class AdmissionPercentageAdapter extends RecyclerView.Adapter<AdmissionPe
      * Add item to the database, notify recyclerview of change
      * @param item item to add to the database
      */
-    public void addLesson(AdmissionPercentageData item) {
+    public void addLesson(AdmissionPercentageDataPojo item) {
         //add to database
         item.lessonId = mDataDb.addItemGetId(item);
         requery();
@@ -108,7 +111,7 @@ public class AdmissionPercentageAdapter extends RecyclerView.Adapter<AdmissionPe
     }
 
     public void refreshItem(int swipedLessonId, int percentageMetaId) {
-        notifyItemChanged(getRecyclerViewPosition(new AdmissionPercentageData(percentageMetaId, swipedLessonId, -1, -1)));
+        notifyItemChanged(getRecyclerViewPosition(new AdmissionPercentageDataPojo(percentageMetaId, swipedLessonId, -1, -1)));
     }
 
     public void reinstateLesson() {
@@ -126,7 +129,7 @@ public class AdmissionPercentageAdapter extends RecyclerView.Adapter<AdmissionPe
      * requery
      * notify of single changed item
      */
-    public void changeLesson(AdmissionPercentageData changedLesson) {
+    public void changeLesson(AdmissionPercentageDataPojo changedLesson) {
         mDataDb.changeItem(changedLesson);
         requery();
         notifyItemChanged(getRecyclerViewPosition(changedLesson));
@@ -138,7 +141,7 @@ public class AdmissionPercentageAdapter extends RecyclerView.Adapter<AdmissionPe
      * Remove lesson from database
      * @return Savepoint ID of the savepoint created before deleting the object
      */
-    public String removeLesson(final AdmissionPercentageData item) {
+    public String removeLesson(final AdmissionPercentageDataPojo item) {
         String savePointId = "delete_lesson_" + System.currentTimeMillis();
         mDataDb.createSavepoint(savePointId);
         final int recyclerViewPosition = getRecyclerViewPosition(item);
@@ -156,10 +159,10 @@ public class AdmissionPercentageAdapter extends RecyclerView.Adapter<AdmissionPe
         mData = mDataDb.getItemsForMetaId(mAdmissionPercentageMetaId, mLatestLessonFirst);
     }
 
-    int getRecyclerViewPosition(AdmissionPercentageData item) {
+    int getRecyclerViewPosition(AdmissionPercentageDataPojo item) {
         int listPosition;
         for (listPosition = 0; listPosition < mData.size(); listPosition++) {
-            AdmissionPercentageData apd = mData.get(listPosition);
+            AdmissionPercentageDataPojo apd = mData.get(listPosition);
             if (apd.lessonId == item.lessonId && apd.admissionPercentageMetaId == item.admissionPercentageMetaId)
                 break;
         }
@@ -172,7 +175,7 @@ public class AdmissionPercentageAdapter extends RecyclerView.Adapter<AdmissionPe
      *
      * @return meta pojo
      */
-    public AdmissionPercentageMeta getCurrentMeta() {
+    public AdmissionPercentageMetaPojo getCurrentMeta() {
         if (mMetaPojo == null)
             throw new AssertionError("the meta object has not been loaded yet");
         return mMetaPojo;
@@ -244,7 +247,7 @@ public class AdmissionPercentageAdapter extends RecyclerView.Adapter<AdmissionPe
 
             //if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
             //    Log.i("ap adapter", "bind view at " + position);
-            AdmissionPercentageData data = mData.get(position);
+            AdmissionPercentageDataPojo data = mData.get(position);
 
             //load strings
             String lessonIndex = String.valueOf(data.lessonId);
@@ -276,7 +279,7 @@ public class AdmissionPercentageAdapter extends RecyclerView.Adapter<AdmissionPe
         presentationPointsView.setText(counter.counterName + ": " + currentPoints + " " + mContext.getString(R.string.main_dialog_lesson_von) + " " + targetPoints);
     }
 
-    private void setVoteAverage(TextView averageVoteView, AdmissionPercentageMeta meta) {
+    private void setVoteAverage(TextView averageVoteView, AdmissionPercentageMetaPojo meta) {
         float average = meta.getAverageFinished();
 
         //no votes have been given
@@ -307,7 +310,7 @@ public class AdmissionPercentageAdapter extends RecyclerView.Adapter<AdmissionPe
     }
 
     private void setAverageNeededAssignments(TextView averageNeededVotesView,
-                                             AdmissionPercentageMeta meta,
+                                             AdmissionPercentageMetaPojo meta,
                                              AdmissionPercentageCalculationResult result) {
         EstimationModeDependentResults dependentResults = result.getEstimationDependentResults(meta.estimationMode);
 

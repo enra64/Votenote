@@ -6,7 +6,7 @@ import android.content.Intent;
 
 import java.util.List;
 
-import de.oerntec.votenote.Database.Pojo.PercentageMetaStuff.AdmissionPercentageMeta;
+import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMetaStuff.AdmissionPercentageMetaPojo;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageMeta;
 
 /**
@@ -15,11 +15,11 @@ import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageMeta;
 public class RebootReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
-        List<AdmissionPercentageMeta> notificationList =
+        List<AdmissionPercentageMetaPojo> notificationList =
                 DBAdmissionPercentageMeta.setupInstance(context).getItemsWithNotifications();
 
-        for (AdmissionPercentageMeta apm : notificationList) {
-            int[] tmp = NotificationGeneralHelper.convertFromRecurrenceRule(apm.getRecurrenceRule());
+        for (AdmissionPercentageMetaPojo apm : notificationList) {
+            int[] tmp = NotificationGeneralHelper.convertFromRecurrenceRule(apm.notificationRecurrenceString);
             NotificationGeneralHelper.setAlarmForNotification(
                     context,
                     apm.subjectId,

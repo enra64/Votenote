@@ -25,7 +25,7 @@ import android.widget.NumberPicker;
 
 import java.util.List;
 
-import de.oerntec.votenote.AdmissionPercentageFragmentStuff.LessonDialogFragment;
+import de.oerntec.votenote.AdmissionPercentageFragmentStuff.AddLessonDialogFragment;
 import de.oerntec.votenote.Database.Pojo.AdmissionCounter;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionCounters;
 import de.oerntec.votenote.MainActivity;
@@ -39,7 +39,7 @@ public class MainDialogHelper {
     }
 
     public static void showChangeLessonDialog(FragmentManager fragmentManager, int apMetaId, int lessonId) {
-        LessonDialogFragment fragment = LessonDialogFragment.newInstance(apMetaId, lessonId);
+        AddLessonDialogFragment fragment = AddLessonDialogFragment.newInstance(apMetaId, lessonId);
         fragment.show(fragmentManager, "ap_create_dialog");
     }
 

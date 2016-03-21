@@ -14,13 +14,14 @@ import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.github.jjobes.slidedaytimepicker.SlideDayTimeListener;
 import com.github.jjobes.slidedaytimepicker.SlideDayTimePicker;
 
 import java.util.Calendar;
 
-import de.oerntec.votenote.Database.Pojo.PercentageMetaStuff.AdmissionPercentageMeta;
+import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMetaStuff.AdmissionPercentageMetaPojo;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageMeta;
 import de.oerntec.votenote.Helpers.NotEmptyWatcher;
 import de.oerntec.votenote.Helpers.Notifications.NotificationGeneralHelper;
@@ -42,7 +43,6 @@ public class AdmissionPercentageFragment extends Fragment implements Button.OnCl
     private EditText nameInput;
     private TextView mRequiredPercentageCurrentValueTextView, mEstimatedAssignmentsPerLessonCurrentValueTextView, mEstimatedLessonCountCurrentValueTextView, mEstimationModeDescription, mEstimationModeCurrentValueTextView;
     private SeekBar mRequiredPercentageSeekBar, mEstimatedAssignmentsPerLessonSeekBar, mEstimatedLessonCountSeekBar, mEstimationModeSeekbar;
-
 
     /**
      * Switch to set notification enabled setting
@@ -79,7 +79,7 @@ public class AdmissionPercentageFragment extends Fragment implements Button.OnCl
      * This string is:
      * empty, if there was no recurrence string and none was set
      * ==hint, if the old recurrence string was not changed,
-     * the new recurrence string
+     * the new recurrence string, if a new one was set
      */
     private String mNotificationRecurrenceStringCurrent;
 
@@ -146,7 +146,7 @@ public class AdmissionPercentageFragment extends Fragment implements Button.OnCl
 
             //create a new meta entry for this so we have an id to work with
             if (mIsNewPercentageCounter)
-                mAdmissionPercentageId = mDb.addItemGetId(new AdmissionPercentageMeta(-1, mSubjectId, 0, 0, 0, "if you see this, i fucked up.", "undefined", 0, false, "", false));
+                mAdmissionPercentageId = mDb.addItemGetId(new AdmissionPercentageMetaPojo(-1, mSubjectId, 0, 0, 0, "if you see this, i fucked up.", "undefined", 0, false, "", false));
 
             //hide the delete button if this is a new subject
             if (mIsNewPercentageCounter)
@@ -202,7 +202,7 @@ public class AdmissionPercentageFragment extends Fragment implements Button.OnCl
             throw new AssertionError("this is a new subject, we cannot load data for it!");
 
         //try to get old subject data; returns null if no subject is found
-        AdmissionPercentageMeta oldState = mDb.getItem(mAdmissionPercentageId);
+        AdmissionPercentageMetaPojo oldState = mDb.getItem(mAdmissionPercentageId);
 
         //extract subject data
         nameHint = oldState.name;
@@ -219,6 +219,10 @@ public class AdmissionPercentageFragment extends Fragment implements Button.OnCl
 
         //set the parent activity title
         ((AdmissionPercentageCreationActivity) getActivity()).setToolbarTitle(getTitle());
+
+        // try to remove the notification for this. when saving, it will be regenerated if the check-
+        // box is checked.
+        NotificationGeneralHelper.removeAlarmForNotification(getActivity(), mSubjectId, mAdmissionPercentageId);
     }
 
     /**
@@ -265,10 +269,10 @@ public class AdmissionPercentageFragment extends Fragment implements Button.OnCl
     }
 
     private void initEstimationModeSeekbar() {
-        int amountOfEstimationModes = AdmissionPercentageMeta.EstimationMode.values().length - 2; // -1 for a) undefined and b) max is 1-indexed
+        int amountOfEstimationModes = AdmissionPercentageMetaPojo.EstimationMode.values().length - 2; // -1 for a) undefined and b) max is 1-indexed
         mEstimationModeSeekbar.setMax(amountOfEstimationModes);
 
-        AdmissionPercentageMeta.EstimationMode estimationMode = AdmissionPercentageMeta.EstimationMode.valueOf(mEstimationModeHint);
+        AdmissionPercentageMetaPojo.EstimationMode estimationMode = AdmissionPercentageMetaPojo.EstimationMode.valueOf(mEstimationModeHint);
 
         mEstimationModeSeekbar.setProgress(estimationMode.ordinal());
 
@@ -291,7 +295,7 @@ public class AdmissionPercentageFragment extends Fragment implements Button.OnCl
     }
 
     private void onEstimationModeChange(int seekbarProgress) {
-        switch (AdmissionPercentageMeta.EstimationMode.values()[seekbarProgress]) {
+        switch (AdmissionPercentageMetaPojo.EstimationMode.values()[seekbarProgress]) {
             case user://user
                 mCurrentEstimationMode = "user";
                 mEstimationModeCurrentValueTextView.setText(R.string.estimation_name_user);
@@ -340,6 +344,47 @@ public class AdmissionPercentageFragment extends Fragment implements Button.OnCl
         return title;
     }
 
+    private int save() {
+        //change the item we created at the beginning of this dialog to the actual values
+        mDb.changeItem(new AdmissionPercentageMetaPojo(
+                mAdmissionPercentageId,
+                mSubjectId,
+                mEstimatedAssignmentsPerLessonSeekBar.getProgress(),
+                mEstimatedLessonCountSeekBar.getProgress(),
+                mRequiredPercentageSeekBar.getProgress(),
+                nameInput.getText().toString(),
+                mCurrentEstimationMode,
+                mBonusRequiredPercentageSeekBar.getProgress(),
+                mBonusRequiredPercentageActivationCheckBox.isChecked(),
+                mNotificationRecurrenceStringCurrent,
+                mNotificationEnabledSwitch.isChecked()
+        ));
+
+        // do we need to set an alarm?
+        // this works, by the way, because the current string is the hint if not changed, so it
+        // contains the old string
+        if (mNotificationEnabledSwitch.isChecked()) {
+            NotificationGeneralHelper.setAlarmForNotification(getActivity(),
+                    mSubjectId,
+                    mAdmissionPercentageId,
+                    mNotificationRecurrenceStringCurrent);
+            // because this is only the percentage creation dialog, we would have to somehow give
+            // the parent activity data about the notification time to have really correct save
+            // behaviour. Since that would be quite tedious, we simply show a notification to
+            // alarm the user that an alarm has now been set.
+            Toast.makeText(getActivity(), R.string.percentage_creator_notification_activated_toast, Toast.LENGTH_LONG).show();
+        } else
+            Toast.makeText(getActivity(), R.string.subject_creator_notification_deactivated_toast, Toast.LENGTH_LONG).show();
+
+        //commit
+        mDb.releaseSavepoint(mSavepointId);
+        //notify the host fragment that we changed an item
+        if (mIsNewPercentageCounter)
+            return SubjectCreationActivity.DIALOG_RESULT_ADDED;
+        else
+            return SubjectCreationActivity.DIALOG_RESULT_CHANGED;
+    }
+
     @Override
     public void onClick(View v) {
         int resultState = -1;
@@ -349,27 +394,7 @@ public class AdmissionPercentageFragment extends Fragment implements Button.OnCl
                 resultState = SubjectCreationActivity.DIALOG_RESULT_DELETE;
                 break;
             case R.id.giant_ok_button:
-                //change the item we created at the beginning of this dialog to the actual values
-                mDb.changeItem(new AdmissionPercentageMeta(
-                        mAdmissionPercentageId,
-                        mSubjectId,
-                        mEstimatedAssignmentsPerLessonSeekBar.getProgress(),
-                        mEstimatedLessonCountSeekBar.getProgress(),
-                        mRequiredPercentageSeekBar.getProgress(),
-                        nameInput.getText().toString(),
-                        mCurrentEstimationMode,
-                        mBonusRequiredPercentageSeekBar.getProgress(),
-                        mBonusRequiredPercentageActivationCheckBox.isChecked(),
-                        mNotificationRecurrenceStringCurrent,
-                        mNotificationEnabledSwitch.isChecked()
-                ));
-                //commit
-                mDb.releaseSavepoint(mSavepointId);
-                //notify the host fragment that we changed an item
-                if (mIsNewPercentageCounter)
-                    resultState = SubjectCreationActivity.DIALOG_RESULT_ADDED;
-                else
-                    resultState = SubjectCreationActivity.DIALOG_RESULT_CHANGED;
+                resultState = save();
                 break;
             case R.id.giant_cancel_button:
                 mDb.rollbackToSavepoint(mSavepointId);
@@ -384,17 +409,10 @@ public class AdmissionPercentageFragment extends Fragment implements Button.OnCl
     public void onCheckedChanged(final CompoundButton buttonView, boolean isChecked) {
         if (isChecked) {
             SlideDayTimePicker.Builder builder = new SlideDayTimePicker.Builder(getFragmentManager());
-
             builder.setListener(new SlideDayTimeListener() {
                 @Override
                 public void onDayTimeSet(int day, int hour, int minute) {
                     mNotificationRecurrenceStringCurrent = day + ":" + hour + ":" + minute;
-                    NotificationGeneralHelper.setAlarmForNotification(getActivity(),
-                            mSubjectId,
-                            mAdmissionPercentageId,
-                            day,
-                            hour,
-                            minute);
 
                     if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
                         Log.i("votenote alarms", "added notification");
@@ -422,9 +440,7 @@ public class AdmissionPercentageFragment extends Fragment implements Button.OnCl
 
             builder.build().show();
         } else {
-            NotificationGeneralHelper.removeAlarmForNotification(getActivity(), mSubjectId, mAdmissionPercentageId);
-            if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
-                Log.i("votenote alarms", "removed notification");
+            mNotificationRecurrenceStringCurrent = null;
         }
     }
 }

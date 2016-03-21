@@ -13,7 +13,7 @@ import android.widget.TextView;
 import java.util.List;
 
 import de.oerntec.votenote.Database.Pojo.AdmissionCounter;
-import de.oerntec.votenote.Database.Pojo.PercentageMetaStuff.AdmissionPercentageMeta;
+import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMetaStuff.AdmissionPercentageMetaPojo;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionCounters;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageMeta;
 import de.oerntec.votenote.R;
@@ -25,7 +25,7 @@ public class UnifiedCreatorAdapter extends RecyclerView.Adapter<UnifiedCreatorAd
     static final int VIEW_COUNTER = 2;
 
     private List<AdmissionCounter> mCounterData;
-    private List<AdmissionPercentageMeta> mPercentageData;
+    private List<AdmissionPercentageMetaPojo> mPercentageData;
 
     private DBAdmissionCounters mCounterDb;
     private DBAdmissionPercentageMeta mPercentageDb;
@@ -107,7 +107,7 @@ public class UnifiedCreatorAdapter extends RecyclerView.Adapter<UnifiedCreatorAd
                 break;
             case VIEW_PERCENTAGE:
                 PercentageViewHolder percentageHolder = (PercentageViewHolder) holder;
-                AdmissionPercentageMeta percentageData = getPercentagePojoAtPosition(position);
+                AdmissionPercentageMetaPojo percentageData = getPercentagePojoAtPosition(position);
                 percentageHolder.itemView.setTag(percentageData.id);
                 percentageHolder.assignmentsPerLesson.setText(mContext.getString(R.string.percentage_card_assignments_per_lesson, percentageData.userAssignmentsPerLessonEstimation));
                 percentageHolder.name.setText(percentageData.name);
@@ -195,7 +195,7 @@ public class UnifiedCreatorAdapter extends RecyclerView.Adapter<UnifiedCreatorAd
         return mCounterData.get(position - 1);
     }
 
-    public AdmissionPercentageMeta getPercentagePojoAtPosition(int position) {
+    public AdmissionPercentageMetaPojo getPercentagePojoAtPosition(int position) {
         return mPercentageData.get(position - 1 - mCounterData.size());
     }
 

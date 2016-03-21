@@ -1,4 +1,4 @@
-package de.oerntec.votenote.Database.Pojo.PercentageMetaStuff;
+package de.oerntec.votenote.Database.Pojo.AdmissionPercentageMetaStuff;
 
 /**
  * This class holds all information for an admission percentage counter estimation that depends on

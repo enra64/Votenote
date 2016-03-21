@@ -40,13 +40,12 @@ import de.oerntec.votenote.AdmissionPercentageOverview.AdmissionPercentageOvervi
 import de.oerntec.votenote.CardListHelpers.OnItemClickListener;
 import de.oerntec.votenote.CardListHelpers.RecyclerItemClickListener;
 import de.oerntec.votenote.CardListHelpers.SwipeDeletion;
-import de.oerntec.votenote.Database.Pojo.AdmissionPercentageData;
-import de.oerntec.votenote.Database.Pojo.PercentageMetaStuff.AdmissionPercentageMeta;
+import de.oerntec.votenote.Database.Pojo.AdmissionPercentageDataPojo;
+import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMetaStuff.AdmissionPercentageMetaPojo;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageData;
 import de.oerntec.votenote.Dialogs.MainDialogHelper;
 import de.oerntec.votenote.MainActivity;
 import de.oerntec.votenote.R;
-import de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.CreationFragment.AdmissionPercentageCreation.AdmissionPercentageCreationActivity;
 import de.oerntec.votenote.SubjectManagerStuff.SubjectManagementActivity;
 
 /**
@@ -82,7 +81,7 @@ public class AdmissionPercentageFragment extends Fragment implements SwipeDeleti
     /**
      * POJO object to hold the admission percentage meta data from fragment start
      */
-    private AdmissionPercentageMeta mMetaObject;
+    private AdmissionPercentageMetaPojo mMetaObject;
 
     /**
      * Parent viewgroup
@@ -257,7 +256,7 @@ public class AdmissionPercentageFragment extends Fragment implements SwipeDeleti
         //if another one has been deleted before this one, release that sp now
         trySavepointRelease();
         //remove the lesson. creates a savepoint before that, returns the id
-        mLastRemovalSavePointId = mAdapter.removeLesson(new AdmissionPercentageData(mAdmissionPercentageMetaId, lessonId, -1, -1));
+        mLastRemovalSavePointId = mAdapter.removeLesson(new AdmissionPercentageDataPojo(mAdmissionPercentageMetaId, lessonId, -1, -1));
         if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
             Log.i("apf", "creating savepoint " + mLastRemovalSavePointId);
         Snackbar
@@ -309,7 +308,7 @@ public class AdmissionPercentageFragment extends Fragment implements SwipeDeleti
      * delete a lesson with programmatic swipe
      * @param mOldData the data the dialog was called with
      */
-    public void deleteLessonAnimated(AdmissionPercentageData mOldData) {
+    public void deleteLessonAnimated(AdmissionPercentageDataPojo mOldData) {
         if(mLastClickedView == null)
             throw new AssertionError("mLastClickedView must not be null here, because it must only be called from the dialogfragment");
         SwipeDeletion.executeProgrammaticSwipeDeletion(getActivity(), this, mLastClickedView, mAdapter.getRecyclerViewPosition(mOldData));

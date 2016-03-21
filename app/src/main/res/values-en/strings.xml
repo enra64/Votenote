@@ -140,4 +140,10 @@
     <string name="keine_prozentz_hler_vorhanden_f_ge_in_den_einstellungen_welche_hinzu">No admission percentage counters available, add some in subject management.</string>
     <string name="name_des_percentagecounters">Percentage counter name</string>
     <string name="estimation_mode_title">Estimation mode</string>
+    <string name="notifcation_action">Add lesson</string>
+    <string name="notification_text">Don\'t forget to add the lesson to %1$s!</string>
+    <string name="notification_title_vote">Lesson entry</string>
+    <string name="percentage_creator_notification_activated_toast">Notification activated</string>
+    <string name="subject_creator_notification_deactivated_toast">Notification removed!</string>
+    <string name="votierungserinnerung">Lesson reminder</string>
 </resources>

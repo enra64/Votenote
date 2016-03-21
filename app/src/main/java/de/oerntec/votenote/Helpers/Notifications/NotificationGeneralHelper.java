@@ -30,14 +30,20 @@ public class NotificationGeneralHelper {
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
 
-        //if the day is past, increase the week of year to avoid firing an immediate notification
-        if (day < calendar.get(Calendar.DAY_OF_WEEK))
-            calendar.add(Calendar.WEEK_OF_YEAR, 1);
+        long nowTime = calendar.getTimeInMillis();
 
         calendar.set(Calendar.HOUR_OF_DAY, hour);
         calendar.set(Calendar.DAY_OF_WEEK, day);
         calendar.set(Calendar.MINUTE, minute);
         calendar.set(Calendar.SECOND, 0);
+
+        long alarmTime = calendar.getTimeInMillis();
+
+        //if the day is past, increase the week of year to avoid firing an immediate notification
+        if (alarmTime < nowTime)
+            calendar.add(Calendar.WEEK_OF_YEAR, 1);
+
+
         return calendar;
     }
 
@@ -68,6 +74,22 @@ public class NotificationGeneralHelper {
         // minutes later than scheduled
         alarmManager.setInexactRepeating(AlarmManager.RTC,
                 NotificationGeneralHelper.getCalendar(day, hour, minute).getTimeInMillis(),
+                AlarmManager.INTERVAL_DAY * 7,
+                getAlarmPendingIntent(
+                        context,
+                        subjectId,
+                        admissionPercentageId));
+    }
+
+    public static void setAlarmForNotification(Context context, int subjectId, int admissionPercentageId, String recurrenceString) {
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+
+        int[] data = convertFromRecurrenceRule(recurrenceString);
+
+        // as of api 19, everything is inexact, so the user will get the notification up to 10
+        // minutes later than scheduled
+        alarmManager.setInexactRepeating(AlarmManager.RTC,
+                NotificationGeneralHelper.getCalendar(data[0], data[1], data[2]).getTimeInMillis(),
                 AlarmManager.INTERVAL_DAY * 7,
                 getAlarmPendingIntent(
                         context,
