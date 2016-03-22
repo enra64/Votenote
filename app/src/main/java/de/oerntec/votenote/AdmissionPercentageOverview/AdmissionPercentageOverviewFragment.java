@@ -79,7 +79,7 @@ public class AdmissionPercentageOverviewFragment extends Fragment {
 
         setHasOptionsMenu(true);
 
-        fillContentList(data);
+        fillContentList(mAdmissionCounterMetaPojo, data);
     }
 
     @Override
@@ -112,12 +112,12 @@ public class AdmissionPercentageOverviewFragment extends Fragment {
         }
     }
 
-    private void fillContentList(AdmissionPercentageCalculationResult data) {
+    private void fillContentList(AdmissionPercentageMetaPojo metaPojo, AdmissionPercentageCalculationResult data) {
         //this is the order as in the ordinals of the enum
-        mContentList.add(createSingleList(data, AdmissionPercentageMetaPojo.EstimationMode.user));
-        mContentList.add(createSingleList(data, AdmissionPercentageMetaPojo.EstimationMode.mean));
-        mContentList.add(createSingleList(data, AdmissionPercentageMetaPojo.EstimationMode.best));
-        mContentList.add(createSingleList(data, AdmissionPercentageMetaPojo.EstimationMode.worst));
+        mContentList.add(createSingleList(metaPojo, data, AdmissionPercentageMetaPojo.EstimationMode.user));
+        mContentList.add(createSingleList(metaPojo, data, AdmissionPercentageMetaPojo.EstimationMode.mean));
+        mContentList.add(createSingleList(metaPojo, data, AdmissionPercentageMetaPojo.EstimationMode.best));
+        mContentList.add(createSingleList(metaPojo, data, AdmissionPercentageMetaPojo.EstimationMode.worst));
     }
 
     private void setAdapterDataset(int enumerationOrdinal) {
@@ -130,15 +130,16 @@ public class AdmissionPercentageOverviewFragment extends Fragment {
         setAdapterDataset(seekbarProgress);
     }
 
-    private ArrayList<String> createSingleList(AdmissionPercentageCalculationResult data, AdmissionPercentageMetaPojo.EstimationMode mode) {
+    private ArrayList<String> createSingleList(AdmissionPercentageMetaPojo metaPojo, AdmissionPercentageCalculationResult data, AdmissionPercentageMetaPojo.EstimationMode mode) {
         ArrayList<String> list = new ArrayList<>(11);
 
         //independent results
-        list.add("Geschätzte Gesamtanzahl an Übungen: " + mAdmissionCounterMetaPojo.userLessonCountEstimation);
-        list.add("Eingetragene Übungen: " + data.numberOfPastLessons);
-        list.add("Zukünftige Übungen: " + data.numberOfFutureLessons);
-        list.add("Anzahl vergangener Aufgaben:" + data.numberOfPastAvailableAssignments);
-        list.add("Anzahl votierter Aufgaben:" + data.numberOfFinishedAssignments);
+        list.add(getActivity().getString(R.string.overview_overall_lessons) + mAdmissionCounterMetaPojo.userLessonCountEstimation);
+        list.add(getActivity().getString(R.string.overview_entered_lesson_count) + data.numberOfPastLessons);
+        list.add(getActivity().getString(R.string.overview_future_lesson_count) + data.numberOfFutureLessons);
+        list.add(getActivity().getString(R.string.overview_past_available_count) + data.numberOfPastAvailableAssignments);
+        list.add(getActivity().getString(R.string.overview_past_finished_count) + data.numberOfFinishedAssignments);
+        list.add(getActivity().getString(R.string.overview_percentage) + metaPojo.getAverageFinished());
 
         EstimationModeDependentResults results =
                 data.getEstimationDependentResults(mode);
@@ -149,11 +150,11 @@ public class AdmissionPercentageOverviewFragment extends Fragment {
         else
             list.add("Bonus nicht aktiviert.");
 
-        list.add("Geschätzte Aufgaben pro Übung (in der Zukunft): " + results.numberOfAssignmentsEstimatedPerLesson);
-        list.add("Geschätzte Gesamtanzahl an Aufgaben: " + results.numberOfEstimatedOverallAssignments);
-        list.add("Geschätzte Anzahl an gesamt benötigten Aufgaben: " + results.numberOfNeededAssignments);
-        list.add("Geschätzte Anzahl an noch benötigten Aufgaben: " + results.numberOfRemainingNeededAssignments);
-        list.add("Geschätzte Anzahl an pro Übung benötigten Aufgaben: " + results.numberOfAssignmentsNeededPerLesson);
+        list.add(getActivity().getString(R.string.overview_available_assignments_per_lesson) + results.numberOfAssignmentsEstimatedPerLesson);
+        list.add(getActivity().getString(R.string.overview_overall_available_assignments) + results.numberOfEstimatedOverallAssignments);
+        list.add(getActivity().getString(R.string.overview_overall_required_assignments) + results.numberOfNeededAssignments);
+        list.add(getActivity().getString(R.string.overview_remaining_required_finished_assignments) + results.numberOfRemainingNeededAssignments);
+        list.add(getActivity().getString(R.string.overview_assignments_per_lesson) + results.numberOfAssignmentsNeededPerLesson);
         return list;
     }
 

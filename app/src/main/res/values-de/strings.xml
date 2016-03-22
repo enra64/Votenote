@@ -158,4 +158,16 @@
     <string name="percentage_creator_header_percentages">Prozentwerte</string>
     <string name="percentage_creator_header_estimations">Schätzungen</string>
     <string name="percentage_creator_enable_vote_notification_title">Votierungserinnerung</string>
+    <string name="used_libraries_title">Hilfen</string>
+    <string name="overview_overall_lessons">Geschätzte Gesamtanzahl an Übungen: </string>
+    <string name="overview_entered_lesson_count">Eingetragene Übungen: </string>
+    <string name="overview_future_lesson_count">Zukünftige Übungen: </string>
+    <string name="overview_past_available_count">Anzahl vergangener Aufgaben:</string>
+    <string name="overview_past_finished_count">Anzahl votierter Aufgaben:</string>
+    <string name="overview_percentage">Prozentzahl votierter Aufgaben</string>
+    <string name="overview_available_assignments_per_lesson">Geschätzte Aufgaben pro Übung (in der Zukunft): </string>
+    <string name="overview_overall_available_assignments">Geschätzte Gesamtanzahl an Aufgaben: </string>
+    <string name="overview_overall_required_assignments">Geschätzte Anzahl an gesamt benötigten Aufgaben: </string>
+    <string name="overview_remaining_required_finished_assignments">Geschätzte Anzahl an noch benötigten Aufgaben: </string>
+    <string name="overview_assignments_per_lesson">Geschätzte Anzahl an pro Übung benötigten Aufgaben: </string>
 </resources>

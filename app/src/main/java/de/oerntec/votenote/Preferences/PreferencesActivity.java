@@ -100,7 +100,7 @@ public class PreferencesActivity extends AppCompatActivity {
                 public boolean onPreferenceClick(Preference preference) {
                     //show a dialog with graphview and stackoverflow
                     AlertDialog.Builder b = new AlertDialog.Builder(getActivity());
-                    b.setTitle("Hilfen");
+                    b.setTitle(R.string.used_libraries_title);
                     b.setPositiveButton("OK", null);
                     b.setView(getActivity().getLayoutInflater().inflate(R.layout.preferences_thanks, null));
                     b.show();
