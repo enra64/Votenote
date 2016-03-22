@@ -3,7 +3,7 @@ package de.oerntec.votenote.Database.Pojo.AdmissionPercentageMetaStuff;
 import java.util.List;
 
 import de.oerntec.votenote.Database.NameAndIdPojo;
-import de.oerntec.votenote.Database.Pojo.AdmissionPercentageDataPojo;
+import de.oerntec.votenote.Database.Pojo.Lesson;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageData;
 
 /**
@@ -70,7 +70,7 @@ public class AdmissionPercentageMetaPojo implements NameAndIdPojo {
      * If the data has been loaded, this list contains all lessons in this apm, simplifying data
      * calculation
      */
-    public List<AdmissionPercentageDataPojo> mDataList;
+    public List<Lesson> mDataList;
 
     /**
      * Has the lesson list been populated?
@@ -133,7 +133,7 @@ public class AdmissionPercentageMetaPojo implements NameAndIdPojo {
     public float getAverageFinished(int addToAvailable, int addToFinished) {
         if (!mDataLoaded) throw new AssertionError("pojo has not loaded data");
         int availableAssignments = 0, finishedAssignments = 0;
-        for (AdmissionPercentageDataPojo d : mDataList) {
+        for (Lesson d : mDataList) {
             availableAssignments += d.availableAssignments;
             finishedAssignments += d.finishedAssignments;
         }
@@ -196,6 +196,7 @@ public class AdmissionPercentageMetaPojo implements NameAndIdPojo {
 
     // BEWARE: mEstimationModeSeekbar.setMax(EstimationMode.values().length - 2); in setValuesForViews
     // in AdmissionPercentageFragment relies on the undefined state to exist and be last!
+    // also in overview fragment, just dont change this
     public enum EstimationMode {
         user,
         mean,

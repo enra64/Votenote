@@ -1,0 +1,11 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".SubjectManagerStuff.SubjectCreation.SubjectOverview.SubjectCreationActivity">
+    <item
+        android:id="@+id/overview_spinner"
+        android:actionViewClass="android.widget.Spinner"
+        android:showAsAction="always"
+        android:title="spinner"
+        app:showAsAction="always" />
+</menu>

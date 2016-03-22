@@ -2,7 +2,7 @@ package de.oerntec.votenote.Database.Pojo.AdmissionPercentageMetaStuff;
 
 import java.util.List;
 
-import de.oerntec.votenote.Database.Pojo.AdmissionPercentageDataPojo;
+import de.oerntec.votenote.Database.Pojo.Lesson;
 
 import static de.oerntec.votenote.Database.Pojo.AdmissionPercentageMetaStuff.AdmissionPercentageMetaPojo.EstimationMode;
 
@@ -68,30 +68,30 @@ public class AdmissionPercentageCalculator {
         return results;
     }
 
-    private static int getNumberOfPastFinishedAssignments(List<AdmissionPercentageDataPojo> mDataList) {
+    private static int getNumberOfPastFinishedAssignments(List<Lesson> mDataList) {
         int finishedAssignments = 0;
-        for (AdmissionPercentageDataPojo d : mDataList)
+        for (Lesson d : mDataList)
             finishedAssignments += d.finishedAssignments;
         return finishedAssignments;
     }
 
-    private static int getNumberOfPastAvailableAssignments(List<AdmissionPercentageDataPojo> mDataList) {
+    private static int getNumberOfPastAvailableAssignments(List<Lesson> mDataList) {
         int availableAssignments = 0;
-        for (AdmissionPercentageDataPojo d : mDataList)
+        for (Lesson d : mDataList)
             availableAssignments += d.availableAssignments;
         return availableAssignments;
     }
 
-    private static int getMinimumPastAvailableAssignments(List<AdmissionPercentageDataPojo> mDataList) {
+    private static int getMinimumPastAvailableAssignments(List<Lesson> mDataList) {
         int minAvailableAssignments = Integer.MAX_VALUE;
-        for (AdmissionPercentageDataPojo d : mDataList)
+        for (Lesson d : mDataList)
             minAvailableAssignments = d.availableAssignments < minAvailableAssignments ? d.availableAssignments : minAvailableAssignments;
         return minAvailableAssignments;
     }
 
-    private static int getMaximumPastAvailableAssignments(List<AdmissionPercentageDataPojo> mDataList) {
+    private static int getMaximumPastAvailableAssignments(List<Lesson> mDataList) {
         int maxAvailableAssignments = 0;
-        for (AdmissionPercentageDataPojo d : mDataList)
+        for (Lesson d : mDataList)
             maxAvailableAssignments = d.availableAssignments > maxAvailableAssignments ? d.availableAssignments : maxAvailableAssignments;
         return maxAvailableAssignments;
     }

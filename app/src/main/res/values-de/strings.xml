@@ -154,4 +154,8 @@
     <string name="preferences_backup_import_summary">Lädt ein Backup von der SD-Karte</string>
     <string name="preferences_backup_import_title">Backup importieren</string>
     <string name="bonus_votierungsgrenze">Bonus-Votierungsgrenze</string>
+    <string name="percentage_creator_header_general">Allgemeines</string>
+    <string name="percentage_creator_header_percentages">Prozentwerte</string>
+    <string name="percentage_creator_header_estimations">Schätzungen</string>
+    <string name="percentage_creator_enable_vote_notification_title">Votierungserinnerung</string>
 </resources>

@@ -42,7 +42,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import de.oerntec.votenote.Database.Pojo.AdmissionPercentageDataPojo;
+import de.oerntec.votenote.Database.Pojo.Lesson;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageData;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageMeta;
 import de.oerntec.votenote.Helpers.General;
@@ -165,17 +165,17 @@ public class DiagramActivity extends AppCompatActivity implements DiagramSubject
      * Creates a LineGraphSeries object containing the data points of the specified subject
      */
     private LineGraphSeries<DataPoint> getGroupLineGraph(int metaId, int color) {
-        List<AdmissionPercentageDataPojo> data = DBAdmissionPercentageData.getInstance().getItemsForMetaId(metaId, MainActivity.getPreference("reverse_lesson_sort", false));
+        List<Lesson> data = DBAdmissionPercentageData.getInstance().getItemsForMetaId(metaId, MainActivity.getPreference("reverse_lesson_sort", false));
 
         //add uebung data to graph
         DataPoint[] dataPointArray = new DataPoint[data.size()];
         int arrayCounter = 0;
 
         if (usePercentageForXAxis)
-            for (AdmissionPercentageDataPojo d : data)
+            for (Lesson d : data)
                 dataPointArray[arrayCounter++] = new DataPoint(100f * ((float) (d.lessonId - 1) / (float) (dataPointArray.length - 1)), 100 * ((float) d.finishedAssignments / (float) d.availableAssignments));
         else
-            for (AdmissionPercentageDataPojo d : data)
+            for (Lesson d : data)
                 dataPointArray[arrayCounter++] = new DataPoint(d.lessonId, 100 * ((float) d.finishedAssignments / (float) d.availableAssignments));
 
         LineGraphSeries<DataPoint> answer = new LineGraphSeries<>(dataPointArray);

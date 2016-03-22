@@ -153,4 +153,9 @@
     <string name="preferences_backup_import_title">Import backup</string>
     <string name="preferences_backup_share_summary">Shows apps able to process the backup</string>
     <string name="preferences_backup_share_title">Share backup</string>
+    <string name="bonus_votierungsgrenze">Bonus percentage</string>
+    <string name="percentage_creator_header_estimations">Estimations</string>
+    <string name="percentage_creator_header_general">General</string>
+    <string name="percentage_creator_header_percentages">Percentages</string>
+    <string name="percentage_creator_enable_vote_notification_title">Entry Reminder</string>
 </resources>

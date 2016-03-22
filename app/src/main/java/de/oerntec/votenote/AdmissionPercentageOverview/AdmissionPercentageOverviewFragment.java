@@ -4,14 +4,18 @@ package de.oerntec.votenote.AdmissionPercentageOverview;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.SeekBar;
-import android.widget.TextView;
+import android.widget.Spinner;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMetaStuff.AdmissionPercentageCalculationResult;
@@ -34,10 +38,7 @@ public class AdmissionPercentageOverviewFragment extends Fragment {
     private AdmissionPercentageMetaPojo mAdmissionCounterMetaPojo;
 
     private ListView mDataListView;
-    private SeekBar mEstimationModeSeekBar;
-    private TextView mEstimationModeCurrentValueTextView;
-
-    private String mCurrentEstimationMode;
+    private Spinner mEstimationModeSpinner;
 
     private List<List<String>> mContentList;
     private ArrayAdapter<String> mAdapter;
@@ -76,7 +77,39 @@ public class AdmissionPercentageOverviewFragment extends Fragment {
 
         mContentList = new ArrayList<>();
 
+        setHasOptionsMenu(true);
+
         fillContentList(data);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_subject_overview, menu);
+        MenuItem spinnerMenuItem = menu.findItem(R.id.overview_spinner);
+        View view1 = spinnerMenuItem.setActionView(new Spinner(getContext())).getActionView();
+        if (view1 instanceof Spinner) {
+            mEstimationModeSpinner = (Spinner) view1;
+
+            String user = getString(R.string.estimation_name_user);
+            String mean = getString(R.string.estimation_name_mean);
+            String best = getString(R.string.estimation_name_best);
+            String worst = getString(R.string.estimation_name_worst);
+
+            List<String> dataList = Arrays.asList(user, mean, best, worst);
+
+            mEstimationModeSpinner.setAdapter(new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_dropdown_item, dataList));
+
+            mEstimationModeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    onEstimationModeChange(position);
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
+                }
+            });
+        }
     }
 
     private void fillContentList(AdmissionPercentageCalculationResult data) {
@@ -87,33 +120,13 @@ public class AdmissionPercentageOverviewFragment extends Fragment {
         mContentList.add(createSingleList(data, AdmissionPercentageMetaPojo.EstimationMode.worst));
     }
 
-    private void setAdapterDataset(int enumerationOrdinal){
+    private void setAdapterDataset(int enumerationOrdinal) {
         mAdapter.clear();
         mAdapter.addAll(mContentList.get(enumerationOrdinal));
         mAdapter.notifyDataSetChanged();
     }
 
     private void onEstimationModeChange(int seekbarProgress) {
-        switch (AdmissionPercentageMetaPojo.EstimationMode.values()[seekbarProgress]) {
-            case user://user
-                mCurrentEstimationMode = "user";
-                mEstimationModeCurrentValueTextView.setText(R.string.estimation_name_user);
-                break;
-            case mean://mean
-                mCurrentEstimationMode = "mean";
-                mEstimationModeCurrentValueTextView.setText(R.string.estimation_name_mean);
-                break;
-            case best://best
-                mCurrentEstimationMode = "best";
-                mEstimationModeCurrentValueTextView.setText(R.string.estimation_name_best);
-                break;
-            case worst://worst
-                mCurrentEstimationMode = "worst";
-                mEstimationModeCurrentValueTextView.setText(R.string.estimation_name_worst);
-                break;
-            default:
-                throw new AssertionError("unknown progress value!");
-        }
         setAdapterDataset(seekbarProgress);
     }
 
@@ -131,7 +144,7 @@ public class AdmissionPercentageOverviewFragment extends Fragment {
                 data.getEstimationDependentResults(mode);
 
         //estimation mode dependent results
-        if(mAdmissionCounterMetaPojo.bonusTargetPercentageEnabled)
+        if (mAdmissionCounterMetaPojo.bonusTargetPercentageEnabled)
             list.add("Bonus erreichbar: " + (results.bonusReachable ? "Ja" : "Nein"));
         else
             list.add("Bonus nicht aktiviert.");
@@ -150,31 +163,17 @@ public class AdmissionPercentageOverviewFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_admission_percentage_overview, container, false);
 
+        setHasOptionsMenu(true);
+
         //find views
-        mEstimationModeSeekBar = (SeekBar) rootView.findViewById(R.id.fragment_admission_percentage_overview_seekBar);
         mDataListView = (ListView) rootView.findViewById(R.id.fragment_admission_percentage_overview_list);
-        mEstimationModeCurrentValueTextView = (TextView) rootView.findViewById(R.id.fragment_admission_percentage_overview_estimation_mode_current_text_view);
 
         //listView init
         mAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, new ArrayList<String>());
         mDataListView.setAdapter(mAdapter);
 
-        //seekbar initialisation
-        mEstimationModeSeekBar.setMax(AdmissionPercentageMetaPojo.EstimationMode.values().length - 2);
-        mEstimationModeSeekBar.setProgress(mAdmissionCounterMetaPojo.estimationMode.ordinal());
-        mEstimationModeSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                onEstimationModeChange(progress);
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {}
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {}
-        });
-        onEstimationModeChange(mEstimationModeSeekBar.getProgress());
+        if (mEstimationModeSpinner != null)
+            mEstimationModeSpinner.setSelection(mAdmissionCounterMetaPojo.estimationMode.ordinal());
 
         return rootView;
     }

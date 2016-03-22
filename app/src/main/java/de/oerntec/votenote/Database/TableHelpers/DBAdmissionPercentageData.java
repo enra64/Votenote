@@ -27,10 +27,10 @@ import java.util.LinkedList;
 import java.util.List;
 
 import de.oerntec.votenote.Database.DatabaseCreator;
-import de.oerntec.votenote.Database.Pojo.AdmissionPercentageDataPojo;
+import de.oerntec.votenote.Database.Pojo.Lesson;
 import de.oerntec.votenote.MainActivity;
 
-public class DBAdmissionPercentageData extends CrudDb<AdmissionPercentageDataPojo> {
+public class DBAdmissionPercentageData extends CrudDb<Lesson> {
     /**
      * Singleton instance
      */
@@ -62,7 +62,7 @@ public class DBAdmissionPercentageData extends CrudDb<AdmissionPercentageDataPoj
     }
 
     @Override
-    public void changeItem(AdmissionPercentageDataPojo newItem) {
+    public void changeItem(Lesson newItem) {
         ContentValues values = new ContentValues();
         //values.put(DatabaseCreator.ADMISSION_PERCENTAGES_DATA_ID, newItem.id);
         values.put(DatabaseCreator.ADMISSION_PERCENTAGES_DATA_ADMISSION_PERCENTAGE_ID, newItem.admissionPercentageMetaId);
@@ -81,12 +81,12 @@ public class DBAdmissionPercentageData extends CrudDb<AdmissionPercentageDataPoj
             throw new AssertionError("no item was changed");
     }
 
-    public AdmissionPercentageDataPojo getItem(int lessonId, int apMetaId) {
-        return getItem(new AdmissionPercentageDataPojo(apMetaId, lessonId, -1, -1));
+    public Lesson getItem(int lessonId, int apMetaId) {
+        return getItem(new Lesson(apMetaId, lessonId, -1, -1));
     }
 
     @Override
-    public AdmissionPercentageDataPojo getItem(AdmissionPercentageDataPojo item) {
+    public Lesson getItem(Lesson item) {
         String[] whereArgs = {String.valueOf(item.admissionPercentageMetaId), String.valueOf(item.lessonId)};
         Cursor c = mDatabase.query(true,
                 DatabaseCreator.TABLE_NAME_ADMISSION_PERCENTAGES_DATA,
@@ -94,11 +94,11 @@ public class DBAdmissionPercentageData extends CrudDb<AdmissionPercentageDataPoj
                 DatabaseCreator.ADMISSION_PERCENTAGES_DATA_ADMISSION_PERCENTAGE_ID + "=? AND " +
                         DatabaseCreator.ADMISSION_PERCENTAGES_DATA_LESSON_ID + "=?",
                 whereArgs, null, null, null, null);
-        AdmissionPercentageDataPojo returnValue = null;
+        Lesson returnValue = null;
         if (c.getCount() != 1)
             throw new AssertionError("!=1 id returned: " + c.getCount());
         if (c.moveToFirst())
-            returnValue = new AdmissionPercentageDataPojo(
+            returnValue = new Lesson(
                     //c.getInt(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_DATA_ID)),
                     c.getInt(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_DATA_ADMISSION_PERCENTAGE_ID)),
                     c.getInt(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_DATA_LESSON_ID)),
@@ -116,7 +116,7 @@ public class DBAdmissionPercentageData extends CrudDb<AdmissionPercentageDataPoj
      * @param admissionPercentageMetaId what subject id are we looking for
      * @return list of objects corresponding to the db values
      */
-    public List<AdmissionPercentageDataPojo> getItemsForMetaId(int admissionPercentageMetaId, boolean isLatestLessonFirst) {
+    public List<Lesson> getItemsForMetaId(int admissionPercentageMetaId, boolean isLatestLessonFirst) {
         String[] whereArgs = {String.valueOf(admissionPercentageMetaId)};
         String order = isLatestLessonFirst ? " DESC" : " ASC";
         Cursor c = mDatabase.query(
@@ -130,10 +130,10 @@ public class DBAdmissionPercentageData extends CrudDb<AdmissionPercentageDataPoj
                 DatabaseCreator.ADMISSION_PERCENTAGES_DATA_LESSON_ID + order,
                 null);
 
-        List<AdmissionPercentageDataPojo> items = new LinkedList<>();
+        List<Lesson> items = new LinkedList<>();
 
         while (c.moveToNext())
-            items.add(new AdmissionPercentageDataPojo(
+            items.add(new Lesson(
                     c.getInt(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_DATA_ADMISSION_PERCENTAGE_ID)),
                     c.getInt(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_DATA_LESSON_ID)),
                     c.getInt(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_DATA_FINISHED_ASSIGNMENTS)),
@@ -147,7 +147,7 @@ public class DBAdmissionPercentageData extends CrudDb<AdmissionPercentageDataPoj
     /**
      * Delete a counter
      */
-    public void deleteItem(AdmissionPercentageDataPojo item) {
+    public void deleteItem(Lesson item) {
         String[] whereArgs = new String[]{String.valueOf(item.admissionPercentageMetaId), String.valueOf(item.lessonId)};
         mDatabase.delete(DatabaseCreator.TABLE_NAME_ADMISSION_PERCENTAGES_DATA, DatabaseCreator.ADMISSION_PERCENTAGES_DATA_ADMISSION_PERCENTAGE_ID + "=? AND " +
                 DatabaseCreator.ADMISSION_PERCENTAGES_DATA_LESSON_ID + "=?", whereArgs);
@@ -164,7 +164,7 @@ public class DBAdmissionPercentageData extends CrudDb<AdmissionPercentageDataPoj
      *
      * @param newItem the item to add
      */
-    public void addItem(AdmissionPercentageDataPojo newItem) {
+    public void addItem(Lesson newItem) {
         int lessonId = newItem.id;
 
         //get the next free lesson id if this is a new data item
@@ -193,7 +193,7 @@ public class DBAdmissionPercentageData extends CrudDb<AdmissionPercentageDataPoj
     }
 
     @Override
-    public int addItemGetId(AdmissionPercentageDataPojo item) {
+    public int addItemGetId(Lesson item) {
         addItem(item);
         return getMaxLessonIdForAp(item.admissionPercentageMetaId);
     }
@@ -217,8 +217,8 @@ public class DBAdmissionPercentageData extends CrudDb<AdmissionPercentageDataPoj
         return result;
     }
 
-    public AdmissionPercentageDataPojo getNewestItemForMetaId(int apMetaId) {
+    public Lesson getNewestItemForMetaId(int apMetaId) {
         int lessonId = getMaxLessonIdForAp(apMetaId);
-        return getItem(new AdmissionPercentageDataPojo(apMetaId, lessonId, -1, -1));
+        return getItem(new Lesson(apMetaId, lessonId, -1, -1));
     }
 }

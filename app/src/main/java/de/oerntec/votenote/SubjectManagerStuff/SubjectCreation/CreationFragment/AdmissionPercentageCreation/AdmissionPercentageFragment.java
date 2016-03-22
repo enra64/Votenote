@@ -284,11 +284,14 @@ public class AdmissionPercentageFragment extends Fragment implements Button.OnCl
     private void initBonusCheckBox() {
         mBonusRequiredPercentageActivationCheckBox.setChecked(mBonusRequiredPercentageEnabledHint);
         mBonusRequiredPercentageSeekBar.setEnabled(mBonusRequiredPercentageEnabledHint);
+        mBonusRequiredPercentageCurrentValueTextView.setVisibility(mBonusRequiredPercentageEnabledHint
+                ? View.VISIBLE : View.INVISIBLE);
 
         mBonusRequiredPercentageActivationCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 mBonusRequiredPercentageSeekBar.setEnabled(isChecked);
+                mBonusRequiredPercentageCurrentValueTextView.setVisibility(isChecked ? View.VISIBLE : View.INVISIBLE);
             }
         });
     }

@@ -32,8 +32,8 @@ import java.io.InputStream;
 
 import de.oerntec.votenote.Database.DatabaseCreator;
 import de.oerntec.votenote.Database.Pojo.AdmissionCounter;
-import de.oerntec.votenote.Database.Pojo.AdmissionPercentageDataPojo;
 import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMetaStuff.AdmissionPercentageMetaPojo;
+import de.oerntec.votenote.Database.Pojo.Lesson;
 import de.oerntec.votenote.Database.Pojo.Subject;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionCounters;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageData;
@@ -156,7 +156,7 @@ public class XmlImporter {
 
         parser.nextTag();
         parser.require(XmlPullParser.END_TAG, null, "row");
-        db.addItem(new AdmissionPercentageDataPojo(-1,
+        db.addItem(new Lesson(-1,
                 Integer.valueOf(typ_uebung),
                 Integer.valueOf(nummer_uebung),
                 Integer.valueOf(my_votierung),

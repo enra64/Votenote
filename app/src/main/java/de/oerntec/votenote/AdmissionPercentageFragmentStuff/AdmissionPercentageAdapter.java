@@ -18,7 +18,6 @@
 package de.oerntec.votenote.AdmissionPercentageFragmentStuff;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -29,11 +28,11 @@ import android.widget.TextView;
 import java.util.List;
 
 import de.oerntec.votenote.Database.Pojo.AdmissionCounter;
-import de.oerntec.votenote.Database.Pojo.AdmissionPercentageDataPojo;
 import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMetaStuff.AdmissionPercentageCalculationResult;
 import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMetaStuff.AdmissionPercentageCalculator;
 import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMetaStuff.AdmissionPercentageMetaPojo;
 import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMetaStuff.EstimationModeDependentResults;
+import de.oerntec.votenote.Database.Pojo.Lesson;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionCounters;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageData;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageMeta;
@@ -74,7 +73,7 @@ public class AdmissionPercentageAdapter extends RecyclerView.Adapter<AdmissionPe
     /**
      * List of current data objects
      */
-    private List<AdmissionPercentageDataPojo> mData;
+    private List<Lesson> mData;
 
     private Context mContext;
     private int mAdmissionPercentageMetaId;
@@ -98,7 +97,7 @@ public class AdmissionPercentageAdapter extends RecyclerView.Adapter<AdmissionPe
      * Add item to the database, notify recyclerview of change
      * @param item item to add to the database
      */
-    public void addLesson(AdmissionPercentageDataPojo item) {
+    public void addLesson(Lesson item) {
         //add to database
         item.lessonId = mDataDb.addItemGetId(item);
         requery();
@@ -111,7 +110,7 @@ public class AdmissionPercentageAdapter extends RecyclerView.Adapter<AdmissionPe
     }
 
     public void refreshItem(int swipedLessonId, int percentageMetaId) {
-        notifyItemChanged(getRecyclerViewPosition(new AdmissionPercentageDataPojo(percentageMetaId, swipedLessonId, -1, -1)));
+        notifyItemChanged(getRecyclerViewPosition(new Lesson(percentageMetaId, swipedLessonId, -1, -1)));
     }
 
     public void reinstateLesson() {
@@ -129,7 +128,7 @@ public class AdmissionPercentageAdapter extends RecyclerView.Adapter<AdmissionPe
      * requery
      * notify of single changed item
      */
-    public void changeLesson(AdmissionPercentageDataPojo changedLesson) {
+    public void changeLesson(Lesson changedLesson) {
         mDataDb.changeItem(changedLesson);
         requery();
         notifyItemChanged(getRecyclerViewPosition(changedLesson));
@@ -141,7 +140,7 @@ public class AdmissionPercentageAdapter extends RecyclerView.Adapter<AdmissionPe
      * Remove lesson from database
      * @return Savepoint ID of the savepoint created before deleting the object
      */
-    public String removeLesson(final AdmissionPercentageDataPojo item) {
+    public String removeLesson(final Lesson item) {
         String savePointId = "delete_lesson_" + System.currentTimeMillis();
         mDataDb.createSavepoint(savePointId);
         final int recyclerViewPosition = getRecyclerViewPosition(item);
@@ -159,10 +158,10 @@ public class AdmissionPercentageAdapter extends RecyclerView.Adapter<AdmissionPe
         mData = mDataDb.getItemsForMetaId(mAdmissionPercentageMetaId, mLatestLessonFirst);
     }
 
-    int getRecyclerViewPosition(AdmissionPercentageDataPojo item) {
+    int getRecyclerViewPosition(Lesson item) {
         int listPosition;
         for (listPosition = 0; listPosition < mData.size(); listPosition++) {
-            AdmissionPercentageDataPojo apd = mData.get(listPosition);
+            Lesson apd = mData.get(listPosition);
             if (apd.lessonId == item.lessonId && apd.admissionPercentageMetaId == item.admissionPercentageMetaId)
                 break;
         }
@@ -247,7 +246,7 @@ public class AdmissionPercentageAdapter extends RecyclerView.Adapter<AdmissionPe
 
             //if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
             //    Log.i("ap adapter", "bind view at " + position);
-            AdmissionPercentageDataPojo data = mData.get(position);
+            Lesson data = mData.get(position);
 
             //load strings
             String lessonIndex = String.valueOf(data.lessonId);
@@ -297,8 +296,12 @@ public class AdmissionPercentageAdapter extends RecyclerView.Adapter<AdmissionPe
             averageVoteView.setText(String.format("%.1f%%", average));
 
         //color text in
-        if(!meta.bonusTargetPercentageEnabled)
-            averageVoteView.setTextColor(average >= baselineTargetPercentage ? Color.argb(255, 153, 204, 0) : Color.argb(255, 204, 0, 0));//red
+        if (!meta.bonusTargetPercentageEnabled) {
+            if (average >= baselineTargetPercentage)
+                averageVoteView.setTextColor(ContextCompat.getColor(mContext, R.color.ok_green));
+            else
+                averageVoteView.setTextColor(ContextCompat.getColor(mContext, R.color.warning_red));
+        }
         else{
             if(average < baselineTargetPercentage)
                 averageVoteView.setTextColor(ContextCompat.getColor(mContext, R.color.warning_red));
