@@ -131,7 +131,7 @@
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
                     android:layout_marginLeft="10dp"
-                    android:text="Votierungserinnerung"
+                    android:text="Bonus"
                     android:textAppearance="?android:attr/textAppearanceLarge"
                     android:textSize="20sp" />
             </RelativeLayout>
@@ -191,7 +191,7 @@
             android:layout_below="@id/percentage_creator_estimated_lesson_count_layout" />
 
         <Spinner
-            android:id="@+id/spinner"
+            android:id="@+id/percentage_creator_estimation_mode_spinner"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"

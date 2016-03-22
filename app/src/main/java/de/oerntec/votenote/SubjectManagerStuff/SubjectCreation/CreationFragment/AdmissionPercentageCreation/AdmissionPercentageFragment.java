@@ -7,12 +7,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.SeekBar;
-import android.widget.Switch;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -41,13 +42,29 @@ public class AdmissionPercentageFragment extends Fragment implements Button.OnCl
 
     //views needed for configuring a new percentage counter
     private EditText nameInput;
-    private TextView mRequiredPercentageCurrentValueTextView, mEstimatedAssignmentsPerLessonCurrentValueTextView, mEstimatedLessonCountCurrentValueTextView, mEstimationModeDescription, mEstimationModeCurrentValueTextView;
-    private SeekBar mRequiredPercentageSeekBar, mEstimatedAssignmentsPerLessonSeekBar, mEstimatedLessonCountSeekBar, mEstimationModeSeekbar;
+    private TextView
+            mRequiredPercentageCurrentValueTextView,
+            mEstimatedAssignmentsPerLessonCurrentValueTextView,
+            mEstimatedLessonCountCurrentValueTextView;
+    private SeekBar
+            mRequiredPercentageSeekBar,
+            mEstimatedAssignmentsPerLessonSeekBar,
+            mEstimatedLessonCountSeekBar;
+
+    /**
+     * Spinner to show the different choices for the estimation mode
+     */
+    private Spinner mEstimationModeSpinner;
 
     /**
      * Switch to set notification enabled setting
      */
-    private Switch mNotificationEnabledSwitch;
+    private CheckBox mNotificationEnabledSwitch;
+
+    /**
+     * TextView to show the current notification settings
+     */
+    private TextView mNoticationCurrentSettingsTextView;
 
     /**
      * SeekBar for choosing the value of the required percentage for getting a bonus
@@ -160,28 +177,30 @@ public class AdmissionPercentageFragment extends Fragment implements Button.OnCl
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.subject_manager_fragment_percentage_creator_fragment, container, false);
+        View view = inflater.inflate(R.layout.subject_manager_percentage_creator_fragment, container, false);
 
-        nameInput = (EditText) view.findViewById(R.id.subject_manager_dialog_groupsettings_edit_name);
+        nameInput = (EditText) view.findViewById(R.id.percentage_creator_name_edittext);
 
-        mRequiredPercentageCurrentValueTextView = (TextView) view.findViewById(R.id.subject_manager_dialog_groupsettings_required_percentage_current_value);
-        mRequiredPercentageSeekBar = (SeekBar) view.findViewById(R.id.subject_manager_dialog_groupsettings_required_percentage_seekbar);
+        View baselinePercentageLayout = view.findViewById(R.id.percentage_creator_baseline_percentage_layout);
+        mRequiredPercentageCurrentValueTextView = (TextView) baselinePercentageLayout.findViewById(R.id.current);
+        mRequiredPercentageSeekBar = (SeekBar) baselinePercentageLayout.findViewById(R.id.seekBar);
 
-        mEstimatedAssignmentsPerLessonCurrentValueTextView = (TextView) view.findViewById(R.id.subject_manager_dialog_groupsettings_estimated_assignments_per_lesson_current_value);
-        mEstimatedAssignmentsPerLessonSeekBar = (SeekBar) view.findViewById(R.id.subject_manager_dialog_groupsettings_estimated_assignments_per_lesson_seekbar);
+        View estimatedAssignmentsPerLessonLayout = view.findViewById(R.id.percentage_creator_estimated_assignments_per_lesson_layout);
+        mEstimatedAssignmentsPerLessonCurrentValueTextView = (TextView) estimatedAssignmentsPerLessonLayout.findViewById(R.id.current);
+        mEstimatedAssignmentsPerLessonSeekBar = (SeekBar) estimatedAssignmentsPerLessonLayout.findViewById(R.id.seekBar);
 
-        mEstimatedLessonCountCurrentValueTextView = (TextView) view.findViewById(R.id.subject_manager_dialog_groupsettings_estimated_lesson_count_current_value);
-        mEstimatedLessonCountSeekBar = (SeekBar) view.findViewById(R.id.subject_manager_dialog_groupsettings_estimated_lesson_count_seekbar);
+        View estimatedLessonCountLayout = view.findViewById(R.id.percentage_creator_estimated_lesson_count_layout);
+        mEstimatedLessonCountCurrentValueTextView = (TextView) estimatedLessonCountLayout.findViewById(R.id.current);
+        mEstimatedLessonCountSeekBar = (SeekBar) estimatedLessonCountLayout.findViewById(R.id.seekBar);
 
-        mEstimationModeCurrentValueTextView = (TextView) view.findViewById(R.id.subject_manager_fragment_percentage_creator_fragment_current_value);
-        mEstimationModeDescription = (TextView) view.findViewById(R.id.subject_manager_fragment_percentage_creator_fragment_estimation_current_value_description);
-        mEstimationModeSeekbar = (SeekBar) view.findViewById(R.id.subject_manager_fragment_percentage_creator_fragment_estimation_seekbar);
+        mEstimationModeSpinner = (Spinner) view.findViewById(R.id.percentage_creator_estimation_mode_spinner);
 
-        mBonusRequiredPercentageActivationCheckBox = (CheckBox) view.findViewById(R.id.subject_manager_fragment_percentage_creator_fragment_bonus_vote_checkbox);
-        mBonusRequiredPercentageSeekBar = (SeekBar) view.findViewById(R.id.subject_manager_fragment_percentage_creator_fragment_bonus_vote_seek_bar);
-        mBonusRequiredPercentageCurrentValueTextView = (TextView) view.findViewById(R.id.subject_manager_fragment_percentage_creator_fragment_bonus_vote_current_value);
+        mBonusRequiredPercentageActivationCheckBox = (CheckBox) view.findViewById(R.id.percentage_creator_bonus_checkbox);
+        mBonusRequiredPercentageSeekBar = (SeekBar) view.findViewById(R.id.percentage_creator_bonus_seekbar);
+        mBonusRequiredPercentageCurrentValueTextView = (TextView) view.findViewById(R.id.percentage_creator_bonus_current);
 
-        mNotificationEnabledSwitch = (Switch) view.findViewById(R.id.subject_manager_fragment_percentage_creator_fragment_notification_switch);
+        mNotificationEnabledSwitch = (CheckBox) view.findViewById(R.id.percentage_creator_notification_checkbox);
+        mNoticationCurrentSettingsTextView = (TextView) view.findViewById(R.id.percentage_creator_notification_current);
 
         return view;
     }
@@ -248,7 +267,7 @@ public class AdmissionPercentageFragment extends Fragment implements Button.OnCl
         initSeekbar(mEstimatedAssignmentsPerLessonSeekBar, mEstimatedAssignmentsPerLessonCurrentValueTextView, estimatedAssignmentsHint, 50);
         initSeekbar(mEstimatedLessonCountSeekBar, mEstimatedLessonCountCurrentValueTextView, estimatedLessonCountHint, 50);
 
-        initEstimationModeSeekbar();
+        initEstimationModeSpinner();
 
         initBonusCheckBox();
 
@@ -268,26 +287,21 @@ public class AdmissionPercentageFragment extends Fragment implements Button.OnCl
         });
     }
 
-    private void initEstimationModeSeekbar() {
-        int amountOfEstimationModes = AdmissionPercentageMetaPojo.EstimationMode.values().length - 2; // -1 for a) undefined and b) max is 1-indexed
-        mEstimationModeSeekbar.setMax(amountOfEstimationModes);
-
+    private void initEstimationModeSpinner() {
         AdmissionPercentageMetaPojo.EstimationMode estimationMode = AdmissionPercentageMetaPojo.EstimationMode.valueOf(mEstimationModeHint);
 
-        mEstimationModeSeekbar.setProgress(estimationMode.ordinal());
+        mEstimationModeSpinner.setAdapter(new EstimationModeAdapter(getActivity(), 0));
+        mEstimationModeSpinner.setSelection(estimationMode.ordinal());
 
-        mEstimationModeSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        mEstimationModeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                onEstimationModeChange(progress);
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                onEstimationModeChange(position);
             }
 
             @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-            }
+            public void onNothingSelected(AdapterView<?> parent) {
 
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
             }
         });
 
@@ -297,24 +311,10 @@ public class AdmissionPercentageFragment extends Fragment implements Button.OnCl
     private void onEstimationModeChange(int seekbarProgress) {
         switch (AdmissionPercentageMetaPojo.EstimationMode.values()[seekbarProgress]) {
             case user://user
-                mCurrentEstimationMode = "user";
-                mEstimationModeCurrentValueTextView.setText(R.string.estimation_name_user);
-                mEstimationModeDescription.setText(R.string.estimation_description_user);
-                break;
-            case mean://mean
-                mCurrentEstimationMode = "mean";
-                mEstimationModeCurrentValueTextView.setText(R.string.estimation_name_mean);
-                mEstimationModeDescription.setText(R.string.estimation_description_mean);
-                break;
-            case worst://worst
-                mCurrentEstimationMode = "worst";
-                mEstimationModeCurrentValueTextView.setText(R.string.estimation_name_worst);
-                mEstimationModeDescription.setText(R.string.estimation_description_worst);
-                break;
-            case best://best
-                mCurrentEstimationMode = "best";
-                mEstimationModeCurrentValueTextView.setText(R.string.estimation_name_best);
-                mEstimationModeDescription.setText(R.string.estimation_description_best);
+            case worst://user
+            case best://user
+            case mean://user
+                mCurrentEstimationMode = AdmissionPercentageMetaPojo.EstimationMode.values()[seekbarProgress].name();
                 break;
             default:
                 throw new AssertionError("unknown progress value!");
