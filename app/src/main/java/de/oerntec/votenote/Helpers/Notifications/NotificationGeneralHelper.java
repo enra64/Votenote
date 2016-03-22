@@ -21,6 +21,8 @@ public class NotificationGeneralHelper {
     }
 
     public static Calendar getCalendar(String recurrence) {
+        if (recurrence == null || recurrence.isEmpty())
+            return null;
         int[] tmp = convertFromRecurrenceRule(recurrence);
         return getCalendar(tmp[0], tmp[1], tmp[2]);
     }

@@ -20,7 +20,9 @@ import android.widget.Toast;
 import com.github.jjobes.slidedaytimepicker.SlideDayTimeListener;
 import com.github.jjobes.slidedaytimepicker.SlideDayTimePicker;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMetaStuff.AdmissionPercentageMetaPojo;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageMeta;
@@ -60,11 +62,6 @@ public class AdmissionPercentageFragment extends Fragment implements Button.OnCl
      * Switch to set notification enabled setting
      */
     private CheckBox mNotificationEnabledSwitch;
-
-    /**
-     * TextView to show the current notification settings
-     */
-    private TextView mNoticationCurrentSettingsTextView;
 
     /**
      * SeekBar for choosing the value of the required percentage for getting a bonus
@@ -132,6 +129,11 @@ public class AdmissionPercentageFragment extends Fragment implements Button.OnCl
      */
     private String mSavepointId;
 
+    /**
+     * TextView used for showing displaying the current notification settings
+     */
+    private TextView mNoticationCurrentSettingsTextView;
+
     private boolean mIsOldPercentageCounter, mIsNewPercentageCounter;
 
     public AdmissionPercentageFragment() {
@@ -178,20 +180,22 @@ public class AdmissionPercentageFragment extends Fragment implements Button.OnCl
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.subject_manager_percentage_creator_fragment, container, false);
-
         nameInput = (EditText) view.findViewById(R.id.percentage_creator_name_edittext);
 
         View baselinePercentageLayout = view.findViewById(R.id.percentage_creator_baseline_percentage_layout);
         mRequiredPercentageCurrentValueTextView = (TextView) baselinePercentageLayout.findViewById(R.id.current);
         mRequiredPercentageSeekBar = (SeekBar) baselinePercentageLayout.findViewById(R.id.seekBar);
+        ((TextView) baselinePercentageLayout.findViewById(R.id.title)).setText(R.string.subjectmanager_needed_work);
 
         View estimatedAssignmentsPerLessonLayout = view.findViewById(R.id.percentage_creator_estimated_assignments_per_lesson_layout);
         mEstimatedAssignmentsPerLessonCurrentValueTextView = (TextView) estimatedAssignmentsPerLessonLayout.findViewById(R.id.current);
         mEstimatedAssignmentsPerLessonSeekBar = (SeekBar) estimatedAssignmentsPerLessonLayout.findViewById(R.id.seekBar);
+        ((TextView) estimatedAssignmentsPerLessonLayout.findViewById(R.id.title)).setText(R.string.subjectmanager_assignments_per_lesson);
 
         View estimatedLessonCountLayout = view.findViewById(R.id.percentage_creator_estimated_lesson_count_layout);
         mEstimatedLessonCountCurrentValueTextView = (TextView) estimatedLessonCountLayout.findViewById(R.id.current);
         mEstimatedLessonCountSeekBar = (SeekBar) estimatedLessonCountLayout.findViewById(R.id.seekBar);
+        ((TextView) estimatedLessonCountLayout.findViewById(R.id.title)).setText(R.string.subjectmanager_lesson_count);
 
         mEstimationModeSpinner = (Spinner) view.findViewById(R.id.percentage_creator_estimation_mode_spinner);
 
@@ -260,6 +264,8 @@ public class AdmissionPercentageFragment extends Fragment implements Button.OnCl
             nameInput.setError("Must not be empty");
             ((AdmissionPercentageCreationActivity) getActivity()).getSaveButton().setEnabled(false);
         }
+
+        updateCurrentNotificationSettingsView();
 
         initSeekbar(mRequiredPercentageSeekBar, mRequiredPercentageCurrentValueTextView, requiredPercentageHint, 100);
         initSeekbar(mBonusRequiredPercentageSeekBar, mBonusRequiredPercentageCurrentValueTextView, mBonusRequiredPercentageHint, 100);
@@ -405,6 +411,15 @@ public class AdmissionPercentageFragment extends Fragment implements Button.OnCl
         host.callCreatorFragmentForItemChange(resultState);
     }
 
+    private void updateCurrentNotificationSettingsView() {
+        Calendar currentCalendar = NotificationGeneralHelper.getCalendar(mNotificationRecurrenceStringCurrent);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, kk:mm");
+        if (currentCalendar != null)
+            mNoticationCurrentSettingsTextView.setText(dateFormat.format(new Date(currentCalendar.getTimeInMillis())));
+        else
+            mNoticationCurrentSettingsTextView.setVisibility(View.GONE);
+    }
+
     @Override
     public void onCheckedChanged(final CompoundButton buttonView, boolean isChecked) {
         if (isChecked) {
@@ -413,6 +428,10 @@ public class AdmissionPercentageFragment extends Fragment implements Button.OnCl
                 @Override
                 public void onDayTimeSet(int day, int hour, int minute) {
                     mNotificationRecurrenceStringCurrent = day + ":" + hour + ":" + minute;
+
+                    updateCurrentNotificationSettingsView();
+
+                    mNoticationCurrentSettingsTextView.setVisibility(View.VISIBLE);
 
                     if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
                         Log.i("votenote alarms", "added notification");
@@ -441,6 +460,7 @@ public class AdmissionPercentageFragment extends Fragment implements Button.OnCl
             builder.build().show();
         } else {
             mNotificationRecurrenceStringCurrent = null;
+            mNoticationCurrentSettingsTextView.setVisibility(View.GONE);
         }
     }
 }
