@@ -207,18 +207,21 @@ public class DatabaseCreator extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase database, int oldVersion, int newVersion) {
         if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
             Log.w(DatabaseCreator.class.getName(), "Upgrading database from version " + oldVersion + " to " + newVersion + ", which is basically pray'n'spray");
-        //12 to 13
+        // 12 to 13 creates all new tables using the newest table creation statements, so we only
+        // need to execute that.
         if (oldVersion <= 12)
             transferFrom12To13(database);
+        else {
+            if (oldVersion <= 13)
+                transferFrom13To14(database);
 
-        if (oldVersion <= 13)
-            transferFrom13To14(database);
+            if (oldVersion <= 14)
+                transferFrom14To15(database);
 
-        if (oldVersion <= 14)
-            transferFrom14To15(database);
+            if (oldVersion <= 15)
+                transferFrom15To16(database);
+        }
 
-        if (oldVersion <= 15)
-            transferFrom15To16(database);
     }
 
     private void transferFrom15To16(SQLiteDatabase database) {
