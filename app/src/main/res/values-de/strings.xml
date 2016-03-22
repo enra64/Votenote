@@ -146,4 +146,12 @@
     <string name="notifcation_action">Votieren</string>
     <string name="percentage_creator_notification_activated_toast">Erinnerung aktiviert!</string>
     <string name="subject_creator_notification_deactivated_toast">Erinnerung deaktiviert!</string>
+    <string name="summary_swipe_to_delete">Übungseinträge durch zur Seite wischen entfernen.</string>
+    <string name="preferences_backup_share_summary">Zeigt Apps an, die das Backup verarbeiten</string>
+    <string name="preferences_backup_share_title">Backup teilen</string>
+    <string name="preferences_backup_export_summary">Speichert ein Backup auf der SD-Karte</string>
+    <string name="preferences_backup_export_title">Backup erstellen</string>
+    <string name="preferences_backup_import_summary">Lädt ein Backup von der SD-Karte</string>
+    <string name="preferences_backup_import_title">Backup importieren</string>
+    <string name="bonus_votierungsgrenze">Bonus-Votierungsgrenze</string>
 </resources>

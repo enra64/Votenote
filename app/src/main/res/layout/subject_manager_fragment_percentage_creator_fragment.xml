@@ -40,7 +40,8 @@
             android:layout_marginBottom="6dp"
             android:layout_marginTop="10dp"
             android:text="@string/votierungserinnerung"
-            android:textAppearance="?android:attr/textAppearanceLarge" />
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textSize="20sp" />
 
         <Switch
             android:id="@+id/subject_manager_fragment_percentage_creator_fragment_notification_switch"
@@ -197,6 +198,7 @@
             android:text="Small Text"
             android:textAppearance="?android:attr/textAppearanceSmall" />
 
+
         <RelativeLayout
             android:id="@+id/relativeLayout8"
             android:layout_width="wrap_content"
@@ -221,7 +223,7 @@
                 android:layout_centerVertical="true"
                 android:layout_toEndOf="@+id/subject_manager_fragment_percentage_creator_fragment_bonus_vote_checkbox"
                 android:layout_toRightOf="@+id/subject_manager_fragment_percentage_creator_fragment_bonus_vote_checkbox"
-                android:text="Bonus-Votierungsgrenze"
+                android:text="@string/bonus_votierungsgrenze"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:textSize="20sp" />
         </RelativeLayout>
@@ -247,6 +249,13 @@
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:textColor="@android:color/secondary_text_dark"
             android:textSize="20sp" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/subject_manager_fragment_percentage_creator_fragment_bonus_vote_seek_bar"></RelativeLayout>
 
     </RelativeLayout>
 

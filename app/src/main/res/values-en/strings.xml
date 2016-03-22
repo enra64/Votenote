@@ -146,4 +146,11 @@
     <string name="percentage_creator_notification_activated_toast">Notification activated</string>
     <string name="subject_creator_notification_deactivated_toast">Notification removed!</string>
     <string name="votierungserinnerung">Lesson reminder</string>
+    <string name="summary_swipe_to_delete">Delete lesson entries by swiping them sideways</string>
+    <string name="preferences_backup_export_summary">Save a backup file to the sd card.</string>
+    <string name="preferences_backup_export_title">Create Backup</string>
+    <string name="preferences_backup_import_summary">Loads a backup from the sd card.</string>
+    <string name="preferences_backup_import_title">Import backup</string>
+    <string name="preferences_backup_share_summary">Shows apps able to process the backup</string>
+    <string name="preferences_backup_share_title">Share backup</string>
 </resources>

@@ -35,6 +35,7 @@
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="enable_swipe_to_delete_lesson"
+            android:summary="@string/summary_swipe_to_delete"
             android:title="@string/pref_swipe_to_delete_lesson" />
 
         <CheckBoxPreference
@@ -62,16 +63,16 @@
             android:title="@string/pref_csv_export" />
         <de.oerntec.votenote.Preferences.CustomActionPreference
             android:key="backup_share"
-            android:summary="Zeigt Apps an, die das Backup verarbeiten"
-            android:title="Backup teilen" />
+            android:summary="@string/preferences_backup_share_summary"
+            android:title="@string/preferences_backup_share_title" />
         <de.oerntec.votenote.Preferences.CustomActionPreference
             android:key="backup_export"
-            android:summary="Speichert ein Backup auf der SD-Karte"
-            android:title="Backup erstellen" />
+            android:summary="@string/preferences_backup_export_summary"
+            android:title="@string/preferences_backup_export_title" />
         <de.oerntec.votenote.Preferences.CustomActionPreference
             android:key="backup_import"
-            android:summary="Lädt ein Backup von der SD-Karte"
-            android:title="Backup importieren" />
+            android:summary="@string/preferences_backup_import_summary"
+            android:title="@string/preferences_backup_import_title" />
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/pref_updates">
