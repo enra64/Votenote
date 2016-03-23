@@ -133,10 +133,10 @@
     <string name="estimation_name_mean">Average</string>
     <string name="estimation_name_user">User</string>
     <string name="estimation_name_worst">Worst case</string>
-    <string name="estimation_description_best">The smallest value given for available assignments in this subject is used as \"assignments per lesson\".</string>
-    <string name="estimation_description_mean">The average value given for the number of available assignments in this subject is used as "assignments per lesson"</string>
-    <string name="estimation_description_user">Simply uses the "available assignments per lesson" value given here. This is the default.</string>
-    <string name="estimation_description_worst">The largest value given for available assignments in this subject is used as "assignments per lesson".</string>
+    <string name="estimation_description_best">This estimation mode uses the smallest value given for available assignments in this subject as \"assignments per lesson\".</string>
+    <string name="estimation_description_mean">This estimation mode uses the average value given for the number of available assignments in this subject as \"assignments per lesson\"</string>
+    <string name="estimation_description_user">This estimation mode uses the \"available assignments per lesson\" value given here. This is the default.</string>
+    <string name="estimation_description_worst">This estimation mode uses the largest value given for available assignments in this subject as \"assignments per lesson\".</string>
     <string name="keine_prozentz_hler_vorhanden_f_ge_in_den_einstellungen_welche_hinzu">No admission percentage counters available, add some in subject management.</string>
     <string name="name_des_percentagecounters">Percentage counter name</string>
     <string name="estimation_mode_title">Estimation mode</string>
