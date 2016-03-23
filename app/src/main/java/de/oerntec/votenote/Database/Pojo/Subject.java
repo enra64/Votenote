@@ -21,8 +21,8 @@ import java.util.List;
 
 import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMetaStuff.AdmissionPercentageMetaPojo;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionCounters;
-import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageData;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageMeta;
+import de.oerntec.votenote.Database.TableHelpers.DBLessons;
 
 public class Subject {
     public String name;
@@ -46,7 +46,7 @@ public class Subject {
     /**
      * fill the lists that are usually empty containing all other pojos belonging to this subject
      */
-    public void loadAllData(DBAdmissionCounters counterDb, DBAdmissionPercentageData dataDb, DBAdmissionPercentageMeta metaDb, boolean latestLessonFirst){
+    public void loadAllData(DBAdmissionCounters counterDb, DBLessons dataDb, DBAdmissionPercentageMeta metaDb, boolean latestLessonFirst) {
         admissionCounterList = counterDb.getItemsForSubject(id);
         admissionPercentageMetaPojoList = metaDb.getItemsForSubject(id);
         for (AdmissionPercentageMetaPojo meta : admissionPercentageMetaPojoList) {

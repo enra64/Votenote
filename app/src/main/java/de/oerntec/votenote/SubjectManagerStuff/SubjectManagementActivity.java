@@ -37,9 +37,17 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import java.util.Random;
+
 import de.oerntec.votenote.CardListHelpers.OnItemClickListener;
 import de.oerntec.votenote.CardListHelpers.RecyclerItemClickListener;
 import de.oerntec.votenote.CardListHelpers.SwipeDeletion;
+import de.oerntec.votenote.Database.Pojo.AdmissionCounter;
+import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMetaStuff.AdmissionPercentageMetaPojo;
+import de.oerntec.votenote.Database.Pojo.Lesson;
+import de.oerntec.votenote.Database.TableHelpers.DBAdmissionCounters;
+import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageMeta;
+import de.oerntec.votenote.Database.TableHelpers.DBLessons;
 import de.oerntec.votenote.Database.TableHelpers.DBSubjects;
 import de.oerntec.votenote.Helpers.General;
 import de.oerntec.votenote.ImportExport.BackupHelper;
@@ -98,6 +106,7 @@ public class SubjectManagementActivity extends AppCompatActivity implements Swip
 
         //show tutorial if no subjects are present and the tutorial has not yet been read
         if (DBSubjects.getInstance().isEmpty() && !getPreference("tutorial_subjects_read", false)) {
+            //noinspection deprecation
             Builder b = new AlertDialog.Builder(this, AlertDialog.THEME_DEVICE_DEFAULT_LIGHT);
             b.setTitle("Tutorial");
             b.setView(this.getLayoutInflater().inflate(R.layout.tutorial_subjects, null));
@@ -114,6 +123,7 @@ public class SubjectManagementActivity extends AppCompatActivity implements Swip
         mSubjectList = (RecyclerView) findViewById(R.id.subject_manager_recycler_view);
 
         //config the recyclerview
+        if (mSubjectList == null) throw new AssertionError("subject list not found");
         mSubjectList.setHasFixedSize(true);
 
         ItemTouchHelper.SimpleCallback swipeCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
@@ -161,6 +171,8 @@ public class SubjectManagementActivity extends AppCompatActivity implements Swip
 
         //add listener to fab
         FloatingActionButton addFab = (FloatingActionButton) findViewById(R.id.subject_manager_add_fab);
+        if (addFab == null)
+            throw new AssertionError("could not find floating action button");
         addFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -219,6 +231,7 @@ public class SubjectManagementActivity extends AppCompatActivity implements Swip
         DBSubjects.getInstance().createSavepoint(mLastDeletionSavepointId);
         mSubjectAdapter.removeSubject(subjectId, position);
         //make snackbar
+        //noinspection ConstantConditions
         mDeletionSnackbar = Snackbar.make(findViewById(R.id.subject_manager_coordinator_layout), getString(R.string.undobar_deleted), Snackbar.LENGTH_LONG)
             .setCallback(new Snackbar.Callback() {
                 @Override
@@ -266,8 +279,73 @@ public class SubjectManagementActivity extends AppCompatActivity implements Swip
             case R.id.action_read_from_storage:
                 BackupHelper.importDialog(this);
                 return true;
+            case R.id.action_create_example:
+                createExample();
+                return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void createExample() {
+        //these all need instances
+        DBSubjects dbSubjects = DBSubjects.setupInstance(this);
+        DBAdmissionPercentageMeta dbAdmissionPercentageMeta = DBAdmissionPercentageMeta.setupInstance(this);
+        DBLessons dbLessons = DBLessons.setupInstance(this);
+        DBAdmissionCounters dbAdmissionCounters = DBAdmissionCounters.setupInstance(this);
+
+        int subjectId = dbSubjects.addItemGetId("Modul");
+
+        AdmissionPercentageMetaPojo percentage1 = new AdmissionPercentageMetaPojo(
+                -1,
+                subjectId,
+                5,
+                12,
+                66,
+                "Votierungszähler 1",
+                "user",
+                80,
+                true,
+                "1:14:0",
+                false);
+
+        AdmissionPercentageMetaPojo percentage2 = new AdmissionPercentageMetaPojo(
+                -1,
+                subjectId,
+                3,
+                12,
+                50,
+                "Votierungszähler 1",
+                "user",
+                80,
+                false,
+                "4:12:0",
+                false);
+
+        int percentage1Id = dbAdmissionPercentageMeta.addItemGetId(percentage1);
+        int percentage2Id = dbAdmissionPercentageMeta.addItemGetId(percentage2);
+
+        Random r = new Random();
+
+        for (int i = 0; i < 20; i++) {
+            int percentageId = i < 8 ? percentage1Id : percentage2Id;
+            int available = r.nextInt(6);
+            int finished = available > 0 ? r.nextInt(available) : 0;
+            dbLessons.addItem(new Lesson(percentageId, 1, finished, available));
+        }
+
+        dbAdmissionCounters.addItem(new AdmissionCounter(-1,
+                subjectId,
+                "Vortragspunkte",
+                2,
+                3));
+
+        dbAdmissionCounters.addItem(new AdmissionCounter(-1,
+                subjectId,
+                "Belegaufgabe",
+                0,
+                1));
+
+        mSubjectAdapter.notifySubjectAdded();
     }
 
     @Override
@@ -286,10 +364,6 @@ public class SubjectManagementActivity extends AppCompatActivity implements Swip
 
     public boolean getPreference(String key, boolean def) {
         return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(key, def);
-    }
-
-    public String getPreference(String key, String def) {
-        return PreferenceManager.getDefaultSharedPreferences(this).getString(key, def);
     }
 
     public void setPreference(String key, boolean newValue) {

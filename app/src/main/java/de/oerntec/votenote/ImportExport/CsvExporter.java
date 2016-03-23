@@ -29,8 +29,8 @@ import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMetaStuff.AdmissionP
 import de.oerntec.votenote.Database.Pojo.Lesson;
 import de.oerntec.votenote.Database.Pojo.Subject;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionCounters;
-import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageData;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageMeta;
+import de.oerntec.votenote.Database.TableHelpers.DBLessons;
 import de.oerntec.votenote.Database.TableHelpers.DBSubjects;
 import de.oerntec.votenote.MainActivity;
 
@@ -90,7 +90,7 @@ public class CsvExporter {
     }
 
     private static List<Subject> getSubjects(){
-        final DBAdmissionPercentageData mApDataDb = DBAdmissionPercentageData.getInstance();
+        final DBLessons mApDataDb = DBLessons.getInstance();
         final DBAdmissionPercentageMeta mApMetaDb = DBAdmissionPercentageMeta.getInstance();
         final DBAdmissionCounters mCountersDb = DBAdmissionCounters.getInstance();
         final DBSubjects mSubjectDb = DBSubjects.getInstance();

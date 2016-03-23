@@ -42,7 +42,7 @@ import de.oerntec.votenote.CardListHelpers.RecyclerItemClickListener;
 import de.oerntec.votenote.CardListHelpers.SwipeDeletion;
 import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMetaStuff.AdmissionPercentageMetaPojo;
 import de.oerntec.votenote.Database.Pojo.Lesson;
-import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageData;
+import de.oerntec.votenote.Database.TableHelpers.DBLessons;
 import de.oerntec.votenote.Dialogs.MainDialogHelper;
 import de.oerntec.votenote.MainActivity;
 import de.oerntec.votenote.R;
@@ -96,7 +96,7 @@ public class AdmissionPercentageFragment extends Fragment implements SwipeDeleti
     /**
      * db holding percentage data
      */
-    private DBAdmissionPercentageData mDataDb = DBAdmissionPercentageData.getInstance();
+    private DBLessons mDataDb = DBLessons.getInstance();
 
     private boolean mEnableSwipeToDelete;
 
@@ -298,7 +298,7 @@ public class AdmissionPercentageFragment extends Fragment implements SwipeDeleti
      */
     private void onUndo() {
         if (mLastRemovalSavePointId != null) {
-            DBAdmissionPercentageData.getInstance().rollbackToSavepoint(mLastRemovalSavePointId);
+            DBLessons.getInstance().rollbackToSavepoint(mLastRemovalSavePointId);
             mLastRemovalSavePointId = null;
             mAdapter.reinstateLesson();
         }

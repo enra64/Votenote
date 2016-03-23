@@ -4,7 +4,7 @@ import java.util.List;
 
 import de.oerntec.votenote.Database.NameAndIdPojo;
 import de.oerntec.votenote.Database.Pojo.Lesson;
-import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageData;
+import de.oerntec.votenote.Database.TableHelpers.DBLessons;
 
 /**
  * POJO class for representing the metadata available about an admission percentage counter
@@ -104,7 +104,7 @@ public class AdmissionPercentageMetaPojo implements NameAndIdPojo {
         this.estimationMode = EstimationMode.valueOf(mode);
     }
 
-    public void loadData(DBAdmissionPercentageData dataDb, boolean latestLessonFirst){
+    public void loadData(DBLessons dataDb, boolean latestLessonFirst) {
         mDataList = dataDb.getItemsForMetaId(id, latestLessonFirst);
         mDataLoaded = true;
     }

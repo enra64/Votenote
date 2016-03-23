@@ -18,7 +18,7 @@
     <string name="new_folder_button">Neuer Ordner</string>
 
     <string name="tutorial_control_prespoints">Präsentationspunkte verwalten</string>
-    <string name="tutorial_create_your_first_subject">Erstelle mit dem Plus oben rechts deine erste Übung</string>
+    <string name="tutorial_create_your_first_subject">Erstelle mit dem Plus unten links deine erste Übung!</string>
     <string name="tutorial_add_button">Übung hinzufügen</string>
 
     <string name="subjectmanager_needed_work">Erforderliche Votierung</string>
@@ -170,11 +170,13 @@
     <string name="overview_future_lesson_count">Zukünftige Übungen: </string>
     <string name="overview_past_available_count">Anzahl vergangener Aufgaben:</string>
     <string name="overview_past_finished_count">Anzahl votierter Aufgaben:</string>
-    <string name="overview_percentage">Prozentzahl votierter Aufgaben</string>
+    <string name="overview_percentage">Prozentzahl votierter Aufgaben: </string>
     <string name="overview_available_assignments_per_lesson">Geschätzte Aufgaben pro Übung (in der Zukunft): </string>
     <string name="overview_overall_available_assignments">Geschätzte Gesamtanzahl an Aufgaben: </string>
     <string name="overview_overall_required_assignments">Geschätzte Anzahl an gesamt benötigten Aufgaben:</string>
     <string name="overview_remaining_required_finished_assignments">Geschätzte Anzahl an noch benötigten Aufgaben: </string>
     <string name="overview_assignments_per_lesson">Geschätzte Anzahl an pro Übung benötigten Aufgaben: </string>
     <string name="eula_dialog_title">Endnutzerlizenzbestimmungen für Votenote</string>
+    <string name="tutorial_create_example">Beispiel erstellen</string>
+    <string name="action_create_example_title">Beispiel erstellen</string>
 </resources>

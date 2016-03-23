@@ -13,8 +13,8 @@ import android.widget.Toast;
 
 import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMetaStuff.AdmissionPercentageMetaPojo;
 import de.oerntec.votenote.Database.Pojo.Lesson;
-import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageData;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageMeta;
+import de.oerntec.votenote.Database.TableHelpers.DBLessons;
 import de.oerntec.votenote.Helpers.General;
 import de.oerntec.votenote.MainActivity;
 import de.oerntec.votenote.R;
@@ -58,7 +58,7 @@ public class AddLessonDialogFragment extends DialogFragment implements DialogInt
     /**
      * database instance to use
      */
-    private DBAdmissionPercentageData mDataDb;
+    private DBLessons mDataDb;
 
     /**
      * If and only if this is an old subject, this contains the old data
@@ -124,7 +124,7 @@ public class AddLessonDialogFragment extends DialogFragment implements DialogInt
             mIsNewLesson = mLessonId == ADD_LESSON_CODE;
             mIsOldLesson = !mIsNewLesson;
             mMetaItem = DBAdmissionPercentageMeta.getInstance().getItem(mMetaId);
-            mMetaItem.loadData(DBAdmissionPercentageData.getInstance(), MainActivity.getPreference("reverse_lesson_sort", false));
+            mMetaItem.loadData(DBLessons.getInstance(), MainActivity.getPreference("reverse_lesson_sort", false));
 
             //load shared settings
             mReverseLessonSort = MainActivity.getPreference("reverse_lesson_sort", false);
@@ -132,7 +132,7 @@ public class AddLessonDialogFragment extends DialogFragment implements DialogInt
             mLiveUpdateResultingPercentage = MainActivity.getPreference("live_resulting_percentage", true);
 
             //get database instance
-            mDataDb = DBAdmissionPercentageData.getInstance();
+            mDataDb = DBLessons.getInstance();
 
             //first lesson for this pc?
             if(mIsNewLesson)

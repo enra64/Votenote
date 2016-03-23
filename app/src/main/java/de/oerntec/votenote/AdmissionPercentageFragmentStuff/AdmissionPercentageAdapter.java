@@ -34,8 +34,8 @@ import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMetaStuff.AdmissionP
 import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMetaStuff.EstimationModeDependentResults;
 import de.oerntec.votenote.Database.Pojo.Lesson;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionCounters;
-import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageData;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageMeta;
+import de.oerntec.votenote.Database.TableHelpers.DBLessons;
 import de.oerntec.votenote.MainActivity;
 import de.oerntec.votenote.R;
 
@@ -58,7 +58,7 @@ public class AdmissionPercentageAdapter extends RecyclerView.Adapter<AdmissionPe
     /**
      * Admission Percentage Data Database
      */
-    private DBAdmissionPercentageData mDataDb = DBAdmissionPercentageData.getInstance();
+    private DBLessons mDataDb = DBLessons.getInstance();
 
     /**
      * The meta pojo belonging to the given admission percentage meta id
@@ -83,7 +83,7 @@ public class AdmissionPercentageAdapter extends RecyclerView.Adapter<AdmissionPe
         mContext = context;
         //get db
         mMetaDb = DBAdmissionPercentageMeta.getInstance();
-        mDataDb = DBAdmissionPercentageData.getInstance();
+        mDataDb = DBLessons.getInstance();
         //transfer the percentage meta id this adapter is for
         mAdmissionPercentageMetaId = admissionPercentageMetaId;
         //get the pojo object corresponding to this adapter
@@ -227,7 +227,7 @@ public class AdmissionPercentageAdapter extends RecyclerView.Adapter<AdmissionPe
     public void onBindViewHolder(Holder holder, int position) {
         if (position == 0) {
             InfoHolder infoHolder = (InfoHolder) holder;
-            mMetaPojo.loadData(DBAdmissionPercentageData.getInstance(), mLatestLessonFirst);
+            mMetaPojo.loadData(DBLessons.getInstance(), mLatestLessonFirst);
             AdmissionPercentageCalculationResult result = AdmissionPercentageCalculator.calculateAll(mMetaPojo);
             infoHolder.title.setText(mMetaPojo.name);
             setAverageNeededAssignments(infoHolder.avgLeft, mMetaPojo, result);

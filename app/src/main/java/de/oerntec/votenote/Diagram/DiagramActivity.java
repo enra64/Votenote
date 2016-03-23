@@ -43,8 +43,8 @@ import java.util.Map;
 import java.util.Random;
 
 import de.oerntec.votenote.Database.Pojo.Lesson;
-import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageData;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageMeta;
+import de.oerntec.votenote.Database.TableHelpers.DBLessons;
 import de.oerntec.votenote.Helpers.General;
 import de.oerntec.votenote.MainActivity;
 import de.oerntec.votenote.R;
@@ -165,7 +165,7 @@ public class DiagramActivity extends AppCompatActivity implements DiagramSubject
      * Creates a LineGraphSeries object containing the data points of the specified subject
      */
     private LineGraphSeries<DataPoint> getGroupLineGraph(int metaId, int color) {
-        List<Lesson> data = DBAdmissionPercentageData.getInstance().getItemsForMetaId(metaId, MainActivity.getPreference("reverse_lesson_sort", false));
+        List<Lesson> data = DBLessons.getInstance().getItemsForMetaId(metaId, MainActivity.getPreference("reverse_lesson_sort", false));
 
         //add uebung data to graph
         DataPoint[] dataPointArray = new DataPoint[data.size()];

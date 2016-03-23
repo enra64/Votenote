@@ -22,8 +22,8 @@ import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMetaStuff.AdmissionP
 import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMetaStuff.AdmissionPercentageCalculator;
 import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMetaStuff.AdmissionPercentageMetaPojo;
 import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMetaStuff.EstimationModeDependentResults;
-import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageData;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageMeta;
+import de.oerntec.votenote.Database.TableHelpers.DBLessons;
 import de.oerntec.votenote.MainActivity;
 import de.oerntec.votenote.R;
 
@@ -69,7 +69,7 @@ public class AdmissionPercentageOverviewFragment extends Fragment {
         boolean lastestLessonFirst = MainActivity.getPreference("reverse_lesson_sort", false);
 
         //load all data
-        mAdmissionCounterMetaPojo.loadData(DBAdmissionPercentageData.getInstance(), lastestLessonFirst);
+        mAdmissionCounterMetaPojo.loadData(DBLessons.getInstance(), lastestLessonFirst);
 
         //calculate all data
         AdmissionPercentageCalculationResult data =

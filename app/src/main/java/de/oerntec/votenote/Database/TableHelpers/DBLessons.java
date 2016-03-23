@@ -30,13 +30,13 @@ import de.oerntec.votenote.Database.DatabaseCreator;
 import de.oerntec.votenote.Database.Pojo.Lesson;
 import de.oerntec.votenote.MainActivity;
 
-public class DBAdmissionPercentageData extends CrudDb<Lesson> {
+public class DBLessons extends CrudDb<Lesson> {
     /**
      * Singleton instance
      */
-    private static DBAdmissionPercentageData mInstance;
+    private static DBLessons mInstance;
 
-    private DBAdmissionPercentageData(Context context, String tableName) {
+    private DBLessons(Context context, String tableName) {
         super(context, tableName);
     }
 
@@ -46,9 +46,9 @@ public class DBAdmissionPercentageData extends CrudDb<Lesson> {
      * @param context context needed for creating the db access
      * @return the instance itself
      */
-    public static DBAdmissionPercentageData setupInstance(Context context) {
+    public static DBLessons setupInstance(Context context) {
         if (mInstance == null)
-            mInstance = new DBAdmissionPercentageData(context, DatabaseCreator.TABLE_NAME_ADMISSION_PERCENTAGES_DATA);
+            mInstance = new DBLessons(context, DatabaseCreator.TABLE_NAME_ADMISSION_PERCENTAGES_DATA);
         return mInstance;
     }
 
@@ -57,7 +57,7 @@ public class DBAdmissionPercentageData extends CrudDb<Lesson> {
      *
      * @return the singleton instance
      */
-    public static DBAdmissionPercentageData getInstance() {
+    public static DBLessons getInstance() {
         return mInstance;
     }
 

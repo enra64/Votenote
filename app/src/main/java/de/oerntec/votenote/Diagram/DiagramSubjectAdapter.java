@@ -30,8 +30,8 @@ import android.widget.Toast;
 import java.util.List;
 
 import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMetaStuff.AdmissionPercentageMetaPojo;
-import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageData;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageMeta;
+import de.oerntec.votenote.Database.TableHelpers.DBLessons;
 import de.oerntec.votenote.Database.TableHelpers.DBSubjects;
 import de.oerntec.votenote.R;
 
@@ -80,7 +80,7 @@ public class DiagramSubjectAdapter extends RecyclerView.Adapter<DiagramSubjectAd
         //set tag for later identification avoiding all
         holder.itemView.setTag(data.id);
 
-        final boolean enoughLessons = DBAdmissionPercentageData.getInstance().getItemsForMetaId(metaId, false/*sorting does not matter here*/).size() > 1;
+        final boolean enoughLessons = DBLessons.getInstance().getItemsForMetaId(metaId, false/*sorting does not matter here*/).size() > 1;
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override

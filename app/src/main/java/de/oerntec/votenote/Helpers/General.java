@@ -13,9 +13,9 @@ import android.widget.TextView;
 import java.util.Locale;
 
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionCounters;
-import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageData;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageMeta;
 import de.oerntec.votenote.Database.TableHelpers.DBLastViewed;
+import de.oerntec.votenote.Database.TableHelpers.DBLessons;
 import de.oerntec.votenote.Database.TableHelpers.DBSubjects;
 import de.oerntec.votenote.R;
 
@@ -77,7 +77,7 @@ public class General {
         //database access
         DBSubjects.setupInstance(context);
         DBAdmissionCounters.setupInstance(context);
-        DBAdmissionPercentageData.setupInstance(context);
+        DBLessons.setupInstance(context);
         DBAdmissionPercentageMeta.setupInstance(context);
         DBLastViewed.setupInstance(context);
     }

@@ -171,4 +171,5 @@
     <string name="overview_percentage">Percentage of finished assignments:</string>
     <string name="overview_remaining_required_finished_assignments">Estimated number of overall assignments required:</string>
     <string name="eula_dialog_title">End-User License Agreement for Votenote</string>
+    <string name="tutorial_create_example">Create Example</string>
 </resources>

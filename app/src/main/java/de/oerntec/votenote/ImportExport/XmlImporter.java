@@ -36,8 +36,8 @@ import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMetaStuff.AdmissionP
 import de.oerntec.votenote.Database.Pojo.Lesson;
 import de.oerntec.votenote.Database.Pojo.Subject;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionCounters;
-import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageData;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageMeta;
+import de.oerntec.votenote.Database.TableHelpers.DBLessons;
 import de.oerntec.votenote.Database.TableHelpers.DBSubjects;
 import de.oerntec.votenote.MainActivity;
 
@@ -131,7 +131,7 @@ public class XmlImporter {
     }
 
     private static void parseEntry(XmlPullParser parser) throws IOException, XmlPullParserException {
-        DBAdmissionPercentageData db = DBAdmissionPercentageData.getInstance();
+        DBLessons db = DBLessons.getInstance();
         parser.require(XmlPullParser.START_TAG, null, "row");
 
         parser.nextTag();
