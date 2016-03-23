@@ -173,4 +173,8 @@
     <string name="eula_dialog_title">Endnutzerlizenzbestimmungen für Votenote</string>
     <string name="tutorial_create_example">Beispiel erstellen</string>
     <string name="action_create_example_title">Beispiel erstellen</string>
+    <string name="example_subject_presentation_points">Vortragspunkte</string>
+    <string name="example_subject_proof_assignments_counter_name">Belegaufgabe</string>
+    <string name="example_subject_percentage_counter_1_name">Votierungszähler 1</string>
+    <string name="example_subject_percentage_counter_2_name">Votierungszähler 2</string>
 </resources>

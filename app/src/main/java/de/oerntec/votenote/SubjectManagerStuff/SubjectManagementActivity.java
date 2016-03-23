@@ -301,7 +301,7 @@ public class SubjectManagementActivity extends AppCompatActivity implements Swip
                 5,
                 12,
                 66,
-                "Votierungszähler 1",
+                getString(R.string.example_subject_percentage_counter_1_name),
                 "user",
                 80,
                 true,
@@ -314,7 +314,7 @@ public class SubjectManagementActivity extends AppCompatActivity implements Swip
                 3,
                 12,
                 50,
-                "Votierungszähler 1",
+                getString(R.string.example_subject_percentage_counter_2_name),
                 "user",
                 80,
                 false,
@@ -335,13 +335,13 @@ public class SubjectManagementActivity extends AppCompatActivity implements Swip
 
         dbAdmissionCounters.addItem(new AdmissionCounter(-1,
                 subjectId,
-                "Vortragspunkte",
+                getString(R.string.example_subject_presentation_points),
                 2,
                 3));
 
         dbAdmissionCounters.addItem(new AdmissionCounter(-1,
                 subjectId,
-                "Belegaufgabe",
+                getString(R.string.example_subject_proof_assignments_counter_name),
                 0,
                 1));
 
