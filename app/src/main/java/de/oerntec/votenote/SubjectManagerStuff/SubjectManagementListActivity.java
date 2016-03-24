@@ -286,7 +286,9 @@ public class SubjectManagementListActivity extends AppCompatActivity implements 
         return super.onOptionsItemSelected(item);
     }
 
-    private void createExample() {
+    private void createExampleForReal() {
+        setPreference("example_created", true);
+
         //these all need instances
         DBSubjects dbSubjects = DBSubjects.setupInstance(this);
         DBAdmissionPercentageMeta dbAdmissionPercentageMeta = DBAdmissionPercentageMeta.setupInstance(this);
@@ -346,6 +348,23 @@ public class SubjectManagementListActivity extends AppCompatActivity implements 
                 1));
 
         mSubjectAdapter.notifySubjectAdded();
+    }
+
+    private void createExample() {
+        if (getPreference("example_created", false)) {
+            AlertDialog.Builder b = new Builder(this);
+            b.setTitle("Beispiel hinzufügen");
+            b.setMessage("Möchtest du das Beispiel wirklich erneut hinzufügen?");
+            b.setPositiveButton("Ja", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    createExampleForReal();
+                }
+            });
+            b.setNegativeButton("Nein", null);
+            b.create().show();
+        } else
+            createExampleForReal();
     }
 
     @Override
