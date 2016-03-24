@@ -36,6 +36,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import java.util.Random;
 
@@ -289,6 +290,8 @@ public class SubjectManagementListActivity extends AppCompatActivity implements 
     private void createExampleForReal() {
         setPreference("example_created", true);
 
+        Toast.makeText(this, R.string.subject_management_example_created_toast, Toast.LENGTH_LONG).show();
+
         //these all need instances
         DBSubjects dbSubjects = DBSubjects.setupInstance(this);
         DBAdmissionPercentageMeta dbAdmissionPercentageMeta = DBAdmissionPercentageMeta.setupInstance(this);
@@ -353,15 +356,15 @@ public class SubjectManagementListActivity extends AppCompatActivity implements 
     private void createExample() {
         if (getPreference("example_created", false)) {
             AlertDialog.Builder b = new Builder(this);
-            b.setTitle("Beispiel hinzufügen");
-            b.setMessage("Möchtest du das Beispiel wirklich erneut hinzufügen?");
-            b.setPositiveButton("Ja", new DialogInterface.OnClickListener() {
+            b.setTitle(R.string.subject_management_add_example_dialog_title);
+            b.setMessage(R.string.subject_management_add_example_dialog_message);
+            b.setPositiveButton(R.string.dialog_button_yes, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     createExampleForReal();
                 }
             });
-            b.setNegativeButton("Nein", null);
+            b.setNegativeButton(R.string.dialog_button_no, null);
             b.create().show();
         } else
             createExampleForReal();

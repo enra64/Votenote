@@ -189,4 +189,9 @@
     <string name="subject_manager_main_card_add_counter">+ Point counter</string>
     <string name="subject_manager_main_card_add_percentage">+ Percentage counter</string>
     <string name="name_der_bung">Subject name</string>
+    <string name="dialog_button_no">No</string>
+    <string name="dialog_button_yes">Yes</string>
+    <string name="subject_management_add_example_dialog_message">Do you really want to add the example again?</string>
+    <string name="subject_management_add_example_dialog_title">Add example</string>
+    <string name="subject_management_example_created_toast">An example has been added</string>
 </resources>

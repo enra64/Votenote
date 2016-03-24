@@ -189,4 +189,9 @@
     <string name="subject_manager_main_card_add_percentage">+ Prozentzähler</string>
     <string name="subject_manager_main_card_add_counter">+ Punktezähler</string>
     <string name="name_der_bung">Name der Übung</string>
+    <string name="subject_management_example_created_toast">Ein Beispiel wurde erstellt</string>
+    <string name="subject_management_add_example_dialog_title">Beispiel hinzufügen</string>
+    <string name="subject_management_add_example_dialog_message">Möchtest du das Beispiel wirklich erneut hinzufügen?</string>
+    <string name="dialog_button_yes">Ja</string>
+    <string name="dialog_button_no">Nein</string>
 </resources>
