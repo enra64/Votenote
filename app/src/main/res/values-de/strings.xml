@@ -177,4 +177,6 @@
     <string name="example_subject_proof_assignments_counter_name">Belegaufgabe</string>
     <string name="example_subject_percentage_counter_1_name">Votierungszähler 1</string>
     <string name="example_subject_percentage_counter_2_name">Votierungszähler 2</string>
+    <string name="percentage_creator_dow_empty_button_text">Wochentag</string>
+    <string name="percentage_creator_time_empty_button_text">Zeit</string>
 </resources>

@@ -4,22 +4,35 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.support.annotation.Nullable;
 
 import java.util.Calendar;
 
 /**
- * Created by arne on 3/19/16.
+ * Bits and pieces to make handling the notifications and their settings easier
  */
 public class NotificationGeneralHelper {
-    public static int[] convertFromRecurrenceRule(String recurrence) {
+    /**
+     * Get the recurrence rule out of a recurrence string.
+     * If recurrence is null, it returns {0,0,0}. For each part of the recurrence string that is
+     * empty, a zero is also returned
+     *
+     * @param recurrence input string to be converted
+     * @return day, hour, minute int array corresponding to the input recurrence string
+     */
+    public static int[] convertFromRecurrenceRule(@Nullable String recurrence) {
+        if (recurrence == null || recurrence.isEmpty())
+            recurrence = "::";//baad
         String[] tmp = recurrence.split(":");
-        return new int[]{
-                Integer.parseInt(tmp[0]),
-                Integer.parseInt(tmp[1]),
-                Integer.parseInt(tmp[2])
-        };
+        int day = !tmp[0].isEmpty() ? Integer.parseInt(tmp[0]) : 0;
+        int hour = !tmp[1].isEmpty() ? Integer.parseInt(tmp[1]) : 0;
+        int minute = !tmp[2].isEmpty() ? Integer.parseInt(tmp[2]) : 0;
+        return new int[]{day, hour, minute};
     }
 
+    /**
+     * Returns a calendar set to the day of week, hour and minute given in the recurrence string
+     */
     public static Calendar getCalendar(String recurrence) {
         if (recurrence == null || recurrence.isEmpty())
             return null;
@@ -27,6 +40,9 @@ public class NotificationGeneralHelper {
         return getCalendar(tmp[0], tmp[1], tmp[2]);
     }
 
+    /**
+     * Returns a calendar set to the day of week, hour and minute given
+     */
     public static Calendar getCalendar(int day, int hour, int minute) {
         //set the calendar to the given time
         Calendar calendar = Calendar.getInstance();

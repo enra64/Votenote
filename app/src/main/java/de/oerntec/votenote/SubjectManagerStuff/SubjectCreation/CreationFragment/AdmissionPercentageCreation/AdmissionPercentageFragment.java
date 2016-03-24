@@ -1,9 +1,9 @@
 package de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.CreationFragment.AdmissionPercentageCreation;
 
+import android.app.TimePickerDialog;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,10 +15,8 @@ import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
-
-import com.github.jjobes.slidedaytimepicker.SlideDayTimeListener;
-import com.github.jjobes.slidedaytimepicker.SlideDayTimePicker;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -26,14 +24,14 @@ import java.util.Date;
 
 import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMetaStuff.AdmissionPercentageMetaPojo;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageMeta;
+import de.oerntec.votenote.Helpers.DowPickerDialog;
 import de.oerntec.votenote.Helpers.NotEmptyWatcher;
 import de.oerntec.votenote.Helpers.Notifications.NotificationGeneralHelper;
-import de.oerntec.votenote.MainActivity;
 import de.oerntec.votenote.R;
 import de.oerntec.votenote.SubjectManagerStuff.SeekerListener;
 import de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.SubjectOverview.SubjectCreationActivity;
 
-public class AdmissionPercentageFragment extends Fragment implements Button.OnClickListener, CompoundButton.OnCheckedChangeListener {
+public class AdmissionPercentageFragment extends Fragment implements Button.OnClickListener {
     public static final String SUBJECT_ID = "subject_id";
     public static final String ADMISSION_PERCENTAGE_ID = "ap_id";
     public static final String SUBJECT_IS_NEW = "subject_is_new";
@@ -61,7 +59,17 @@ public class AdmissionPercentageFragment extends Fragment implements Button.OnCl
     /**
      * Switch to set notification enabled setting
      */
-    private CheckBox mNotificationEnabledSwitch;
+    private CheckBox mNotificationEnabledCheckBox;
+
+    /**
+     * Button used to display the current notification dow and trigger the dow dialog
+     */
+    private Button mNotificationDowButton;
+
+    /**
+     * Button used to display the current notification time and trigger the time dialog
+     */
+    private Button mNotificationTimeButton;
 
     /**
      * SeekBar for choosing the value of the required percentage for getting a bonus
@@ -78,6 +86,10 @@ public class AdmissionPercentageFragment extends Fragment implements Button.OnCl
      */
     private TextView mBonusRequiredPercentageCurrentValueTextView;
 
+    /**
+     * Textview showing the title of the settings layout
+     */
+    private TextView mBonusRequiredPercentageTitleTextView;
 
     /**
      * whether or not the recurring notifications are enabled
@@ -87,7 +99,7 @@ public class AdmissionPercentageFragment extends Fragment implements Button.OnCl
     /**
      * If it exists, this string contains the old recurrence string
      */
-    private String mNotificationRecurrenceStringHint = "";
+    private String mNotificationRecurrenceStringHint = "::";
 
     /**
      * This string is:
@@ -128,11 +140,6 @@ public class AdmissionPercentageFragment extends Fragment implements Button.OnCl
      * the id used to distinguish our current savepoint
      */
     private String mSavepointId;
-
-    /**
-     * TextView used for showing displaying the current notification settings
-     */
-    private TextView mNoticationCurrentSettingsTextView;
 
     private boolean mIsOldPercentageCounter, mIsNewPercentageCounter;
 
@@ -199,12 +206,37 @@ public class AdmissionPercentageFragment extends Fragment implements Button.OnCl
 
         mEstimationModeSpinner = (Spinner) view.findViewById(R.id.percentage_creator_estimation_mode_spinner);
 
-        mBonusRequiredPercentageActivationCheckBox = (CheckBox) view.findViewById(R.id.percentage_creator_bonus_checkbox);
-        mBonusRequiredPercentageSeekBar = (SeekBar) view.findViewById(R.id.percentage_creator_bonus_seekbar);
-        mBonusRequiredPercentageCurrentValueTextView = (TextView) view.findViewById(R.id.percentage_creator_bonus_current);
+        View bonusEnabledLayout = view.findViewById(R.id.percentage_creator_bonus_enabled_layout);
+        mBonusRequiredPercentageActivationCheckBox = (CheckBox) bonusEnabledLayout.findViewById(R.id.checkbox);
+        ((TextView) bonusEnabledLayout.findViewById(R.id.title)).setText("Bonus-Votierungsgrenze aktivieren");
+        ((TextView) bonusEnabledLayout.findViewById(R.id.summary)).setText("Das Erreichen dieser Grenze gibt Bonuspunkte.");
 
-        mNotificationEnabledSwitch = (CheckBox) view.findViewById(R.id.percentage_creator_notification_checkbox);
-        mNoticationCurrentSettingsTextView = (TextView) view.findViewById(R.id.percentage_creator_notification_current);
+        View bonusSettingsLayout = view.findViewById(R.id.percentage_creator_bonus_percentage_layout);
+        mBonusRequiredPercentageSeekBar = (SeekBar) bonusSettingsLayout.findViewById(R.id.seekBar);
+        mBonusRequiredPercentageCurrentValueTextView = (TextView) bonusSettingsLayout.findViewById(R.id.current);
+        mBonusRequiredPercentageTitleTextView = (TextView) bonusSettingsLayout.findViewById(R.id.title);
+        mBonusRequiredPercentageTitleTextView.setText("Bonus-Grenze");
+
+        View notificationEnabledLayout = view.findViewById(R.id.percentage_creator_notification_enabled_layout);
+        mNotificationEnabledCheckBox = (CheckBox) notificationEnabledLayout.findViewById(R.id.checkbox);
+        ((TextView) notificationEnabledLayout.findViewById(R.id.title)).setText("Votierungserinnerung");
+        ((TextView) notificationEnabledLayout.findViewById(R.id.summary)).setText("Wöchentliche Erinnerung zu votieren.");
+
+        View notificationSettingsLayout = view.findViewById(R.id.percentage_creator_notification_buttons_layout);
+        mNotificationDowButton = (Button) notificationSettingsLayout.findViewById(R.id.left_button);
+        mNotificationDowButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onDowClicked();
+            }
+        });
+        mNotificationTimeButton = (Button) notificationSettingsLayout.findViewById(R.id.right_button);
+        mNotificationTimeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onTimeClicked();
+            }
+        });
 
         return view;
     }
@@ -265,8 +297,6 @@ public class AdmissionPercentageFragment extends Fragment implements Button.OnCl
             ((AdmissionPercentageCreationActivity) getActivity()).getSaveButton().setEnabled(false);
         }
 
-        updateCurrentNotificationSettingsView();
-
         initSeekbar(mRequiredPercentageSeekBar, mRequiredPercentageCurrentValueTextView, requiredPercentageHint, 100);
         initSeekbar(mBonusRequiredPercentageSeekBar, mBonusRequiredPercentageCurrentValueTextView, mBonusRequiredPercentageHint, 100);
 
@@ -277,23 +307,33 @@ public class AdmissionPercentageFragment extends Fragment implements Button.OnCl
 
         initBonusCheckBox();
 
-        mNotificationEnabledSwitch.setChecked(mNotificationEnabledHint);
-        mNotificationEnabledSwitch.setOnCheckedChangeListener(this);
+        updateNotificationButtons(mNotificationEnabledHint);
+
+        mNotificationEnabledCheckBox.setChecked(mNotificationEnabledHint);
+        mNotificationEnabledCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                updateNotificationButtons(isChecked);
+            }
+        });
     }
 
     private void initBonusCheckBox() {
-        mBonusRequiredPercentageActivationCheckBox.setChecked(mBonusRequiredPercentageEnabledHint);
         mBonusRequiredPercentageSeekBar.setEnabled(mBonusRequiredPercentageEnabledHint);
-        mBonusRequiredPercentageCurrentValueTextView.setVisibility(mBonusRequiredPercentageEnabledHint
-                ? View.VISIBLE : View.INVISIBLE);
+        mBonusRequiredPercentageCurrentValueTextView.setEnabled(mBonusRequiredPercentageEnabledHint);
+        mBonusRequiredPercentageTitleTextView.setEnabled(mBonusRequiredPercentageEnabledHint);
+
+        mBonusRequiredPercentageActivationCheckBox.setChecked(mBonusRequiredPercentageEnabledHint);
 
         mBonusRequiredPercentageActivationCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 mBonusRequiredPercentageSeekBar.setEnabled(isChecked);
-                mBonusRequiredPercentageCurrentValueTextView.setVisibility(isChecked ? View.VISIBLE : View.INVISIBLE);
+                mBonusRequiredPercentageCurrentValueTextView.setEnabled(isChecked);
+                mBonusRequiredPercentageTitleTextView.setEnabled(isChecked);
             }
         });
+
     }
 
     private void initEstimationModeSpinner() {
@@ -366,13 +406,13 @@ public class AdmissionPercentageFragment extends Fragment implements Button.OnCl
                 mBonusRequiredPercentageSeekBar.getProgress(),
                 mBonusRequiredPercentageActivationCheckBox.isChecked(),
                 mNotificationRecurrenceStringCurrent,
-                mNotificationEnabledSwitch.isChecked()
+                mNotificationEnabledCheckBox.isChecked()
         ));
 
         // do we need to set an alarm?
         // this works, by the way, because the current string is the hint if not changed, so it
         // contains the old string
-        if (mNotificationEnabledSwitch.isChecked()) {
+        if (mNotificationEnabledCheckBox.isChecked()) {
             NotificationGeneralHelper.setAlarmForNotification(getActivity(),
                     mSubjectId,
                     mAdmissionPercentageId,
@@ -381,8 +421,10 @@ public class AdmissionPercentageFragment extends Fragment implements Button.OnCl
             // the parent activity data about the notification time to have really correct save
             // behaviour. Since that would be quite tedious, we simply show a notification to
             // alarm the user that an alarm has now been set.
-            Toast.makeText(getActivity(), R.string.percentage_creator_notification_activated_toast, Toast.LENGTH_LONG).show();
-        } else
+            // also, only show the toast if state changed
+            if (!mNotificationEnabledHint)
+                Toast.makeText(getActivity(), R.string.percentage_creator_notification_activated_toast, Toast.LENGTH_LONG).show();
+        } else if (mNotificationEnabledHint)
             Toast.makeText(getActivity(), R.string.subject_creator_notification_deactivated_toast, Toast.LENGTH_LONG).show();
 
         //commit
@@ -414,56 +456,59 @@ public class AdmissionPercentageFragment extends Fragment implements Button.OnCl
         host.callCreatorFragmentForItemChange(resultState);
     }
 
-    private void updateCurrentNotificationSettingsView() {
+    /**
+     * Get the cow/time from the currernt recurrence string and set the button texts appropriately
+     */
+    private void updateNotificationButtons(boolean enableButtons) {
         Calendar currentCalendar = NotificationGeneralHelper.getCalendar(mNotificationRecurrenceStringCurrent);
-        SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, kk:mm");
-        if (currentCalendar != null)
-            mNoticationCurrentSettingsTextView.setText(dateFormat.format(new Date(currentCalendar.getTimeInMillis())));
-        else
-            mNoticationCurrentSettingsTextView.setVisibility(View.GONE);
+
+        if (currentCalendar != null) {
+            Date currentDate = new Date(currentCalendar.getTimeInMillis());
+            SimpleDateFormat dowFormat = new SimpleDateFormat("EEEE");
+            SimpleDateFormat timeFormat = new SimpleDateFormat("kk:mm");
+
+            mNotificationDowButton.setText(dowFormat.format(currentDate));
+            mNotificationTimeButton.setText(timeFormat.format(currentDate));
+        } else {
+            mNotificationDowButton.setText(R.string.percentage_creator_dow_empty_button_text);
+            mNotificationTimeButton.setText(R.string.percentage_creator_time_empty_button_text);
+        }
+
+        mNotificationDowButton.setEnabled(enableButtons);
+        mNotificationTimeButton.setEnabled(enableButtons);
     }
 
-    @Override
-    public void onCheckedChanged(final CompoundButton buttonView, boolean isChecked) {
-        if (isChecked) {
-            SlideDayTimePicker.Builder builder = new SlideDayTimePicker.Builder(getFragmentManager());
-            builder.setListener(new SlideDayTimeListener() {
-                @Override
-                public void onDayTimeSet(int day, int hour, int minute) {
-                    mNotificationRecurrenceStringCurrent = day + ":" + hour + ":" + minute;
+    private void onTimeClicked() {
+        final int[] settings = NotificationGeneralHelper.
+                convertFromRecurrenceRule(mNotificationRecurrenceStringCurrent);
+        TimePickerDialog dialog = new TimePickerDialog(
+                getActivity(),
+                new TimePickerDialog.OnTimeSetListener() {
+                    @Override
+                    public void onTimeSet(TimePicker view, int hour, int minute) {
+                        mNotificationRecurrenceStringCurrent = settings[0] + ":" + hour + ":" + minute;
+                        updateNotificationButtons(mNotificationEnabledCheckBox.isChecked());
+                    }
+                },
+                settings[1],
+                settings[2],
+                true
+        );
 
-                    updateCurrentNotificationSettingsView();
+        dialog.show();
+    }
 
-                    mNoticationCurrentSettingsTextView.setVisibility(View.VISIBLE);
-
-                    if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
-                        Log.i("votenote alarms", "added notification");
-                }
-
-                @Override
-                public void onDayTimeCancel() {
-                    buttonView.setChecked(false);
-                }
-            });
-
-            builder.setIs24HourTime(true);
-            builder.setIndicatorColor(R.color.colorPrimary);
-
-            if (mNotificationRecurrenceStringHint != null && !mNotificationRecurrenceStringHint.isEmpty()) {
-                String[] dowTime = mNotificationRecurrenceStringHint.split(":");
-                builder.setInitialDay(Integer.parseInt(dowTime[0]))
-                        .setInitialHour(Integer.parseInt(dowTime[1]))
-                        .setInitialMinute(Integer.parseInt(dowTime[2]));
-            } else {
-                builder.setInitialDay(Calendar.MONDAY)
-                        .setInitialHour(9)
-                        .setInitialMinute(0);
+    private void onDowClicked() {
+        final int[] settings = NotificationGeneralHelper.
+                convertFromRecurrenceRule(mNotificationRecurrenceStringCurrent);
+        DowPickerDialog d = DowPickerDialog.newInstance(settings[0]);
+        d.setOnDowPickedListener(new DowPickerDialog.DowPickedListener() {
+            @Override
+            public void onDowPicked(int dow) {
+                mNotificationRecurrenceStringCurrent = dow + ":" + settings[1] + ":" + settings[2];
+                updateNotificationButtons(mNotificationEnabledCheckBox.isChecked());
             }
-
-            builder.build().show();
-        } else {
-            mNotificationRecurrenceStringCurrent = null;
-            mNoticationCurrentSettingsTextView.setVisibility(View.GONE);
-        }
+        });
+        d.show(getFragmentManager(), "votenote dowpicker");
     }
 }

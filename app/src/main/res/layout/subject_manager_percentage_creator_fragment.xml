@@ -43,53 +43,21 @@
             android:minHeight="?android:attr/listPreferredItemHeight"
             android:textSize="20sp" />
 
-        <RelativeLayout
-            android:id="@+id/relativeLayout8"
-            android:layout_width="wrap_content"
+        <include
+            android:id="@+id/percentage_creator_notification_enabled_layout"
+            layout="@layout/settings_checkbox"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_below="@+id/percentage_creator_name_edittext"
-            android:layout_marginLeft="10dp"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="12dp"
-            android:minHeight="?android:attr/listPreferredItemHeight">
+            android:layout_below="@id/percentage_creator_name_edittext"
+            android:layout_marginTop="8dp" />
 
-            <RelativeLayout
-                android:id="@+id/relativeLayout27"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <CheckBox
-                    android:id="@+id/percentage_creator_notification_checkbox"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true" />
-
-                <TextView
-                    android:id="@+id/subject_manager_fragment_percentage_creator_fragment_checkbox_title"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:text="@string/percentage_creator_enable_vote_notification_title"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:textSize="20sp" />
-            </RelativeLayout>
-
-
-            <TextView
-                android:id="@+id/percentage_creator_notification_current"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:layout_below="@+id/relativeLayout27"
-                android:text="Samstags, 18:00"
-                android:textAppearance="?android:attr/textAppearanceSmall" />
-        </RelativeLayout>
-
+        <include
+            android:id="@+id/percentage_creator_notification_buttons_layout"
+            layout="@layout/settings_dow_time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/percentage_creator_notification_enabled_layout"
+            android:layout_marginTop="8dp" />
 
         <TextView
             android:id="@+id/header_percentages"
@@ -97,7 +65,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:layout_below="@+id/relativeLayout8"
+            android:layout_below="@+id/percentage_creator_notification_buttons_layout"
             android:layout_marginLeft="10dp"
             android:layout_marginStart="10dp"
             android:layout_marginTop="16dp"
@@ -111,77 +79,25 @@
             android:id="@+id/percentage_creator_baseline_percentage_layout"
             layout="@layout/settings_seekbar"
             android:layout_width="match_parent"
-            android:layout_height="?android:attr/listPreferredItemHeight"
+            android:layout_height="wrap_content"
             android:layout_below="@id/header_percentages"
             android:layout_marginTop="8dp" />
 
-        <RelativeLayout
-            android:id="@+id/relativeLayout10"
+        <include
+            android:id="@+id/percentage_creator_bonus_enabled_layout"
+            layout="@layout/settings_checkbox"
             android:layout_width="match_parent"
-            android:layout_height="?android:attr/listPreferredItemHeight"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_below="@+id/percentage_creator_baseline_percentage_layout">
+            android:layout_height="wrap_content"
+            android:layout_below="@id/percentage_creator_baseline_percentage_layout"
+            android:layout_marginTop="8dp" />
 
-            <RelativeLayout
-                android:id="@+id/relativeLayout9"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true">
-
-                <CheckBox
-                    android:id="@+id/percentage_creator_bonus_checkbox"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true" />
-
-                <TextView
-                    android:id="@+id/textView21"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginStart="10dp"
-                    android:text="@string/bonus_votierungsgrenze"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:textSize="20sp" />
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/relativeLayout9">
-
-                <SeekBar
-                    android:id="@+id/percentage_creator_bonus_seekbar"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
-                    android:layout_alignParentStart="true"
-                    android:layout_centerVertical="true"
-                    android:layout_toLeftOf="@+id/percentage_creator_bonus_current"
-                    android:layout_toStartOf="@+id/percentage_creator_bonus_current" />
-
-                <TextView
-                    android:id="@+id/percentage_creator_bonus_current"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"
-                    android:layout_marginEnd="10dp"
-                    android:layout_marginRight="10dp"
-                    android:text="50"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:textColor="@android:color/secondary_text_dark"
-                    android:textSize="20sp" />
-            </RelativeLayout>
-
-
-        </RelativeLayout>
+        <include
+            android:id="@+id/percentage_creator_bonus_percentage_layout"
+            layout="@layout/settings_seekbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/percentage_creator_bonus_enabled_layout"
+            android:layout_marginTop="8dp" />
 
         <TextView
             android:id="@+id/header_estimations"
@@ -189,7 +105,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:layout_below="@+id/relativeLayout10"
+            android:layout_below="@+id/percentage_creator_bonus_percentage_layout"
             android:layout_marginLeft="10dp"
             android:layout_marginStart="10dp"
             android:layout_marginTop="16dp"
