@@ -19,8 +19,7 @@
             android:layout_marginRight="10dp"
             android:text="50"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textColor="@android:color/secondary_text_dark"
-            android:textSize="20sp" />
+            android:textColor="@android:color/secondary_text_dark" />
 
         <TextView
             android:id="@+id/title"
@@ -29,8 +28,7 @@
             android:layout_marginLeft="10dp"
             android:layout_marginStart="10dp"
             android:text="@string/subjectmanager_needed_work"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textSize="20sp" />
+            android:textAppearance="?android:attr/textAppearanceLarge" />
 
         <SeekBar
             android:id="@+id/seekBar"
