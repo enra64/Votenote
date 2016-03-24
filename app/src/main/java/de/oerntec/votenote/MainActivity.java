@@ -518,7 +518,8 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
     @Override
     protected void onPause() {
         super.onPause();
-        getCurrentAdmissionPercentageFragment().trySavepointRelease();
+        AdmissionPercentageFragment test = getCurrentAdmissionPercentageFragment();
+        if (test != null) test.trySavepointRelease();
     }
 
     public AdmissionPercentageFragment getCurrentAdmissionPercentageFragment() {

@@ -478,6 +478,7 @@ public class AdmissionPercentageFragment extends Fragment implements Button.OnCl
         mNotificationDowButton.setEnabled(enableButtons);
         mNotificationTimeButton.setEnabled(enableButtons);
 
+        //noinspection deprecation
         int color = getResources().getColor(enableButtons ?
                 R.color.enabled_button_text : R.color.disabled_button_text);
 

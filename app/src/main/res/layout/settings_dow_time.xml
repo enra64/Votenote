@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:minHeight="?android:listPreferredItemHeight">
@@ -9,7 +10,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:gravity="center"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        tools:ignore="UselessParent">
 
         <Button
             android:id="@+id/left_button"
@@ -17,7 +19,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Left Button"
-            android:theme="@style/GreenButton" />
+            android:theme="@style/GreenButton"
+            tools:ignore="HardcodedText" />
 
         <Button
             android:id="@+id/right_button"
@@ -25,6 +28,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Right Button"
-            android:theme="@style/GreenButton" />
+            android:theme="@style/GreenButton"
+            tools:ignore="HardcodedText" />
     </LinearLayout>
 </FrameLayout>
