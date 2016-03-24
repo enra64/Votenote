@@ -88,7 +88,7 @@
     <string name="voted_assignments_info_card">voted assignments</string>
     <string name="pref_updates">General information</string>
     <string name="diagram_not_enough_entries">Not enough lessons!</string>
-    <string name="create_new_subject_command">Go to "Settings/Subject management" to create your first subject!</string>
+    <string name="create_new_subject_command">Lets go to the Settings to create your first subject!</string>
     <string name="undobar_deleted">Removed!</string>
     <string name="infoview_vote_average_no_data">No data</string>
     <string name="eula">The Software is provided to you on an "AS IS" basis, without any technical support or warranty of any kind including, without limitation, any warranty or condition of merchantability, fitness for a particular purpose and non-infringement.</string>
@@ -182,8 +182,11 @@
     <string name="percentage_creator_bonus_percentage_settigns_title">Bonus target</string>
     <string name="percentage_creator_dow_empty_button_text">Day of Week</string>
     <string name="percentage_creator_notification_enabled_summary">Weekly reminder to add an entry.</string>
-    <string name="percentage_creator_notification_enabled_title">Entry reminder</string>
+    <string name="percentage_creator_notification_enabled_title">Remind me</string>
     <string name="percentage_creator_time_empty_button_text">Time</string>
     <string name="subject_adapter_card_counter_count">%1$d Admission Counters</string>
     <string name="subject_adapter_percentage_count">%1$d Percentage Admission Counters</string>
+    <string name="subject_manager_main_card_add_counter">+ Point counter</string>
+    <string name="subject_manager_main_card_add_percentage">+ Percentage counter</string>
+    <string name="name_der_bung">Subject name</string>
 </resources>

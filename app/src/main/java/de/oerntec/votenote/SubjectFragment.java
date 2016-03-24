@@ -158,10 +158,7 @@ public class SubjectFragment extends Fragment {
      * get the currently displayed fragment
      */
     public AdmissionPercentageFragment getCurrentFragment() {
-        AdmissionPercentageFragment current = mAdmissionPercentageAdapter.getFragmentInstance(mViewPager.getCurrentItem());
-        if (current == null)
-            throw new AssertionError("could not find current fragment");
-        return current;
+        return mAdmissionPercentageAdapter.getFragmentInstance(mViewPager.getCurrentItem());
     }
 
     /**
@@ -295,8 +292,6 @@ public class SubjectFragment extends Fragment {
          */
         public AdmissionPercentageFragment getFragmentInstance(Integer requestedPosition) {
             AdmissionPercentageFragment instance = mReferenceMap.get(requestedPosition);
-            if(instance == null)
-                throw new AssertionError("could not find an admission percentage fragment at " + requestedPosition);
             return instance;
         }
 

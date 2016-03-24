@@ -25,6 +25,7 @@ import java.util.Date;
 import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMetaStuff.AdmissionPercentageMetaPojo;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageMeta;
 import de.oerntec.votenote.Helpers.DowPickerDialog;
+import de.oerntec.votenote.Helpers.General;
 import de.oerntec.votenote.Helpers.NotEmptyWatcher;
 import de.oerntec.votenote.Helpers.Notifications.NotificationGeneralHelper;
 import de.oerntec.votenote.R;
@@ -47,7 +48,7 @@ public class AdmissionPercentageFragment extends Fragment implements Button.OnCl
             mEstimatedAssignmentsPerLessonCurrentValueTextView,
             mEstimatedLessonCountCurrentValueTextView;
     private SeekBar
-            mRequiredPercentageSeekBar,
+            mBaselinePercentageSeekBar,
             mEstimatedAssignmentsPerLessonSeekBar,
             mEstimatedLessonCountSeekBar;
 
@@ -74,7 +75,7 @@ public class AdmissionPercentageFragment extends Fragment implements Button.OnCl
     /**
      * SeekBar for choosing the value of the required percentage for getting a bonus
      */
-    private SeekBar mBonusRequiredPercentageSeekBar;
+    private SeekBar mBonusPercentageSeekBar;
 
     /**
      * CheckBox to enable the bonus percentage system
@@ -84,7 +85,7 @@ public class AdmissionPercentageFragment extends Fragment implements Button.OnCl
     /**
      * TextView to show the currently chosen bonus value
      */
-    private TextView mBonusRequiredPercentageCurrentValueTextView;
+    private TextView mBonusPercentageCurrentValueTextView;
 
     /**
      * Textview showing the title of the settings layout
@@ -113,7 +114,7 @@ public class AdmissionPercentageFragment extends Fragment implements Button.OnCl
     /**
      * Integer containing the default or the old value for the bonus percentage
      */
-    private int mBonusRequiredPercentageHint = 50;
+    private int mBonusPercentageHint = 80;
 
     /**
      * Boolean containing the default/old activation state for the bonus percentage seekbar
@@ -192,7 +193,7 @@ public class AdmissionPercentageFragment extends Fragment implements Button.OnCl
 
         View baselinePercentageLayout = view.findViewById(R.id.percentage_creator_baseline_percentage_layout);
         mRequiredPercentageCurrentValueTextView = (TextView) baselinePercentageLayout.findViewById(R.id.current);
-        mRequiredPercentageSeekBar = (SeekBar) baselinePercentageLayout.findViewById(R.id.seekBar);
+        mBaselinePercentageSeekBar = (SeekBar) baselinePercentageLayout.findViewById(R.id.seekBar);
         ((TextView) baselinePercentageLayout.findViewById(R.id.title)).setText(R.string.subjectmanager_needed_work);
 
         View estimatedAssignmentsPerLessonLayout = view.findViewById(R.id.percentage_creator_estimated_assignments_per_lesson_layout);
@@ -213,8 +214,8 @@ public class AdmissionPercentageFragment extends Fragment implements Button.OnCl
         ((TextView) bonusEnabledLayout.findViewById(R.id.summary)).setText(R.string.percentage_creator_bonus_enabled_summary);
 
         View bonusSettingsLayout = view.findViewById(R.id.percentage_creator_bonus_percentage_layout);
-        mBonusRequiredPercentageSeekBar = (SeekBar) bonusSettingsLayout.findViewById(R.id.seekBar);
-        mBonusRequiredPercentageCurrentValueTextView = (TextView) bonusSettingsLayout.findViewById(R.id.current);
+        mBonusPercentageSeekBar = (SeekBar) bonusSettingsLayout.findViewById(R.id.seekBar);
+        mBonusPercentageCurrentValueTextView = (TextView) bonusSettingsLayout.findViewById(R.id.current);
         mBonusRequiredPercentageTitleTextView = (TextView) bonusSettingsLayout.findViewById(R.id.title);
         mBonusRequiredPercentageTitleTextView.setText(R.string.percentage_creator_bonus_percentage_settigns_title);
 
@@ -266,7 +267,7 @@ public class AdmissionPercentageFragment extends Fragment implements Button.OnCl
         estimatedAssignmentsHint = oldState.userAssignmentsPerLessonEstimation;
         estimatedLessonCountHint = oldState.userLessonCountEstimation;
         mEstimationModeHint = oldState.getEstimationModeAsString();
-        mBonusRequiredPercentageHint = oldState.bonusTargetPercentage;
+        mBonusPercentageHint = oldState.bonusTargetPercentage;
         mBonusRequiredPercentageEnabledHint = oldState.bonusTargetPercentageEnabled;
 
         mNotificationEnabledHint = oldState.notificationEnabled;
@@ -298,11 +299,13 @@ public class AdmissionPercentageFragment extends Fragment implements Button.OnCl
             ((AdmissionPercentageCreationActivity) getActivity()).getSaveButton().setEnabled(false);
         }
 
-        initSeekbar(mRequiredPercentageSeekBar, mRequiredPercentageCurrentValueTextView, requiredPercentageHint, 100);
-        initSeekbar(mBonusRequiredPercentageSeekBar, mBonusRequiredPercentageCurrentValueTextView, mBonusRequiredPercentageHint, 100);
+        initSeekbar(mBaselinePercentageSeekBar, mRequiredPercentageCurrentValueTextView, requiredPercentageHint, 100);
+        initSeekbar(mBonusPercentageSeekBar, mBonusPercentageCurrentValueTextView, mBonusPercentageHint, 100);
 
         initSeekbar(mEstimatedAssignmentsPerLessonSeekBar, mEstimatedAssignmentsPerLessonCurrentValueTextView, estimatedAssignmentsHint, 50);
         initSeekbar(mEstimatedLessonCountSeekBar, mEstimatedLessonCountCurrentValueTextView, estimatedLessonCountHint, 50);
+
+        createBonusSeekbarLimitEnforcer();
 
         initEstimationModeSpinner();
 
@@ -319,9 +322,34 @@ public class AdmissionPercentageFragment extends Fragment implements Button.OnCl
         });
     }
 
+    private void createBonusSeekbarLimitEnforcer() {
+        mBonusPercentageSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                int adjustedProgress = progress;
+                int baselineProgress = mBaselinePercentageSeekBar.getProgress();
+                if (progress < baselineProgress)
+                    adjustedProgress = baselineProgress;
+                seekBar.setProgress(adjustedProgress);
+                mBonusPercentageCurrentValueTextView.setText(String.format(
+                        General.getCurrentLocale(getActivity()),
+                        "%d",
+                        adjustedProgress));
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+            }
+        });
+    }
+
     private void initBonusCheckBox() {
-        mBonusRequiredPercentageSeekBar.setEnabled(mBonusRequiredPercentageEnabledHint);
-        mBonusRequiredPercentageCurrentValueTextView.setEnabled(mBonusRequiredPercentageEnabledHint);
+        mBonusPercentageSeekBar.setEnabled(mBonusRequiredPercentageEnabledHint);
+        mBonusPercentageCurrentValueTextView.setEnabled(mBonusRequiredPercentageEnabledHint);
         mBonusRequiredPercentageTitleTextView.setEnabled(mBonusRequiredPercentageEnabledHint);
 
         mBonusRequiredPercentageActivationCheckBox.setChecked(mBonusRequiredPercentageEnabledHint);
@@ -329,8 +357,8 @@ public class AdmissionPercentageFragment extends Fragment implements Button.OnCl
         mBonusRequiredPercentageActivationCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                mBonusRequiredPercentageSeekBar.setEnabled(isChecked);
-                mBonusRequiredPercentageCurrentValueTextView.setEnabled(isChecked);
+                mBonusPercentageSeekBar.setEnabled(isChecked);
+                mBonusPercentageCurrentValueTextView.setEnabled(isChecked);
                 mBonusRequiredPercentageTitleTextView.setEnabled(isChecked);
             }
         });
@@ -401,10 +429,10 @@ public class AdmissionPercentageFragment extends Fragment implements Button.OnCl
                 mSubjectId,
                 mEstimatedAssignmentsPerLessonSeekBar.getProgress(),
                 mEstimatedLessonCountSeekBar.getProgress(),
-                mRequiredPercentageSeekBar.getProgress(),
+                mBaselinePercentageSeekBar.getProgress(),
                 nameInput.getText().toString(),
                 mCurrentEstimationMode,
-                mBonusRequiredPercentageSeekBar.getProgress(),
+                mBonusPercentageSeekBar.getProgress(),
                 mBonusRequiredPercentageActivationCheckBox.isChecked(),
                 mNotificationRecurrenceStringCurrent,
                 mNotificationEnabledCheckBox.isChecked()

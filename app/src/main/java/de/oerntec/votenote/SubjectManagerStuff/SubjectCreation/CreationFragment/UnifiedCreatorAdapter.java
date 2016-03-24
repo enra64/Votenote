@@ -16,6 +16,7 @@ import de.oerntec.votenote.Database.Pojo.AdmissionCounter;
 import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMetaStuff.AdmissionPercentageMetaPojo;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionCounters;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageMeta;
+import de.oerntec.votenote.Helpers.NotEmptyWatcher;
 import de.oerntec.votenote.R;
 import de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.SubjectOverview.Dialogs;
 
@@ -38,13 +39,21 @@ public class UnifiedCreatorAdapter extends RecyclerView.Adapter<UnifiedCreatorAd
     private Context mContext;
     private FragmentManager mFragmentManager;
 
+    private Button mParentOkButton;
+
     /**
      * Instance of the calling subject creation fragment, because we want to create the intents for
      * admission percentage counters there
      */
     private SubjectCreationFragment mSubjectCreationFragment;
 
-    public UnifiedCreatorAdapter(Context context, SubjectCreationFragment subjectCreationFragment, FragmentManager fragmentManager, String subjectName, int subjectId) {
+    public UnifiedCreatorAdapter(
+            Context context,
+            SubjectCreationFragment subjectCreationFragment,
+            FragmentManager fragmentManager,
+            String subjectName,
+            int subjectId,
+            Button okButton) {
         mContext = context;
         mCounterDb = DBAdmissionCounters.getInstance();
         mPercentageDb = DBAdmissionPercentageMeta.getInstance();
@@ -52,6 +61,7 @@ public class UnifiedCreatorAdapter extends RecyclerView.Adapter<UnifiedCreatorAd
         mSubjectId = subjectId;
         mFragmentManager = fragmentManager;
         mSubjectCreationFragment = subjectCreationFragment;
+        mParentOkButton = okButton;
         requery();
     }
 
@@ -65,8 +75,8 @@ public class UnifiedCreatorAdapter extends RecyclerView.Adapter<UnifiedCreatorAd
                 InfoViewHolder infoHolder = new InfoViewHolder(root);
                 infoHolder.percentageAddButton = (Button) root.findViewById(R.id.subject_manager_fragment_main_card_add_percentage_counter);
                 infoHolder.counterAddButton = (Button) root.findViewById(R.id.subject_manager_fragment_main_card_add_counter);
-                infoHolder.name = (EditText) root.findViewById(R.id.subject_manager_fragment_main_card_name);
                 mNameInput = (EditText) root.findViewById(R.id.subject_manager_fragment_main_card_name);
+                infoHolder.name = mNameInput;
                 return infoHolder;
             case VIEW_COUNTER:
                 root = inflater.inflate(R.layout.subject_manager_fragment_counter_card, parent, false);
@@ -94,6 +104,7 @@ public class UnifiedCreatorAdapter extends RecyclerView.Adapter<UnifiedCreatorAd
                 InfoViewHolder infoHolder = (InfoViewHolder) holder;
                 if(mSubjectName != null)
                     infoHolder.name.setText(mSubjectName);
+                infoHolder.name.addTextChangedListener(new NotEmptyWatcher(infoHolder.name, mParentOkButton));
                 infoHolder.itemView.setTag(-1);
                 infoHolder.counterAddButton.setOnClickListener(this);
                 infoHolder.percentageAddButton.setOnClickListener(this);

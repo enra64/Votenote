@@ -41,15 +41,6 @@ public class General {
     }
 
     /**
-     * yeah so uuh fuck android keyboard management
-     * https://stackoverflow.com/questions/1109022/close-hide-the-android-soft-keyboard/17789187#17789187
-     */
-    public static void nukeKeyboard(Context context, View view) {
-        InputMethodManager inputMethodManager = (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
-        inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
-    }
-
-    /**
      * Changes the app langugage
      *
      * @param context Context to adjust in
@@ -68,6 +59,14 @@ public class General {
             res.updateConfiguration(conf, dm);
         }
         return languagePreference;
+    }
+
+    public static Locale getCurrentLocale(Context context) {
+        String languagePreference = PreferenceManager.getDefaultSharedPreferences(context).getString("language", "default");
+        if ("default".equals(languagePreference))
+            return new Locale("de");
+        else
+            return new Locale(languagePreference.toLowerCase());
     }
 
     /**

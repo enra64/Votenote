@@ -176,20 +176,25 @@ public class SubjectCreationFragment extends Fragment implements SubjectCreation
 
         //this is the list containing both admission counters and admission percentage counters
         mList = (RecyclerView) input.findViewById(R.id.subject_creator_unified_counter_list);
-        initializeList(mList);
 
         //find the giant button bar and attach the listeners
-        input.findViewById(R.id.giant_ok_button).setOnClickListener(this);
+        Button okButton = (Button) input.findViewById(R.id.giant_ok_button);
+        okButton.setOnClickListener(this);
+        if (mIsNewSubject)
+            okButton.setEnabled(false);
+
         input.findViewById(R.id.giant_cancel_button).setOnClickListener(this);
 
         mDeleteButton = (Button) input.findViewById(R.id.giant_delete_button);
         mDeleteButton.setOnClickListener(this);
 
+        initializeList(mList, okButton);
+
         return input;
     }
 
     @SuppressWarnings("unchecked")
-    private void initializeList(RecyclerView recyclerView) {
+    private void initializeList(RecyclerView recyclerView, Button okButton) {
         //config the recyclerview
         recyclerView.setHasFixedSize(true);
 
@@ -198,7 +203,13 @@ public class SubjectCreationFragment extends Fragment implements SubjectCreation
         manager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(manager);
 
-        mAdapter = new UnifiedCreatorAdapter(getActivity(), this, getFragmentManager(), mIsNewSubject ? null : mOldSubjectName, mSubjectId);
+        mAdapter = new UnifiedCreatorAdapter(
+                getActivity(),
+                this,
+                getFragmentManager(),
+                mIsNewSubject ? null : mOldSubjectName,
+                mSubjectId,
+                okButton);
         recyclerView.setAdapter(mAdapter);
 
         recyclerView.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), recyclerView, new OnItemClickListener() {

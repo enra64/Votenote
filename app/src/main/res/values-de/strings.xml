@@ -88,7 +88,7 @@
     <string name="voted_assignments_info_card">votierte Aufgaben</string>
     <string name="pref_updates">Allgemeine Informationen</string>
     <string name="diagram_not_enough_entries">Nicht genug Einträge!</string>
-    <string name="create_new_subject_command">Unter "Einstellungen/Übungen" verwalten kannst du deine erste Übung hinzufügen</string>
+    <string name="create_new_subject_command">In den Einstellungen kannst du Übungen hinzufügen!</string>
     <string name="undobar_deleted">Gelöscht!</string>
     <string name="infoview_vote_average_no_data">Keine Einträge</string>
     <string name="eula">The Software is provided to you on an "AS IS" basis, without any technical support or warranty of any kind including, without limitation, any warranty or condition of merchantability, fitness for a particular purpose and non-infringement.</string>
@@ -180,10 +180,13 @@
     <string name="percentage_creator_dow_empty_button_text">Wochentag</string>
     <string name="percentage_creator_time_empty_button_text">Zeit</string>
     <string name="percentage_creator_notification_enabled_summary">Wöchentliche Erinnerung zu votieren.</string>
-    <string name="percentage_creator_notification_enabled_title">Votierungserinnerung</string>
+    <string name="percentage_creator_notification_enabled_title">Erinnerung</string>
     <string name="percentage_creator_bonus_percentage_settigns_title">Bonus-Grenze</string>
     <string name="percentage_creator_bonus_enabled_title">Bonus-Votierungsgrenze aktivieren</string>
     <string name="percentage_creator_bonus_enabled_summary">Das Erreichen dieser Grenze gibt Bonuspunkte.</string>
     <string name="subject_adapter_card_counter_count">%1$d Punktezähler</string>
     <string name="subject_adapter_percentage_count">%1$d Prozentzähler</string>
+    <string name="subject_manager_main_card_add_percentage">+ Prozentzähler</string>
+    <string name="subject_manager_main_card_add_counter">+ Punktezähler</string>
+    <string name="name_der_bung">Name der Übung</string>
 </resources>

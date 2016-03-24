@@ -143,7 +143,6 @@ public class DBAdmissionPercentageMeta extends CrudDb<AdmissionPercentageMetaPoj
      *
      * @param id the admission counter id to search for
      */
-    @Deprecated
     public void deleteItem(int id) {
         String[] whereArgs = new String[]{String.valueOf(id)};
         int delCount = mDatabase.delete(DatabaseCreator.TABLE_NAME_ADMISSION_PERCENTAGES_META, DatabaseCreator.ADMISSION_PERCENTAGES_META_ID + "=?", whereArgs);
