@@ -177,4 +177,11 @@
     <string name="example_subject_percentage_counter_2_name">Percentage counter 2</string>
     <string name="example_subject_presentation_points">Presentation points</string>
     <string name="example_subject_proof_assignments_counter_name">Proof assignments</string>
+    <string name="percentage_creator_bonus_enabled_summary">Reaching this target grants bonuses.</string>
+    <string name="percentage_creator_bonus_enabled_title">Enable bonus target</string>
+    <string name="percentage_creator_bonus_percentage_settigns_title">Bonus target</string>
+    <string name="percentage_creator_dow_empty_button_text">Day of Week</string>
+    <string name="percentage_creator_notification_enabled_summary">Weekly reminder to add an entry.</string>
+    <string name="percentage_creator_notification_enabled_title">Entry reminder</string>
+    <string name="percentage_creator_time_empty_button_text">Time</string>
 </resources>

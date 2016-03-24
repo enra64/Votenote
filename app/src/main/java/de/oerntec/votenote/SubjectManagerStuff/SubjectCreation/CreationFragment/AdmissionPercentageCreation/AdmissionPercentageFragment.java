@@ -99,6 +99,7 @@ public class AdmissionPercentageFragment extends Fragment implements Button.OnCl
     /**
      * If it exists, this string contains the old recurrence string
      */
+    @SuppressWarnings("FieldCanBeLocal")
     private String mNotificationRecurrenceStringHint = "::";
 
     /**
@@ -208,19 +209,19 @@ public class AdmissionPercentageFragment extends Fragment implements Button.OnCl
 
         View bonusEnabledLayout = view.findViewById(R.id.percentage_creator_bonus_enabled_layout);
         mBonusRequiredPercentageActivationCheckBox = (CheckBox) bonusEnabledLayout.findViewById(R.id.checkbox);
-        ((TextView) bonusEnabledLayout.findViewById(R.id.title)).setText("Bonus-Votierungsgrenze aktivieren");
-        ((TextView) bonusEnabledLayout.findViewById(R.id.summary)).setText("Das Erreichen dieser Grenze gibt Bonuspunkte.");
+        ((TextView) bonusEnabledLayout.findViewById(R.id.title)).setText(R.string.percentage_creator_bonus_enabled_title);
+        ((TextView) bonusEnabledLayout.findViewById(R.id.summary)).setText(R.string.percentage_creator_bonus_enabled_summary);
 
         View bonusSettingsLayout = view.findViewById(R.id.percentage_creator_bonus_percentage_layout);
         mBonusRequiredPercentageSeekBar = (SeekBar) bonusSettingsLayout.findViewById(R.id.seekBar);
         mBonusRequiredPercentageCurrentValueTextView = (TextView) bonusSettingsLayout.findViewById(R.id.current);
         mBonusRequiredPercentageTitleTextView = (TextView) bonusSettingsLayout.findViewById(R.id.title);
-        mBonusRequiredPercentageTitleTextView.setText("Bonus-Grenze");
+        mBonusRequiredPercentageTitleTextView.setText(R.string.percentage_creator_bonus_percentage_settigns_title);
 
         View notificationEnabledLayout = view.findViewById(R.id.percentage_creator_notification_enabled_layout);
         mNotificationEnabledCheckBox = (CheckBox) notificationEnabledLayout.findViewById(R.id.checkbox);
-        ((TextView) notificationEnabledLayout.findViewById(R.id.title)).setText("Votierungserinnerung");
-        ((TextView) notificationEnabledLayout.findViewById(R.id.summary)).setText("Wöchentliche Erinnerung zu votieren.");
+        ((TextView) notificationEnabledLayout.findViewById(R.id.title)).setText(R.string.percentage_creator_notification_enabled_title);
+        ((TextView) notificationEnabledLayout.findViewById(R.id.summary)).setText(R.string.percentage_creator_notification_enabled_summary);
 
         View notificationSettingsLayout = view.findViewById(R.id.percentage_creator_notification_buttons_layout);
         mNotificationDowButton = (Button) notificationSettingsLayout.findViewById(R.id.left_button);

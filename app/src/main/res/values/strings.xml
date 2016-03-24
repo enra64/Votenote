@@ -185,4 +185,9 @@
     <string name="example_subject_percentage_counter_2_name">Votierungszähler 2</string>
     <string name="percentage_creator_dow_empty_button_text">Wochentag</string>
     <string name="percentage_creator_time_empty_button_text">Zeit</string>
+    <string name="percentage_creator_notification_enabled_summary">Wöchentliche Erinnerung zu votieren.</string>
+    <string name="percentage_creator_notification_enabled_title">Votierungserinnerung</string>
+    <string name="percentage_creator_bonus_percentage_settigns_title">Bonus-Grenze</string>
+    <string name="percentage_creator_bonus_enabled_title">Bonus-Votierungsgrenze aktivieren</string>
+    <string name="percentage_creator_bonus_enabled_summary">Das Erreichen dieser Grenze gibt Bonuspunkte.</string>
 </resources>
