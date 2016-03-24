@@ -56,7 +56,7 @@ import de.oerntec.votenote.R;
 import de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.SubjectOverview.SubjectCreationActivity;
 
 @SuppressLint("InflateParams")
-public class SubjectManagementActivity extends AppCompatActivity implements SwipeDeletion.UndoSnackBarHost {
+public class SubjectManagementListActivity extends AppCompatActivity implements SwipeDeletion.UndoSnackBarHost {
     /**
      * Lesson is to be added, not changed
      */
@@ -193,7 +193,7 @@ public class SubjectManagementActivity extends AppCompatActivity implements Swip
     }
 
     private void showSubjectCreator(int subjectId, int recyclerViewPosition) {
-        Intent subjectManagerIntent = new Intent(SubjectManagementActivity.this, SubjectCreationActivity.class);
+        Intent subjectManagerIntent = new Intent(SubjectManagementListActivity.this, SubjectCreationActivity.class);
         subjectManagerIntent.putExtra(SubjectCreationActivity.ARG_CREATOR_SUBJECT_ID, subjectId);
         //a -1 does not matter, its default anyways
         subjectManagerIntent.putExtra(SubjectCreationActivity.ARG_CREATOR_VIEW_POSITION, recyclerViewPosition);

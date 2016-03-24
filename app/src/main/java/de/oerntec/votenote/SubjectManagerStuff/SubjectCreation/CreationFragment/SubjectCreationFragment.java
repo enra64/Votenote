@@ -31,7 +31,7 @@ import de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.CreationFragment.
 import de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.SubjectOverview.Dialogs;
 import de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.SubjectOverview.SubjectCreationActivity;
 import de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.SubjectOverview.SubjectCreationDialogInterface;
-import de.oerntec.votenote.SubjectManagerStuff.SubjectManagementActivity;
+import de.oerntec.votenote.SubjectManagerStuff.SubjectManagementListActivity;
 
 /**
  * This fragment holds the actual ui/ux for creating a new subject, as opposed to the subject creation
@@ -308,11 +308,11 @@ public class SubjectCreationFragment extends Fragment implements SubjectCreation
 
     private void setActivityResult(boolean delete) {
         if (delete)
-            getActivity().setResult(SubjectManagementActivity.SUBJECT_CREATOR_RESULT_DELETE, getCurrentResultIntent());
+            getActivity().setResult(SubjectManagementListActivity.SUBJECT_CREATOR_RESULT_DELETE, getCurrentResultIntent());
         else if (mIsNewSubject)
-            getActivity().setResult(SubjectManagementActivity.SUBJECT_CREATOR_RESULT_NEW, getCurrentResultIntent());
+            getActivity().setResult(SubjectManagementListActivity.SUBJECT_CREATOR_RESULT_NEW, getCurrentResultIntent());
         else
-            getActivity().setResult(SubjectManagementActivity.SUBJECT_CREATOR_RESULT_CHANGED, getCurrentResultIntent());
+            getActivity().setResult(SubjectManagementListActivity.SUBJECT_CREATOR_RESULT_CHANGED, getCurrentResultIntent());
     }
 
     /**

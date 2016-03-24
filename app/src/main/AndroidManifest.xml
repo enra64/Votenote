@@ -33,7 +33,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".SubjectManagerStuff.SubjectManagementActivity"
+            android:name=".SubjectManagerStuff.SubjectManagementListActivity"
             android:label="@string/title_activity_group_management"
             android:parentActivityName=".Preferences.PreferencesActivity"
             android:windowSoftInputMode="stateHidden">
@@ -69,11 +69,11 @@
         <activity
             android:name=".SubjectManagerStuff.SubjectCreation.SubjectOverview.SubjectCreationActivity"
             android:label="@string/title_activity_subject_creation"
-            android:parentActivityName=".SubjectManagerStuff.SubjectManagementActivity"
+            android:parentActivityName=".SubjectManagerStuff.SubjectManagementListActivity"
             android:windowSoftInputMode="stateAlwaysHidden">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="de.oerntec.votenote.SubjectManagerStuff.SubjectManagementActivity" />
+                android:value=".SubjectManagerStuff.SubjectManagementListActivity" />
         </activity>
         <activity
             android:name=".SubjectManagerStuff.SubjectCreation.CreationFragment.AdmissionPercentageCreation.AdmissionPercentageCreationActivity"

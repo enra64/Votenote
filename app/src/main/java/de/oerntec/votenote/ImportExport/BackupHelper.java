@@ -30,7 +30,7 @@ import de.oerntec.votenote.Database.DatabaseCreator;
 import de.oerntec.votenote.Database.TableHelpers.DBSubjects;
 import de.oerntec.votenote.MainActivity;
 import de.oerntec.votenote.R;
-import de.oerntec.votenote.SubjectManagerStuff.SubjectManagementActivity;
+import de.oerntec.votenote.SubjectManagerStuff.SubjectManagementListActivity;
 
 public class BackupHelper {
     public static void importDialog(final Context activity) {
@@ -60,8 +60,8 @@ public class BackupHelper {
                     public void onChosenDir(String chosenDir) {
                         try {
                             handleFileType(chosenDir, context);
-                            if (context instanceof SubjectManagementActivity)
-                                ((SubjectManagementActivity) context).reloadAdapter();
+                            if (context instanceof SubjectManagementListActivity)
+                                ((SubjectManagementListActivity) context).reloadAdapter();
                         } catch (FileNotFoundException e){
                             Toast.makeText(context, "source file not found, no backup created!", Toast.LENGTH_LONG).show();
                         } catch (IOException e) {
@@ -98,8 +98,8 @@ public class BackupHelper {
                                 Log.i("export target", chosenDir);
                             DatabaseCreator.getInstance(context).exportDatabase(chosenDir);
                             Toast.makeText(context, context.getString(R.string.import_result_ok), Toast.LENGTH_LONG).show();
-                            if (context instanceof SubjectManagementActivity)
-                                ((SubjectManagementActivity) context).reloadAdapter();
+                            if (context instanceof SubjectManagementListActivity)
+                                ((SubjectManagementListActivity) context).reloadAdapter();
                         }
                         catch (FileNotFoundException e){
                             Toast.makeText(context, "source not found", Toast.LENGTH_LONG).show();

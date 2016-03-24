@@ -53,7 +53,7 @@ import de.oerntec.votenote.Dialogs.MainDialogHelper;
 import de.oerntec.votenote.Helpers.General;
 import de.oerntec.votenote.ImportExport.Writer;
 import de.oerntec.votenote.NavigationDrawer.NavigationDrawerFragment;
-import de.oerntec.votenote.SubjectManagerStuff.SubjectManagementActivity;
+import de.oerntec.votenote.SubjectManagerStuff.SubjectManagementListActivity;
 
 /*
 * VERSION HISTORY
@@ -326,7 +326,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
                 b.setPositiveButton(R.string.tutorial_shortcut, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        startActivity(new Intent(MainActivity.this, SubjectManagementActivity.class));
+                        startActivity(new Intent(MainActivity.this, SubjectManagementListActivity.class));
                     }
                 });
                 AlertDialog dialog = b.create();

@@ -44,7 +44,7 @@ import de.oerntec.votenote.Database.Pojo.Subject;
 import de.oerntec.votenote.Database.TableHelpers.DBSubjects;
 import de.oerntec.votenote.Preferences.PreferencesActivity;
 import de.oerntec.votenote.R;
-import de.oerntec.votenote.SubjectManagerStuff.SubjectManagementActivity;
+import de.oerntec.votenote.SubjectManagerStuff.SubjectManagementListActivity;
 
 /**
  * Fragment used for managing interactions for and presentation of a navigation
@@ -126,7 +126,7 @@ public class NavigationDrawerFragment extends Fragment implements SelectionCallb
         root.findViewById(R.id.navigation_drawer_edit).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(getActivity(), SubjectManagementActivity.class));
+                startActivity(new Intent(getActivity(), SubjectManagementListActivity.class));
             }
         });
         return root;

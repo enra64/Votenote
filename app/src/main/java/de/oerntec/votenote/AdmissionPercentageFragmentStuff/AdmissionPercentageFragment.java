@@ -46,7 +46,7 @@ import de.oerntec.votenote.Database.TableHelpers.DBLessons;
 import de.oerntec.votenote.Dialogs.MainDialogHelper;
 import de.oerntec.votenote.MainActivity;
 import de.oerntec.votenote.R;
-import de.oerntec.votenote.SubjectManagerStuff.SubjectManagementActivity;
+import de.oerntec.votenote.SubjectManagerStuff.SubjectManagementListActivity;
 
 /**
  * This fragment is used to display all lessons of a single admissionPercentageMeta item.
@@ -139,7 +139,7 @@ public class AdmissionPercentageFragment extends Fragment implements SwipeDeleti
 
         //if translatedSection is -1, no group has been added yet, so show the subject manager
         if (mAdmissionPercentageMetaId == -1) {
-            Intent intent = new Intent(getActivity(), SubjectManagementActivity.class);
+            Intent intent = new Intent(getActivity(), SubjectManagementListActivity.class);
             intent.putExtra("firstGroup", true);
             getActivity().startActivityForResult(intent, MainActivity.ADD_FIRST_SUBJECT_REQUEST);
             return rootView;

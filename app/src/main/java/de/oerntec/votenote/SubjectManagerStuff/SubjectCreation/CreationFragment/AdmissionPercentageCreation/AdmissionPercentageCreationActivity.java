@@ -18,6 +18,10 @@ public class AdmissionPercentageCreationActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //force the language
+        General.adjustLanguage(this);
+
         setContentView(R.layout.activity_admission_percentage_creation);
 
         //avoid overlapping fragments
@@ -28,9 +32,6 @@ public class AdmissionPercentageCreationActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.subject_creation_activity_toolbar_toolbar);
         //if we can not get our toolbar, its rip time anyways
         setSupportActionBar(toolbar);
-
-        //force the language
-        General.adjustLanguage(this);
 
         //get arguments
         mSubjectId = getIntent().getExtras().getInt(AdmissionPercentageFragment.SUBJECT_ID);
