@@ -13,7 +13,7 @@
 
         <Button
             android:id="@+id/left_button"
-            style="?android:attr/buttonBarButtonStyle"
+            style="@style/ButtonAppTheme"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Left Button"

@@ -514,7 +514,13 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
     private SubjectFragment getCurrentSubjectFragment() {
         return (SubjectFragment) getSupportFragmentManager().findFragmentById(R.id.container);
     }
-    
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        getCurrentAdmissionPercentageFragment().trySavepointRelease();
+    }
+
     public AdmissionPercentageFragment getCurrentAdmissionPercentageFragment() {
         SubjectFragment currentSubjectFragment = getCurrentSubjectFragment();
         if (currentSubjectFragment == null) return null;

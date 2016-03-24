@@ -126,8 +126,8 @@ public class SubjectAdapter extends RecyclerView.Adapter<SubjectAdapter.SubjectH
 
         //set texts
         holder.title.setText(name);
-        holder.counterCount.setText(counterCount + " Admission Counters");
-        holder.percentageCounterCount.setText(metaCount + " Percentage Admission Counters");
+        holder.counterCount.setText(mContext.getString(R.string.subject_adapter_card_counter_count, counterCount));
+        holder.percentageCounterCount.setText(mContext.getString(R.string.subject_adapter_percentage_count, metaCount));
     }
 
     @Override

@@ -10,6 +10,10 @@
         <item name="android:actionBarStyle">@style/CustomActionBarWhiteTitle</item>
     </style>
 
+    <style name="ButtonAppTheme" parent="Base.Widget.AppCompat.Button">
+        <item name="android:background">@drawable/button_material_raised</item>
+    </style>
+
     <style name="CustomActionBarWhiteTitle" parent="@style/Widget.AppCompat.ActionBar.Solid">
         <item name="titleTextStyle">@style/CustomActionBarWhiteTitleText</item>
     </style>

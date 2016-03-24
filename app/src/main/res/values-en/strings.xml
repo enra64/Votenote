@@ -184,4 +184,6 @@
     <string name="percentage_creator_notification_enabled_summary">Weekly reminder to add an entry.</string>
     <string name="percentage_creator_notification_enabled_title">Entry reminder</string>
     <string name="percentage_creator_time_empty_button_text">Time</string>
+    <string name="subject_adapter_card_counter_count">%1$d Admission Counters</string>
+    <string name="subject_adapter_percentage_count">%1$d Percentage Admission Counters</string>
 </resources>

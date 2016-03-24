@@ -285,7 +285,7 @@ public class AdmissionPercentageFragment extends Fragment implements SwipeDeleti
     /**
      * Release the savepoint -> save()
      */
-    private void trySavepointRelease() {
+    public void trySavepointRelease() {
         if (mLastRemovalSavePointId != null) {
             mDataDb.releaseSavepoint(mLastRemovalSavePointId);
             mLastRemovalSavePointId = null;
