@@ -11,6 +11,12 @@
         <item name="android:timePickerDialogTheme">@style/CustomTimePickerDialogTheme</item>
     </style>
 
+    <style name="GreenButton" parent="ThemeOverlay.AppCompat.Dark">
+        <item name="colorButtonNormal">@color/disabled_button_background</item>
+        <item name="colorAccent">@color/colorPrimary</item>
+        <item name="android:textColor">@color/textColorActionBar</item>
+    </style>
+
     <style name="CustomTimePickerDialogTheme" parent="@style/Theme.AppCompat.Light.Dialog">
         <item name="colorAccent">@color/colorPrimaryDark
         </item> <!-- colorAccent here seems to work just fine? -->
@@ -30,10 +36,6 @@
         <item name="android:numbersTextColor">#ff000000</item>
         <item name="android:numbersSelectorColor">@color/accent</item>
         <item name="android:numbersBackgroundColor">#ffdddddd</item>
-    </style>
-
-    <style name="ButtonAppTheme" parent="android:Widget.Material.Button">
-        <item name="android:background">@drawable/button_material_raised</item>
     </style>
 
     <style name="TextAppearance.TimePickerDialogStyle.TimeLabel" parent="@android:style/TextAppearance.Material">
