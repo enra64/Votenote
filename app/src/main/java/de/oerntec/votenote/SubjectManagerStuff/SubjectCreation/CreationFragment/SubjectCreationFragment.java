@@ -179,10 +179,10 @@ public class SubjectCreationFragment extends Fragment implements SubjectCreation
         initializeList(mList);
 
         //find the giant button bar and attach the listeners
-        input.findViewById(R.id.giant_delete_button).setOnClickListener(this);
+        input.findViewById(R.id.giant_ok_button).setOnClickListener(this);
         input.findViewById(R.id.giant_cancel_button).setOnClickListener(this);
 
-        mDeleteButton = (Button) input.findViewById(R.id.giant_ok_button);
+        mDeleteButton = (Button) input.findViewById(R.id.giant_delete_button);
         mDeleteButton.setOnClickListener(this);
 
         return input;

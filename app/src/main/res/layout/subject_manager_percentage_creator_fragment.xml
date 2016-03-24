@@ -59,13 +59,28 @@
             android:layout_below="@id/percentage_creator_notification_enabled_layout"
             android:layout_marginTop="8dp" />
 
+        <include
+            android:id="@+id/percentage_creator_estimated_lesson_count_layout"
+            layout="@layout/settings_seekbar"
+            android:layout_width="match_parent"
+            android:layout_height="?android:attr/listPreferredItemHeight"
+            android:layout_below="@+id/percentage_creator_notification_buttons_layout"
+            android:layout_marginTop="8dp" />
+
+        <include
+            android:id="@+id/percentage_creator_estimated_assignments_per_lesson_layout"
+            layout="@layout/settings_seekbar"
+            android:layout_width="match_parent"
+            android:layout_height="?android:attr/listPreferredItemHeight"
+            android:layout_below="@+id/percentage_creator_estimated_lesson_count_layout" />
+
         <TextView
             android:id="@+id/header_percentages"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:layout_below="@+id/percentage_creator_notification_buttons_layout"
+            android:layout_below="@+id/percentage_creator_estimated_assignments_per_lesson_layout"
             android:layout_marginLeft="10dp"
             android:layout_marginStart="10dp"
             android:layout_marginTop="16dp"
@@ -115,28 +130,13 @@
             android:textSize="14sp"
             android:textStyle="bold" />
 
-        <include
-            android:id="@+id/percentage_creator_estimated_lesson_count_layout"
-            layout="@layout/settings_seekbar"
-            android:layout_width="match_parent"
-            android:layout_height="?android:attr/listPreferredItemHeight"
-            android:layout_below="@id/header_estimations"
-            android:layout_marginTop="8dp" />
-
-        <include
-            android:id="@+id/percentage_creator_estimated_assignments_per_lesson_layout"
-            layout="@layout/settings_seekbar"
-            android:layout_width="match_parent"
-            android:layout_height="?android:attr/listPreferredItemHeight"
-            android:layout_below="@id/percentage_creator_estimated_lesson_count_layout" />
-
         <Spinner
             android:id="@+id/percentage_creator_estimation_mode_spinner"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:layout_below="@+id/percentage_creator_estimated_assignments_per_lesson_layout" />
+            android:layout_below="@+id/header_estimations" />
 
     </RelativeLayout>
 </ScrollView>

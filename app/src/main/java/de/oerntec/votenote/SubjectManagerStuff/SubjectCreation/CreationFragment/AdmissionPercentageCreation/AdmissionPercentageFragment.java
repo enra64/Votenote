@@ -100,7 +100,7 @@ public class AdmissionPercentageFragment extends Fragment implements Button.OnCl
      * If it exists, this string contains the old recurrence string
      */
     @SuppressWarnings("FieldCanBeLocal")
-    private String mNotificationRecurrenceStringHint = "::";
+    private String mNotificationRecurrenceStringHint = "0:0:0";
 
     /**
      * This string is:

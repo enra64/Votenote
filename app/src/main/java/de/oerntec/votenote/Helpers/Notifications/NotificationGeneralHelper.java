@@ -22,11 +22,11 @@ public class NotificationGeneralHelper {
      */
     public static int[] convertFromRecurrenceRule(@Nullable String recurrence) {
         if (recurrence == null || recurrence.isEmpty())
-            recurrence = "::";//baad
+            recurrence = "0:0:0";//baad
         String[] tmp = recurrence.split(":");
-        int day = !tmp[0].isEmpty() ? Integer.parseInt(tmp[0]) : 0;
-        int hour = !tmp[1].isEmpty() ? Integer.parseInt(tmp[1]) : 0;
-        int minute = !tmp[2].isEmpty() ? Integer.parseInt(tmp[2]) : 0;
+        int day = Integer.parseInt(tmp[0]);
+        int hour = Integer.parseInt(tmp[1]);
+        int minute = Integer.parseInt(tmp[2]);
         return new int[]{day, hour, minute};
     }
 
