@@ -26,8 +26,11 @@ import android.widget.NumberPicker;
 import java.util.List;
 
 import de.oerntec.votenote.AdmissionPercentageFragmentStuff.AddLessonDialogFragment;
+import de.oerntec.votenote.AdmissionPercentageFragmentStuff.AdmissionPercentageFragment;
 import de.oerntec.votenote.Database.Pojo.AdmissionCounter;
+import de.oerntec.votenote.Database.Pojo.Lesson;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionCounters;
+import de.oerntec.votenote.Database.TableHelpers.DBLessons;
 import de.oerntec.votenote.MainActivity;
 import de.oerntec.votenote.R;
 
@@ -42,6 +45,7 @@ public class MainDialogHelper {
         AddLessonDialogFragment fragment = AddLessonDialogFragment.newInstance(apMetaId, lessonId);
         fragment.show(fragmentManager, "ap_create_dialog");
     }
+
 
     /**
      * if only one counter exists, immediately display the change dialog for that one.
@@ -95,6 +99,20 @@ public class MainDialogHelper {
                     }
                 }).setNegativeButton(activity.getString(R.string.dialog_button_abort), null);
         b.setTitle(activity.getString(R.string.admission_counter_change_dialog_title, item.counterName));
+        b.create().show();
+    }
+
+    public static void showDeleteEntryDialog(final AdmissionPercentageFragment callingFragment, int apMetaId, int id) {
+        final Lesson oldLesson = DBLessons.getInstance().getItem(id, apMetaId);
+        AlertDialog.Builder b = new AlertDialog.Builder(callingFragment.getActivity());
+        b.setTitle("Eintrag löschen?");
+        b.setNegativeButton(R.string.dialog_button_no, null);
+        b.setPositiveButton(R.string.dialog_button_yes, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                callingFragment.deleteLessonAnimated(oldLesson);
+            }
+        });
         b.create().show();
     }
 }

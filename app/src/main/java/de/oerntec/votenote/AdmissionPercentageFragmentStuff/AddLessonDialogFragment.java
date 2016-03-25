@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -44,11 +45,6 @@ public class AddLessonDialogFragment extends DialogFragment implements DialogInt
      * is this the first lesson to be added to the pc?
      */
     private boolean mIsFirstLesson;
-
-    /**
-     * Whether the lessons are displayed in reverse  or not
-     */
-    private boolean mReverseLessonSort;
 
     /**
      * Whether to try and fix invalid number picker values or let the user do it
@@ -127,7 +123,8 @@ public class AddLessonDialogFragment extends DialogFragment implements DialogInt
             mMetaItem.loadData(DBLessons.getInstance(), MainActivity.getPreference("reverse_lesson_sort", false));
 
             //load shared settings
-            mReverseLessonSort = MainActivity.getPreference("reverse_lesson_sort", false);
+            //Whether the lessons are displayed in reverse  or not
+            boolean mReverseLessonSort = MainActivity.getPreference("reverse_lesson_sort", false);
             mEnableDataAutoFix = MainActivity.getPreference("move_max_assignments_picker", true);
             mLiveUpdateResultingPercentage = MainActivity.getPreference("live_resulting_percentage", true);
 
@@ -167,6 +164,7 @@ public class AddLessonDialogFragment extends DialogFragment implements DialogInt
         return rootView;
     }
 
+    @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder b = new AlertDialog.Builder(getActivity())
@@ -301,7 +299,7 @@ public class AddLessonDialogFragment extends DialogFragment implements DialogInt
             newAvg = mMetaItem.getAverageFinished(availableCount, finishedCount);
         else
             newAvg = mMetaItem.getAverageFinished(availableCount - mOldData.availableAssignments, finishedCount - mOldData.finishedAssignments);
-        mResultingPercentageView.setText(String.format("%.1f%%", newAvg));
+        mResultingPercentageView.setText(String.format(General.getCurrentLocale(getActivity()), "%.1f%%", newAvg));
         General.applyClueColor(mResultingPercentageView, getActivity(), newAvg >= mMetaItem.baselineTargetPercentage);
     }
 

@@ -31,7 +31,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -42,7 +41,7 @@ import java.util.Random;
 
 import de.oerntec.votenote.CardListHelpers.OnItemClickListener;
 import de.oerntec.votenote.CardListHelpers.RecyclerItemClickListener;
-import de.oerntec.votenote.CardListHelpers.SwipeDeletion;
+import de.oerntec.votenote.CardListHelpers.SwipeAnimationUtils;
 import de.oerntec.votenote.Database.Pojo.AdmissionCounter;
 import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMetaStuff.AdmissionPercentageMetaPojo;
 import de.oerntec.votenote.Database.Pojo.Lesson;
@@ -57,7 +56,7 @@ import de.oerntec.votenote.R;
 import de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.SubjectOverview.SubjectCreationActivity;
 
 @SuppressLint("InflateParams")
-public class SubjectManagementListActivity extends AppCompatActivity implements SwipeDeletion.UndoSnackBarHost {
+public class SubjectManagementListActivity extends AppCompatActivity implements SwipeAnimationUtils.UndoSnackBarHost {
     /**
      * Lesson is to be added, not changed
      */
@@ -127,29 +126,6 @@ public class SubjectManagementListActivity extends AppCompatActivity implements 
         if (mSubjectList == null) throw new AssertionError("subject list not found");
         mSubjectList.setHasFixedSize(true);
 
-        ItemTouchHelper.SimpleCallback swipeCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
-            @Override
-            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
-                return false;
-            }
-
-            @Override
-            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-                //info view has no tag
-                Object viewTag = viewHolder.itemView.getTag();
-                if (viewTag != null) {
-                    int subjectId = (Integer) viewTag;
-                    if (subjectId != 0) {
-                        //i hope i never have to touch this again
-                        showUndoSnackBar(subjectId, mSubjectList.getChildAdapterPosition(viewHolder.itemView));
-                    }
-                }
-            }
-        };
-
-        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(swipeCallback);
-        itemTouchHelper.attachToRecyclerView(mSubjectList);
-
         //give it a layoutmanager (whatever that is)
         LinearLayoutManager manager = new LinearLayoutManager(this);
         manager.setOrientation(LinearLayoutManager.VERTICAL);
@@ -157,6 +133,8 @@ public class SubjectManagementListActivity extends AppCompatActivity implements 
 
 
         mSubjectAdapter = new SubjectAdapter(this);
+
+        final SubjectManagementListActivity veryGoodCoding = this;
 
         mSubjectList.setAdapter(mSubjectAdapter);
         mSubjectList.addOnItemTouchListener(new RecyclerItemClickListener(this, mSubjectList, new OnItemClickListener() {
@@ -166,7 +144,17 @@ public class SubjectManagementListActivity extends AppCompatActivity implements 
                 showSubjectCreator((Integer) view.getTag(), position);
             }
 
-            public void onItemLongClick(final View view, int position) {
+            public void onItemLongClick(final View view, final int position) {
+                AlertDialog.Builder b = new AlertDialog.Builder(getApplicationContext());
+                b.setTitle("Eintrag löschen?");
+                b.setNegativeButton(R.string.dialog_button_no, null);
+                b.setPositiveButton(R.string.dialog_button_yes, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        SwipeAnimationUtils.executeProgrammaticSwipeDeletion(veryGoodCoding, veryGoodCoding, view, position);
+                    }
+                });
+                b.create().show();
             }
         }));
 
@@ -220,9 +208,10 @@ public class SubjectManagementListActivity extends AppCompatActivity implements 
                 Log.i("sma", "reloaded adapter to show new subject");
         } else if (resultCode == SUBJECT_CREATOR_RESULT_DELETE) {
             int recyclerViewPosition = data.getIntExtra(SubjectCreationActivity.ARG_CREATOR_VIEW_POSITION, 0);
-            SwipeDeletion.executeProgrammaticSwipeDeletion(this, this, mSubjectList.getLayoutManager().getChildAt(recyclerViewPosition), recyclerViewPosition);
+            SwipeAnimationUtils.executeProgrammaticSwipeDeletion(this, this, mSubjectList.getLayoutManager().getChildAt(recyclerViewPosition), recyclerViewPosition);
         }
     }
+
 
     /**
      * delete the subject, get a backup, show a undobar, and enable restoring the subject by tapping undo
