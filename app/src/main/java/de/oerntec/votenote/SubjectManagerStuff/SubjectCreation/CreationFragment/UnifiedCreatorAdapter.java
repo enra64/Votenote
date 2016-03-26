@@ -16,7 +16,7 @@ import de.oerntec.votenote.Database.Pojo.AdmissionCounter;
 import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMetaStuff.AdmissionPercentageMetaPojo;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionCounters;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageMeta;
-import de.oerntec.votenote.Helpers.NotEmptyWatcher;
+import de.oerntec.votenote.Helpers.TextWatchers.FakeDisabledNotEmptyWatcher;
 import de.oerntec.votenote.R;
 import de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.SubjectOverview.Dialogs;
 
@@ -41,19 +41,23 @@ public class UnifiedCreatorAdapter extends RecyclerView.Adapter<UnifiedCreatorAd
 
     private Button mParentOkButton;
 
+    private View.OnClickListener mEnabledOnClickListener;
+
     /**
      * Instance of the calling subject creation fragment, because we want to create the intents for
      * admission percentage counters there
      */
     private SubjectCreationFragment mSubjectCreationFragment;
 
+    //this got out of hand
     public UnifiedCreatorAdapter(
             Context context,
             SubjectCreationFragment subjectCreationFragment,
             FragmentManager fragmentManager,
             String subjectName,
             int subjectId,
-            Button okButton) {
+            Button okButton,
+            View.OnClickListener enabledOnClickListener) {
         mContext = context;
         mCounterDb = DBAdmissionCounters.getInstance();
         mPercentageDb = DBAdmissionPercentageMeta.getInstance();
@@ -62,6 +66,7 @@ public class UnifiedCreatorAdapter extends RecyclerView.Adapter<UnifiedCreatorAd
         mFragmentManager = fragmentManager;
         mSubjectCreationFragment = subjectCreationFragment;
         mParentOkButton = okButton;
+        mEnabledOnClickListener = enabledOnClickListener;
         requery();
     }
 
@@ -101,10 +106,22 @@ public class UnifiedCreatorAdapter extends RecyclerView.Adapter<UnifiedCreatorAd
     public void onBindViewHolder(ViewHolder holder, int position) {
         switch (holder.type){
             case VIEW_INFO:
-                InfoViewHolder infoHolder = (InfoViewHolder) holder;
+                final InfoViewHolder infoHolder = (InfoViewHolder) holder;
                 if(mSubjectName != null)
                     infoHolder.name.setText(mSubjectName);
-                infoHolder.name.addTextChangedListener(new NotEmptyWatcher(infoHolder.name, mParentOkButton));
+                infoHolder.name.addTextChangedListener(
+                        new FakeDisabledNotEmptyWatcher(
+                                infoHolder.name,
+                                mParentOkButton.getContext().getString(R.string.edit_text_empty_error_text),
+                                mSubjectName == null || mSubjectName.isEmpty(),
+                                new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        infoHolder.name.setError(v.getContext().getString(R.string.edit_text_empty_error_text));
+                                    }
+                                },
+                                mEnabledOnClickListener,
+                                mParentOkButton));
                 infoHolder.itemView.setTag(-1);
                 infoHolder.counterAddButton.setOnClickListener(this);
                 infoHolder.percentageAddButton.setOnClickListener(this);

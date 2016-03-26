@@ -194,6 +194,8 @@
     <string name="subject_management_add_example_dialog_message">Möchtest du das Beispiel wirklich erneut hinzufügen?</string>
     <string name="dialog_button_yes">Ja</string>
     <string name="dialog_button_no">Nein</string>
-    <string name="dialog_title_delete">Eintrag löschen?</string>
+    <string name="dialog_title_delete">Löschen?</string>
     <string name="lesson_add_dialog_title">Übung %d ändern?</string>
+    <string name="edit_text_empty_error_text">Bitte benennen</string>
+    <string name="admission_percentage_creator_name_hint">Nichtleerer Name</string>
 </resources>

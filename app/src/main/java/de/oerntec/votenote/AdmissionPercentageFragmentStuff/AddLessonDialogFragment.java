@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -145,7 +146,8 @@ public class AddLessonDialogFragment extends DialogFragment implements DialogInt
      */
     private View createView(LayoutInflater inflater) {
         //inflate rootView
-        final View rootView = inflater.inflate(R.layout.subject_fragment_dialog_newentry, null);
+        //noinspection RedundantCast because in a dialog, we cant know the parent yet
+        final View rootView = inflater.inflate(R.layout.subject_fragment_dialog_newentry, (ViewGroup) null);
 
         //find all necessary views
         mInfoView = (TextView) rootView.findViewById(R.id.infoTextView);

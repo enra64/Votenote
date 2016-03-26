@@ -26,8 +26,8 @@ import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMetaStuff.AdmissionP
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageMeta;
 import de.oerntec.votenote.Helpers.DowPickerDialog;
 import de.oerntec.votenote.Helpers.General;
-import de.oerntec.votenote.Helpers.NotEmptyWatcher;
 import de.oerntec.votenote.Helpers.Notifications.NotificationGeneralHelper;
+import de.oerntec.votenote.Helpers.TextWatchers.FakeDisabledNotEmptyWatcher;
 import de.oerntec.votenote.R;
 import de.oerntec.votenote.SubjectManagerStuff.SeekerListener;
 import de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.SubjectOverview.SubjectCreationActivity;
@@ -287,17 +287,24 @@ public class AdmissionPercentageCreationFragment extends Fragment implements But
      */
     private void setValuesForViews() {
         //display an error if the edittext is empty
-        nameInput.addTextChangedListener(new NotEmptyWatcher(nameInput, ((AdmissionPercentageCreationActivity) getActivity()).getSaveButton()));
+        final String emptyError = getActivity().getString(R.string.edit_text_empty_error_text);
+        nameInput.addTextChangedListener(new FakeDisabledNotEmptyWatcher(
+                nameInput,
+                emptyError,
+                mIsNewPercentageCounter,
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        nameInput.setError(emptyError);
+                    }
+                },
+                this,
+                ((AdmissionPercentageCreationActivity) getActivity()).getSaveButton()
+        ));
 
         //set old name as hint
         if (mIsOldPercentageCounter)
             nameInput.setText(nameHint);
-
-        //show the user he has to enter a name
-        if (mIsNewPercentageCounter) {
-            nameInput.setError("Must not be empty");
-            ((AdmissionPercentageCreationActivity) getActivity()).getSaveButton().setEnabled(false);
-        }
 
         initSeekbar(mBaselinePercentageSeekBar, mRequiredPercentageCurrentValueTextView, requiredPercentageHint, 100);
         initSeekbar(mBonusPercentageSeekBar, mBonusPercentageCurrentValueTextView, mBonusPercentageHint, 100);

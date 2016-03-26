@@ -180,8 +180,6 @@ public class SubjectCreationFragment extends Fragment implements SubjectCreation
         //find the giant button bar and attach the listeners
         Button okButton = (Button) input.findViewById(R.id.giant_ok_button);
         okButton.setOnClickListener(this);
-        if (mIsNewSubject)
-            okButton.setEnabled(false);
 
         input.findViewById(R.id.giant_cancel_button).setOnClickListener(this);
 
@@ -194,7 +192,7 @@ public class SubjectCreationFragment extends Fragment implements SubjectCreation
     }
 
     @SuppressWarnings("unchecked")
-    private void initializeList(RecyclerView recyclerView, Button okButton) {
+    private void initializeList(RecyclerView recyclerView, final Button okButton) {
         //config the recyclerview
         recyclerView.setHasFixedSize(true);
 
@@ -209,7 +207,8 @@ public class SubjectCreationFragment extends Fragment implements SubjectCreation
                 getFragmentManager(),
                 mIsNewSubject ? null : mOldSubjectName,
                 mSubjectId,
-                okButton);
+                okButton,
+                this);
         recyclerView.setAdapter(mAdapter);
 
         recyclerView.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), recyclerView, new OnItemClickListener() {

@@ -28,6 +28,7 @@ import android.preference.PreferenceFragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.ViewGroup;
 import android.widget.Toast;
 
 import de.oerntec.votenote.Helpers.General;
@@ -105,7 +106,8 @@ public class PreferencesActivity extends AppCompatActivity {
                     AlertDialog.Builder b = new AlertDialog.Builder(getActivity());
                     b.setTitle(R.string.used_libraries_title);
                     b.setPositiveButton("OK", null);
-                    b.setView(getActivity().getLayoutInflater().inflate(R.layout.preferences_thanks, null));
+                    //noinspection RedundantCast because we cant yet know the parent for the dialog
+                    b.setView(getActivity().getLayoutInflater().inflate(R.layout.preferences_thanks, (ViewGroup) null));
                     b.show();
                     return true;
                 }
@@ -118,7 +120,8 @@ public class PreferencesActivity extends AppCompatActivity {
                     AlertDialog.Builder eulaBuilder = new AlertDialog.Builder(getActivity());
                     eulaBuilder.setCancelable(false);
                     eulaBuilder.setTitle(R.string.eula_dialog_title);
-                    eulaBuilder.setView(getActivity().getLayoutInflater().inflate(R.layout.preferences_eula, null));
+                    //noinspection RedundantCast because we cant yet know the parent for the dialog
+                    eulaBuilder.setView(getActivity().getLayoutInflater().inflate(R.layout.preferences_eula, (ViewGroup) null));
                     eulaBuilder.setPositiveButton("OK", null);
                     eulaBuilder.show();
                     return true;

@@ -22,6 +22,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.support.v4.app.FragmentManager;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.NumberPicker;
 
 import java.util.List;
@@ -76,7 +77,8 @@ public class DialogHelper {
         final DBAdmissionCounters db = DBAdmissionCounters.getInstance();
         final AdmissionCounter item = db.getItem(counterId);
 
-        final View inputView = activity.getLayoutInflater().inflate(R.layout.subject_fragment_dialog_presentation_points, null);
+        //noinspection RedundantCast because we cant yet know the parent for the dialog
+        final View inputView = activity.getLayoutInflater().inflate(R.layout.subject_fragment_dialog_presentation_points, (ViewGroup) null);
         final NumberPicker presPointPicker = (NumberPicker) inputView.findViewById(R.id.mainfragment_dialog_prespoints_picker);
 
         presPointPicker.setMinValue(0);
