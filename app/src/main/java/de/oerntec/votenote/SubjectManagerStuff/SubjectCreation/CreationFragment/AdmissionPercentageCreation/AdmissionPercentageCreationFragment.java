@@ -32,7 +32,7 @@ import de.oerntec.votenote.R;
 import de.oerntec.votenote.SubjectManagerStuff.SeekerListener;
 import de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.SubjectOverview.SubjectCreationActivity;
 
-public class AdmissionPercentageFragment extends Fragment implements Button.OnClickListener {
+public class AdmissionPercentageCreationFragment extends Fragment implements Button.OnClickListener {
     public static final String SUBJECT_ID = "subject_id";
     public static final String ADMISSION_PERCENTAGE_ID = "ap_id";
     public static final String SUBJECT_IS_NEW = "subject_is_new";
@@ -145,11 +145,11 @@ public class AdmissionPercentageFragment extends Fragment implements Button.OnCl
 
     private boolean mIsOldPercentageCounter, mIsNewPercentageCounter;
 
-    public AdmissionPercentageFragment() {
+    public AdmissionPercentageCreationFragment() {
     }
 
-    public static AdmissionPercentageFragment newInstance(int subjectId, int admissionCounterId, boolean isNew) {
-        AdmissionPercentageFragment fragment = new AdmissionPercentageFragment();
+    public static AdmissionPercentageCreationFragment newInstance(int subjectId, int admissionCounterId, boolean isNew) {
+        AdmissionPercentageCreationFragment fragment = new AdmissionPercentageCreationFragment();
         Bundle args = new Bundle();
         args.putInt(SUBJECT_ID, subjectId);
         args.putInt(ADMISSION_PERCENTAGE_ID, admissionCounterId);

@@ -27,7 +27,7 @@ import de.oerntec.votenote.Helpers.General;
 import de.oerntec.votenote.MainActivity;
 import de.oerntec.votenote.R;
 import de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.CreationFragment.AdmissionPercentageCreation.AdmissionPercentageCreationActivity;
-import de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.CreationFragment.AdmissionPercentageCreation.AdmissionPercentageFragment;
+import de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.CreationFragment.AdmissionPercentageCreation.AdmissionPercentageCreationFragment;
 import de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.SubjectOverview.Dialogs;
 import de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.SubjectOverview.SubjectCreationActivity;
 import de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.SubjectOverview.SubjectCreationDialogInterface;
@@ -234,9 +234,9 @@ public class SubjectCreationFragment extends Fragment implements SubjectCreation
 
     void openAdmissionPercentageCreationActivity(int admissionPercentageId, boolean isNew) {
         Intent intent = new Intent(getActivity(), AdmissionPercentageCreationActivity.class);
-        intent.putExtra(AdmissionPercentageFragment.SUBJECT_ID, mSubjectId);
-        intent.putExtra(AdmissionPercentageFragment.ADMISSION_PERCENTAGE_ID, admissionPercentageId);
-        intent.putExtra(AdmissionPercentageFragment.SUBJECT_IS_NEW, isNew);
+        intent.putExtra(AdmissionPercentageCreationFragment.SUBJECT_ID, mSubjectId);
+        intent.putExtra(AdmissionPercentageCreationFragment.ADMISSION_PERCENTAGE_ID, admissionPercentageId);
+        intent.putExtra(AdmissionPercentageCreationFragment.SUBJECT_IS_NEW, isNew);
         startActivityForResult(intent, AdmissionPercentageCreationActivity.RESULT_REQUEST_CODE_ADMISSION_PERCENTAGE_CREATOR);
     }
 
@@ -407,7 +407,7 @@ public class SubjectCreationFragment extends Fragment implements SubjectCreation
             if (data == null)
                 dialogClosed();
             else {
-                int itemId = data.getExtras().getInt(AdmissionPercentageFragment.ADMISSION_PERCENTAGE_ID);
+                int itemId = data.getExtras().getInt(AdmissionPercentageCreationFragment.ADMISSION_PERCENTAGE_ID);
                 switch (resultCode) {
                     case SubjectCreationActivity.DIALOG_RESULT_ADDED:
                         admissionPercentageFinished(itemId, true);//true -> isNew
