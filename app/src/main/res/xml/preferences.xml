@@ -33,12 +33,6 @@
             android:title="@string/pref_title_save_last_selected_meta_pos" />
 
         <CheckBoxPreference
-            android:defaultValue="true"
-            android:key="enable_swipe_to_delete_lesson"
-            android:summary="@string/summary_swipe_to_delete"
-            android:title="@string/pref_swipe_to_delete_lesson" />
-
-        <CheckBoxPreference
             android:defaultValue="false"
             android:key="enable_logging"
             android:summary="@string/pref_logging_sum"
