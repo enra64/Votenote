@@ -18,6 +18,7 @@
 package de.oerntec.votenote.Dialogs;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.support.v4.app.FragmentManager;
 import android.view.View;
@@ -26,15 +27,12 @@ import android.widget.NumberPicker;
 import java.util.List;
 
 import de.oerntec.votenote.AdmissionPercentageFragmentStuff.AddLessonDialogFragment;
-import de.oerntec.votenote.AdmissionPercentageFragmentStuff.AdmissionPercentageFragment;
 import de.oerntec.votenote.Database.Pojo.AdmissionCounter;
-import de.oerntec.votenote.Database.Pojo.Lesson;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionCounters;
-import de.oerntec.votenote.Database.TableHelpers.DBLessons;
 import de.oerntec.votenote.MainActivity;
 import de.oerntec.votenote.R;
 
-public class MainDialogHelper {
+public class DialogHelper {
     private static final int ADD_LESSON_CODE = -2;
 
     public static void showAddLessonDialog(FragmentManager fragmentManager, int apMetaId) {
@@ -102,17 +100,11 @@ public class MainDialogHelper {
         b.create().show();
     }
 
-    public static void showDeleteEntryDialog(final AdmissionPercentageFragment callingFragment, int apMetaId, int id) {
-        final Lesson oldLesson = DBLessons.getInstance().getItem(id, apMetaId);
-        AlertDialog.Builder b = new AlertDialog.Builder(callingFragment.getActivity());
-        b.setTitle("Eintrag löschen?");
+    public static void showDeleteDialog(Context context, DialogInterface.OnClickListener onYesListener) {
+        AlertDialog.Builder b = new AlertDialog.Builder(context);
+        b.setTitle(R.string.dialog_title_delete);
         b.setNegativeButton(R.string.dialog_button_no, null);
-        b.setPositiveButton(R.string.dialog_button_yes, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                callingFragment.deleteLessonAnimated(oldLesson);
-            }
-        });
+        b.setPositiveButton(R.string.dialog_button_yes, onYesListener);
         b.create().show();
     }
 }

@@ -36,6 +36,7 @@ import de.oerntec.votenote.Database.Pojo.Lesson;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionCounters;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageMeta;
 import de.oerntec.votenote.Database.TableHelpers.DBLessons;
+import de.oerntec.votenote.Helpers.General;
 import de.oerntec.votenote.MainActivity;
 import de.oerntec.votenote.R;
 
@@ -275,7 +276,12 @@ public class AdmissionPercentageAdapter extends RecyclerView.Adapter<AdmissionPe
         int targetPoints = counter.targetValue;
 
         //set text informing of current presentation point level, handling plural by the way.
-        presentationPointsView.setText(counter.counterName + ": " + currentPoints + " " + mContext.getString(R.string.main_dialog_lesson_von) + " " + targetPoints);
+        presentationPointsView.setText(String.format(General.getCurrentLocale(mContext),
+                "%s: %d %s %d",
+                counter.counterName,
+                currentPoints,
+                mContext.getString(R.string.main_dialog_lesson_von),
+                targetPoints));
     }
 
     private void setVoteAverage(TextView averageVoteView, AdmissionPercentageMetaPojo meta) {
@@ -293,7 +299,7 @@ public class AdmissionPercentageAdapter extends RecyclerView.Adapter<AdmissionPe
         if (Float.isNaN(average))
             averageVoteView.setText(mContext.getString(R.string.infoview_vote_average_no_data));
         else
-            averageVoteView.setText(String.format("%.1f%%", average));
+            averageVoteView.setText(String.format(General.getCurrentLocale(mContext), "%.1f%%", average));
 
         //color text in
         if (!meta.bonusTargetPercentageEnabled) {
@@ -323,7 +329,11 @@ public class AdmissionPercentageAdapter extends RecyclerView.Adapter<AdmissionPe
             averageNeededVotesView.setText(mContext.getString(R.string.subject_fragment_overshot_lesson_count));
         else
             averageNeededVotesView.setText(String.format("%s %s %s", mContext.getString(R.string.subject_fragment_on_average),
-                    String.format("%.2f", dependentResults.numberOfAssignmentsNeededPerLesson), mContext.getString(R.string.lesson_fragment_info_card_assignments_per_lesson_description)));
+                    String.format(
+                            General.getCurrentLocale(mContext),
+                            "%.2f",
+                            dependentResults.numberOfAssignmentsNeededPerLesson),
+                    mContext.getString(R.string.lesson_fragment_info_card_assignments_per_lesson_description)));
 
         if (dependentResults.numberOfEstimatedOverallAssignments < 0)
             averageNeededVotesView.setText(mContext.getString(R.string.subject_fragment_error_detected));

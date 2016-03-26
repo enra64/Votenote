@@ -12,6 +12,8 @@ import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.Locale;
+
 import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMetaStuff.AdmissionPercentageMetaPojo;
 import de.oerntec.votenote.Database.Pojo.Lesson;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageMeta;
@@ -200,10 +202,7 @@ public class AddLessonDialogFragment extends DialogFragment implements DialogInt
     private String getTitle() {
         if(mIsNewLesson)
             return getActivity().getString(R.string.main_dialog_lesson_new_lesson_title);
-        if (getActivity().getResources().getConfiguration().locale.getLanguage().equals("de"))
-            return "Übung " + mLessonId + " ändern?";
-        else
-            return "Change lesson " + mLessonId + "?";
+        return String.format(getActivity().getString(R.string.lesson_add_dialog_title), mLessonId);
     }
 
     /**
@@ -299,7 +298,8 @@ public class AddLessonDialogFragment extends DialogFragment implements DialogInt
             newAvg = mMetaItem.getAverageFinished(availableCount, finishedCount);
         else
             newAvg = mMetaItem.getAverageFinished(availableCount - mOldData.availableAssignments, finishedCount - mOldData.finishedAssignments);
-        mResultingPercentageView.setText(String.format(General.getCurrentLocale(getActivity()), "%.1f%%", newAvg));
+        Locale locale = General.getCurrentLocale(getActivity());
+        mResultingPercentageView.setText(String.format(locale, "%.1f%%", newAvg));
         General.applyClueColor(mResultingPercentageView, getActivity(), newAvg >= mMetaItem.baselineTargetPercentage);
     }
 

@@ -18,6 +18,7 @@
 package de.oerntec.votenote.AdmissionPercentageFragmentStuff;
 
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -38,7 +39,7 @@ import de.oerntec.votenote.CardListHelpers.RecyclerItemClickListener;
 import de.oerntec.votenote.CardListHelpers.SwipeAnimationUtils;
 import de.oerntec.votenote.Database.Pojo.Lesson;
 import de.oerntec.votenote.Database.TableHelpers.DBLessons;
-import de.oerntec.votenote.Dialogs.MainDialogHelper;
+import de.oerntec.votenote.Dialogs.DialogHelper;
 import de.oerntec.votenote.MainActivity;
 import de.oerntec.votenote.R;
 import de.oerntec.votenote.SubjectManagerStuff.SubjectManagementListActivity;
@@ -145,7 +146,7 @@ public class AdmissionPercentageFragment extends Fragment implements SwipeAnimat
         addFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                MainDialogHelper.showAddLessonDialog(getFragmentManager(), mAdmissionPercentageMetaId);
+                DialogHelper.showAddLessonDialog(getFragmentManager(), mAdmissionPercentageMetaId);
             }
         });
 
@@ -180,14 +181,20 @@ public class AdmissionPercentageFragment extends Fragment implements SwipeAnimat
             public void onItemClick(View view, int position) {
                 if (position != 0){
                     mLastClickedView = view;
-                    MainDialogHelper.showChangeLessonDialog(getFragmentManager(), mAdmissionPercentageMetaId, (Integer) view.getTag());
+                    DialogHelper.showChangeLessonDialog(getFragmentManager(), mAdmissionPercentageMetaId, (Integer) view.getTag());
                 }
             }
 
             public void onItemLongClick(final View view, int position) {
                 if (position != 0) {
                     mLastClickedView = view;
-                    MainDialogHelper.showDeleteEntryDialog(bestCoding, mAdmissionPercentageMetaId, (Integer) view.getTag());
+                    DialogHelper.showDeleteDialog(getActivity(), new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Lesson oldLesson = mDataDb.getItem((int) view.getTag(), mAdmissionPercentageMetaId);
+                            deleteLessonAnimated(oldLesson);
+                        }
+                    });
                 }
             }
         }));

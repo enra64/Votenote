@@ -19,7 +19,7 @@ import de.oerntec.votenote.AdmissionPercentageFragmentStuff.AdmissionPercentageF
 import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMetaStuff.AdmissionPercentageMetaPojo;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageMeta;
 import de.oerntec.votenote.Database.TableHelpers.DBLastViewed;
-import de.oerntec.votenote.Dialogs.MainDialogHelper;
+import de.oerntec.votenote.Dialogs.DialogHelper;
 
 /**
  * This class shows **all** info available on a subject, including all percentage counters (swipe to the left/right) and all point counters
@@ -185,7 +185,7 @@ public class SubjectFragment extends Fragment {
         mViewPager.setCurrentItem(admissionPercentageFragmentPosition);
 
         if (forceLessonAddDialog)
-            MainDialogHelper.showAddLessonDialog(getFragmentManager(), admissionPercentageFragmentId);
+            DialogHelper.showAddLessonDialog(getFragmentManager(), admissionPercentageFragmentId);
     }
 
     /**
@@ -291,8 +291,7 @@ public class SubjectFragment extends Fragment {
          * return the saved instance reference to the given id
          */
         public AdmissionPercentageFragment getFragmentInstance(Integer requestedPosition) {
-            AdmissionPercentageFragment instance = mReferenceMap.get(requestedPosition);
-            return instance;
+            return mReferenceMap.get(requestedPosition);
         }
 
         @Override

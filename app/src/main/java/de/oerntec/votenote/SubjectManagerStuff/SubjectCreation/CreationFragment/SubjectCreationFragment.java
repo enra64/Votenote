@@ -151,8 +151,8 @@ public class SubjectCreationFragment extends Fragment implements SubjectCreation
         if(mSubjectDb == null) throw new AssertionError("could not get a database instance?");
 
         //begin transaction on database to enable using commit and abort
-        if(MainActivity.ENABLE_DEBUG_LOG_CALLS)
-            Log.i("creator fragment", "beginning transaction");
+        if (MainActivity.ENABLE_TRANSACTION_LOG)
+            Log.i("transact. log", "starting SubjectCreationFragment transaction in onAttach");
         mDatabase.beginTransaction();
     }
 
@@ -252,8 +252,8 @@ public class SubjectCreationFragment extends Fragment implements SubjectCreation
 
 
     private void abortAndClose() {
-        if(MainActivity.ENABLE_DEBUG_LOG_CALLS)
-            Log.i("creator fragment", "ending transaction");
+        if (MainActivity.ENABLE_TRANSACTION_LOG)
+            Log.i("transact. log", "ending SubjectCreationFragment transaction in abortAndClose");
 
         mDatabase.endTransaction();
         getActivity().finish();
@@ -283,8 +283,8 @@ public class SubjectCreationFragment extends Fragment implements SubjectCreation
         boolean hasEmptyName = "".equals(mAdapter.getCurrentName());
         if (!hasChanged()) {
             if(mDatabase.inTransaction()){
-                if(MainActivity.ENABLE_DEBUG_LOG_CALLS)
-                    Log.i("creator fragment", "ending transaction");
+                if (MainActivity.ENABLE_TRANSACTION_LOG)
+                    Log.i("transact. log", "ending SubjectCreationFragment transaction in showBackConfirmation");
                 mDatabase.endTransaction();
             }
             getActivity().finish();
@@ -334,8 +334,8 @@ public class SubjectCreationFragment extends Fragment implements SubjectCreation
         mSubjectDb.changeItem(new Subject(newName, mSubjectId));
         if (mDatabase == null)
             throw new AssertionError("no db reference?");
-        if(MainActivity.ENABLE_DEBUG_LOG_CALLS)
-            Log.i("creator fragment", "ending transaction successfully");
+        if (MainActivity.ENABLE_TRANSACTION_LOG)
+            Log.i("transact. log", "ending SubjectCreationFragment transaction successfully in saveAndClose");
         mDatabase.setTransactionSuccessful();
         mDatabase.endTransaction();
 

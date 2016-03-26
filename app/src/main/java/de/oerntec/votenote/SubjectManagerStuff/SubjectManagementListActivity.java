@@ -49,6 +49,7 @@ import de.oerntec.votenote.Database.TableHelpers.DBAdmissionCounters;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageMeta;
 import de.oerntec.votenote.Database.TableHelpers.DBLessons;
 import de.oerntec.votenote.Database.TableHelpers.DBSubjects;
+import de.oerntec.votenote.Dialogs.DialogHelper;
 import de.oerntec.votenote.Helpers.General;
 import de.oerntec.votenote.ImportExport.BackupHelper;
 import de.oerntec.votenote.MainActivity;
@@ -145,16 +146,12 @@ public class SubjectManagementListActivity extends AppCompatActivity implements 
             }
 
             public void onItemLongClick(final View view, final int position) {
-                AlertDialog.Builder b = new AlertDialog.Builder(getApplicationContext());
-                b.setTitle("Eintrag löschen?");
-                b.setNegativeButton(R.string.dialog_button_no, null);
-                b.setPositiveButton(R.string.dialog_button_yes, new DialogInterface.OnClickListener() {
+                DialogHelper.showDeleteDialog(veryGoodCoding, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         SwipeAnimationUtils.executeProgrammaticSwipeDeletion(veryGoodCoding, veryGoodCoding, view, position);
                     }
                 });
-                b.create().show();
             }
         }));
 

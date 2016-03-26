@@ -49,7 +49,7 @@ import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageMeta;
 import de.oerntec.votenote.Database.TableHelpers.DBLastViewed;
 import de.oerntec.votenote.Database.TableHelpers.DBSubjects;
 import de.oerntec.votenote.Diagram.DiagramActivity;
-import de.oerntec.votenote.Dialogs.MainDialogHelper;
+import de.oerntec.votenote.Dialogs.DialogHelper;
 import de.oerntec.votenote.Helpers.General;
 import de.oerntec.votenote.ImportExport.Writer;
 import de.oerntec.votenote.NavigationDrawer.NavigationDrawerFragment;
@@ -122,6 +122,13 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
      * enable or disable log calls for release
      */
     public static final boolean ENABLE_DEBUG_LOG_CALLS = BuildConfig.DEBUG;
+
+    /**
+     * Enable or disable transaction log calls for debugging the good old
+     * BEGIN EXCLUSIVE;] cannot start a transaction within a transaction
+     */
+    @SuppressWarnings("PointlessBooleanExpression")
+    public static final boolean ENABLE_TRANSACTION_LOG = ENABLE_DEBUG_LOG_CALLS && true;
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the
@@ -500,7 +507,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
     }
 
     private void onPresentationPointsClick() {
-        MainDialogHelper.showPresentationPointDialog(this, mCurrentSelectedSubjectId);
+        DialogHelper.showPresentationPointDialog(this, mCurrentSelectedSubjectId);
     }
 
     private void setPreference(String key, int val) {

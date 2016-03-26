@@ -64,7 +64,7 @@ public class General {
     public static Locale getCurrentLocale(Context context) {
         String languagePreference = PreferenceManager.getDefaultSharedPreferences(context).getString("language", "default");
         if ("default".equals(languagePreference))
-            return new Locale("de");
+            return Locale.getDefault();
         else
             return new Locale(languagePreference.toLowerCase());
     }
