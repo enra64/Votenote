@@ -49,7 +49,7 @@ import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageMeta;
 import de.oerntec.votenote.Database.TableHelpers.DBLastViewed;
 import de.oerntec.votenote.Database.TableHelpers.DBSubjects;
 import de.oerntec.votenote.Diagram.DiagramActivity;
-import de.oerntec.votenote.Dialogs.DialogHelper;
+import de.oerntec.votenote.Helpers.DialogHelper;
 import de.oerntec.votenote.Helpers.General;
 import de.oerntec.votenote.ImportExport.Writer;
 import de.oerntec.votenote.NavigationDrawer.NavigationDrawerFragment;
@@ -327,7 +327,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
             if (!getPreference("tutorial_base_read", false)) {
                 @SuppressWarnings("deprecation")
                 AlertDialog.Builder b = new AlertDialog.Builder(this, AlertDialog.THEME_DEVICE_DEFAULT_LIGHT);
-                b.setTitle("Tutorial");
+                b.setTitle(R.string.tutorial_shortcut_title);
                 b.setMessage(getString(R.string.create_new_subject_command));
                 b.setNegativeButton(R.string.tutorial_dismiss, null);
                 b.setPositiveButton(R.string.tutorial_shortcut, new DialogInterface.OnClickListener() {

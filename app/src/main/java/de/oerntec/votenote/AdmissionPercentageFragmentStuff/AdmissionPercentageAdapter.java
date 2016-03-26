@@ -278,7 +278,7 @@ public class AdmissionPercentageAdapter extends RecyclerView.Adapter<AdmissionPe
         //set text informing of current presentation point level, handling plural by the way.
         presentationPointsView.setText(String.format(General.getCurrentLocale(mContext),
                 "%s: %d %s %d",
-                counter.counterName,
+                counter.name,
                 currentPoints,
                 mContext.getString(R.string.main_dialog_lesson_von),
                 targetPoints));

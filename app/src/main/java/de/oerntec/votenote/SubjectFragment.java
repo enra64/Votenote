@@ -19,7 +19,7 @@ import de.oerntec.votenote.AdmissionPercentageFragmentStuff.AdmissionPercentageF
 import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMetaStuff.AdmissionPercentageMetaPojo;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageMeta;
 import de.oerntec.votenote.Database.TableHelpers.DBLastViewed;
-import de.oerntec.votenote.Dialogs.DialogHelper;
+import de.oerntec.votenote.Helpers.DialogHelper;
 
 /**
  * This class shows **all** info available on a subject, including all percentage counters (swipe to the left/right) and all point counters

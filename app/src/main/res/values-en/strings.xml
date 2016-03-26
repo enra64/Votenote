@@ -198,4 +198,8 @@
     <string name="admission_percentage_creator_name_hint">Not empty name</string>
     <string name="edit_text_empty_error_text">Please enter a name</string>
     <string name="dialog_title_delete">Delete?</string>
+    <string name="dialog_delete_abort">Nevermind</string>
+    <string name="dialog_delete_confirm">Delete</string>
+    <string name="dialog_delete_title">Delete %s?</string>
+    <string name="tutorial_shortcut_title">Hello</string>
 </resources>

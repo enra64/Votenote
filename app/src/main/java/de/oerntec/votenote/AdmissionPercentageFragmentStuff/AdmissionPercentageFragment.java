@@ -39,7 +39,7 @@ import de.oerntec.votenote.CardListHelpers.RecyclerItemClickListener;
 import de.oerntec.votenote.CardListHelpers.SwipeAnimationUtils;
 import de.oerntec.votenote.Database.Pojo.Lesson;
 import de.oerntec.votenote.Database.TableHelpers.DBLessons;
-import de.oerntec.votenote.Dialogs.DialogHelper;
+import de.oerntec.votenote.Helpers.DialogHelper;
 import de.oerntec.votenote.MainActivity;
 import de.oerntec.votenote.R;
 import de.oerntec.votenote.SubjectManagerStuff.SubjectManagementListActivity;

@@ -15,7 +15,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 * */
-package de.oerntec.votenote.Dialogs;
+package de.oerntec.votenote.Helpers;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -32,6 +32,7 @@ import de.oerntec.votenote.Database.Pojo.AdmissionCounter;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionCounters;
 import de.oerntec.votenote.MainActivity;
 import de.oerntec.votenote.R;
+import de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.CreationFragment.AdmissionCounterDialogFragment;
 
 public class DialogHelper {
     private static final int ADD_LESSON_CODE = -2;
@@ -58,7 +59,7 @@ public class DialogHelper {
         else{
             String[] choices = new String[list.size()];
             for(int i = 0; i < list.size(); i++)
-                choices[i] = list.get(i).counterName;
+                choices[i] = list.get(i).name;
             AlertDialog.Builder builder = new AlertDialog.Builder(activity);
             builder.setTitle("Admission Counter wählen")
                 .setItems(choices, new DialogInterface.OnClickListener() {
@@ -98,15 +99,26 @@ public class DialogHelper {
                         activity.getCurrentAdmissionPercentageFragment().reloadInfo();
                     }
                 }).setNegativeButton(activity.getString(R.string.dialog_button_abort), null);
-        b.setTitle(activity.getString(R.string.admission_counter_change_dialog_title, item.counterName));
+        b.setTitle(activity.getString(R.string.admission_counter_change_dialog_title, item.name));
         b.create().show();
     }
 
     public static void showDeleteDialog(Context context, DialogInterface.OnClickListener onYesListener) {
+        showDeleteDialog(context, onYesListener, context.getString(R.string.dialog_title_delete));
+    }
+
+    public static void showDeleteDialog(Context context,
+                                        DialogInterface.OnClickListener onYesListener,
+                                        String title) {
         AlertDialog.Builder b = new AlertDialog.Builder(context);
-        b.setTitle(R.string.dialog_title_delete);
+        b.setTitle(title);
         b.setNegativeButton(R.string.dialog_button_no, null);
         b.setPositiveButton(R.string.dialog_button_yes, onYesListener);
         b.create().show();
+    }
+
+    public static void showCounterDialog(android.app.FragmentManager fragmentManager, int subjectId, int counterId, boolean isNew) {
+        AdmissionCounterDialogFragment fragment = AdmissionCounterDialogFragment.newInstance(subjectId, counterId, isNew);
+        fragment.show(fragmentManager, "ac_create_dialog");
     }
 }

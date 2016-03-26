@@ -23,12 +23,12 @@ import de.oerntec.votenote.CardListHelpers.RecyclerItemClickListener;
 import de.oerntec.votenote.Database.DatabaseCreator;
 import de.oerntec.votenote.Database.Pojo.Subject;
 import de.oerntec.votenote.Database.TableHelpers.DBSubjects;
+import de.oerntec.votenote.Helpers.DialogHelper;
 import de.oerntec.votenote.Helpers.General;
 import de.oerntec.votenote.MainActivity;
 import de.oerntec.votenote.R;
 import de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.CreationFragment.AdmissionPercentageCreation.AdmissionPercentageCreationActivity;
 import de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.CreationFragment.AdmissionPercentageCreation.AdmissionPercentageCreationFragment;
-import de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.SubjectOverview.Dialogs;
 import de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.SubjectOverview.SubjectCreationActivity;
 import de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.SubjectOverview.SubjectCreationDialogInterface;
 import de.oerntec.votenote.SubjectManagerStuff.SubjectManagementListActivity;
@@ -129,7 +129,7 @@ public class SubjectCreationFragment extends Fragment implements SubjectCreation
         mIsOldSubject = !mIsNewSubject;
 
         //if this is a new subject, we have to create a subject now to know the subject id, which is conveniently returned by the addItemGetId method
-        if(mIsNewSubject)
+        if (mIsNewSubject)
             mSubjectId = mSubjectDb.addItemGetId("If you see this, i fucked up.");
 
         setHasOptionsMenu(true);
@@ -148,7 +148,7 @@ public class SubjectCreationFragment extends Fragment implements SubjectCreation
 
         mSubjectDb = DBSubjects.getInstance();
 
-        if(mSubjectDb == null) throw new AssertionError("could not get a database instance?");
+        if (mSubjectDb == null) throw new AssertionError("could not get a database instance?");
 
         //begin transaction on database to enable using commit and abort
         if (MainActivity.ENABLE_TRANSACTION_LOG)
@@ -214,18 +214,34 @@ public class SubjectCreationFragment extends Fragment implements SubjectCreation
         recyclerView.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), recyclerView, new OnItemClickListener() {
             public void onItemClick(View view, int position) {
                 if (mAdapter.getItemViewType(position) == UnifiedCreatorAdapter.VIEW_COUNTER)
-                    Dialogs.showCounterDialog(getFragmentManager(), mSubjectId, (int) view.getTag(), false);
+                    DialogHelper.showCounterDialog(getFragmentManager(), mSubjectId, (int) view.getTag(), false);
                 else if (mAdapter.getItemViewType(position) == UnifiedCreatorAdapter.VIEW_PERCENTAGE) {
                     openAdmissionPercentageCreationActivity((int) view.getTag(), false);
                 }
             }
 
-            public void onItemLongClick(final View view, int position) {
+            public void onItemLongClick(final View view, final int position) {
                 if ((int) view.getTag() != ID_ADD_ITEM) {
                     if (mAdapter.getItemViewType(position) == UnifiedCreatorAdapter.VIEW_COUNTER)
-                        Dialogs.showCounterDeleteDialog(mAdapter.getCounterPojoAtPosition(position), getActivity(), SubjectCreationFragment.this);
+                        DialogHelper.showDeleteDialog(
+                                getActivity(),
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        deleteAdmissionCounter(mAdapter.getCounterPojoAtPosition(position).id);
+                                    }
+                                },
+                                String.format(getString(R.string.dialog_delete_title), mAdapter.getCounterPojoAtPosition(position).name));
                     else if (mAdapter.getItemViewType(position) == UnifiedCreatorAdapter.VIEW_PERCENTAGE)
-                        Dialogs.showPercentageDeleteDialog(mAdapter.getPercentagePojoAtPosition(position), getActivity(), SubjectCreationFragment.this);
+                        DialogHelper.showDeleteDialog(
+                                getActivity(),
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        deleteAdmissionPercentage(mAdapter.getPercentagePojoAtPosition(position).id);
+                                    }
+                                },
+                                String.format(getString(R.string.dialog_delete_title), mAdapter.getPercentagePojoAtPosition(position).name));
                 }
             }
         }));
@@ -281,7 +297,7 @@ public class SubjectCreationFragment extends Fragment implements SubjectCreation
         //if the subject did not change, we dont need to show this dialog
         boolean hasEmptyName = "".equals(mAdapter.getCurrentName());
         if (!hasChanged()) {
-            if(mDatabase.inTransaction()){
+            if (mDatabase.inTransaction()) {
                 if (MainActivity.ENABLE_TRANSACTION_LOG)
                     Log.i("transact. log", "ending SubjectCreationFragment transaction in showBackConfirmation");
                 mDatabase.endTransaction();
@@ -425,7 +441,7 @@ public class SubjectCreationFragment extends Fragment implements SubjectCreation
         }
     }
 
-    public void dialogClosed(){
+    public void dialogClosed() {
         General.nukeKeyboard(getActivity());
     }
 

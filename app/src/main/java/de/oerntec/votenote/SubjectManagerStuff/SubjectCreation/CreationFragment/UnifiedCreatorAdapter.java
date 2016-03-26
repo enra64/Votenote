@@ -16,9 +16,9 @@ import de.oerntec.votenote.Database.Pojo.AdmissionCounter;
 import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMetaStuff.AdmissionPercentageMetaPojo;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionCounters;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageMeta;
+import de.oerntec.votenote.Helpers.DialogHelper;
 import de.oerntec.votenote.Helpers.TextWatchers.FakeDisabledNotEmptyWatcher;
 import de.oerntec.votenote.R;
-import de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.SubjectOverview.Dialogs;
 
 public class UnifiedCreatorAdapter extends RecyclerView.Adapter<UnifiedCreatorAdapter.ViewHolder> implements View.OnClickListener {
     static final int VIEW_INFO = 0;
@@ -130,7 +130,7 @@ public class UnifiedCreatorAdapter extends RecyclerView.Adapter<UnifiedCreatorAd
                 CounterViewHolder counterHolder = (CounterViewHolder) holder;
                 AdmissionCounter counterData = getCounterPojoAtPosition(position);
                 counterHolder.itemView.setTag(counterData.id);
-                counterHolder.name.setText(counterData.counterName);
+                counterHolder.name.setText(counterData.name);
                 counterHolder.targetPoints.setText(mContext.getString(R.string.minimum_points_text, counterData.targetValue));
                 break;
             case VIEW_PERCENTAGE:
@@ -215,7 +215,7 @@ public class UnifiedCreatorAdapter extends RecyclerView.Adapter<UnifiedCreatorAd
             mSubjectCreationFragment.openAdmissionPercentageCreationActivity(SubjectCreationFragment.ID_ADD_ITEM, true);
         }
         else{
-            Dialogs.showCounterDialog(mFragmentManager, mSubjectId, SubjectCreationFragment.ID_ADD_ITEM, true);
+            DialogHelper.showCounterDialog(mFragmentManager, mSubjectId, SubjectCreationFragment.ID_ADD_ITEM, true);
         }
     }
 

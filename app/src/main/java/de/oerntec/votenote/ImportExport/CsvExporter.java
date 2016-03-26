@@ -73,7 +73,7 @@ public class CsvExporter {
                     b.append(apd.getCsvRepresentation()).append(le);
             }
             for(AdmissionCounter ac : s.admissionCounterList){
-                b.append("Admission Counter:").append(ac.counterName).append(le);
+                b.append("Admission Counter:").append(ac.name).append(le);
                 b.append(acHeader).append(le);
                 b.append(ac.getCsvRepresentation()).append(le);
             }

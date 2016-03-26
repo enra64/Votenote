@@ -159,7 +159,7 @@ public class AdmissionCounterDialogFragment extends DialogFragment implements Di
 
         //set old name
         if (mIsOld)
-            mNameInput.setText(inputCounter.counterName);
+            mNameInput.setText(inputCounter.name);
         else
             mNameInput.setHint(R.string.admission_percentage_creator_name_hint);
     }
@@ -169,7 +169,7 @@ public class AdmissionCounterDialogFragment extends DialogFragment implements Di
         if (mIsNew)
             title = "New admission counter";
         else {
-            title = "Change " + mDb.getItem(mAdmissionCounterId).counterName;
+            title = "Change " + mDb.getItem(mAdmissionCounterId).name;
         }
         return title;
     }

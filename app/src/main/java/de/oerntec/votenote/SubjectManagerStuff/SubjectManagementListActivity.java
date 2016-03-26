@@ -49,7 +49,7 @@ import de.oerntec.votenote.Database.TableHelpers.DBAdmissionCounters;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageMeta;
 import de.oerntec.votenote.Database.TableHelpers.DBLessons;
 import de.oerntec.votenote.Database.TableHelpers.DBSubjects;
-import de.oerntec.votenote.Dialogs.DialogHelper;
+import de.oerntec.votenote.Helpers.DialogHelper;
 import de.oerntec.votenote.Helpers.General;
 import de.oerntec.votenote.ImportExport.BackupHelper;
 import de.oerntec.votenote.MainActivity;
