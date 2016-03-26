@@ -191,6 +191,13 @@ public class DatabaseCreator extends SQLiteOpenHelper {
         }
     }
 
+    @Override
+    public void onOpen(SQLiteDatabase db) {
+        super.onOpen(db);
+        // obviously this needs to be executed, otherwise on delete cascade is weird
+        db.execSQL("PRAGMA foreign_keys=ON");
+    }
+
     // Method is called during creation of the database
     @Override
     public void onCreate(SQLiteDatabase database) {

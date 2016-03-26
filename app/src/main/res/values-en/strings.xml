@@ -101,7 +101,7 @@
     <string name="preference_auto_set_max_assignments_title">Avoid invalid lesson number picker values</string>
     <string name="eula_accept">I accept</string>
     <string name="eula_do_not_accept">I do not accept</string>
-    <string name="tutorial_dismiss">Dismiss</string>
+    <string name="tutorial_dismiss">No</string>
     <string name="tutorial_shortcut">Go</string>
     <string name="preferences_language">Language</string>
     <string name="lesson_fragment_info_card_assignments_per_lesson_description">assignments required per lesson</string>
