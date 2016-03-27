@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:minHeight="?android:listPreferredItemHeight">
@@ -7,9 +8,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:paddingLeft="10dp"
-        android:paddingStart="10dp">
+        android:layout_gravity="center_vertical">
 
         <TextView
             android:id="@+id/title"
@@ -24,7 +23,8 @@
             android:singleLine="true"
             android:text="Title"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textColor="@android:color/primary_text_light" />
+            android:textColor="@android:color/primary_text_light"
+            tools:ignore="HardcodedText" />
 
         <TextView
             android:id="@+id/summary"
@@ -37,7 +37,8 @@
             android:layout_toStartOf="@+id/checkbox"
             android:maxLines="2"
             android:text="Summary"
-            android:textAppearance="?android:attr/textAppearanceSmall" />
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            tools:ignore="HardcodedText" />
 
         <CheckBox
             android:id="@+id/checkbox"
