@@ -16,7 +16,6 @@ import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
-import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -36,6 +35,7 @@ public class AdmissionPercentageCreationFragment extends Fragment implements But
     public static final String SUBJECT_ID = "subject_id";
     public static final String ADMISSION_PERCENTAGE_ID = "ap_id";
     public static final String SUBJECT_IS_NEW = "subject_is_new";
+    public static final String RECURRENCE_STRING = "percentage_recurrence_string";
 
     private int mSubjectId, mAdmissionPercentageId;
 
@@ -429,6 +429,11 @@ public class AdmissionPercentageCreationFragment extends Fragment implements But
         return title;
     }
 
+    /**
+     * Save the database changes
+     *
+     * @return appropriate result code (changed/new)
+     */
     private int save() {
         //change the item we created at the beginning of this dialog to the actual values
         mDb.changeItem(new AdmissionPercentageMetaPojo(
@@ -449,19 +454,9 @@ public class AdmissionPercentageCreationFragment extends Fragment implements But
         // this works, by the way, because the current string is the hint if not changed, so it
         // contains the old string
         if (mNotificationEnabledCheckBox.isChecked()) {
-            NotificationGeneralHelper.setAlarmForNotification(getActivity(),
-                    mSubjectId,
-                    mAdmissionPercentageId,
-                    mNotificationRecurrenceStringCurrent);
-            // because this is only the percentage creation dialog, we would have to somehow give
-            // the parent activity data about the notification time to have really correct save
-            // behaviour. Since that would be quite tedious, we simply show a notification to
-            // alarm the user that an alarm has now been set.
-            // also, only show the toast if state changed
-            if (!mNotificationEnabledHint)
-                Toast.makeText(getActivity(), R.string.percentage_creator_notification_activated_toast, Toast.LENGTH_LONG).show();
-        } else if (mNotificationEnabledHint)
-            Toast.makeText(getActivity(), R.string.subject_creator_notification_deactivated_toast, Toast.LENGTH_LONG).show();
+            AdmissionPercentageCreationActivity host = (AdmissionPercentageCreationActivity) getActivity();
+            host.setRecurrenceString(mNotificationRecurrenceStringCurrent);
+        }
 
         //commit
         mDb.releaseSavepoint(mSavepointId);
@@ -489,7 +484,7 @@ public class AdmissionPercentageCreationFragment extends Fragment implements But
                 break;
         }
         AdmissionPercentageCreationActivity host = (AdmissionPercentageCreationActivity) getActivity();
-        host.callCreatorFragmentForItemChange(resultState);
+        host.finishToSubjectCreator(resultState);
     }
 
     /**
