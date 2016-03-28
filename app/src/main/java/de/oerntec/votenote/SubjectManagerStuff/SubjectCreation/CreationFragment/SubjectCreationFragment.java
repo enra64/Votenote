@@ -18,6 +18,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import de.oerntec.votenote.CardListHelpers.OnItemClickListener;
 import de.oerntec.votenote.CardListHelpers.RecyclerItemClickListener;
 import de.oerntec.votenote.Database.DatabaseCreator;
@@ -25,6 +28,7 @@ import de.oerntec.votenote.Database.Pojo.Subject;
 import de.oerntec.votenote.Database.TableHelpers.DBSubjects;
 import de.oerntec.votenote.Helpers.DialogHelper;
 import de.oerntec.votenote.Helpers.General;
+import de.oerntec.votenote.Helpers.Notifications.NotificationGeneralHelper;
 import de.oerntec.votenote.MainActivity;
 import de.oerntec.votenote.R;
 import de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.CreationFragment.AdmissionPercentageCreation.AdmissionPercentageCreationActivity;
@@ -42,12 +46,11 @@ public class SubjectCreationFragment extends Fragment implements SubjectCreation
      * Lesson should be added, not changed
      */
     public static final int ADD_SUBJECT_CODE = -1;
-
     /**
      * ID used for adding percentage or counter
      */
     public static final int ID_ADD_ITEM = -2;
-
+    NotificationReminder mNotificationReminder = new NotificationReminder();
     /**
      * DB for the subjects
      */
@@ -252,7 +255,7 @@ public class SubjectCreationFragment extends Fragment implements SubjectCreation
         intent.putExtra(AdmissionPercentageCreationFragment.SUBJECT_ID, mSubjectId);
         intent.putExtra(AdmissionPercentageCreationFragment.ADMISSION_PERCENTAGE_ID, admissionPercentageId);
         intent.putExtra(AdmissionPercentageCreationFragment.SUBJECT_IS_NEW, isNew);
-        startActivityForResult(intent, AdmissionPercentageCreationActivity.RESULT_REQUEST_CODE_ADMISSION_PERCENTAGE_CREATOR);
+        startActivityForResult(intent, AdmissionPercentageCreationActivity.INTENT_REQUEST_CODE_ADMISSION_PERCENTAGE_CREATOR);
     }
 
     @Override
@@ -354,6 +357,13 @@ public class SubjectCreationFragment extends Fragment implements SubjectCreation
         mDatabase.setTransactionSuccessful();
         mDatabase.endTransaction();
 
+        //set notifications
+        for (NotificationReminder.Reminder r : mNotificationReminder.notificationList)
+            NotificationGeneralHelper.setAlarmForNotification(getActivity(),
+                    mSubjectId,
+                    r.trackerId,
+                    r.recurrenceString);
+
         if (hasChanged())
             setActivityResult(false);
 
@@ -417,7 +427,7 @@ public class SubjectCreationFragment extends Fragment implements SubjectCreation
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == AdmissionPercentageCreationActivity.RESULT_REQUEST_CODE_ADMISSION_PERCENTAGE_CREATOR) {
+        if (requestCode == AdmissionPercentageCreationActivity.INTENT_REQUEST_CODE_ADMISSION_PERCENTAGE_CREATOR) {
             //this happens on back button press
             if (data == null)
                 dialogClosed();
@@ -425,10 +435,16 @@ public class SubjectCreationFragment extends Fragment implements SubjectCreation
                 int itemId = data.getExtras().getInt(AdmissionPercentageCreationFragment.ADMISSION_PERCENTAGE_ID);
                 switch (resultCode) {
                     case SubjectCreationActivity.DIALOG_RESULT_ADDED:
-                        admissionPercentageFinished(itemId, true);//true -> isNew
-                        break;
                     case SubjectCreationActivity.DIALOG_RESULT_CHANGED:
-                        admissionPercentageFinished(itemId, false);//false -> isNotNew
+                        admissionPercentageFinished(itemId,
+                                resultCode == SubjectCreationActivity.DIALOG_RESULT_ADDED);
+                        //check for notification
+                        String recurrenceString =
+                                data.getStringExtra(AdmissionPercentageCreationFragment.RECURRENCE_STRING);
+                        if (recurrenceString != null)
+                            mNotificationReminder.setReminder(itemId, recurrenceString);
+                        else
+                            mNotificationReminder.removeReminder(itemId);
                         break;
                     case SubjectCreationActivity.DIALOG_RESULT_DELETE:
                         deleteAdmissionPercentage(itemId);
@@ -457,6 +473,58 @@ public class SubjectCreationFragment extends Fragment implements SubjectCreation
             case R.id.giant_ok_button:
                 saveAndClose();
                 break;
+        }
+    }
+
+    /**
+     * Class used for remembering whether a certain percentage tracker needs to have a notification
+     * added
+     */
+    private class NotificationReminder {
+        private List<Reminder> notificationList = new ArrayList<>();
+
+        /**
+         * remove a reminder
+         */
+        void removeReminder(int percentageTrackerId) {
+            if (notificationList.isEmpty()) return;
+            int position = getPosition(percentageTrackerId);
+            if (position != -1)
+                notificationList.remove(position);
+        }
+
+        /**
+         * Get Reminder Object
+         *
+         * @param percentageTrackerId Id Of the percentage tracker the notification belongs to
+         * @return Position of the object with id <parameter>percentageTrackerId</parameter> or -1
+         * if not exists
+         */
+        private int getPosition(int percentageTrackerId) {
+            int position = notificationList.size() - 1;
+            for (; position >= 0; position--)
+                if (notificationList.get(position).trackerId == percentageTrackerId)
+                    break;
+            return position;
+        }
+
+        void setReminder(int trackerId, String recurrenceString) {
+            int possibleOldPosition = getPosition(trackerId);
+            Reminder reminder = new Reminder(trackerId, recurrenceString);
+            if (possibleOldPosition == -1)
+                notificationList.add(reminder);
+            else
+                notificationList.set(possibleOldPosition, reminder);
+        }
+
+        class Reminder {
+            int trackerId;
+            String recurrenceString;
+
+            public Reminder(int trackerId, String recurrenceString) {
+                this.trackerId = trackerId;
+                this.recurrenceString = recurrenceString;
+            }
         }
     }
 }

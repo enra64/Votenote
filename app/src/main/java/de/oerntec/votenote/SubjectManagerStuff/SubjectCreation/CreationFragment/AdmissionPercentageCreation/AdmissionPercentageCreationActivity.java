@@ -11,8 +11,15 @@ import de.oerntec.votenote.Helpers.General;
 import de.oerntec.votenote.R;
 
 public class AdmissionPercentageCreationActivity extends AppCompatActivity {
-    public static final int RESULT_REQUEST_CODE_ADMISSION_PERCENTAGE_CREATOR = 123;
+    public static final int INTENT_REQUEST_CODE_ADMISSION_PERCENTAGE_CREATOR = 123;
     private int mSubjectId, mAdmissionPercentageId;
+
+
+    /**
+     * If the corresponding CheckBox is set in the fragment, it will set this value appropriately
+     * to signal that the SubjectCreatorActivity needs to generate a notification
+     */
+    private String mRecurrenceString = null;
 
     @SuppressWarnings("ConstantConditions")//i dont have error handling for that shit
     @Override
@@ -52,6 +59,10 @@ public class AdmissionPercentageCreationActivity extends AppCompatActivity {
         findViewById(R.id.giant_delete_button).setOnClickListener(mContentFragment);
     }
 
+    void setRecurrenceString(String recurrence) {
+        mRecurrenceString = recurrence;
+    }
+
     @SuppressWarnings("ConstantConditions")
     void hideDeleteButton() {
         findViewById(R.id.giant_delete_button).setVisibility(View.GONE);
@@ -68,7 +79,7 @@ public class AdmissionPercentageCreationActivity extends AppCompatActivity {
         return (Button) findViewById(R.id.giant_ok_button);
     }
 
-    public void callCreatorFragmentForItemChange(int resultState) {
+    void finishToSubjectCreator(int resultState) {
         setResult(resultState, getCurrentResultIntent());
         finish();
     }
@@ -78,6 +89,8 @@ public class AdmissionPercentageCreationActivity extends AppCompatActivity {
         Intent returnIntent = new Intent();
         returnIntent.putExtra(AdmissionPercentageCreationFragment.SUBJECT_ID, mSubjectId);
         returnIntent.putExtra(AdmissionPercentageCreationFragment.ADMISSION_PERCENTAGE_ID, mAdmissionPercentageId);
+        if (mRecurrenceString != null)
+            returnIntent.putExtra(AdmissionPercentageCreationFragment.RECURRENCE_STRING, mRecurrenceString);
         return returnIntent;
     }
 
