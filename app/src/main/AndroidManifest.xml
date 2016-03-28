@@ -24,7 +24,8 @@
 
         <activity
             android:name=".MainActivity"
-            android:label="@string/app_name">
+            android:label="@string/app_name"
+            android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -32,7 +33,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".SubjectManagerStuff.SubjectManagementActivity"
+            android:name=".SubjectManagerStuff.SubjectManagementListActivity"
             android:label="@string/title_activity_group_management"
             android:parentActivityName=".Preferences.PreferencesActivity"
             android:windowSoftInputMode="stateHidden">
@@ -57,17 +58,38 @@
                 android:value="de.oerntec.votenote.MainActivity" />
         </activity>
         <activity
-            android:name=".SubjectManagerStuff.SubjectCreation.SubjectOverview.SubjectCreationActivity"
-            android:label="@string/title_activity_subject_creation"
-            android:parentActivityName=".SubjectManagerStuff.SubjectManagementActivity"
+            android:name=".AdmissionPercentageOverview.AdmissionPercentageOverviewActivity"
+            android:label="Info"
+            android:parentActivityName=".MainActivity"
             android:windowSoftInputMode="stateAlwaysHidden">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="de.oerntec.votenote.SubjectManagerStuff.SubjectManagementActivity" />
+                android:value="de.oerntec.votenote.MainActivity" />
+        </activity>
+        <activity
+            android:name=".SubjectManagerStuff.SubjectCreation.SubjectOverview.SubjectCreationActivity"
+            android:label="@string/title_activity_subject_creation"
+            android:parentActivityName=".SubjectManagerStuff.SubjectManagementListActivity"
+            android:windowSoftInputMode="stateAlwaysHidden">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".SubjectManagerStuff.SubjectManagementListActivity" />
         </activity>
         <activity
             android:name=".SubjectManagerStuff.SubjectCreation.CreationFragment.AdmissionPercentageCreation.AdmissionPercentageCreationActivity"
             android:windowSoftInputMode="adjustNothing"></activity>
+
+        <receiver android:name=".Helpers.Notifications.NotificationAlarmReceiver">
+            <intent-filter>
+                <action android:name="de.oerntec.votenote.notifications" />
+            </intent-filter>
+        </receiver>
+
+        <receiver android:name=".Helpers.Notifications.RebootReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

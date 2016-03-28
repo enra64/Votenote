@@ -13,9 +13,9 @@ import android.widget.TextView;
 import java.util.Locale;
 
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionCounters;
-import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageData;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageMeta;
 import de.oerntec.votenote.Database.TableHelpers.DBLastViewed;
+import de.oerntec.votenote.Database.TableHelpers.DBLessons;
 import de.oerntec.votenote.Database.TableHelpers.DBSubjects;
 import de.oerntec.votenote.R;
 
@@ -41,15 +41,6 @@ public class General {
     }
 
     /**
-     * yeah so uuh fuck android keyboard management
-     * https://stackoverflow.com/questions/1109022/close-hide-the-android-soft-keyboard/17789187#17789187
-     */
-    public static void nukeKeyboard(Context context, View view) {
-        InputMethodManager inputMethodManager = (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
-        inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
-    }
-
-    /**
      * Changes the app langugage
      *
      * @param context Context to adjust in
@@ -70,6 +61,14 @@ public class General {
         return languagePreference;
     }
 
+    public static Locale getCurrentLocale(Context context) {
+        String languagePreference = PreferenceManager.getDefaultSharedPreferences(context).getString("language", "default");
+        if ("default".equals(languagePreference))
+            return Locale.getDefault();
+        else
+            return new Locale(languagePreference.toLowerCase());
+    }
+
     /**
      * Set up singletons for all databases
      */
@@ -77,7 +76,7 @@ public class General {
         //database access
         DBSubjects.setupInstance(context);
         DBAdmissionCounters.setupInstance(context);
-        DBAdmissionPercentageData.setupInstance(context);
+        DBLessons.setupInstance(context);
         DBAdmissionPercentageMeta.setupInstance(context);
         DBLastViewed.setupInstance(context);
     }

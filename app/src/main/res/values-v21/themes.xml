@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="CustomAppTheme" parent="@style/Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/accent</item>
+        <item name="windowNoTitle">true</item>
+        <item name="windowActionBar">false</item>
+        <item name="android:actionBarStyle">@style/CustomActionBarWhiteTitle</item>
+        <item name="android:timePickerDialogTheme">@style/CustomTimePickerDialogTheme</item>
+    </style>
+
+    <style name="GreenButton" parent="ThemeOverlay.AppCompat.Dark">
+        <item name="colorButtonNormal">@color/disabled_button_background</item>
+        <item name="colorAccent">@color/colorPrimary</item>
+        <item name="android:textColor">@color/textColorActionBar</item>
+    </style>
+
+    <style name="CustomTimePickerDialogTheme" parent="@style/Theme.AppCompat.Light.Dialog">
+        <item name="colorAccent">@color/colorPrimaryDark
+        </item> <!-- colorAccent here seems to work just fine? -->
+        <item name="android:timePickerStyle">@style/CustomTimePickerDialogStyle</item>
+    </style>
+
+    <style name="CustomTimePickerDialogStyle" parent="@android:style/Widget.Material.Light.TimePicker">
+
+        <item name="colorAccent">@color/accent
+        </item> <!-- colorAccent here seems to work just fine? -->
+
+        <item name="android:timePickerMode">clock</item>
+        <item name="android:headerBackground">@color/colorPrimary</item>
+        <item name="android:headerTimeTextAppearance">
+            @style/TextAppearance.TimePickerDialogStyle.TimeLabel
+        </item> <!-- TimePicker Time *TextAppearance* -->
+        <item name="android:numbersTextColor">#ff000000</item>
+        <item name="android:numbersSelectorColor">@color/accent</item>
+        <item name="android:numbersBackgroundColor">#ffdddddd</item>
+    </style>
+
+    <style name="TextAppearance.TimePickerDialogStyle.TimeLabel" parent="@android:style/TextAppearance.Material">
+
+        <item name="android:textSize">60sp</item> <!-- from -->
+        <item name="android:textColor">@color/accent</item>
+
+    </style>
+</resources>

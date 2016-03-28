@@ -73,7 +73,7 @@ public class DBAdmissionCounters extends CrudDb<AdmissionCounter> implements Poj
     @Override
     public void changeItem(AdmissionCounter newValues) {
         ContentValues values = new ContentValues();
-        values.put(DatabaseCreator.ADMISSION_COUNTER_COUNTER_NAME, newValues.counterName);
+        values.put(DatabaseCreator.ADMISSION_COUNTER_COUNTER_NAME, newValues.name);
         values.put(DatabaseCreator.ADMISSION_COUNTER_CURRENT, newValues.currentValue);
         values.put(DatabaseCreator.ADMISSION_COUNTER_SUBJECT_ID, newValues.subjectId);
         values.put(DatabaseCreator.ADMISSION_COUNTER_TARGET, newValues.targetValue);
@@ -181,7 +181,7 @@ public class DBAdmissionCounters extends CrudDb<AdmissionCounter> implements Poj
      */
     public int addItemGetId(AdmissionCounter newCounter) {
         ContentValues values = new ContentValues();
-        values.put(DatabaseCreator.ADMISSION_COUNTER_COUNTER_NAME, newCounter.counterName);
+        values.put(DatabaseCreator.ADMISSION_COUNTER_COUNTER_NAME, newCounter.name);
         values.put(DatabaseCreator.ADMISSION_COUNTER_CURRENT, newCounter.currentValue);
         values.put(DatabaseCreator.ADMISSION_COUNTER_SUBJECT_ID, newCounter.subjectId);
         values.put(DatabaseCreator.ADMISSION_COUNTER_TARGET, newCounter.targetValue);

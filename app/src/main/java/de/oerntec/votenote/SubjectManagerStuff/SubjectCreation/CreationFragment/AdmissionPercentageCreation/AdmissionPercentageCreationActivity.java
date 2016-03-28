@@ -12,12 +12,16 @@ import de.oerntec.votenote.R;
 
 public class AdmissionPercentageCreationActivity extends AppCompatActivity {
     public static final int RESULT_REQUEST_CODE_ADMISSION_PERCENTAGE_CREATOR = 123;
-    private AdmissionPercentageFragment mContentFragment;
     private int mSubjectId, mAdmissionPercentageId;
 
+    @SuppressWarnings("ConstantConditions")//i dont have error handling for that shit
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //force the language
+        General.adjustLanguage(this);
+
         setContentView(R.layout.activity_admission_percentage_creation);
 
         //avoid overlapping fragments
@@ -29,29 +33,28 @@ public class AdmissionPercentageCreationActivity extends AppCompatActivity {
         //if we can not get our toolbar, its rip time anyways
         setSupportActionBar(toolbar);
 
-        //force the language
-        General.adjustLanguage(this);
-
         //get arguments
-        mSubjectId = getIntent().getExtras().getInt(AdmissionPercentageFragment.SUBJECT_ID);
-        mAdmissionPercentageId = getIntent().getExtras().getInt(AdmissionPercentageFragment.ADMISSION_PERCENTAGE_ID);
-        boolean isNew = getIntent().getExtras().getBoolean(AdmissionPercentageFragment.SUBJECT_IS_NEW);
+        mSubjectId = getIntent().getExtras().getInt(AdmissionPercentageCreationFragment.SUBJECT_ID);
+        mAdmissionPercentageId = getIntent().getExtras().getInt(AdmissionPercentageCreationFragment.ADMISSION_PERCENTAGE_ID);
+        boolean isNew = getIntent().getExtras().getBoolean(AdmissionPercentageCreationFragment.SUBJECT_IS_NEW);
 
         //instantiate and apply fragment
-        mContentFragment = AdmissionPercentageFragment.newInstance(mSubjectId, mAdmissionPercentageId, isNew);
+        AdmissionPercentageCreationFragment mContentFragment =
+                AdmissionPercentageCreationFragment.newInstance(mSubjectId, mAdmissionPercentageId, isNew);
         getSupportFragmentManager().
                 beginTransaction().
                 add(R.id.admission_percentage_creation_fragment_container, mContentFragment)
                 .commit();
 
         //set fragment to be the listener for our buttons
-        findViewById(R.id.activity_admission_percentage_creation_save_button).setOnClickListener(mContentFragment);
-        findViewById(R.id.activity_admission_percentage_creation_cancel_button).setOnClickListener(mContentFragment);
-        findViewById(R.id.activity_admission_percentage_creation_delete_button).setOnClickListener(mContentFragment);
+        findViewById(R.id.giant_ok_button).setOnClickListener(mContentFragment);
+        findViewById(R.id.giant_cancel_button).setOnClickListener(mContentFragment);
+        findViewById(R.id.giant_delete_button).setOnClickListener(mContentFragment);
     }
 
+    @SuppressWarnings("ConstantConditions")
     void hideDeleteButton() {
-        findViewById(R.id.activity_admission_percentage_creation_delete_button).setVisibility(View.GONE);
+        findViewById(R.id.giant_delete_button).setVisibility(View.GONE);
     }
 
     void setToolbarTitle(String title) {
@@ -62,7 +65,7 @@ public class AdmissionPercentageCreationActivity extends AppCompatActivity {
     }
 
     Button getSaveButton() {
-        return (Button) findViewById(R.id.activity_admission_percentage_creation_save_button);
+        return (Button) findViewById(R.id.giant_ok_button);
     }
 
     public void callCreatorFragmentForItemChange(int resultState) {
@@ -73,8 +76,8 @@ public class AdmissionPercentageCreationActivity extends AppCompatActivity {
     private Intent getCurrentResultIntent() {
         //save result data into intent
         Intent returnIntent = new Intent();
-        returnIntent.putExtra(AdmissionPercentageFragment.SUBJECT_ID, mSubjectId);
-        returnIntent.putExtra(AdmissionPercentageFragment.ADMISSION_PERCENTAGE_ID, mAdmissionPercentageId);
+        returnIntent.putExtra(AdmissionPercentageCreationFragment.SUBJECT_ID, mSubjectId);
+        returnIntent.putExtra(AdmissionPercentageCreationFragment.ADMISSION_PERCENTAGE_ID, mAdmissionPercentageId);
         return returnIntent;
     }
 

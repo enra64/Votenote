@@ -7,27 +7,26 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.Switch;
 import android.widget.TextView;
 
 import java.util.List;
 
 import de.oerntec.votenote.Database.Pojo.AdmissionCounter;
-import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMeta;
+import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMetaStuff.AdmissionPercentageMetaPojo;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionCounters;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageMeta;
+import de.oerntec.votenote.Helpers.DialogHelper;
+import de.oerntec.votenote.Helpers.TextWatchers.FakeDisabledNotEmptyWatcher;
 import de.oerntec.votenote.R;
-import de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.SubjectOverview.Dialogs;
 
-public class UnifiedCreatorAdapter extends RecyclerView.Adapter<UnifiedCreatorAdapter.ViewHolder> implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
+public class UnifiedCreatorAdapter extends RecyclerView.Adapter<UnifiedCreatorAdapter.ViewHolder> implements View.OnClickListener {
     static final int VIEW_INFO = 0;
     static final int VIEW_PERCENTAGE = 1;
     static final int VIEW_COUNTER = 2;
 
     private List<AdmissionCounter> mCounterData;
-    private List<AdmissionPercentageMeta> mPercentageData;
+    private List<AdmissionPercentageMetaPojo> mPercentageData;
 
     private DBAdmissionCounters mCounterDb;
     private DBAdmissionPercentageMeta mPercentageDb;
@@ -40,13 +39,25 @@ public class UnifiedCreatorAdapter extends RecyclerView.Adapter<UnifiedCreatorAd
     private Context mContext;
     private FragmentManager mFragmentManager;
 
+    private Button mParentOkButton;
+
+    private View.OnClickListener mEnabledOnClickListener;
+
     /**
      * Instance of the calling subject creation fragment, because we want to create the intents for
      * admission percentage counters there
      */
     private SubjectCreationFragment mSubjectCreationFragment;
 
-    public UnifiedCreatorAdapter(Context context, SubjectCreationFragment subjectCreationFragment, FragmentManager fragmentManager, String subjectName, int subjectId) {
+    //this got out of hand
+    public UnifiedCreatorAdapter(
+            Context context,
+            SubjectCreationFragment subjectCreationFragment,
+            FragmentManager fragmentManager,
+            String subjectName,
+            int subjectId,
+            Button okButton,
+            View.OnClickListener enabledOnClickListener) {
         mContext = context;
         mCounterDb = DBAdmissionCounters.getInstance();
         mPercentageDb = DBAdmissionPercentageMeta.getInstance();
@@ -54,6 +65,8 @@ public class UnifiedCreatorAdapter extends RecyclerView.Adapter<UnifiedCreatorAd
         mSubjectId = subjectId;
         mFragmentManager = fragmentManager;
         mSubjectCreationFragment = subjectCreationFragment;
+        mParentOkButton = okButton;
+        mEnabledOnClickListener = enabledOnClickListener;
         requery();
     }
 
@@ -65,11 +78,10 @@ public class UnifiedCreatorAdapter extends RecyclerView.Adapter<UnifiedCreatorAd
             case VIEW_INFO:
                 root = inflater.inflate(R.layout.subject_manager_fragment_main_card, parent, false);
                 InfoViewHolder infoHolder = new InfoViewHolder(root);
-                infoHolder.notificationSwitch = (Switch) root.findViewById(R.id.subject_manager_fragment_main_card_notification_switch);
                 infoHolder.percentageAddButton = (Button) root.findViewById(R.id.subject_manager_fragment_main_card_add_percentage_counter);
                 infoHolder.counterAddButton = (Button) root.findViewById(R.id.subject_manager_fragment_main_card_add_counter);
-                infoHolder.name = (EditText) root.findViewById(R.id.subject_manager_fragment_main_card_name);
                 mNameInput = (EditText) root.findViewById(R.id.subject_manager_fragment_main_card_name);
+                infoHolder.name = mNameInput;
                 return infoHolder;
             case VIEW_COUNTER:
                 root = inflater.inflate(R.layout.subject_manager_fragment_counter_card, parent, false);
@@ -94,28 +106,40 @@ public class UnifiedCreatorAdapter extends RecyclerView.Adapter<UnifiedCreatorAd
     public void onBindViewHolder(ViewHolder holder, int position) {
         switch (holder.type){
             case VIEW_INFO:
-                InfoViewHolder infoHolder = (InfoViewHolder) holder;
+                final InfoViewHolder infoHolder = (InfoViewHolder) holder;
                 if(mSubjectName != null)
                     infoHolder.name.setText(mSubjectName);
+                infoHolder.name.addTextChangedListener(
+                        new FakeDisabledNotEmptyWatcher(
+                                infoHolder.name,
+                                mParentOkButton.getContext().getString(R.string.edit_text_empty_error_text),
+                                mSubjectName == null || mSubjectName.isEmpty(),
+                                new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        infoHolder.name.setError(v.getContext().getString(R.string.edit_text_empty_error_text));
+                                    }
+                                },
+                                mEnabledOnClickListener,
+                                mParentOkButton));
                 infoHolder.itemView.setTag(-1);
                 infoHolder.counterAddButton.setOnClickListener(this);
                 infoHolder.percentageAddButton.setOnClickListener(this);
-                infoHolder.notificationSwitch.setOnCheckedChangeListener(this);
                 break;
             case VIEW_COUNTER:
                 CounterViewHolder counterHolder = (CounterViewHolder) holder;
                 AdmissionCounter counterData = getCounterPojoAtPosition(position);
                 counterHolder.itemView.setTag(counterData.id);
-                counterHolder.name.setText(counterData.counterName);
+                counterHolder.name.setText(counterData.name);
                 counterHolder.targetPoints.setText(mContext.getString(R.string.minimum_points_text, counterData.targetValue));
                 break;
             case VIEW_PERCENTAGE:
                 PercentageViewHolder percentageHolder = (PercentageViewHolder) holder;
-                AdmissionPercentageMeta percentageData = getPercentagePojoAtPosition(position);
+                AdmissionPercentageMetaPojo percentageData = getPercentagePojoAtPosition(position);
                 percentageHolder.itemView.setTag(percentageData.id);
                 percentageHolder.assignmentsPerLesson.setText(mContext.getString(R.string.percentage_card_assignments_per_lesson, percentageData.userAssignmentsPerLessonEstimation));
                 percentageHolder.name.setText(percentageData.name);
-                percentageHolder.targetLessonCount.setText(mContext.getString(R.string.percentage_card_target_lesson_conut, percentageData.estimatedLessonCount));
+                percentageHolder.targetLessonCount.setText(mContext.getString(R.string.percentage_card_target_lesson_conut, percentageData.userLessonCountEstimation));
                 percentageHolder.targetPercentage.setText(mContext.getString(R.string.percentage_card_target_percentage, percentageData.baselineTargetPercentage));
                 break;
         }
@@ -191,20 +215,15 @@ public class UnifiedCreatorAdapter extends RecyclerView.Adapter<UnifiedCreatorAd
             mSubjectCreationFragment.openAdmissionPercentageCreationActivity(SubjectCreationFragment.ID_ADD_ITEM, true);
         }
         else{
-            Dialogs.showCounterDialog(mFragmentManager, mSubjectId, SubjectCreationFragment.ID_ADD_ITEM, true);
+            DialogHelper.showCounterDialog(mFragmentManager, mSubjectId, SubjectCreationFragment.ID_ADD_ITEM, true);
         }
-    }
-
-    @Override
-    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-        //TODO: notifcation logic
     }
 
     public AdmissionCounter getCounterPojoAtPosition(int position) {
         return mCounterData.get(position - 1);
     }
 
-    public AdmissionPercentageMeta getPercentagePojoAtPosition(int position) {
+    public AdmissionPercentageMetaPojo getPercentagePojoAtPosition(int position) {
         return mPercentageData.get(position - 1 - mCounterData.size());
     }
 
@@ -223,7 +242,6 @@ public class UnifiedCreatorAdapter extends RecyclerView.Adapter<UnifiedCreatorAd
 
     public class InfoViewHolder extends ViewHolder {
         public EditText name;
-        public Switch notificationSwitch;
         public Button percentageAddButton, counterAddButton;
 
         public InfoViewHolder(View itemView) {

@@ -28,6 +28,7 @@ import android.preference.PreferenceFragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.ViewGroup;
 import android.widget.Toast;
 
 import de.oerntec.votenote.Helpers.General;
@@ -44,8 +45,11 @@ public class PreferencesActivity extends AppCompatActivity {
         setSupportActionBar((Toolbar) findViewById(R.id.activity_preferences_toolbar));
 
         ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null)
-            actionBar.setDisplayHomeAsUpEnabled(true);
+
+        actionBar.setDisplayHomeAsUpEnabled(true);
+
+        //try to load already saved language choice
+        General.adjustLanguage(this);
 
         // Display the fragment as the main content.
         FragmentManager mFragmentManager = getFragmentManager();
@@ -100,9 +104,10 @@ public class PreferencesActivity extends AppCompatActivity {
                 public boolean onPreferenceClick(Preference preference) {
                     //show a dialog with graphview and stackoverflow
                     AlertDialog.Builder b = new AlertDialog.Builder(getActivity());
-                    b.setTitle("Hilfen");
+                    b.setTitle(R.string.used_libraries_title);
                     b.setPositiveButton("OK", null);
-                    b.setView(getActivity().getLayoutInflater().inflate(R.layout.preferences_thanks, null));
+                    //noinspection RedundantCast because we cant yet know the parent for the dialog
+                    b.setView(getActivity().getLayoutInflater().inflate(R.layout.preferences_thanks, (ViewGroup) null));
                     b.show();
                     return true;
                 }
@@ -114,8 +119,9 @@ public class PreferencesActivity extends AppCompatActivity {
                     //show a dialog with graphview and stackoverflow
                     AlertDialog.Builder eulaBuilder = new AlertDialog.Builder(getActivity());
                     eulaBuilder.setCancelable(false);
-                    eulaBuilder.setTitle("End-User License Agreement for Votenote");
-                    eulaBuilder.setView(getActivity().getLayoutInflater().inflate(R.layout.preferences_eula, null));
+                    eulaBuilder.setTitle(R.string.eula_dialog_title);
+                    //noinspection RedundantCast because we cant yet know the parent for the dialog
+                    eulaBuilder.setView(getActivity().getLayoutInflater().inflate(R.layout.preferences_eula, (ViewGroup) null));
                     eulaBuilder.setPositiveButton("OK", null);
                     eulaBuilder.show();
                     return true;

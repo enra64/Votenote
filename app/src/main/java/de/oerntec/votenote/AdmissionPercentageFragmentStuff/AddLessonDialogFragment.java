@@ -4,22 +4,26 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import de.oerntec.votenote.Database.Pojo.AdmissionPercentageData;
-import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMeta;
-import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageData;
+import java.util.Locale;
+
+import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMetaStuff.AdmissionPercentageMetaPojo;
+import de.oerntec.votenote.Database.Pojo.Lesson;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageMeta;
+import de.oerntec.votenote.Database.TableHelpers.DBLessons;
 import de.oerntec.votenote.Helpers.General;
 import de.oerntec.votenote.MainActivity;
 import de.oerntec.votenote.R;
 
-public class LessonDialogFragment extends DialogFragment implements DialogInterface.OnClickListener {
+public class AddLessonDialogFragment extends DialogFragment implements DialogInterface.OnClickListener {
     private static final String ARG_AP_META_ID = "apmetaid";
     private static final String ARG_LESSON_ID = "lessonid";
 
@@ -46,11 +50,6 @@ public class LessonDialogFragment extends DialogFragment implements DialogInterf
     private boolean mIsFirstLesson;
 
     /**
-     * Whether the lessons are displayed in reverse  or not
-     */
-    private boolean mReverseLessonSort;
-
-    /**
      * Whether to try and fix invalid number picker values or let the user do it
      */
     private boolean mEnableDataAutoFix;
@@ -58,12 +57,12 @@ public class LessonDialogFragment extends DialogFragment implements DialogInterf
     /**
      * database instance to use
      */
-    private DBAdmissionPercentageData mDataDb;
+    private DBLessons mDataDb;
 
     /**
      * If and only if this is an old subject, this contains the old data
      */
-    private AdmissionPercentageData mOldData;
+    private Lesson mOldData;
 
     /**
      * text view used to display information about the current picker status
@@ -85,14 +84,14 @@ public class LessonDialogFragment extends DialogFragment implements DialogInterf
      */
     private TextView mResultingPercentageView;
 
-    private AdmissionPercentageMeta mMetaItem;
+    private AdmissionPercentageMetaPojo mMetaItem;
 
     private boolean mLiveUpdateResultingPercentage;
 
     /**
      * default constructor
      */
-    public LessonDialogFragment() {
+    public AddLessonDialogFragment() {
     }
 
     /**
@@ -102,8 +101,8 @@ public class LessonDialogFragment extends DialogFragment implements DialogInterf
      * @param lessonID lesson id to identify the lesson
      * @return new instance
      */
-    public static LessonDialogFragment newInstance(final int apMetaId, final int lessonID) {
-        LessonDialogFragment fragment = new LessonDialogFragment();
+    public static AddLessonDialogFragment newInstance(final int apMetaId, final int lessonID) {
+        AddLessonDialogFragment fragment = new AddLessonDialogFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_AP_META_ID, apMetaId);
         args.putInt(ARG_LESSON_ID, lessonID);
@@ -124,15 +123,16 @@ public class LessonDialogFragment extends DialogFragment implements DialogInterf
             mIsNewLesson = mLessonId == ADD_LESSON_CODE;
             mIsOldLesson = !mIsNewLesson;
             mMetaItem = DBAdmissionPercentageMeta.getInstance().getItem(mMetaId);
-            mMetaItem.loadData(DBAdmissionPercentageData.getInstance(), MainActivity.getPreference("reverse_lesson_sort", false));
+            mMetaItem.loadData(DBLessons.getInstance(), MainActivity.getPreference("reverse_lesson_sort", false));
 
             //load shared settings
-            mReverseLessonSort = MainActivity.getPreference("reverse_lesson_sort", false);
+            //Whether the lessons are displayed in reverse  or not
+            boolean mReverseLessonSort = MainActivity.getPreference("reverse_lesson_sort", false);
             mEnableDataAutoFix = MainActivity.getPreference("move_max_assignments_picker", true);
             mLiveUpdateResultingPercentage = MainActivity.getPreference("live_resulting_percentage", true);
 
             //get database instance
-            mDataDb = DBAdmissionPercentageData.getInstance();
+            mDataDb = DBLessons.getInstance();
 
             //first lesson for this pc?
             if(mIsNewLesson)
@@ -146,7 +146,8 @@ public class LessonDialogFragment extends DialogFragment implements DialogInterf
      */
     private View createView(LayoutInflater inflater) {
         //inflate rootView
-        final View rootView = inflater.inflate(R.layout.subject_fragment_dialog_newentry, null);
+        //noinspection RedundantCast because in a dialog, we cant know the parent yet
+        final View rootView = inflater.inflate(R.layout.subject_fragment_dialog_newentry, (ViewGroup) null);
 
         //find all necessary views
         mInfoView = (TextView) rootView.findViewById(R.id.infoTextView);
@@ -167,6 +168,7 @@ public class LessonDialogFragment extends DialogFragment implements DialogInterf
         return rootView;
     }
 
+    @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder b = new AlertDialog.Builder(getActivity())
@@ -202,10 +204,7 @@ public class LessonDialogFragment extends DialogFragment implements DialogInterf
     private String getTitle() {
         if(mIsNewLesson)
             return getActivity().getString(R.string.main_dialog_lesson_new_lesson_title);
-        if (getActivity().getResources().getConfiguration().locale.getLanguage().equals("de"))
-            return "Übung " + mLessonId + " ändern?";
-        else
-            return "Change lesson " + mLessonId + "?";
+        return String.format(getActivity().getString(R.string.lesson_add_dialog_title), mLessonId);
     }
 
     /**
@@ -216,11 +215,11 @@ public class LessonDialogFragment extends DialogFragment implements DialogInterf
 
         if(mIsNewLesson){
             if(mIsFirstLesson){
-                AdmissionPercentageMeta metaItem = DBAdmissionPercentageMeta.getInstance().getItem(mMetaId);
+                AdmissionPercentageMetaPojo metaItem = DBAdmissionPercentageMeta.getInstance().getItem(mMetaId);
                 currentAvailableAssignments = metaItem.userAssignmentsPerLessonEstimation;
                 currentFinishedAssignments = currentAvailableAssignments / 2;
             } else {
-                AdmissionPercentageData lastEnteredLesson = mDataDb.getNewestItemForMetaId(mMetaId);
+                Lesson lastEnteredLesson = mDataDb.getNewestItemForMetaId(mMetaId);
                 currentAvailableAssignments = lastEnteredLesson.availableAssignments;
                 currentFinishedAssignments = lastEnteredLesson.finishedAssignments;
             }
@@ -231,6 +230,8 @@ public class LessonDialogFragment extends DialogFragment implements DialogInterf
 
         setPicker(mAvailableAssignmentsPicker, 0, currentAvailableAssignments * 2, currentAvailableAssignments);
         setPicker(mFinishedAssignmentsPicker, 0, currentAvailableAssignments * 2, currentFinishedAssignments);
+
+        updateResultingPercentage(currentFinishedAssignments, currentAvailableAssignments);
     }
 
     /**
@@ -288,15 +289,19 @@ public class LessonDialogFragment extends DialogFragment implements DialogInterf
         }
     }
 
-    private void updateResultingPercentage(int myVote, int maxVote) {
+    /**
+     * Update the resulting percentage based on the available/finished picker values
+     */
+    private void updateResultingPercentage(int finishedCount, int availableCount) {
         if (!mLiveUpdateResultingPercentage)
             return;
         float newAvg;
         if (mIsNewLesson)
-            newAvg = mMetaItem.getAverageFinished(maxVote, myVote);
+            newAvg = mMetaItem.getAverageFinished(availableCount, finishedCount);
         else
-            newAvg = mMetaItem.getAverageFinished(maxVote - mOldData.availableAssignments, myVote - mOldData.finishedAssignments);
-        mResultingPercentageView.setText(String.format("%.1f%%", newAvg));
+            newAvg = mMetaItem.getAverageFinished(availableCount - mOldData.availableAssignments, finishedCount - mOldData.finishedAssignments);
+        Locale locale = General.getCurrentLocale(getActivity());
+        mResultingPercentageView.setText(String.format(locale, "%.1f%%", newAvg));
         General.applyClueColor(mResultingPercentageView, getActivity(), newAvg >= mMetaItem.baselineTargetPercentage);
     }
 
@@ -320,7 +325,7 @@ public class LessonDialogFragment extends DialogFragment implements DialogInterf
                 int finishedAssignments = mFinishedAssignmentsPicker.getValue();
                 int availableAssignments = mAvailableAssignmentsPicker.getValue();
                 if (finishedAssignments <= availableAssignments) {
-                    AdmissionPercentageData val = new AdmissionPercentageData(ADD_LESSON_CODE, mMetaId, ADD_LESSON_CODE, finishedAssignments, availableAssignments);
+                    Lesson val = new Lesson(ADD_LESSON_CODE, mMetaId, ADD_LESSON_CODE, finishedAssignments, availableAssignments);
                     //add lesson, id and lesson id will be added automatically
                     if (mIsNewLesson)
                         ((MainActivity) getActivity()).getCurrentAdmissionPercentageFragment().mAdapter.addLesson(val);

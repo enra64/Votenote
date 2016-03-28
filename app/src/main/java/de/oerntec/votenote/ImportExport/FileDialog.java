@@ -249,7 +249,8 @@ public class FileDialog {
     }
 
     private AlertDialog.Builder createDirectoryChooserDialogNew() {
-        View root = LayoutInflater.from(mContext).inflate(R.layout.dialog_file_chooser, null);
+        //noinspection RedundantCast because we cant yet know the parent for the dialog
+        View root = LayoutInflater.from(mContext).inflate(R.layout.dialog_file_chooser, (ViewGroup) null);
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
 
         //set title according to mode

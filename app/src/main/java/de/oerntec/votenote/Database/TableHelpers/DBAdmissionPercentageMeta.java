@@ -27,11 +27,11 @@ import java.util.LinkedList;
 import java.util.List;
 
 import de.oerntec.votenote.Database.DatabaseCreator;
-import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMeta;
+import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMetaStuff.AdmissionPercentageMetaPojo;
 import de.oerntec.votenote.Database.PojoDatabase;
 import de.oerntec.votenote.MainActivity;
 
-public class DBAdmissionPercentageMeta extends CrudDb<AdmissionPercentageMeta> implements PojoDatabase<AdmissionPercentageMeta> {
+public class DBAdmissionPercentageMeta extends CrudDb<AdmissionPercentageMetaPojo> implements PojoDatabase<AdmissionPercentageMetaPojo> {
     /**
      * Singleton instance
      */
@@ -65,21 +65,28 @@ public class DBAdmissionPercentageMeta extends CrudDb<AdmissionPercentageMeta> i
         return mInstance;
     }
 
-    @Override
-    public void changeItem(AdmissionPercentageMeta newItem) {
+    private ContentValues getContentFromItem(AdmissionPercentageMetaPojo item) {
         ContentValues values = new ContentValues();
-        values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_NAME, newItem.name);
-        values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_SUBJECT_ID, newItem.subjectId);
-        values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_USER_ESTIMATED_ASSIGNMENTS_PER_LESSON, newItem.userAssignmentsPerLessonEstimation);
-        values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_TARGET_PERCENTAGE, newItem.baselineTargetPercentage);
-        values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_TARGET_LESSON_COUNT, newItem.estimatedLessonCount);
-        values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_ESTIMATION_MODE, newItem.getEstimationModeAsString());
+        values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_NAME, item.name);
+        values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_SUBJECT_ID, item.subjectId);
+        values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_USER_ESTIMATED_ASSIGNMENTS_PER_LESSON, item.userAssignmentsPerLessonEstimation);
+        values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_TARGET_PERCENTAGE, item.baselineTargetPercentage);
+        values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_TARGET_LESSON_COUNT, item.userLessonCountEstimation);
+        values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_ESTIMATION_MODE, item.getEstimationModeAsString());
 
-        values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_BONUS_TARGET_PERCENTAGE, newItem.bonusTargetPercentage);
-        values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_BONUS_TARGET_PERCENTAGE_ENABLED, newItem.bonusTargetPercentageEnabled);
+        values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_RECURRENCE_DATA_STRING, item.notificationRecurrenceString);
+        values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_RECURRENCE_NOTIFICATION_ENABLED, item.notificationEnabled);
 
+        values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_BONUS_TARGET_PERCENTAGE, item.bonusTargetPercentage);
+        values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_BONUS_TARGET_PERCENTAGE_ENABLED, item.bonusTargetPercentageEnabled);
+
+        return values;
+    }
+
+    @Override
+    public void changeItem(AdmissionPercentageMetaPojo newItem) {
         String[] whereArgs = {String.valueOf(newItem.id)};
-        int affectedRows = mDatabase.update(DatabaseCreator.TABLE_NAME_ADMISSION_PERCENTAGES_META, values, DatabaseCreator.ADMISSION_PERCENTAGES_META_ID + "=?", whereArgs);
+        int affectedRows = mDatabase.update(DatabaseCreator.TABLE_NAME_ADMISSION_PERCENTAGES_META, getContentFromItem(newItem), DatabaseCreator.ADMISSION_PERCENTAGES_META_ID + "=?", whereArgs);
         if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
             if (affectedRows != 1)
                 Log.i("AdmissionCounters", "No or more than one entry was changed, something is weird");
@@ -88,7 +95,7 @@ public class DBAdmissionPercentageMeta extends CrudDb<AdmissionPercentageMeta> i
     }
 
     @Override
-    public AdmissionPercentageMeta getItem(AdmissionPercentageMeta idItem) {
+    public AdmissionPercentageMetaPojo getItem(AdmissionPercentageMetaPojo idItem) {
         return getItem(idItem.id);
     }
 
@@ -99,24 +106,14 @@ public class DBAdmissionPercentageMeta extends CrudDb<AdmissionPercentageMeta> i
      * @return AdmissionCounter object corresponding to the db values
      * @throws AssertionError if not exactly one AdmissionCounters are found
      */
-    public AdmissionPercentageMeta getItem(int id) {
+    public AdmissionPercentageMetaPojo getItem(int id) {
         String[] whereArgs = {String.valueOf(id)};
         Cursor c = mDatabase.query(true, DatabaseCreator.TABLE_NAME_ADMISSION_PERCENTAGES_META, null, DatabaseCreator.ADMISSION_PERCENTAGES_META_ID + "=?", whereArgs, null, null, null, null);
-        AdmissionPercentageMeta returnValue = null;
+        AdmissionPercentageMetaPojo returnValue = null;
         if (c.getCount() != 1)
             throw new AssertionError("more than one item returned if we search via id is bad, found " + c.getCount());
         if (c.moveToFirst())
-            returnValue = new AdmissionPercentageMeta(
-                    c.getInt(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_META_ID)),
-                    c.getInt(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_META_SUBJECT_ID)),
-                    c.getInt(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_META_USER_ESTIMATED_ASSIGNMENTS_PER_LESSON)),
-                    c.getInt(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_META_TARGET_LESSON_COUNT)),
-                    c.getInt(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_META_TARGET_PERCENTAGE)),
-                    c.getString(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_META_NAME)),
-                    c.getString(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_META_ESTIMATION_MODE)),
-                    c.getInt(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_META_BONUS_TARGET_PERCENTAGE)),
-                    getBoolean(c.getInt(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_META_BONUS_TARGET_PERCENTAGE_ENABLED)))
-            );
+            returnValue = itemFromCursor(c);
         c.close();
         return returnValue;
     }
@@ -133,28 +130,12 @@ public class DBAdmissionPercentageMeta extends CrudDb<AdmissionPercentageMeta> i
      * @param subjectId what subject id are we looking for
      * @return list of objects corresponding to the db values
      */
-    public List<AdmissionPercentageMeta> getItemsForSubject(int subjectId) {
+    public List<AdmissionPercentageMetaPojo> getItemsForSubject(int subjectId) {
         String[] whereArgs = {String.valueOf(subjectId)};
         Cursor c = mDatabase.query(true, DatabaseCreator.TABLE_NAME_ADMISSION_PERCENTAGES_META, null, DatabaseCreator.ADMISSION_PERCENTAGES_META_SUBJECT_ID + "=?",
                 whereArgs, null, null, DatabaseCreator.ADMISSION_PERCENTAGES_META_ID + " ASC", null);
 
-        List<AdmissionPercentageMeta> items = new LinkedList<>();
-
-        while (c.moveToNext())
-            items.add(new AdmissionPercentageMeta(
-                    c.getInt(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_META_ID)),
-                    c.getInt(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_META_SUBJECT_ID)),
-                    c.getInt(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_META_USER_ESTIMATED_ASSIGNMENTS_PER_LESSON)),
-                    c.getInt(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_META_TARGET_LESSON_COUNT)),
-                    c.getInt(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_META_TARGET_PERCENTAGE)),
-                    c.getString(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_META_NAME)),
-                    c.getString(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_META_ESTIMATION_MODE)),
-                    c.getInt(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_META_BONUS_TARGET_PERCENTAGE)),
-                    getBoolean(c.getInt(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_META_BONUS_TARGET_PERCENTAGE_ENABLED)))
-            ));
-
-        c.close();
-        return items;
+        return listifyItems(c);
     }
 
     /**
@@ -162,7 +143,6 @@ public class DBAdmissionPercentageMeta extends CrudDb<AdmissionPercentageMeta> i
      *
      * @param id the admission counter id to search for
      */
-    @Deprecated
     public void deleteItem(int id) {
         String[] whereArgs = new String[]{String.valueOf(id)};
         int delCount = mDatabase.delete(DatabaseCreator.TABLE_NAME_ADMISSION_PERCENTAGES_META, DatabaseCreator.ADMISSION_PERCENTAGES_META_ID + "=?", whereArgs);
@@ -173,12 +153,12 @@ public class DBAdmissionPercentageMeta extends CrudDb<AdmissionPercentageMeta> i
     }
 
     @Override
-    public void deleteItem(AdmissionPercentageMeta item) {
+    public void deleteItem(AdmissionPercentageMetaPojo item) {
         deleteItem(item.id);
     }
 
     @Override
-    public void addItem(AdmissionPercentageMeta item) {
+    public void addItem(AdmissionPercentageMetaPojo item) {
         addItemGetId(item);
     }
 
@@ -189,26 +169,13 @@ public class DBAdmissionPercentageMeta extends CrudDb<AdmissionPercentageMeta> i
      * @return -1 if a constraint was violated, new object row id otherwise
      */
     @Override
-    public int addItemGetId(AdmissionPercentageMeta newItem) {
-        //create values for insert or update
-        ContentValues values = new ContentValues();
-        values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_NAME, newItem.name);
-        values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_SUBJECT_ID, newItem.subjectId);
-        values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_USER_ESTIMATED_ASSIGNMENTS_PER_LESSON, newItem.userAssignmentsPerLessonEstimation);
-        values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_TARGET_PERCENTAGE, newItem.baselineTargetPercentage);
-        values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_TARGET_LESSON_COUNT, newItem.estimatedLessonCount);
-
-        values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_ESTIMATION_MODE, newItem.getEstimationModeAsString());
-
-        values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_BONUS_TARGET_PERCENTAGE, newItem.bonusTargetPercentage);
-        values.put(DatabaseCreator.ADMISSION_PERCENTAGES_META_BONUS_TARGET_PERCENTAGE_ENABLED, newItem.bonusTargetPercentageEnabled);
-
+    public int addItemGetId(AdmissionPercentageMetaPojo newItem) {
         if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
             Log.i("DBAP-M", "adding meta item");
 
         //try to insert the subject. since
         try {
-            mDatabase.insert(DatabaseCreator.TABLE_NAME_ADMISSION_PERCENTAGES_META, null, values);
+            mDatabase.insert(DatabaseCreator.TABLE_NAME_ADMISSION_PERCENTAGES_META, null, getContentFromItem(newItem));
         } catch (SQLiteConstraintException e) {
             return -1;
         }
@@ -228,26 +195,41 @@ public class DBAdmissionPercentageMeta extends CrudDb<AdmissionPercentageMeta> i
         return result;
     }
 
-    public List<AdmissionPercentageMeta> getAllItems() {
+    private AdmissionPercentageMetaPojo itemFromCursor(Cursor c) {
+        return new AdmissionPercentageMetaPojo(
+                c.getInt(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_META_ID)),
+                c.getInt(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_META_SUBJECT_ID)),
+                c.getInt(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_META_USER_ESTIMATED_ASSIGNMENTS_PER_LESSON)),
+                c.getInt(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_META_TARGET_LESSON_COUNT)),
+                c.getInt(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_META_TARGET_PERCENTAGE)),
+                c.getString(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_META_NAME)),
+                c.getString(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_META_ESTIMATION_MODE)),
+                c.getInt(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_META_BONUS_TARGET_PERCENTAGE)),
+                getBoolean(c.getInt(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_META_BONUS_TARGET_PERCENTAGE_ENABLED))),
+                c.getString(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_META_RECURRENCE_DATA_STRING)),
+                getBoolean(c.getInt(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_META_RECURRENCE_NOTIFICATION_ENABLED)))
+        );
+    }
+
+    private List<AdmissionPercentageMetaPojo> listifyItems(Cursor c) {
+        List<AdmissionPercentageMetaPojo> items = new LinkedList<>();
+        while (c.moveToNext()) items.add(itemFromCursor(c));
+        c.close();
+        return items;
+    }
+
+    public List<AdmissionPercentageMetaPojo> getAllItems() {
         Cursor c = mDatabase.query(true, DatabaseCreator.TABLE_NAME_ADMISSION_PERCENTAGES_META, null, null,
                 null, null, null, DatabaseCreator.ADMISSION_PERCENTAGES_META_ID + " ASC", null);
 
-        List<AdmissionPercentageMeta> items = new LinkedList<>();
+        return listifyItems(c);
+    }
 
-        while (c.moveToNext())
-            items.add(new AdmissionPercentageMeta(
-                    c.getInt(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_META_ID)),
-                    c.getInt(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_META_SUBJECT_ID)),
-                    c.getInt(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_META_USER_ESTIMATED_ASSIGNMENTS_PER_LESSON)),
-                    c.getInt(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_META_TARGET_LESSON_COUNT)),
-                    c.getInt(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_META_TARGET_PERCENTAGE)),
-                    c.getString(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_META_NAME)),
-                    c.getString(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_META_ESTIMATION_MODE)),
-                    c.getInt(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_META_BONUS_TARGET_PERCENTAGE)),
-                    getBoolean(c.getInt(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_META_BONUS_TARGET_PERCENTAGE_ENABLED)))
-            ));
+    public List<AdmissionPercentageMetaPojo> getItemsWithNotifications() {
+        Cursor c = mDatabase.query(true, DatabaseCreator.TABLE_NAME_ADMISSION_PERCENTAGES_META, null,
+                DatabaseCreator.ADMISSION_PERCENTAGES_META_RECURRENCE_NOTIFICATION_ENABLED + "=1",
+                null, null, null, DatabaseCreator.ADMISSION_PERCENTAGES_META_ID + " ASC", null);
 
-        c.close();
-        return items;
+        return listifyItems(c);
     }
 }

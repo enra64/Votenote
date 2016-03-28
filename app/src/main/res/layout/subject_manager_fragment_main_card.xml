@@ -25,7 +25,7 @@
             android:layout_alignParentRight="true"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
-            android:hint="Name der Übung" />
+            android:hint="@string/name_der_bung" />
 
         <Button
             android:id="@+id/subject_manager_fragment_main_card_add_percentage_counter"
@@ -34,8 +34,8 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:layout_below="@+id/textView21"
-            android:text="+ Prozentzähler" />
+            android:layout_below="@+id/subject_manager_fragment_main_card_name"
+            android:text="@string/subject_manager_main_card_add_percentage" />
 
         <Button
             android:id="@+id/subject_manager_fragment_main_card_add_counter"
@@ -45,27 +45,9 @@
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:layout_alignTop="@+id/subject_manager_fragment_main_card_add_percentage_counter"
-            android:text="+ Punktezähler" />
+            android:text="@string/subject_manager_main_card_add_counter" />
 
-        <TextView
-            android:id="@+id/textView21"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_below="@+id/subject_manager_fragment_main_card_name"
-            android:layout_marginBottom="6dp"
-            android:layout_marginTop="10dp"
-            android:text="Votierungserinnerung"
-            android:textAppearance="?android:attr/textAppearanceLarge" />
 
-        <Switch
-            android:id="@+id/subject_manager_fragment_main_card_notification_switch"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignEnd="@+id/subject_manager_fragment_main_card_add_counter"
-            android:layout_alignRight="@+id/subject_manager_fragment_main_card_add_counter"
-            android:layout_alignTop="@+id/textView21" />
 
     </RelativeLayout>
 </android.support.v7.widget.CardView>

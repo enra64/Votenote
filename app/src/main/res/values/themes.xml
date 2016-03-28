@@ -10,6 +10,13 @@
         <item name="android:actionBarStyle">@style/CustomActionBarWhiteTitle</item>
     </style>
 
+    <style name="GreenButton" parent="ThemeOverlay.AppCompat.Dark">
+        <item name="colorButtonNormal">@color/disabled_button_background</item>
+        <item name="android:textColorPrimaryDisableOnly">@color/disabled_button_text</item>
+        <item name="colorAccent">@color/colorPrimary</item>
+        <item name="android:textColor">@color/textColorActionBar</item>
+    </style>
+
     <style name="CustomActionBarWhiteTitle" parent="@style/Widget.AppCompat.ActionBar.Solid">
         <item name="titleTextStyle">@style/CustomActionBarWhiteTitleText</item>
     </style>

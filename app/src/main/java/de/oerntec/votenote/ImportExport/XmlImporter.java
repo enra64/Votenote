@@ -32,12 +32,12 @@ import java.io.InputStream;
 
 import de.oerntec.votenote.Database.DatabaseCreator;
 import de.oerntec.votenote.Database.Pojo.AdmissionCounter;
-import de.oerntec.votenote.Database.Pojo.AdmissionPercentageData;
-import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMeta;
+import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMetaStuff.AdmissionPercentageMetaPojo;
+import de.oerntec.votenote.Database.Pojo.Lesson;
 import de.oerntec.votenote.Database.Pojo.Subject;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionCounters;
-import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageData;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageMeta;
+import de.oerntec.votenote.Database.TableHelpers.DBLessons;
 import de.oerntec.votenote.Database.TableHelpers.DBSubjects;
 import de.oerntec.votenote.MainActivity;
 
@@ -131,7 +131,7 @@ public class XmlImporter {
     }
 
     private static void parseEntry(XmlPullParser parser) throws IOException, XmlPullParserException {
-        DBAdmissionPercentageData db = DBAdmissionPercentageData.getInstance();
+        DBLessons db = DBLessons.getInstance();
         parser.require(XmlPullParser.START_TAG, null, "row");
 
         parser.nextTag();
@@ -156,7 +156,7 @@ public class XmlImporter {
 
         parser.nextTag();
         parser.require(XmlPullParser.END_TAG, null, "row");
-        db.addItem(new AdmissionPercentageData(-1,
+        db.addItem(new Lesson(-1,
                 Integer.valueOf(typ_uebung),
                 Integer.valueOf(nummer_uebung),
                 Integer.valueOf(my_votierung),
@@ -219,7 +219,7 @@ public class XmlImporter {
         parser.require(XmlPullParser.END_TAG, null, "row");
 
         sDb.addItemWithId(new Subject(uebung_name, id));
-        mDb.addItem(new AdmissionPercentageMeta(id, id, uebung_maxvotes_per_ueb, uebung_count, uebung_minvote, "Votierungspunkte", "user", 50, false));
+        mDb.addItem(new AdmissionPercentageMetaPojo(id, id, uebung_maxvotes_per_ueb, uebung_count, uebung_minvote, "Votierungspunkte", "user", 50, false, "", false));
         cDb.addItem(new AdmissionCounter(-1, id, "Vortragspunkte", uebung_prespoints, uebung_max_prespoints));
     }
 

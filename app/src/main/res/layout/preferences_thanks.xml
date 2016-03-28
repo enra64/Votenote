@@ -107,4 +107,16 @@
         android:linksClickable="true"
         android:text="FileDialog:\nhttps://github.com/18446744073709551615/android-file-chooser-dialog"
         android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <TextView
+        android:id="@+id/textView8"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/textView6"
+        android:layout_alignStart="@+id/textView6"
+        android:layout_below="@+id/textView7"
+        android:autoLink="web"
+        android:linksClickable="true"
+        android:text="SlideDayTimePicker:\nhttps://github.com/jjobes/SlideDayTimePicker\nusing http://www.apache.org/licenses/LICENSE-2.0.html"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
 </RelativeLayout>

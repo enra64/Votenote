@@ -4,7 +4,7 @@
     android:id="@+id/subject_manager_root_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="de.oerntec.votenote.SubjectManagerStuff.SubjectManagementActivity">
+    tools:context=".SubjectManagerStuff.SubjectManagementListActivity">
 
     <include
         android:id="@+id/subject_manager_toolbar"

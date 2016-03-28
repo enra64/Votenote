@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.SeekBar;
@@ -14,7 +15,7 @@ import android.widget.TextView;
 
 import de.oerntec.votenote.Database.Pojo.AdmissionCounter;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionCounters;
-import de.oerntec.votenote.Helpers.NotEmptyWatcher;
+import de.oerntec.votenote.Helpers.TextWatchers.ActuallyDisabledNotEmptyWatcher;
 import de.oerntec.votenote.R;
 import de.oerntec.votenote.SubjectManagerStuff.SeekerListener;
 import de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.SubjectOverview.SubjectCreationActivity;
@@ -72,8 +73,10 @@ public class AdmissionCounterDialogFragment extends DialogFragment implements Di
     }
 
     public View createView(LayoutInflater inflater) {
-        // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.subject_manager_fragment_dialog_admission_counter, null, false);
+        // we may pass null to the inflater here, because in a dialog, we simply do not know what
+        // parent we attach to
+        //noinspection RedundantCast
+        View view = inflater.inflate(R.layout.subject_manager_fragment_dialog_admission_counter, (ViewGroup) null, false);
 
         mNameInput = (EditText) view.findViewById(R.id.subject_manager_fragment_dialog_admission_counter_name_edittext);
         mTargetPointCountSeek = (SeekBar) view.findViewById(R.id.subject_manager_fragment_dialog_admission_counter_target_seekbar);
@@ -111,7 +114,7 @@ public class AdmissionCounterDialogFragment extends DialogFragment implements Di
                 //default to zero points for a new counter
                 int currentPoints = 0;
                 if (mIsOld)
-                    currentPoints = mDb.getItem(mSubjectId).currentValue;
+                    currentPoints = mDb.getItem(mAdmissionCounterId).currentValue;
                 //change the item we created at the beginning of this dialog to the actual values
                 mDb.changeItem(new AdmissionCounter(
                         mAdmissionCounterId,
@@ -148,17 +151,17 @@ public class AdmissionCounterDialogFragment extends DialogFragment implements Di
         mTargetPointCountSeek.setOnSeekBarChangeListener(new SeekerListener(mTargetPointCountCurrent));
 
         //add a watcher to set an error if the name is empty
-        mNameInput.addTextChangedListener(new NotEmptyWatcher(mNameInput, ((AlertDialog) getDialog()).getButton(DialogInterface.BUTTON_POSITIVE)));
+        mNameInput.addTextChangedListener(new ActuallyDisabledNotEmptyWatcher(
+                mNameInput,
+                getActivity().getString(R.string.edit_text_empty_error_text),
+                mIsOld,
+                ((AlertDialog) getDialog()).getButton(DialogInterface.BUTTON_POSITIVE)));
 
         //set old name
         if (mIsOld)
-            mNameInput.setText(inputCounter.counterName);
-        else {
-            //mNameInput.setHint("Add subject");
-            //since the field is empty, put an error here
-            mNameInput.setError("Must not be empty");
-            ((AlertDialog) getDialog()).getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(false);
-        }
+            mNameInput.setText(inputCounter.name);
+        else
+            mNameInput.setHint(R.string.admission_percentage_creator_name_hint);
     }
 
     public String getTitle() {
@@ -166,7 +169,7 @@ public class AdmissionCounterDialogFragment extends DialogFragment implements Di
         if (mIsNew)
             title = "New admission counter";
         else {
-            title = "Change " + mDb.getItem(mAdmissionCounterId).counterName;
+            title = "Change " + mDb.getItem(mAdmissionCounterId).name;
         }
         return title;
     }

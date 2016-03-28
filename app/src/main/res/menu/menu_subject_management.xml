@@ -1,12 +1,19 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="de.oerntec.votenote.SubjectManagerStuff.SubjectManagementActivity">
+    tools:context=".SubjectManagerStuff.SubjectManagementListActivity">
 
     <item
         android:id="@+id/action_read_from_storage"
         android:icon="@drawable/ic_button_import"
         android:showAsAction="ifRoom"
         android:title="@string/action_import"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_create_example"
+        android:icon="@drawable/ic_button_help"
+        android:showAsAction="ifRoom"
+        android:title="@string/action_create_example_title"
         app:showAsAction="ifRoom" />
 </menu>

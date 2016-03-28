@@ -27,16 +27,16 @@ import java.util.LinkedList;
 import java.util.List;
 
 import de.oerntec.votenote.Database.DatabaseCreator;
-import de.oerntec.votenote.Database.Pojo.AdmissionPercentageData;
+import de.oerntec.votenote.Database.Pojo.Lesson;
 import de.oerntec.votenote.MainActivity;
 
-public class DBAdmissionPercentageData extends CrudDb<AdmissionPercentageData> {
+public class DBLessons extends CrudDb<Lesson> {
     /**
      * Singleton instance
      */
-    private static DBAdmissionPercentageData mInstance;
+    private static DBLessons mInstance;
 
-    private DBAdmissionPercentageData(Context context, String tableName) {
+    private DBLessons(Context context, String tableName) {
         super(context, tableName);
     }
 
@@ -46,9 +46,9 @@ public class DBAdmissionPercentageData extends CrudDb<AdmissionPercentageData> {
      * @param context context needed for creating the db access
      * @return the instance itself
      */
-    public static DBAdmissionPercentageData setupInstance(Context context) {
+    public static DBLessons setupInstance(Context context) {
         if (mInstance == null)
-            mInstance = new DBAdmissionPercentageData(context, DatabaseCreator.TABLE_NAME_ADMISSION_PERCENTAGES_DATA);
+            mInstance = new DBLessons(context, DatabaseCreator.TABLE_NAME_ADMISSION_PERCENTAGES_DATA);
         return mInstance;
     }
 
@@ -57,12 +57,12 @@ public class DBAdmissionPercentageData extends CrudDb<AdmissionPercentageData> {
      *
      * @return the singleton instance
      */
-    public static DBAdmissionPercentageData getInstance() {
+    public static DBLessons getInstance() {
         return mInstance;
     }
 
     @Override
-    public void changeItem(AdmissionPercentageData newItem) {
+    public void changeItem(Lesson newItem) {
         ContentValues values = new ContentValues();
         //values.put(DatabaseCreator.ADMISSION_PERCENTAGES_DATA_ID, newItem.id);
         values.put(DatabaseCreator.ADMISSION_PERCENTAGES_DATA_ADMISSION_PERCENTAGE_ID, newItem.admissionPercentageMetaId);
@@ -81,12 +81,12 @@ public class DBAdmissionPercentageData extends CrudDb<AdmissionPercentageData> {
             throw new AssertionError("no item was changed");
     }
 
-    public AdmissionPercentageData getItem(int lessonId, int apMetaId) {
-        return getItem(new AdmissionPercentageData(apMetaId, lessonId, -1, -1));
+    public Lesson getItem(int lessonId, int apMetaId) {
+        return getItem(new Lesson(apMetaId, lessonId, -1, -1));
     }
 
     @Override
-    public AdmissionPercentageData getItem(AdmissionPercentageData item) {
+    public Lesson getItem(Lesson item) {
         String[] whereArgs = {String.valueOf(item.admissionPercentageMetaId), String.valueOf(item.lessonId)};
         Cursor c = mDatabase.query(true,
                 DatabaseCreator.TABLE_NAME_ADMISSION_PERCENTAGES_DATA,
@@ -94,11 +94,11 @@ public class DBAdmissionPercentageData extends CrudDb<AdmissionPercentageData> {
                 DatabaseCreator.ADMISSION_PERCENTAGES_DATA_ADMISSION_PERCENTAGE_ID + "=? AND " +
                         DatabaseCreator.ADMISSION_PERCENTAGES_DATA_LESSON_ID + "=?",
                 whereArgs, null, null, null, null);
-        AdmissionPercentageData returnValue = null;
+        Lesson returnValue = null;
         if (c.getCount() != 1)
             throw new AssertionError("!=1 id returned: " + c.getCount());
         if (c.moveToFirst())
-            returnValue = new AdmissionPercentageData(
+            returnValue = new Lesson(
                     //c.getInt(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_DATA_ID)),
                     c.getInt(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_DATA_ADMISSION_PERCENTAGE_ID)),
                     c.getInt(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_DATA_LESSON_ID)),
@@ -116,7 +116,7 @@ public class DBAdmissionPercentageData extends CrudDb<AdmissionPercentageData> {
      * @param admissionPercentageMetaId what subject id are we looking for
      * @return list of objects corresponding to the db values
      */
-    public List<AdmissionPercentageData> getItemsForMetaId(int admissionPercentageMetaId, boolean isLatestLessonFirst) {
+    public List<Lesson> getItemsForMetaId(int admissionPercentageMetaId, boolean isLatestLessonFirst) {
         String[] whereArgs = {String.valueOf(admissionPercentageMetaId)};
         String order = isLatestLessonFirst ? " DESC" : " ASC";
         Cursor c = mDatabase.query(
@@ -130,10 +130,10 @@ public class DBAdmissionPercentageData extends CrudDb<AdmissionPercentageData> {
                 DatabaseCreator.ADMISSION_PERCENTAGES_DATA_LESSON_ID + order,
                 null);
 
-        List<AdmissionPercentageData> items = new LinkedList<>();
+        List<Lesson> items = new LinkedList<>();
 
         while (c.moveToNext())
-            items.add(new AdmissionPercentageData(
+            items.add(new Lesson(
                     c.getInt(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_DATA_ADMISSION_PERCENTAGE_ID)),
                     c.getInt(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_DATA_LESSON_ID)),
                     c.getInt(c.getColumnIndexOrThrow(DatabaseCreator.ADMISSION_PERCENTAGES_DATA_FINISHED_ASSIGNMENTS)),
@@ -147,7 +147,7 @@ public class DBAdmissionPercentageData extends CrudDb<AdmissionPercentageData> {
     /**
      * Delete a counter
      */
-    public void deleteItem(AdmissionPercentageData item) {
+    public void deleteItem(Lesson item) {
         String[] whereArgs = new String[]{String.valueOf(item.admissionPercentageMetaId), String.valueOf(item.lessonId)};
         mDatabase.delete(DatabaseCreator.TABLE_NAME_ADMISSION_PERCENTAGES_DATA, DatabaseCreator.ADMISSION_PERCENTAGES_DATA_ADMISSION_PERCENTAGE_ID + "=? AND " +
                 DatabaseCreator.ADMISSION_PERCENTAGES_DATA_LESSON_ID + "=?", whereArgs);
@@ -164,7 +164,7 @@ public class DBAdmissionPercentageData extends CrudDb<AdmissionPercentageData> {
      *
      * @param newItem the item to add
      */
-    public void addItem(AdmissionPercentageData newItem) {
+    public void addItem(Lesson newItem) {
         int lessonId = newItem.id;
 
         //get the next free lesson id if this is a new data item
@@ -193,7 +193,7 @@ public class DBAdmissionPercentageData extends CrudDb<AdmissionPercentageData> {
     }
 
     @Override
-    public int addItemGetId(AdmissionPercentageData item) {
+    public int addItemGetId(Lesson item) {
         addItem(item);
         return getMaxLessonIdForAp(item.admissionPercentageMetaId);
     }
@@ -217,8 +217,8 @@ public class DBAdmissionPercentageData extends CrudDb<AdmissionPercentageData> {
         return result;
     }
 
-    public AdmissionPercentageData getNewestItemForMetaId(int apMetaId) {
+    public Lesson getNewestItemForMetaId(int apMetaId) {
         int lessonId = getMaxLessonIdForAp(apMetaId);
-        return getItem(new AdmissionPercentageData(apMetaId, lessonId, -1, -1));
+        return getItem(new Lesson(apMetaId, lessonId, -1, -1));
     }
 }

@@ -49,21 +49,21 @@ public class SubjectAdapter extends RecyclerView.Adapter<SubjectAdapter.SubjectH
                 Log.w("sub man adapter", "had to recreate dbsubjects instance??");
             mSubjectDb = DBSubjects.setupInstance(activity.getApplicationContext());
         }
-        requery();
+        reQuery();
     }
 
     /**
-     * requery
+     * reQuery
      * notify of single changed item
      */
     public void notifyOfChangedSubject(int recyclerViewPosition) {
-        requery();
+        reQuery();
         notifyItemChanged(recyclerViewPosition);
     }
 
     public void notifySubjectAdded(){
         List<Subject> oldList = new ArrayList<>(mData);
-        requery();
+        reQuery();
         List<Subject> newList = new ArrayList<>(mData);
         //iterate over the subjects to find the first one that does not match, it must be the new one
         int newIndex;
@@ -85,10 +85,10 @@ public class SubjectAdapter extends RecyclerView.Adapter<SubjectAdapter.SubjectH
         notifyItemRemoved(recyclerViewPosition);
         notifyItemRangeChanged(recyclerViewPosition, getItemCount() - 1);
         mSubjectDb.deleteItem(mSubjectDb.getItem(subjectId));
-        requery();
+        reQuery();
     }
 
-    private void requery() {
+    private void reQuery() {
         if(mSubjectDb == null)
             mSubjectDb = DBSubjects.getInstance();
         mData = mSubjectDb.getAllSubjects();
@@ -126,8 +126,8 @@ public class SubjectAdapter extends RecyclerView.Adapter<SubjectAdapter.SubjectH
 
         //set texts
         holder.title.setText(name);
-        holder.counterCount.setText(counterCount + " Admission Counters");
-        holder.percentageCounterCount.setText(metaCount + " Percentage Admission Counters");
+        holder.counterCount.setText(mContext.getString(R.string.subject_adapter_card_counter_count, counterCount));
+        holder.percentageCounterCount.setText(mContext.getString(R.string.subject_adapter_percentage_count, metaCount));
     }
 
     @Override

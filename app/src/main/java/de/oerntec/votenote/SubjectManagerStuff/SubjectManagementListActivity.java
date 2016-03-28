@@ -31,16 +31,25 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
+
+import java.util.Random;
 
 import de.oerntec.votenote.CardListHelpers.OnItemClickListener;
 import de.oerntec.votenote.CardListHelpers.RecyclerItemClickListener;
-import de.oerntec.votenote.CardListHelpers.SwipeDeletion;
+import de.oerntec.votenote.CardListHelpers.SwipeAnimationUtils;
+import de.oerntec.votenote.Database.Pojo.AdmissionCounter;
+import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMetaStuff.AdmissionPercentageMetaPojo;
+import de.oerntec.votenote.Database.Pojo.Lesson;
+import de.oerntec.votenote.Database.TableHelpers.DBAdmissionCounters;
+import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageMeta;
+import de.oerntec.votenote.Database.TableHelpers.DBLessons;
 import de.oerntec.votenote.Database.TableHelpers.DBSubjects;
+import de.oerntec.votenote.Helpers.DialogHelper;
 import de.oerntec.votenote.Helpers.General;
 import de.oerntec.votenote.ImportExport.BackupHelper;
 import de.oerntec.votenote.MainActivity;
@@ -48,7 +57,7 @@ import de.oerntec.votenote.R;
 import de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.SubjectOverview.SubjectCreationActivity;
 
 @SuppressLint("InflateParams")
-public class SubjectManagementActivity extends AppCompatActivity implements SwipeDeletion.UndoSnackBarHost {
+public class SubjectManagementListActivity extends AppCompatActivity implements SwipeAnimationUtils.UndoSnackBarHost {
     /**
      * Lesson is to be added, not changed
      */
@@ -98,7 +107,7 @@ public class SubjectManagementActivity extends AppCompatActivity implements Swip
 
         //show tutorial if no subjects are present and the tutorial has not yet been read
         if (DBSubjects.getInstance().isEmpty() && !getPreference("tutorial_subjects_read", false)) {
-            Builder b = new AlertDialog.Builder(this, AlertDialog.THEME_DEVICE_DEFAULT_LIGHT);
+            Builder b = new AlertDialog.Builder(this);
             b.setTitle("Tutorial");
             b.setView(this.getLayoutInflater().inflate(R.layout.tutorial_subjects, null));
             b.setPositiveButton(getString(R.string.dialog_button_ok), new DialogInterface.OnClickListener() {
@@ -114,30 +123,8 @@ public class SubjectManagementActivity extends AppCompatActivity implements Swip
         mSubjectList = (RecyclerView) findViewById(R.id.subject_manager_recycler_view);
 
         //config the recyclerview
+        if (mSubjectList == null) throw new AssertionError("subject list not found");
         mSubjectList.setHasFixedSize(true);
-
-        ItemTouchHelper.SimpleCallback swipeCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
-            @Override
-            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
-                return false;
-            }
-
-            @Override
-            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-                //info view has no tag
-                Object viewTag = viewHolder.itemView.getTag();
-                if (viewTag != null) {
-                    int subjectId = (Integer) viewTag;
-                    if (subjectId != 0) {
-                        //i hope i never have to touch this again
-                        showUndoSnackBar(subjectId, mSubjectList.getChildAdapterPosition(viewHolder.itemView));
-                    }
-                }
-            }
-        };
-
-        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(swipeCallback);
-        itemTouchHelper.attachToRecyclerView(mSubjectList);
 
         //give it a layoutmanager (whatever that is)
         LinearLayoutManager manager = new LinearLayoutManager(this);
@@ -147,6 +134,8 @@ public class SubjectManagementActivity extends AppCompatActivity implements Swip
 
         mSubjectAdapter = new SubjectAdapter(this);
 
+        final SubjectManagementListActivity veryGoodCoding = this;
+
         mSubjectList.setAdapter(mSubjectAdapter);
         mSubjectList.addOnItemTouchListener(new RecyclerItemClickListener(this, mSubjectList, new OnItemClickListener() {
             public void onItemClick(View view, int position) {
@@ -155,12 +144,20 @@ public class SubjectManagementActivity extends AppCompatActivity implements Swip
                 showSubjectCreator((Integer) view.getTag(), position);
             }
 
-            public void onItemLongClick(final View view, int position) {
+            public void onItemLongClick(final View view, final int position) {
+                DialogHelper.showDeleteDialog(veryGoodCoding, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        SwipeAnimationUtils.executeProgrammaticSwipeDeletion(veryGoodCoding, veryGoodCoding, view, position);
+                    }
+                });
             }
         }));
 
         //add listener to fab
         FloatingActionButton addFab = (FloatingActionButton) findViewById(R.id.subject_manager_add_fab);
+        if (addFab == null)
+            throw new AssertionError("could not find floating action button");
         addFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -181,7 +178,7 @@ public class SubjectManagementActivity extends AppCompatActivity implements Swip
     }
 
     private void showSubjectCreator(int subjectId, int recyclerViewPosition) {
-        Intent subjectManagerIntent = new Intent(SubjectManagementActivity.this, SubjectCreationActivity.class);
+        Intent subjectManagerIntent = new Intent(SubjectManagementListActivity.this, SubjectCreationActivity.class);
         subjectManagerIntent.putExtra(SubjectCreationActivity.ARG_CREATOR_SUBJECT_ID, subjectId);
         //a -1 does not matter, its default anyways
         subjectManagerIntent.putExtra(SubjectCreationActivity.ARG_CREATOR_VIEW_POSITION, recyclerViewPosition);
@@ -207,9 +204,10 @@ public class SubjectManagementActivity extends AppCompatActivity implements Swip
                 Log.i("sma", "reloaded adapter to show new subject");
         } else if (resultCode == SUBJECT_CREATOR_RESULT_DELETE) {
             int recyclerViewPosition = data.getIntExtra(SubjectCreationActivity.ARG_CREATOR_VIEW_POSITION, 0);
-            SwipeDeletion.executeProgrammaticSwipeDeletion(this, this, mSubjectList.getLayoutManager().getChildAt(recyclerViewPosition), recyclerViewPosition);
+            SwipeAnimationUtils.executeProgrammaticSwipeDeletion(this, this, mSubjectList.getLayoutManager().getChildAt(recyclerViewPosition), recyclerViewPosition);
         }
     }
+
 
     /**
      * delete the subject, get a backup, show a undobar, and enable restoring the subject by tapping undo
@@ -219,6 +217,7 @@ public class SubjectManagementActivity extends AppCompatActivity implements Swip
         DBSubjects.getInstance().createSavepoint(mLastDeletionSavepointId);
         mSubjectAdapter.removeSubject(subjectId, position);
         //make snackbar
+        //noinspection ConstantConditions
         mDeletionSnackbar = Snackbar.make(findViewById(R.id.subject_manager_coordinator_layout), getString(R.string.undobar_deleted), Snackbar.LENGTH_LONG)
             .setCallback(new Snackbar.Callback() {
                 @Override
@@ -266,8 +265,94 @@ public class SubjectManagementActivity extends AppCompatActivity implements Swip
             case R.id.action_read_from_storage:
                 BackupHelper.importDialog(this);
                 return true;
+            case R.id.action_create_example:
+                createExample();
+                return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void createExampleForReal() {
+        setPreference("example_created", true);
+
+        Toast.makeText(this, R.string.subject_management_example_created_toast, Toast.LENGTH_LONG).show();
+
+        //these all need instances
+        DBSubjects dbSubjects = DBSubjects.setupInstance(this);
+        DBAdmissionPercentageMeta dbAdmissionPercentageMeta = DBAdmissionPercentageMeta.setupInstance(this);
+        DBLessons dbLessons = DBLessons.setupInstance(this);
+        DBAdmissionCounters dbAdmissionCounters = DBAdmissionCounters.setupInstance(this);
+
+        int subjectId = dbSubjects.addItemGetId("Modul");
+
+        AdmissionPercentageMetaPojo percentage1 = new AdmissionPercentageMetaPojo(
+                -1,
+                subjectId,
+                5,
+                12,
+                66,
+                getString(R.string.example_subject_percentage_counter_1_name),
+                "user",
+                80,
+                true,
+                "1:14:0",
+                false);
+
+        AdmissionPercentageMetaPojo percentage2 = new AdmissionPercentageMetaPojo(
+                -1,
+                subjectId,
+                3,
+                12,
+                50,
+                getString(R.string.example_subject_percentage_counter_2_name),
+                "user",
+                80,
+                false,
+                "4:12:0",
+                false);
+
+        int percentage1Id = dbAdmissionPercentageMeta.addItemGetId(percentage1);
+        int percentage2Id = dbAdmissionPercentageMeta.addItemGetId(percentage2);
+
+        Random r = new Random();
+
+        for (int i = 0; i < 20; i++) {
+            int percentageId = i < 8 ? percentage1Id : percentage2Id;
+            int available = r.nextInt(6);
+            int finished = available > 0 ? r.nextInt(available) : 0;
+            dbLessons.addItem(new Lesson(percentageId, 1, finished, available));
+        }
+
+        dbAdmissionCounters.addItem(new AdmissionCounter(-1,
+                subjectId,
+                getString(R.string.example_subject_presentation_points),
+                2,
+                3));
+
+        dbAdmissionCounters.addItem(new AdmissionCounter(-1,
+                subjectId,
+                getString(R.string.example_subject_proof_assignments_counter_name),
+                0,
+                1));
+
+        mSubjectAdapter.notifySubjectAdded();
+    }
+
+    private void createExample() {
+        if (getPreference("example_created", false)) {
+            AlertDialog.Builder b = new Builder(this);
+            b.setTitle(R.string.subject_management_add_example_dialog_title);
+            b.setMessage(R.string.subject_management_add_example_dialog_message);
+            b.setPositiveButton(R.string.dialog_button_yes, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    createExampleForReal();
+                }
+            });
+            b.setNegativeButton(R.string.dialog_button_no, null);
+            b.create().show();
+        } else
+            createExampleForReal();
     }
 
     @Override
@@ -286,10 +371,6 @@ public class SubjectManagementActivity extends AppCompatActivity implements Swip
 
     public boolean getPreference(String key, boolean def) {
         return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(key, def);
-    }
-
-    public String getPreference(String key, String def) {
-        return PreferenceManager.getDefaultSharedPreferences(this).getString(key, def);
     }
 
     public void setPreference(String key, boolean newValue) {

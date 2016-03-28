@@ -68,6 +68,8 @@ public class DatabaseCreator extends SQLiteOpenHelper {
     public static final String ADMISSION_PERCENTAGES_META_TARGET_PERCENTAGE = "target_percentage";
     public static final String ADMISSION_PERCENTAGES_META_BONUS_TARGET_PERCENTAGE = "bonus_target_percentage";
     public static final String ADMISSION_PERCENTAGES_META_BONUS_TARGET_PERCENTAGE_ENABLED = "bonus_target_percentage_enabled";
+    public static final String ADMISSION_PERCENTAGES_META_RECURRENCE_DATA_STRING = "recurrence_string";
+    public static final String ADMISSION_PERCENTAGES_META_RECURRENCE_NOTIFICATION_ENABLED = "recurrence_enabled";
     public static final String ADMISSION_PERCENTAGES_META_ESTIMATION_MODE = "estimation_mode";
     public static final String ADMISSION_PERCENTAGES_META_TARGET_LESSON_COUNT = "target_lesson_count";
     public static final String ADMISSION_PERCENTAGES_META_USER_ESTIMATED_ASSIGNMENTS_PER_LESSON = "target_assignments_per_lesson";
@@ -87,7 +89,8 @@ public class DatabaseCreator extends SQLiteOpenHelper {
     //switched to db v13 in commit 22.10.15 13:49
     //db14: 8.3.16 14:22
     //db15: 9.3.16 20:58
-    public static final int DATABASE_VERSION = 15;
+    //db16: 17.3.16. 21:38
+    public static final int DATABASE_VERSION = 16;
 
     //begin new database system
     private static final String CREATE_TABLE_SUBJECTS = "create table " + TABLE_NAME_SUBJECTS + "( " +
@@ -114,12 +117,14 @@ public class DatabaseCreator extends SQLiteOpenHelper {
     private static final String CREATE_TABLE_ADMISSION_PERCENTAGES_META = "create table " + TABLE_NAME_ADMISSION_PERCENTAGES_META + "( " +
             ADMISSION_PERCENTAGES_META_ID + " integer primary key, " +
             ADMISSION_PERCENTAGES_META_NAME + " text DEFAULT 'Votierungspunkte', " +
+            ADMISSION_PERCENTAGES_META_RECURRENCE_DATA_STRING + " text DEFAULT NULL, " +
             ADMISSION_PERCENTAGES_META_SUBJECT_ID + " integer, " +
             ADMISSION_PERCENTAGES_META_USER_ESTIMATED_ASSIGNMENTS_PER_LESSON + " integer not null," +
             ADMISSION_PERCENTAGES_META_TARGET_LESSON_COUNT + " integer not null," +
             ADMISSION_PERCENTAGES_META_TARGET_PERCENTAGE + " integer not null," +
             ADMISSION_PERCENTAGES_META_BONUS_TARGET_PERCENTAGE + " integer not null default 50," +//v15
-            ADMISSION_PERCENTAGES_META_BONUS_TARGET_PERCENTAGE_ENABLED + " boolean not null DEFAULT 0 CHECK (" + ADMISSION_PERCENTAGES_META_BONUS_TARGET_PERCENTAGE_ENABLED + " IN (0,1))" +//v15
+            ADMISSION_PERCENTAGES_META_BONUS_TARGET_PERCENTAGE_ENABLED + " boolean not null DEFAULT 0 CHECK (" + ADMISSION_PERCENTAGES_META_BONUS_TARGET_PERCENTAGE_ENABLED + " IN (0,1))," +//v15
+            ADMISSION_PERCENTAGES_META_RECURRENCE_NOTIFICATION_ENABLED + " boolean not null DEFAULT 0 CHECK (" + ADMISSION_PERCENTAGES_META_RECURRENCE_NOTIFICATION_ENABLED + " IN (0,1))," +//v16
             ADMISSION_PERCENTAGES_META_ESTIMATION_MODE + " string NOT NULL DEFAULT 'user'," + //v14
             "FOREIGN KEY (" + ADMISSION_PERCENTAGES_META_SUBJECT_ID + ") REFERENCES " + TABLE_NAME_SUBJECTS + "(" + SUBJECTS_ID + ") ON DELETE CASCADE" +
             ");";
@@ -186,6 +191,13 @@ public class DatabaseCreator extends SQLiteOpenHelper {
         }
     }
 
+    @Override
+    public void onOpen(SQLiteDatabase db) {
+        super.onOpen(db);
+        // obviously this needs to be executed, otherwise on delete cascade is weird
+        db.execSQL("PRAGMA foreign_keys=ON");
+    }
+
     // Method is called during creation of the database
     @Override
     public void onCreate(SQLiteDatabase database) {
@@ -202,30 +214,28 @@ public class DatabaseCreator extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase database, int oldVersion, int newVersion) {
         if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
             Log.w(DatabaseCreator.class.getName(), "Upgrading database from version " + oldVersion + " to " + newVersion + ", which is basically pray'n'spray");
-        //12 to 13
-        if (oldVersion == 12 && newVersion == 13) {
+        // 12 to 13 creates all new tables using the newest table creation statements, so we only
+        // need to execute that.
+        if (oldVersion <= 12)
             transferFrom12To13(database);
+        else {
+            if (oldVersion <= 13)
+                transferFrom13To14(database);
+
+            if (oldVersion <= 14)
+                transferFrom14To15(database);
+
+            if (oldVersion <= 15)
+                transferFrom15To16(database);
         }
 
-        //12/13 to 14
-        else if (oldVersion == 12 && newVersion == 14) {
-            transferFrom12To13(database);
-            transferFrom13To14(database);
-        } else if (oldVersion == 13 && newVersion == 14) {
-            transferFrom13To14(database);
-        }
+    }
 
-        //12/13/14 to 15
-        else if (oldVersion == 14 && newVersion == 15) {
-            transferFrom14To15(database);
-        } else if (oldVersion == 13 && newVersion == 15) {
-            transferFrom13To14(database);
-            transferFrom14To15(database);
-        } else if (oldVersion == 12 && newVersion == 15) {
-            transferFrom12To13(database);
-            transferFrom13To14(database);
-            transferFrom14To15(database);
-        }
+    private void transferFrom15To16(SQLiteDatabase database) {
+        database.execSQL("ALTER TABLE " + TABLE_NAME_ADMISSION_PERCENTAGES_META + " ADD COLUMN " +
+                ADMISSION_PERCENTAGES_META_RECURRENCE_DATA_STRING + " text DEFAULT NULL");
+        database.execSQL("ALTER TABLE " + TABLE_NAME_ADMISSION_PERCENTAGES_META + " ADD COLUMN " +
+                ADMISSION_PERCENTAGES_META_RECURRENCE_NOTIFICATION_ENABLED + " boolean not null DEFAULT 0 CHECK (" + ADMISSION_PERCENTAGES_META_RECURRENCE_NOTIFICATION_ENABLED + " IN (0,1))");
     }
 
     private void transferFrom14To15(SQLiteDatabase database) {

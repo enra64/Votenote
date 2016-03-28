@@ -7,12 +7,12 @@ import de.oerntec.votenote.Database.NameAndIdPojo;
  */
 public class AdmissionCounter implements Cloneable, NameAndIdPojo {
     public int id, subjectId, currentValue, targetValue;
-    public String counterName;
+    public String name;
 
-    public AdmissionCounter(int id, int subjectId, String counterName, int currentValue, int targetValue) {
+    public AdmissionCounter(int id, int subjectId, String name, int currentValue, int targetValue) {
         this.id = id;
         this.subjectId = subjectId;
-        this.counterName = counterName;
+        this.name = name;
         this.currentValue = currentValue;
         this.targetValue = targetValue;
     }
@@ -31,6 +31,7 @@ public class AdmissionCounter implements Cloneable, NameAndIdPojo {
         throw new AssertionError("couldnt clone");
     }
 
+    @SuppressWarnings("SimplifiableIfStatement")
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -42,13 +43,13 @@ public class AdmissionCounter implements Cloneable, NameAndIdPojo {
         if (subjectId != that.subjectId) return false;
         if (currentValue != that.currentValue) return false;
         if (targetValue != that.targetValue) return false;
-        return !(counterName != null ? !counterName.equals(that.counterName) : that.counterName != null);
+        return !(name != null ? !name.equals(that.name) : that.name != null);
 
     }
 
     @Override
     public String getDisplayName() {
-        return counterName + " - " + targetValue;
+        return name + " - " + targetValue;
     }
 
     @Override

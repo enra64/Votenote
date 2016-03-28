@@ -23,7 +23,7 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 
-public class SwipeDeletion {
+public class SwipeAnimationUtils {
     /**
      * Swipe view to the right to show user fast deletion method. Also calls UndoSnackBar
      *
@@ -31,7 +31,11 @@ public class SwipeDeletion {
      * @param snackBarHost class having an interface to show a udo snackbar
      * @param animatedView animated view
      */
-    public static void executeProgrammaticSwipeDeletion(final Context context, final UndoSnackBarHost snackBarHost, final View animatedView, final int position) {
+    public static void executeProgrammaticSwipeDeletion(
+            final Context context,
+            final UndoSnackBarHost snackBarHost,
+            final View animatedView,
+            final int position) {
         //delay animation to start after dialog closed
         new Handler().postDelayed(new Runnable() {
             @Override

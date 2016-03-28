@@ -3,11 +3,19 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <include
+        android:id="@+id/subject_creator_button_bar"
+        layout="@layout/giant_dialog_button_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true" />
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/subject_manager_admission_counter_list"
-        android:layout_width="wrap_content"
+        android:id="@+id/subject_creator_unified_counter_list"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_above="@id/subject_creator_button_bar"
         android:layout_centerVertical="true" />
+
 
 </RelativeLayout>

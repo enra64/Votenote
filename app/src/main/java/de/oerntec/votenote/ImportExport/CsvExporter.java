@@ -25,12 +25,12 @@ import java.io.IOException;
 import java.util.List;
 
 import de.oerntec.votenote.Database.Pojo.AdmissionCounter;
-import de.oerntec.votenote.Database.Pojo.AdmissionPercentageData;
-import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMeta;
+import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMetaStuff.AdmissionPercentageMetaPojo;
+import de.oerntec.votenote.Database.Pojo.Lesson;
 import de.oerntec.votenote.Database.Pojo.Subject;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionCounters;
-import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageData;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageMeta;
+import de.oerntec.votenote.Database.TableHelpers.DBLessons;
 import de.oerntec.votenote.Database.TableHelpers.DBSubjects;
 import de.oerntec.votenote.MainActivity;
 
@@ -56,7 +56,7 @@ public class CsvExporter {
         //get database access
         StringBuilder b = new StringBuilder();
         String le = "\r\n";
-        String apmHeader = "Name,Required percentage for admission,Estimated Assignments per Lesson,Estimated Lesson Count";
+        String apmHeader = "Name,Required percentage for admission,Bonus Percentage for admission,Bonus Percentage enabled,Estimation mode,User Estimated Assignments per Lesson,Estimated Lesson Count";
         String apdHeader = "Lesson,Finished Assignments,Available Assignments";
         String acHeader = "Current points,Target point count";
         List<Subject> subjects = getSubjects();
@@ -64,16 +64,16 @@ public class CsvExporter {
         b.append("sep=;").append(le);
         for(Subject s : subjects){
             b.append("Subject:").append(s.name).append(le);
-            for(AdmissionPercentageMeta apm : s.admissionPercentageMetaList){
+            for (AdmissionPercentageMetaPojo apm : s.admissionPercentageMetaPojoList) {
                 b.append("Admission Percentage:");
                 b.append(apmHeader).append(le);
                 b.append(apm.getCsvRepresentation()).append(le);
                 b.append(apdHeader).append(le);
-                for(AdmissionPercentageData apd : apm.mDataList)
+                for (Lesson apd : apm.mDataList)
                     b.append(apd.getCsvRepresentation()).append(le);
             }
             for(AdmissionCounter ac : s.admissionCounterList){
-                b.append("Admission Counter:").append(ac.counterName).append(le);
+                b.append("Admission Counter:").append(ac.name).append(le);
                 b.append(acHeader).append(le);
                 b.append(ac.getCsvRepresentation()).append(le);
             }
@@ -90,7 +90,7 @@ public class CsvExporter {
     }
 
     private static List<Subject> getSubjects(){
-        final DBAdmissionPercentageData mApDataDb = DBAdmissionPercentageData.getInstance();
+        final DBLessons mApDataDb = DBLessons.getInstance();
         final DBAdmissionPercentageMeta mApMetaDb = DBAdmissionPercentageMeta.getInstance();
         final DBAdmissionCounters mCountersDb = DBAdmissionCounters.getInstance();
         final DBSubjects mSubjectDb = DBSubjects.getInstance();

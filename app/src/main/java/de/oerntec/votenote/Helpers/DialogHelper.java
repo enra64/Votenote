@@ -15,26 +15,26 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 * */
-package de.oerntec.votenote.Dialogs;
+package de.oerntec.votenote.Helpers;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.support.v4.app.FragmentManager;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.NumberPicker;
 
 import java.util.List;
 
-import de.oerntec.votenote.AdmissionPercentageFragmentStuff.LessonDialogFragment;
+import de.oerntec.votenote.AdmissionPercentageFragmentStuff.AddLessonDialogFragment;
 import de.oerntec.votenote.Database.Pojo.AdmissionCounter;
-import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMeta;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionCounters;
-import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageData;
-import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageMeta;
 import de.oerntec.votenote.MainActivity;
 import de.oerntec.votenote.R;
+import de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.CreationFragment.AdmissionCounterDialogFragment;
 
-public class MainDialogHelper {
+public class DialogHelper {
     private static final int ADD_LESSON_CODE = -2;
 
     public static void showAddLessonDialog(FragmentManager fragmentManager, int apMetaId) {
@@ -42,9 +42,10 @@ public class MainDialogHelper {
     }
 
     public static void showChangeLessonDialog(FragmentManager fragmentManager, int apMetaId, int lessonId) {
-        LessonDialogFragment fragment = LessonDialogFragment.newInstance(apMetaId, lessonId);
+        AddLessonDialogFragment fragment = AddLessonDialogFragment.newInstance(apMetaId, lessonId);
         fragment.show(fragmentManager, "ap_create_dialog");
     }
+
 
     /**
      * if only one counter exists, immediately display the change dialog for that one.
@@ -58,7 +59,7 @@ public class MainDialogHelper {
         else{
             String[] choices = new String[list.size()];
             for(int i = 0; i < list.size(); i++)
-                choices[i] = list.get(i).counterName;
+                choices[i] = list.get(i).name;
             AlertDialog.Builder builder = new AlertDialog.Builder(activity);
             builder.setTitle("Admission Counter wählen")
                 .setItems(choices, new DialogInterface.OnClickListener() {
@@ -77,7 +78,8 @@ public class MainDialogHelper {
         final DBAdmissionCounters db = DBAdmissionCounters.getInstance();
         final AdmissionCounter item = db.getItem(counterId);
 
-        final View inputView = activity.getLayoutInflater().inflate(R.layout.subject_fragment_dialog_presentation_points, null);
+        //noinspection RedundantCast because we cant yet know the parent for the dialog
+        final View inputView = activity.getLayoutInflater().inflate(R.layout.subject_fragment_dialog_presentation_points, (ViewGroup) null);
         final NumberPicker presPointPicker = (NumberPicker) inputView.findViewById(R.id.mainfragment_dialog_prespoints_picker);
 
         presPointPicker.setMinValue(0);
@@ -97,31 +99,26 @@ public class MainDialogHelper {
                         activity.getCurrentAdmissionPercentageFragment().reloadInfo();
                     }
                 }).setNegativeButton(activity.getString(R.string.dialog_button_abort), null);
-        b.setTitle(activity.getString(R.string.admission_counter_change_dialog_title, item.counterName));
+        b.setTitle(activity.getString(R.string.admission_counter_change_dialog_title, item.name));
         b.create().show();
     }
 
-    public static void showAllInfoDialog(MainActivity activity, int metaId) {
-        AdmissionPercentageMeta meta = DBAdmissionPercentageMeta.getInstance().getItem(metaId);
-        meta.loadData(DBAdmissionPercentageData.getInstance(), MainActivity.getPreference("reverse_lesson_sort", true));
+    public static void showDeleteDialog(Context context, DialogInterface.OnClickListener onYesListener) {
+        showDeleteDialog(context, onYesListener, context.getString(R.string.dialog_title_delete));
+    }
 
-        String scheduledWork = activity.getString(R.string.maximum_possible_assignments) + " " + meta.getEstimatedNumberOfAssignments();
-        String numberOfNeededAssignmentsString = activity.getString(R.string.needed_work_count) + " " + meta.getNumberOfNeededAssignments();
-        String numberOfVotedAssignmentsString = activity.getString(R.string.voted_assignments) + " " + meta.getFinishedAssignmentsCount();
-        String remainingNeededAssignmentsString = activity.getString(R.string.remaining_needed_assignments) + " " + meta.getRemainingNeededAssignments();
-        String numberOfElapsedLessonsString = activity.getString(R.string.past_lessons) + " " + meta.getNumberOfElapsedLessons();
-        String numberOfLessonsLeftString = activity.getString(R.string.future_lessons) + " " + meta.getNumberOfLessonsLeft();
-        String neededAssignmentsPerUebungString = activity.getString(R.string.assignments_per_lesson_for_exam) + " " + meta.getNeededAssignmentsPerUebung();
+    public static void showDeleteDialog(Context context,
+                                        DialogInterface.OnClickListener onYesListener,
+                                        String title) {
+        AlertDialog.Builder b = new AlertDialog.Builder(context);
+        b.setTitle(title);
+        b.setNegativeButton(R.string.dialog_button_no, null);
+        b.setPositiveButton(R.string.dialog_button_yes, onYesListener);
+        b.create().show();
+    }
 
-        AlertDialog.Builder b = new AlertDialog.Builder(activity)
-                .setPositiveButton(R.string.dialog_button_ok, null)
-                .setTitle(meta.name + ":");
-        b.setItems(new String[]{scheduledWork,
-                numberOfNeededAssignmentsString,
-                numberOfVotedAssignmentsString,
-                remainingNeededAssignmentsString,
-                numberOfElapsedLessonsString,
-                numberOfLessonsLeftString,
-                neededAssignmentsPerUebungString}, null).show();
+    public static void showCounterDialog(android.app.FragmentManager fragmentManager, int subjectId, int counterId, boolean isNew) {
+        AdmissionCounterDialogFragment fragment = AdmissionCounterDialogFragment.newInstance(subjectId, counterId, isNew);
+        fragment.show(fragmentManager, "ac_create_dialog");
     }
 }

@@ -38,9 +38,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.util.List;
+
+import de.oerntec.votenote.Database.Pojo.Subject;
+import de.oerntec.votenote.Database.TableHelpers.DBSubjects;
 import de.oerntec.votenote.Preferences.PreferencesActivity;
 import de.oerntec.votenote.R;
-import de.oerntec.votenote.SubjectManagerStuff.SubjectManagementActivity;
+import de.oerntec.votenote.SubjectManagerStuff.SubjectManagementListActivity;
 
 /**
  * Fragment used for managing interactions for and presentation of a navigation
@@ -122,7 +126,7 @@ public class NavigationDrawerFragment extends Fragment implements SelectionCallb
         root.findViewById(R.id.navigation_drawer_edit).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(getActivity(), SubjectManagementActivity.class));
+                startActivity(new Intent(getActivity(), SubjectManagementListActivity.class));
             }
         });
         return root;
@@ -220,7 +224,23 @@ public class NavigationDrawerFragment extends Fragment implements SelectionCallb
         return ((AppCompatActivity) getActivity()).getSupportActionBar();
     }
 
-    public void selectItem(int position) {
+    /**
+     * get the position in the adapter via the id
+     */
+    private int getPositionFromId(int id) {
+        List<Subject> data = DBSubjects.getInstance().getAllSubjects();
+        for (int position = 0; position < data.size(); position++)
+            if (id == data.get(position).id)
+                return position;
+        return -1;
+    }
+
+
+    public void forceAdmissionPercentageFragmentDialogById(int subjectId, int admissionPercentageId) {
+        forceAdmissionPercentageFragmentDialog(getPositionFromId(subjectId), admissionPercentageId);
+    }
+
+    public void forceAdmissionPercentageFragmentDialog(int position, int admissionPercentageId) {
         mCurrentSelectedPosition = position;
         if (mAdapter != null)
             mAdapter.setCurrentSelection(position);
@@ -228,8 +248,17 @@ public class NavigationDrawerFragment extends Fragment implements SelectionCallb
         if (mDrawerLayout != null)
             mDrawerLayout.closeDrawer(mFragmentContainerView);
 
-        if (mCallbacks != null)
-            mCallbacks.onNavigationDrawerItemSelected(position);
+        if (mCallbacks != null) {
+            if (admissionPercentageId == -1)
+                mCallbacks.onNavigationDrawerItemSelected(position);
+            else
+                mCallbacks.onNavigationDrawerItemSelected(position, admissionPercentageId, true);
+
+        }
+    }
+
+    public void selectItem(int position) {
+        forceAdmissionPercentageFragmentDialog(position, -1);
     }
 
     public void reloadAdapter() {
@@ -301,6 +330,8 @@ public class NavigationDrawerFragment extends Fragment implements SelectionCallb
          * Called when an item in the navigation drawer is selected.
          */
         void onNavigationDrawerItemSelected(int position);
+
+        void onNavigationDrawerItemSelected(int position, int admissionPercentageId, boolean forceLessonAddDialog);
     }
 
 

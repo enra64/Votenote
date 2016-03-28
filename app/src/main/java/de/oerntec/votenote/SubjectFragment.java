@@ -16,9 +16,10 @@ import java.util.HashMap;
 import java.util.List;
 
 import de.oerntec.votenote.AdmissionPercentageFragmentStuff.AdmissionPercentageFragment;
-import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMeta;
+import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMetaStuff.AdmissionPercentageMetaPojo;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageMeta;
 import de.oerntec.votenote.Database.TableHelpers.DBLastViewed;
+import de.oerntec.votenote.Helpers.DialogHelper;
 
 /**
  * This class shows **all** info available on a subject, including all percentage counters (swipe to the left/right) and all point counters
@@ -35,6 +36,10 @@ public class SubjectFragment extends Fragment {
      * argument name for the subject position in the navigation drawer
      */
     private static final String ARG_SUBJECT_POSITION = "subject_position";
+
+    private static final String ARG_FORCED_ADMISSION_ID = "admission_id";
+    private static final String ARG_FORCE_ADMISSION_ID_ENABLED = "admission_id_forced";
+    private static final String ARG_FORCE_DIALOG_SHOW = "show_dialog";
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -61,6 +66,12 @@ public class SubjectFragment extends Fragment {
      */
     private boolean mSaveLastMetaId;
 
+    private boolean mForceAddLessonDialog;
+
+    private boolean mForceAdmissionPercentageFragmentLoad;
+
+    private int mForcedAdmissionPercentageId;
+
     /**
      * empty fragment constructor
      */
@@ -72,10 +83,22 @@ public class SubjectFragment extends Fragment {
      * @return a newly instanced fragment
      */
     public static SubjectFragment newInstance(int subjectId, int subjectPosition) {
+        return newInstance(subjectId, subjectPosition, -1, false);
+    }
+
+    public static SubjectFragment newInstance(int subjectId, int subjectPosition, int forcedAdmissionPercentageId, boolean forceLessonAddDialog) {
         Bundle args = new Bundle();
         //put arguments into an intent
         args.putInt(ARG_SUBJECT_ID, subjectId);
         args.putInt(ARG_SUBJECT_POSITION, subjectPosition);
+
+        //forced admission id load?
+        args.putBoolean(ARG_FORCE_ADMISSION_ID_ENABLED, forcedAdmissionPercentageId != -1);
+        if (forcedAdmissionPercentageId != -1)
+            args.putInt(ARG_FORCED_ADMISSION_ID, forcedAdmissionPercentageId);
+
+        //show lesson add dialog?
+        args.putBoolean(ARG_FORCE_DIALOG_SHOW, forceLessonAddDialog);
 
         SubjectFragment fragment = new SubjectFragment();
         fragment.setArguments(args);
@@ -88,6 +111,13 @@ public class SubjectFragment extends Fragment {
         mSubjectId = getArguments().getInt(ARG_SUBJECT_ID, -1);
         if (mSubjectId == -1)
             throw new AssertionError("trying to load a non-existing subject!");
+
+        mForceAddLessonDialog = getArguments().getBoolean(ARG_FORCE_DIALOG_SHOW, false);
+
+        mForceAdmissionPercentageFragmentLoad = getArguments().getBoolean(ARG_FORCE_ADMISSION_ID_ENABLED, false);
+
+        if (mForceAdmissionPercentageFragmentLoad)
+            mForcedAdmissionPercentageId = getArguments().getInt(ARG_FORCED_ADMISSION_ID, -1);
     }
 
     public int getSubjectId(){
@@ -128,18 +158,47 @@ public class SubjectFragment extends Fragment {
      * get the currently displayed fragment
      */
     public AdmissionPercentageFragment getCurrentFragment() {
-        AdmissionPercentageFragment current = mAdmissionPercentageAdapter.getFragmentInstance(mViewPager.getCurrentItem());
-        if (current == null)
-            throw new AssertionError("could not find current fragment");
-        return current;
+        return mAdmissionPercentageAdapter.getFragmentInstance(mViewPager.getCurrentItem());
     }
 
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        List<AdmissionPercentageMeta> percentages = DBAdmissionPercentageMeta.getInstance().getItemsForSubject(mSubjectId);
+    /**
+     * get the position in the adapter via the id
+     */
+    private int getPositionFromId(int id) {
+        List<AdmissionPercentageMetaPojo> data = DBAdmissionPercentageMeta.getInstance().getItemsForSubject(mSubjectId);
+        for (int position = 0; position < data.size(); position++)
+            if (id == data.get(position).id)
+                return position;
+        return -1;
+    }
 
+    /**
+     * load an admission percentage fragment via id, also try to show the lesson add dialog
+     */
+    private void setAdmissionPercentageFragmentById(int admissionPercentageFragmentId, boolean forceLessonAddDialog) {
+        //get position corresponding to the id
+        int admissionPercentageFragmentPosition = getPositionFromId(admissionPercentageFragmentId);
+        if (MainActivity.ENABLE_DEBUG_LOG_CALLS) {
+            Log.i("subfrag", "id: " + admissionPercentageFragmentId);
+            Log.i("subfrag", "calculated position: " + admissionPercentageFragmentPosition);
+        }
+        mViewPager.setCurrentItem(admissionPercentageFragmentPosition);
+
+        if (forceLessonAddDialog)
+            DialogHelper.showAddLessonDialog(getFragmentManager(), admissionPercentageFragmentId);
+    }
+
+    /**
+     * load either the last selected, the default, or the forced admission percentage fragment
+     */
+    private void loadAppropriateAdmissionPercentageFragment() {
+        List<AdmissionPercentageMetaPojo> percentages = DBAdmissionPercentageMeta.getInstance().getItemsForSubject(mSubjectId);
         final int subjectPosition = getArguments().getInt(ARG_SUBJECT_POSITION);
+
+        if (mForceAdmissionPercentageFragmentLoad) {
+            setAdmissionPercentageFragmentById(mForcedAdmissionPercentageId, mForceAddLessonDialog);
+            return;
+        }
 
         //check whether the subject has percentage counters
         if (percentages.size() > 0) {
@@ -159,6 +218,17 @@ public class SubjectFragment extends Fragment {
             else
                 mViewPager.setCurrentItem(0);
         }
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+
+        final int subjectPosition = getArguments().getInt(ARG_SUBJECT_POSITION);
+
+        loadAppropriateAdmissionPercentageFragment();
+
         if(mSaveLastMetaId){
             if (DBAdmissionPercentageMeta.getInstance().getItemsForSubject(mSubjectId).size() > 1) {
                 mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -190,7 +260,7 @@ public class SubjectFragment extends Fragment {
      */
     public class AdmissionPercentageAdapter extends FragmentPagerAdapter {
         private DBAdmissionPercentageMeta mMetaDb;
-        private List<AdmissionPercentageMeta> mData;
+        private List<AdmissionPercentageMetaPojo> mData;
         private int mSubjectId;
         private HashMap<Integer, AdmissionPercentageFragment> mReferenceMap;
 
@@ -221,10 +291,7 @@ public class SubjectFragment extends Fragment {
          * return the saved instance reference to the given id
          */
         public AdmissionPercentageFragment getFragmentInstance(Integer requestedPosition) {
-            AdmissionPercentageFragment instance = mReferenceMap.get(requestedPosition);
-            if(instance == null)
-                throw new AssertionError("could not find an admission percentage fragment at " + requestedPosition);
-            return instance;
+            return mReferenceMap.get(requestedPosition);
         }
 
         @Override

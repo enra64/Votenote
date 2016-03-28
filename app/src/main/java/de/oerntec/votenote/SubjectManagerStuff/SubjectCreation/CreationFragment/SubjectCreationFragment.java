@@ -16,27 +16,28 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import de.oerntec.votenote.CardListHelpers.OnItemClickListener;
 import de.oerntec.votenote.CardListHelpers.RecyclerItemClickListener;
 import de.oerntec.votenote.Database.DatabaseCreator;
 import de.oerntec.votenote.Database.Pojo.Subject;
 import de.oerntec.votenote.Database.TableHelpers.DBSubjects;
+import de.oerntec.votenote.Helpers.DialogHelper;
 import de.oerntec.votenote.Helpers.General;
 import de.oerntec.votenote.MainActivity;
 import de.oerntec.votenote.R;
 import de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.CreationFragment.AdmissionPercentageCreation.AdmissionPercentageCreationActivity;
-import de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.CreationFragment.AdmissionPercentageCreation.AdmissionPercentageFragment;
-import de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.SubjectOverview.Dialogs;
+import de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.CreationFragment.AdmissionPercentageCreation.AdmissionPercentageCreationFragment;
 import de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.SubjectOverview.SubjectCreationActivity;
 import de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.SubjectOverview.SubjectCreationDialogInterface;
-import de.oerntec.votenote.SubjectManagerStuff.SubjectManagementActivity;
+import de.oerntec.votenote.SubjectManagerStuff.SubjectManagementListActivity;
 
 /**
  * This fragment holds the actual ui/ux for creating a new subject, as opposed to the subject creation
  * activity, which merely contains this
  */
-public class SubjectCreationFragment extends Fragment implements SubjectCreationDialogInterface {
+public class SubjectCreationFragment extends Fragment implements SubjectCreationDialogInterface, View.OnClickListener {
     /**
      * Lesson should be added, not changed
      */
@@ -95,6 +96,12 @@ public class SubjectCreationFragment extends Fragment implements SubjectCreation
      */
     private String mOldSubjectName = "";
 
+    /**
+     * This is the delete button in the giant action bar, we need a class variable in case this is a
+     * new subject and we want to hide it
+     */
+    private Button mDeleteButton;
+
     public SubjectCreationFragment() {
     }
 
@@ -122,7 +129,7 @@ public class SubjectCreationFragment extends Fragment implements SubjectCreation
         mIsOldSubject = !mIsNewSubject;
 
         //if this is a new subject, we have to create a subject now to know the subject id, which is conveniently returned by the addItemGetId method
-        if(mIsNewSubject)
+        if (mIsNewSubject)
             mSubjectId = mSubjectDb.addItemGetId("If you see this, i fucked up.");
 
         setHasOptionsMenu(true);
@@ -141,11 +148,11 @@ public class SubjectCreationFragment extends Fragment implements SubjectCreation
 
         mSubjectDb = DBSubjects.getInstance();
 
-        if(mSubjectDb == null) throw new AssertionError("could not get a database instance?");
+        if (mSubjectDb == null) throw new AssertionError("could not get a database instance?");
 
         //begin transaction on database to enable using commit and abort
-        if(MainActivity.ENABLE_DEBUG_LOG_CALLS)
-            Log.i("creator fragment", "beginning transaction");
+        if (MainActivity.ENABLE_TRANSACTION_LOG)
+            Log.i("transact. log", "starting SubjectCreationFragment transaction in onAttach");
         mDatabase.beginTransaction();
     }
 
@@ -153,10 +160,8 @@ public class SubjectCreationFragment extends Fragment implements SubjectCreation
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_subject_creation, menu);
 
-        if (mIsNewSubject) {
-            menu.findItem(R.id.action_delete).setEnabled(false);
-            menu.findItem(R.id.action_delete).setVisible(false);
-        }
+        if (mIsNewSubject)
+            mDeleteButton.setVisibility(View.GONE);
     }
 
     @Override
@@ -169,14 +174,25 @@ public class SubjectCreationFragment extends Fragment implements SubjectCreation
             mOldSubjectName = oldData.name;
         }
 
-        mList = (RecyclerView) input.findViewById(R.id.subject_manager_admission_counter_list);
-        initializeList(mList);
+        //this is the list containing both admission counters and admission percentage counters
+        mList = (RecyclerView) input.findViewById(R.id.subject_creator_unified_counter_list);
+
+        //find the giant button bar and attach the listeners
+        Button okButton = (Button) input.findViewById(R.id.giant_ok_button);
+        okButton.setOnClickListener(this);
+
+        input.findViewById(R.id.giant_cancel_button).setOnClickListener(this);
+
+        mDeleteButton = (Button) input.findViewById(R.id.giant_delete_button);
+        mDeleteButton.setOnClickListener(this);
+
+        initializeList(mList, okButton);
 
         return input;
     }
 
     @SuppressWarnings("unchecked")
-    private void initializeList(RecyclerView recyclerView) {
+    private void initializeList(RecyclerView recyclerView, final Button okButton) {
         //config the recyclerview
         recyclerView.setHasFixedSize(true);
 
@@ -185,24 +201,47 @@ public class SubjectCreationFragment extends Fragment implements SubjectCreation
         manager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(manager);
 
-        mAdapter = new UnifiedCreatorAdapter(getActivity(), this, getFragmentManager(), mIsNewSubject ? null : mOldSubjectName, mSubjectId);
+        mAdapter = new UnifiedCreatorAdapter(
+                getActivity(),
+                this,
+                getFragmentManager(),
+                mIsNewSubject ? null : mOldSubjectName,
+                mSubjectId,
+                okButton,
+                this);
         recyclerView.setAdapter(mAdapter);
 
         recyclerView.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), recyclerView, new OnItemClickListener() {
             public void onItemClick(View view, int position) {
                 if (mAdapter.getItemViewType(position) == UnifiedCreatorAdapter.VIEW_COUNTER)
-                    Dialogs.showCounterDialog(getFragmentManager(), mSubjectId, (int) view.getTag(), false);
+                    DialogHelper.showCounterDialog(getFragmentManager(), mSubjectId, (int) view.getTag(), false);
                 else if (mAdapter.getItemViewType(position) == UnifiedCreatorAdapter.VIEW_PERCENTAGE) {
                     openAdmissionPercentageCreationActivity((int) view.getTag(), false);
                 }
             }
 
-            public void onItemLongClick(final View view, int position) {
+            public void onItemLongClick(final View view, final int position) {
                 if ((int) view.getTag() != ID_ADD_ITEM) {
                     if (mAdapter.getItemViewType(position) == UnifiedCreatorAdapter.VIEW_COUNTER)
-                        Dialogs.showCounterDeleteDialog(mAdapter.getCounterPojoAtPosition(position), getActivity(), SubjectCreationFragment.this);
+                        DialogHelper.showDeleteDialog(
+                                getActivity(),
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        deleteAdmissionCounter(mAdapter.getCounterPojoAtPosition(position).id);
+                                    }
+                                },
+                                String.format(getString(R.string.dialog_delete_title), mAdapter.getCounterPojoAtPosition(position).name));
                     else if (mAdapter.getItemViewType(position) == UnifiedCreatorAdapter.VIEW_PERCENTAGE)
-                        Dialogs.showPercentageDeleteDialog(mAdapter.getPercentagePojoAtPosition(position), getActivity(), SubjectCreationFragment.this);
+                        DialogHelper.showDeleteDialog(
+                                getActivity(),
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        deleteAdmissionPercentage(mAdapter.getPercentagePojoAtPosition(position).id);
+                                    }
+                                },
+                                String.format(getString(R.string.dialog_delete_title), mAdapter.getPercentagePojoAtPosition(position).name));
                 }
             }
         }));
@@ -210,9 +249,9 @@ public class SubjectCreationFragment extends Fragment implements SubjectCreation
 
     void openAdmissionPercentageCreationActivity(int admissionPercentageId, boolean isNew) {
         Intent intent = new Intent(getActivity(), AdmissionPercentageCreationActivity.class);
-        intent.putExtra(AdmissionPercentageFragment.SUBJECT_ID, mSubjectId);
-        intent.putExtra(AdmissionPercentageFragment.ADMISSION_PERCENTAGE_ID, admissionPercentageId);
-        intent.putExtra(AdmissionPercentageFragment.SUBJECT_IS_NEW, isNew);
+        intent.putExtra(AdmissionPercentageCreationFragment.SUBJECT_ID, mSubjectId);
+        intent.putExtra(AdmissionPercentageCreationFragment.ADMISSION_PERCENTAGE_ID, admissionPercentageId);
+        intent.putExtra(AdmissionPercentageCreationFragment.SUBJECT_IS_NEW, isNew);
         startActivityForResult(intent, AdmissionPercentageCreationActivity.RESULT_REQUEST_CODE_ADMISSION_PERCENTAGE_CREATOR);
     }
 
@@ -222,22 +261,15 @@ public class SubjectCreationFragment extends Fragment implements SubjectCreation
             case android.R.id.home:
                 showBackConfirmation();
                 return true;
-            case R.id.action_delete:
-                deleteCurrentSubject();
-                return true;
-            case R.id.action_save:
-                saveData();
-                return true;
-            case R.id.action_abort:
-                abort();
-                return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private void abort() {
-        if(MainActivity.ENABLE_DEBUG_LOG_CALLS)
-            Log.i("creator fragment", "ending transaction");
+
+    private void abortAndClose() {
+        if (MainActivity.ENABLE_TRANSACTION_LOG)
+            Log.i("transact. log", "ending SubjectCreationFragment transaction in abortAndClose");
+
         mDatabase.endTransaction();
         getActivity().finish();
     }
@@ -265,15 +297,15 @@ public class SubjectCreationFragment extends Fragment implements SubjectCreation
         //if the subject did not change, we dont need to show this dialog
         boolean hasEmptyName = "".equals(mAdapter.getCurrentName());
         if (!hasChanged()) {
-            if(mDatabase.inTransaction()){
-                if(MainActivity.ENABLE_DEBUG_LOG_CALLS)
-                    Log.i("creator fragment", "ending transaction");
+            if (mDatabase.inTransaction()) {
+                if (MainActivity.ENABLE_TRANSACTION_LOG)
+                    Log.i("transact. log", "ending SubjectCreationFragment transaction in showBackConfirmation");
                 mDatabase.endTransaction();
             }
             getActivity().finish();
             return;
         }
-        //create dialog
+        //create dialog if data was changed
         AlertDialog.Builder b = new AlertDialog.Builder(getActivity());
         b.setTitle("Speichern?");
         b.setMessage("Möchtest du deine Änderungen speichern?");
@@ -282,20 +314,13 @@ public class SubjectCreationFragment extends Fragment implements SubjectCreation
         b.setPositiveButton("Speichern", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                //save data first
-                saveData();
-
-                //set the result, delete is false, change is determined by mIsNewSubject
-                setActivityResult(false);
-
-                //close the activity containing this fragment
-                getActivity().finish();
+                saveAndClose();
             }
         });
         b.setNegativeButton("Verwerfen", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                abort();
+                abortAndClose();
             }
         });
         b.setNeutralButton("Abbrechen", null);
@@ -309,32 +334,36 @@ public class SubjectCreationFragment extends Fragment implements SubjectCreation
 
     private void setActivityResult(boolean delete) {
         if (delete)
-            getActivity().setResult(SubjectManagementActivity.SUBJECT_CREATOR_RESULT_DELETE, getCurrentResultIntent());
+            getActivity().setResult(SubjectManagementListActivity.SUBJECT_CREATOR_RESULT_DELETE, getCurrentResultIntent());
         else if (mIsNewSubject)
-            getActivity().setResult(SubjectManagementActivity.SUBJECT_CREATOR_RESULT_NEW, getCurrentResultIntent());
+            getActivity().setResult(SubjectManagementListActivity.SUBJECT_CREATOR_RESULT_NEW, getCurrentResultIntent());
         else
-            getActivity().setResult(SubjectManagementActivity.SUBJECT_CREATOR_RESULT_CHANGED, getCurrentResultIntent());
+            getActivity().setResult(SubjectManagementListActivity.SUBJECT_CREATOR_RESULT_CHANGED, getCurrentResultIntent());
     }
 
     /**
      * Write the new data out to db
      */
-    private void saveData() {
+    private void saveAndClose() {
         String newName = mAdapter.getCurrentName();
         mSubjectDb.changeItem(new Subject(newName, mSubjectId));
         if (mDatabase == null)
             throw new AssertionError("no db reference?");
-        if(MainActivity.ENABLE_DEBUG_LOG_CALLS)
-            Log.i("creator fragment", "ending transaction successfully");
+        if (MainActivity.ENABLE_TRANSACTION_LOG)
+            Log.i("transact. log", "ending SubjectCreationFragment transaction successfully in saveAndClose");
         mDatabase.setTransactionSuccessful();
         mDatabase.endTransaction();
 
-        if(mSubjectHasBeenChanged)
+        if (hasChanged())
             setActivityResult(false);
 
-        //enable change listeners
-        mOldSubjectName = newName;
-        mSubjectHasBeenChanged = false;
+        // enable change listeners
+        //mOldSubjectName = newName;
+        //mSubjectHasBeenChanged = false;
+
+        // because we may have some ugly problems if we simply open a new transaction to be able to
+        // continue editing, we simply kill the activity...
+        getActivity().finish();
     }
 
     /**
@@ -393,7 +422,7 @@ public class SubjectCreationFragment extends Fragment implements SubjectCreation
             if (data == null)
                 dialogClosed();
             else {
-                int itemId = data.getExtras().getInt(AdmissionPercentageFragment.ADMISSION_PERCENTAGE_ID);
+                int itemId = data.getExtras().getInt(AdmissionPercentageCreationFragment.ADMISSION_PERCENTAGE_ID);
                 switch (resultCode) {
                     case SubjectCreationActivity.DIALOG_RESULT_ADDED:
                         admissionPercentageFinished(itemId, true);//true -> isNew
@@ -412,7 +441,22 @@ public class SubjectCreationFragment extends Fragment implements SubjectCreation
         }
     }
 
-    public void dialogClosed(){
+    public void dialogClosed() {
         General.nukeKeyboard(getActivity());
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.giant_cancel_button:
+                abortAndClose();
+                break;
+            case R.id.giant_delete_button:
+                deleteCurrentSubject();
+                break;
+            case R.id.giant_ok_button:
+                saveAndClose();
+                break;
+        }
     }
 }

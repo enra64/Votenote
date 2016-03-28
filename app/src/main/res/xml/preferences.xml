@@ -4,7 +4,7 @@
 
         <PreferenceScreen android:title="@string/pres_control_subjects">
             <intent
-                android:targetClass="de.oerntec.votenote.SubjectManagerStuff.SubjectManagementActivity"
+                android:targetClass="de.oerntec.votenote.SubjectManagerStuff.SubjectManagementListActivity"
                 android:targetPackage="de.oerntec.votenote" />
         </PreferenceScreen>
 
@@ -33,11 +33,6 @@
             android:title="@string/pref_title_save_last_selected_meta_pos" />
 
         <CheckBoxPreference
-            android:defaultValue="true"
-            android:key="enable_swipe_to_delete_lesson"
-            android:title="@string/pref_swipe_to_delete_lesson" />
-
-        <CheckBoxPreference
             android:defaultValue="false"
             android:key="enable_logging"
             android:summary="@string/pref_logging_sum"
@@ -62,16 +57,16 @@
             android:title="@string/pref_csv_export" />
         <de.oerntec.votenote.Preferences.CustomActionPreference
             android:key="backup_share"
-            android:summary="Zeigt Apps an, die das Backup verarbeiten"
-            android:title="Backup teilen" />
+            android:summary="@string/preferences_backup_share_summary"
+            android:title="@string/preferences_backup_share_title" />
         <de.oerntec.votenote.Preferences.CustomActionPreference
             android:key="backup_export"
-            android:summary="Speichert ein Backup auf der SD-Karte"
-            android:title="Backup erstellen" />
+            android:summary="@string/preferences_backup_export_summary"
+            android:title="@string/preferences_backup_export_title" />
         <de.oerntec.votenote.Preferences.CustomActionPreference
             android:key="backup_import"
-            android:summary="Lädt ein Backup von der SD-Karte"
-            android:title="Backup importieren" />
+            android:summary="@string/preferences_backup_import_summary"
+            android:title="@string/preferences_backup_import_title" />
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/pref_updates">
