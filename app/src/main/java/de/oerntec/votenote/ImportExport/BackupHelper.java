@@ -30,7 +30,7 @@ import de.oerntec.votenote.Database.DatabaseCreator;
 import de.oerntec.votenote.Database.TableHelpers.DBSubjects;
 import de.oerntec.votenote.MainActivity;
 import de.oerntec.votenote.R;
-import de.oerntec.votenote.SubjectManagerStuff.SubjectManagementListActivity;
+import de.oerntec.votenote.SubjectManagement.SubjectManagementListActivity;
 
 public class BackupHelper {
     public static void importDialog(final Context activity) {

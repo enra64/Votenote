@@ -43,17 +43,17 @@ import android.widget.Toast;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-import de.oerntec.votenote.AdmissionPercentageFragmentStuff.AdmissionPercentageFragment;
+import de.oerntec.votenote.PercentageTrackerFragmentStuff.PercentageTrackerFragment;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionCounters;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageMeta;
 import de.oerntec.votenote.Database.TableHelpers.DBLastViewed;
 import de.oerntec.votenote.Database.TableHelpers.DBSubjects;
-import de.oerntec.votenote.Diagram.DiagramActivity;
+import de.oerntec.votenote.Chart.ChartActivity;
 import de.oerntec.votenote.Helpers.DialogHelper;
 import de.oerntec.votenote.Helpers.General;
 import de.oerntec.votenote.ImportExport.Writer;
 import de.oerntec.votenote.NavigationDrawer.NavigationDrawerFragment;
-import de.oerntec.votenote.SubjectManagerStuff.SubjectManagementListActivity;
+import de.oerntec.votenote.SubjectManagement.SubjectManagementListActivity;
 
 /*
 * VERSION HISTORY
@@ -503,7 +503,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
     }
 
     private void onDiagramClick() {
-        startActivity(new Intent(this, DiagramActivity.class));
+        startActivity(new Intent(this, ChartActivity.class));
     }
 
     private void onPresentationPointsClick() {
@@ -525,11 +525,11 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
     @Override
     protected void onPause() {
         super.onPause();
-        AdmissionPercentageFragment test = getCurrentAdmissionPercentageFragment();
+        PercentageTrackerFragment test = getCurrentAdmissionPercentageFragment();
         if (test != null) test.trySavepointRelease();
     }
 
-    public AdmissionPercentageFragment getCurrentAdmissionPercentageFragment() {
+    public PercentageTrackerFragment getCurrentAdmissionPercentageFragment() {
         SubjectFragment currentSubjectFragment = getCurrentSubjectFragment();
         if (currentSubjectFragment == null) return null;
         return currentSubjectFragment.getCurrentFragment();

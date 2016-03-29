@@ -27,12 +27,12 @@ import android.widget.NumberPicker;
 
 import java.util.List;
 
-import de.oerntec.votenote.AdmissionPercentageFragmentStuff.AddLessonDialogFragment;
+import de.oerntec.votenote.PercentageTrackerFragmentStuff.AddLessonDialogFragment;
 import de.oerntec.votenote.Database.Pojo.AdmissionCounter;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionCounters;
 import de.oerntec.votenote.MainActivity;
 import de.oerntec.votenote.R;
-import de.oerntec.votenote.SubjectManagerStuff.SubjectCreation.CreationFragment.AdmissionCounterDialogFragment;
+import de.oerntec.votenote.SubjectManagement.AdmissionCounterCreation.AdmissionCounterDialogFragment;
 
 public class DialogHelper {
     private static final int ADD_LESSON_CODE = -2;

@@ -15,18 +15,17 @@ import android.view.ViewGroup;
 import java.util.HashMap;
 import java.util.List;
 
-import de.oerntec.votenote.AdmissionPercentageFragmentStuff.AdmissionPercentageFragment;
+import de.oerntec.votenote.PercentageTrackerFragmentStuff.PercentageTrackerFragment;
 import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMetaStuff.AdmissionPercentageMetaPojo;
 import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageMeta;
 import de.oerntec.votenote.Database.TableHelpers.DBLastViewed;
 import de.oerntec.votenote.Helpers.DialogHelper;
 
 /**
- * This class shows **all** info available on a subject, including all percentage counters (swipe to the left/right) and all point counters
+ * Designed to display all percentage trackers and admission point counters for any given subject.
  */
 
 public class SubjectFragment extends Fragment {
-
     /**
      * Argument name for the subject db id
      */
@@ -37,8 +36,20 @@ public class SubjectFragment extends Fragment {
      */
     private static final String ARG_SUBJECT_POSITION = "subject_position";
 
-    private static final String ARG_FORCED_ADMISSION_ID = "admission_id";
-    private static final String ARG_FORCE_ADMISSION_ID_ENABLED = "admission_id_forced";
+    /**
+     * Percentage tracker id to load over the last selected position
+     */
+    private static final String ARG_FORCED_PERCENTAGE_TRACKER_ID = "admission_id";
+
+    /**
+     * Force load a percentage tracker that is not necessarily the most recently selected (used by
+     * the notification action button)
+     */
+    private static final String ARG_FORCE_PERCENTAGE_TRACKER_ID_ENABLED = "admission_id_forced";
+
+    /**
+     * Bundle argument to show a lesson add dialog or not
+     */
     private static final String ARG_FORCE_DIALOG_SHOW = "show_dialog";
 
     /**
@@ -66,10 +77,19 @@ public class SubjectFragment extends Fragment {
      */
     private boolean mSaveLastMetaId;
 
+    /**
+     * Force showing a lesson add dialog?
+     */
     private boolean mForceAddLessonDialog;
 
+    /**
+     * Force loading a specific percentage tracker?
+     */
     private boolean mForceAdmissionPercentageFragmentLoad;
 
+    /**
+     * If applicable, the percentage tracker that is to be loaded
+     */
     private int mForcedAdmissionPercentageId;
 
     /**
@@ -86,6 +106,9 @@ public class SubjectFragment extends Fragment {
         return newInstance(subjectId, subjectPosition, -1, false);
     }
 
+    /**
+     * Put the required arguments into a bundle to give to the new fragment
+     */
     public static SubjectFragment newInstance(int subjectId, int subjectPosition, int forcedAdmissionPercentageId, boolean forceLessonAddDialog) {
         Bundle args = new Bundle();
         //put arguments into an intent
@@ -93,9 +116,9 @@ public class SubjectFragment extends Fragment {
         args.putInt(ARG_SUBJECT_POSITION, subjectPosition);
 
         //forced admission id load?
-        args.putBoolean(ARG_FORCE_ADMISSION_ID_ENABLED, forcedAdmissionPercentageId != -1);
+        args.putBoolean(ARG_FORCE_PERCENTAGE_TRACKER_ID_ENABLED, forcedAdmissionPercentageId != -1);
         if (forcedAdmissionPercentageId != -1)
-            args.putInt(ARG_FORCED_ADMISSION_ID, forcedAdmissionPercentageId);
+            args.putInt(ARG_FORCED_PERCENTAGE_TRACKER_ID, forcedAdmissionPercentageId);
 
         //show lesson add dialog?
         args.putBoolean(ARG_FORCE_DIALOG_SHOW, forceLessonAddDialog);
@@ -114,10 +137,10 @@ public class SubjectFragment extends Fragment {
 
         mForceAddLessonDialog = getArguments().getBoolean(ARG_FORCE_DIALOG_SHOW, false);
 
-        mForceAdmissionPercentageFragmentLoad = getArguments().getBoolean(ARG_FORCE_ADMISSION_ID_ENABLED, false);
+        mForceAdmissionPercentageFragmentLoad = getArguments().getBoolean(ARG_FORCE_PERCENTAGE_TRACKER_ID_ENABLED, false);
 
         if (mForceAdmissionPercentageFragmentLoad)
-            mForcedAdmissionPercentageId = getArguments().getInt(ARG_FORCED_ADMISSION_ID, -1);
+            mForcedAdmissionPercentageId = getArguments().getInt(ARG_FORCED_PERCENTAGE_TRACKER_ID, -1);
     }
 
     public int getSubjectId(){
@@ -157,7 +180,7 @@ public class SubjectFragment extends Fragment {
     /**
      * get the currently displayed fragment
      */
-    public AdmissionPercentageFragment getCurrentFragment() {
+    public PercentageTrackerFragment getCurrentFragment() {
         return mAdmissionPercentageAdapter.getFragmentInstance(mViewPager.getCurrentItem());
     }
 
@@ -262,7 +285,7 @@ public class SubjectFragment extends Fragment {
         private DBAdmissionPercentageMeta mMetaDb;
         private List<AdmissionPercentageMetaPojo> mData;
         private int mSubjectId;
-        private HashMap<Integer, AdmissionPercentageFragment> mReferenceMap;
+        private HashMap<Integer, PercentageTrackerFragment> mReferenceMap;
 
         public AdmissionPercentageAdapter(FragmentManager fm, DBAdmissionPercentageMeta dbMeta, int subjectId) {
             super(fm);
@@ -282,7 +305,7 @@ public class SubjectFragment extends Fragment {
          */
         @Override
         public Fragment getItem(int position) {
-            AdmissionPercentageFragment fragment = AdmissionPercentageFragment.newInstance(mData.get(position).id);
+            PercentageTrackerFragment fragment = PercentageTrackerFragment.newInstance(mData.get(position).id);
             mReferenceMap.put(position, fragment);
             return fragment;
         }
@@ -290,7 +313,7 @@ public class SubjectFragment extends Fragment {
         /**
          * return the saved instance reference to the given id
          */
-        public AdmissionPercentageFragment getFragmentInstance(Integer requestedPosition) {
+        public PercentageTrackerFragment getFragmentInstance(Integer requestedPosition) {
             return mReferenceMap.get(requestedPosition);
         }
 

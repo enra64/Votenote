@@ -195,7 +195,7 @@ public class AdmissionPercentageMetaPojo implements NameAndIdPojo {
     }
 
     // BEWARE: mEstimationModeSeekbar.setMax(EstimationMode.values().length - 2); in setValuesForViews
-    // in AdmissionPercentageFragment relies on the undefined state to exist and be last!
+    // in PercentageTrackerFragment relies on the undefined state to exist and be last!
     // also in overview fragment, just dont change this
     public enum EstimationMode {
         user,

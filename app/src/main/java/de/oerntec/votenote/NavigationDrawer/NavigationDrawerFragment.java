@@ -44,7 +44,7 @@ import de.oerntec.votenote.Database.Pojo.Subject;
 import de.oerntec.votenote.Database.TableHelpers.DBSubjects;
 import de.oerntec.votenote.Preferences.PreferencesActivity;
 import de.oerntec.votenote.R;
-import de.oerntec.votenote.SubjectManagerStuff.SubjectManagementListActivity;
+import de.oerntec.votenote.SubjectManagement.SubjectManagementListActivity;
 
 /**
  * Fragment used for managing interactions for and presentation of a navigation

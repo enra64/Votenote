@@ -33,7 +33,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".SubjectManagerStuff.SubjectManagementListActivity"
+            android:name=".SubjectManagement.SubjectManagementListActivity"
             android:label="@string/title_activity_group_management"
             android:parentActivityName=".Preferences.PreferencesActivity"
             android:windowSoftInputMode="stateHidden">
@@ -42,7 +42,7 @@
                 android:value="de.oerntec.votenote.Preferences.PreferencesActivity" />
         </activity>
         <activity
-            android:name=".Diagram.DiagramActivity"
+            android:name=".Chart.ChartActivity"
             android:label="@string/title_activity_diagram"
             android:parentActivityName=".MainActivity">
             <meta-data
@@ -67,16 +67,16 @@
                 android:value="de.oerntec.votenote.MainActivity" />
         </activity>
         <activity
-            android:name=".SubjectManagerStuff.SubjectCreation.SubjectOverview.SubjectCreationActivity"
+            android:name=".SubjectManagement.SubjectCreation.SubjectCreationActivity"
             android:label="@string/title_activity_subject_creation"
-            android:parentActivityName=".SubjectManagerStuff.SubjectManagementListActivity"
+            android:parentActivityName=".SubjectManagement.SubjectManagementListActivity"
             android:windowSoftInputMode="stateAlwaysHidden">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".SubjectManagerStuff.SubjectManagementListActivity" />
+                android:value=".SubjectManagement.SubjectManagementListActivity" />
         </activity>
         <activity
-            android:name=".SubjectManagerStuff.SubjectCreation.CreationFragment.AdmissionPercentageCreation.AdmissionPercentageCreationActivity"
+            android:name=".SubjectManagement.AdmissionPercentageCreation.PercentageTrackerCreationActivity"
             android:windowSoftInputMode="adjustNothing"></activity>
 
         <receiver android:name=".Helpers.Notifications.NotificationAlarmReceiver">
