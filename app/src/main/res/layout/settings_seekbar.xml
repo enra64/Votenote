@@ -3,7 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:minHeight="?android:listPreferredItemHeight">
+    android:paddingLeft="@dimen/settings_line_side_paddings"
+    android:paddingStart="@dimen/settings_line_side_paddings"
+    android:paddingRight="@dimen/settings_line_side_paddings"
+    android:paddingEnd="@dimen/settings_line_side_paddings"
+    android:minHeight="?android:listPreferredItemHeightLarge">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -17,6 +21,8 @@
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
+            android:layout_marginRight="8dp"
+            android:layout_marginEnd="8dp"
             android:text="50"
             android:textAppearance="?android:attr/textAppearanceSmall"
             tools:ignore="HardcodedText" />

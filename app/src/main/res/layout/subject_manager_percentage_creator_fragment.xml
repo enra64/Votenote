@@ -2,7 +2,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp">
+    android:layout_margin="8dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -23,59 +23,51 @@
             android:id="@+id/percentage_creator_name_edittext"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/settings_line_side_paddings"
+            android:layout_marginStart="@dimen/settings_line_side_paddings"
+            android:layout_marginRight="@dimen/settings_line_side_paddings"
+            android:layout_marginEnd="@dimen/settings_line_side_paddings"
             android:layout_marginTop="8dp"
             android:ems="10"
             android:inputType="textNoSuggestions"
-            android:minHeight="?android:attr/listPreferredItemHeight"
             android:textSize="20sp" />
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="2dip"
-            android:layout_marginLeft="-8dip"
-            android:layout_marginRight="-8dip"
+            android:layout_height="1dp"
             android:background="?android:attr/dividerVertical" />
 
         <include
             android:id="@+id/percentage_creator_notification_enabled_layout"
             layout="@layout/settings_checkbox"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp" />
+            android:layout_height="wrap_content" />
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="2dip"
-            android:layout_marginLeft="-8dip"
-            android:layout_marginRight="-8dip"
+            android:layout_height="1dp"
             android:background="?android:attr/dividerVertical" />
 
         <include
             android:id="@+id/percentage_creator_notification_buttons_layout"
             layout="@layout/settings_dow_time"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp" />
+            android:layout_height="wrap_content" />
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="2dip"
-            android:layout_marginLeft="-8dip"
-            android:layout_marginRight="-8dip"
+            android:layout_height="1dp"
             android:background="?android:attr/dividerVertical" />
 
         <include
             android:id="@+id/percentage_creator_estimated_lesson_count_layout"
             layout="@layout/settings_seekbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp" />
+            android:layout_height="wrap_content" />
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="2dip"
-            android:layout_marginLeft="-8dip"
-            android:layout_marginRight="-8dip"
+            android:layout_height="1dp"
             android:background="?android:attr/dividerVertical" />
 
         <include
@@ -99,29 +91,29 @@
             android:id="@+id/percentage_creator_baseline_percentage_layout"
             layout="@layout/settings_seekbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp" />
+            android:layout_height="wrap_content" />
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="2dip"
-            android:layout_marginLeft="-8dip"
-            android:layout_marginRight="-8dip"
+            android:layout_height="1dp"
             android:background="?android:attr/dividerVertical" />
 
         <include
             android:id="@+id/percentage_creator_bonus_enabled_layout"
             layout="@layout/settings_checkbox"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp" />
+            android:layout_height="wrap_content" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?android:attr/dividerVertical" />
 
         <include
             android:id="@+id/percentage_creator_bonus_percentage_layout"
             layout="@layout/settings_seekbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp" />
+            android:layout_height="wrap_content" />
 
         <TextView
             android:id="@+id/header_estimations"

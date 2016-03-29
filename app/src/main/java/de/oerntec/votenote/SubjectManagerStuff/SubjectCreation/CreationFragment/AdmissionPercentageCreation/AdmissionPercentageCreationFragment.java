@@ -10,7 +10,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.Spinner;
@@ -44,7 +43,7 @@ public class AdmissionPercentageCreationFragment extends Fragment implements But
     //views needed for configuring a new percentage counter
     private EditText nameInput;
     private TextView
-            mRequiredPercentageCurrentValueTextView,
+            mBaselinePercentageCurrentValueTextView,
             mEstimatedAssignmentsPerLessonCurrentValueTextView,
             mEstimatedLessonCountCurrentValueTextView;
     private SeekBar
@@ -192,7 +191,7 @@ public class AdmissionPercentageCreationFragment extends Fragment implements But
         nameInput = (EditText) view.findViewById(R.id.percentage_creator_name_edittext);
 
         View baselinePercentageLayout = view.findViewById(R.id.percentage_creator_baseline_percentage_layout);
-        mRequiredPercentageCurrentValueTextView = (TextView) baselinePercentageLayout.findViewById(R.id.current);
+        mBaselinePercentageCurrentValueTextView = (TextView) baselinePercentageLayout.findViewById(R.id.current);
         mBaselinePercentageSeekBar = (SeekBar) baselinePercentageLayout.findViewById(R.id.seekBar);
         ((TextView) baselinePercentageLayout.findViewById(R.id.title)).setText(R.string.subjectmanager_needed_work);
 
@@ -212,6 +211,14 @@ public class AdmissionPercentageCreationFragment extends Fragment implements But
         mBonusRequiredPercentageActivationCheckBox = (CheckBox) bonusEnabledLayout.findViewById(R.id.checkbox);
         ((TextView) bonusEnabledLayout.findViewById(R.id.title)).setText(R.string.percentage_creator_bonus_enabled_title);
         ((TextView) bonusEnabledLayout.findViewById(R.id.summary)).setText(R.string.percentage_creator_bonus_enabled_summary);
+        bonusEnabledLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mBonusRequiredPercentageActivationCheckBox.setChecked(
+                        !mBonusRequiredPercentageActivationCheckBox.isChecked());
+                enableBonusPercentageSettingsLayout(mBonusRequiredPercentageActivationCheckBox.isChecked());
+            }
+        });
 
         View bonusSettingsLayout = view.findViewById(R.id.percentage_creator_bonus_percentage_layout);
         mBonusPercentageSeekBar = (SeekBar) bonusSettingsLayout.findViewById(R.id.seekBar);
@@ -223,6 +230,13 @@ public class AdmissionPercentageCreationFragment extends Fragment implements But
         mNotificationEnabledCheckBox = (CheckBox) notificationEnabledLayout.findViewById(R.id.checkbox);
         ((TextView) notificationEnabledLayout.findViewById(R.id.title)).setText(R.string.percentage_creator_notification_enabled_title);
         ((TextView) notificationEnabledLayout.findViewById(R.id.summary)).setText(R.string.percentage_creator_notification_enabled_summary);
+        notificationEnabledLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mNotificationEnabledCheckBox.setChecked(!mNotificationEnabledCheckBox.isChecked());
+                updateNotificationButtons(mNotificationEnabledCheckBox.isChecked());
+            }
+        });
 
         View notificationSettingsLayout = view.findViewById(R.id.percentage_creator_notification_buttons_layout);
         mNotificationDowButton = (Button) notificationSettingsLayout.findViewById(R.id.left_button);
@@ -306,7 +320,7 @@ public class AdmissionPercentageCreationFragment extends Fragment implements But
         if (mIsOldPercentageCounter)
             nameInput.setText(nameHint);
 
-        initSeekbar(mBaselinePercentageSeekBar, mRequiredPercentageCurrentValueTextView, requiredPercentageHint, 100);
+        initSeekbar(mBaselinePercentageSeekBar, mBaselinePercentageCurrentValueTextView, requiredPercentageHint, 100);
         initSeekbar(mBonusPercentageSeekBar, mBonusPercentageCurrentValueTextView, mBonusPercentageHint, 100);
 
         initSeekbar(mEstimatedAssignmentsPerLessonSeekBar, mEstimatedAssignmentsPerLessonCurrentValueTextView, estimatedAssignmentsHint, 50);
@@ -321,15 +335,27 @@ public class AdmissionPercentageCreationFragment extends Fragment implements But
         updateNotificationButtons(mNotificationEnabledHint);
 
         mNotificationEnabledCheckBox.setChecked(mNotificationEnabledHint);
-        mNotificationEnabledCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                updateNotificationButtons(isChecked);
-            }
-        });
     }
 
     private void createBonusSeekbarLimitEnforcer() {
+        mBaselinePercentageSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                mBaselinePercentageCurrentValueTextView.setText(String.format(
+                        General.getCurrentLocale(getActivity()), "%d", progress));
+                int bonusCurrent = mBonusPercentageSeekBar.getProgress();
+                if(bonusCurrent < progress)
+                    mBonusPercentageSeekBar.setProgress(progress);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+            }
+        });
         mBonusPercentageSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -355,21 +381,15 @@ public class AdmissionPercentageCreationFragment extends Fragment implements But
     }
 
     private void initBonusCheckBox() {
-        mBonusPercentageSeekBar.setEnabled(mBonusRequiredPercentageEnabledHint);
-        mBonusPercentageCurrentValueTextView.setEnabled(mBonusRequiredPercentageEnabledHint);
-        mBonusRequiredPercentageTitleTextView.setEnabled(mBonusRequiredPercentageEnabledHint);
+        enableBonusPercentageSettingsLayout(mBonusRequiredPercentageEnabledHint);
 
         mBonusRequiredPercentageActivationCheckBox.setChecked(mBonusRequiredPercentageEnabledHint);
+    }
 
-        mBonusRequiredPercentageActivationCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                mBonusPercentageSeekBar.setEnabled(isChecked);
-                mBonusPercentageCurrentValueTextView.setEnabled(isChecked);
-                mBonusRequiredPercentageTitleTextView.setEnabled(isChecked);
-            }
-        });
-
+    private void enableBonusPercentageSettingsLayout(boolean enable){
+        mBonusPercentageSeekBar.setEnabled(enable);
+        mBonusPercentageCurrentValueTextView.setEnabled(enable);
+        mBonusRequiredPercentageTitleTextView.setEnabled(enable);
     }
 
     private void initEstimationModeSpinner() {
@@ -495,8 +515,10 @@ public class AdmissionPercentageCreationFragment extends Fragment implements But
 
         if (currentCalendar != null) {
             Date currentDate = new Date(currentCalendar.getTimeInMillis());
-            SimpleDateFormat dowFormat = new SimpleDateFormat("EEEE");
-            SimpleDateFormat timeFormat = new SimpleDateFormat("kk:mm");
+            SimpleDateFormat dowFormat = new SimpleDateFormat("EEEE",
+                    General.getCurrentLocale(getActivity()));
+            SimpleDateFormat timeFormat = new SimpleDateFormat("kk:mm",
+                    General.getCurrentLocale(getActivity()));
 
             mNotificationDowButton.setText(dowFormat.format(currentDate));
             mNotificationTimeButton.setText(timeFormat.format(currentDate));

@@ -3,6 +3,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:paddingLeft="@dimen/settings_line_side_paddings"
+    android:paddingStart="@dimen/settings_line_side_paddings"
+    android:paddingRight="@dimen/settings_line_side_paddings"
+    android:paddingEnd="@dimen/settings_line_side_paddings"
     android:minHeight="?android:listPreferredItemHeight">
 
     <LinearLayout
