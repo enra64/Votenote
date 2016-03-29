@@ -71,10 +71,10 @@ public class DiagramSubjectAdapter extends RecyclerView.Adapter<DiagramSubjectAd
 
     @Override
     public void onBindViewHolder(final SubjectHolder holder, final int position) {
-        final AdmissionPercentageMetaPojo data = mData.get(position);
+        final AdmissionPercentageMetaPojo data = mData.get(holder.getAdapterPosition());
 
         //load data
-        String name = data.name;
+        String trackerName = data.name;
         final int metaId = data.id;
 
         //set tag for later identification avoiding all
@@ -87,22 +87,20 @@ public class DiagramSubjectAdapter extends RecyclerView.Adapter<DiagramSubjectAd
             public void onClick(View view) {
                 if (enoughLessons) {
                     holder.checkBox.setChecked(!holder.checkBox.isChecked());
-                    mAdapterListener.onClick(metaId, holder.checkBox.isChecked(), mColorArray[position]);
+                    mAdapterListener.onClick(metaId, holder.checkBox.isChecked(), mColorArray[holder.getAdapterPosition()]);
                 } else
                     Toast.makeText(mContext, mContext.getString(R.string.diagram_not_enough_entries), Toast.LENGTH_SHORT).show();
             }
         });
 
-        if (!enoughLessons) {
-            holder.checkBox.setEnabled(false);
-        }
+        holder.checkBox.setEnabled(enoughLessons);
 
         holder.checkBox.setChecked(false);
 
         holder.checkBox.setHighlightColor(mColorArray[position]);
 
         //set texts
-        holder.title.setText(DBSubjects.getInstance().getItem(data.subjectId).name + ": " + name);
+        holder.title.setText(String.format("%s: %s", DBSubjects.getInstance().getItem(data.subjectId).name, trackerName));
         holder.indicator.clearColorFilter();
         holder.indicator.setColorFilter(mColorArray[position]);
     }

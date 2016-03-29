@@ -135,7 +135,7 @@ public class AddLessonDialogFragment extends DialogFragment implements DialogInt
             mDataDb = DBLessons.getInstance();
 
             //first lesson for this pc?
-            if(mIsNewLesson)
+            if (mIsNewLesson)
                 mIsFirstLesson = mDataDb.getItemsForMetaId(mMetaId, mReverseLessonSort).size() == 0;
         } else
             throw new AssertionError("Why are there no arguments here?");
@@ -176,7 +176,7 @@ public class AddLessonDialogFragment extends DialogFragment implements DialogInt
                 .setTitle(getTitle())
                 .setPositiveButton("OK", this)
                 .setNegativeButton(R.string.dialog_button_abort, null);
-        if(mIsOldLesson)
+        if (mIsOldLesson)
             b.setNeutralButton(R.string.delete_button_text, this);
         return b.create();
     }
@@ -202,7 +202,7 @@ public class AddLessonDialogFragment extends DialogFragment implements DialogInt
      * get appropriate title
      */
     private String getTitle() {
-        if(mIsNewLesson)
+        if (mIsNewLesson)
             return getActivity().getString(R.string.main_dialog_lesson_new_lesson_title);
         return String.format(getActivity().getString(R.string.lesson_add_dialog_title), mLessonId);
     }
@@ -210,11 +210,11 @@ public class AddLessonDialogFragment extends DialogFragment implements DialogInt
     /**
      * Set the max, min, current value on both pickers considering whether this is a new/old/the first lesson for this ap meta id
      */
-    private void setPickerValues(){
+    private void setPickerValues() {
         int currentAvailableAssignments, currentFinishedAssignments;
 
-        if(mIsNewLesson){
-            if(mIsFirstLesson){
+        if (mIsNewLesson) {
+            if (mIsFirstLesson) {
                 AdmissionPercentageMetaPojo metaItem = DBAdmissionPercentageMeta.getInstance().getItem(mMetaId);
                 currentAvailableAssignments = metaItem.userAssignmentsPerLessonEstimation;
                 currentFinishedAssignments = currentAvailableAssignments / 2;
@@ -237,39 +237,63 @@ public class AddLessonDialogFragment extends DialogFragment implements DialogInt
     /**
      * create and apply listeners considering whether the user wants to use autofix or not
      */
-    private void applyPickerListeners(){
+    private void applyPickerListeners() {
         //try to fix invalid number of done assignments
         if (mEnableDataAutoFix) {
             mFinishedAssignmentsPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
                 @Override
-                public void onValueChange(NumberPicker numberPicker, int i, int i1) {
-                    //load new values
-                    int myVoteValue = mFinishedAssignmentsPicker.getValue();
-                    int maxVoteValue = mAvailableAssignmentsPicker.getValue();
-                    if (myVoteValue > maxVoteValue)
-                        mAvailableAssignmentsPicker.setValue(myVoteValue);
-                    updateResultingPercentage(myVoteValue, maxVoteValue);
-                    //update info text
-                    mInfoView.setText(getString(R.string.lesson_dialog_fragment_picker_info_text, mFinishedAssignmentsPicker.getValue(), mAvailableAssignmentsPicker.getValue()));
+                public void onValueChange(
+                        NumberPicker numberPicker,
+                        int oldValue,
+                        final int finishedAssignments) {
+
+                    int availableAssignments = mAvailableAssignmentsPicker.getValue();
+
+                    // check whether less assignments are available than have been done
+                    if (finishedAssignments > availableAssignments){
+                        mAvailableAssignmentsPicker.setValue(finishedAssignments);
+                        availableAssignments = finishedAssignments;
+                    }
+
+                    // update the resulting percentage view
+                    updateResultingPercentage(finishedAssignments, availableAssignments);
+
+                    // update info text
+                    mInfoView.setText(
+                            getString(R.string.lesson_dialog_fragment_picker_info_text,
+                                    finishedAssignments,
+                                    availableAssignments));
                 }
             });
             mAvailableAssignmentsPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
                 @Override
-                public void onValueChange(NumberPicker numberPicker, int i, int i1) {
-                    //load new values
-                    int myVoteValue = mFinishedAssignmentsPicker.getValue();
-                    int maxVoteValue = mAvailableAssignmentsPicker.getValue();
-                    if (myVoteValue > maxVoteValue)
-                        mFinishedAssignmentsPicker.setValue(maxVoteValue);
-                    updateResultingPercentage(myVoteValue, maxVoteValue);
-                    //update info text
-                    mInfoView.setText(getString(R.string.lesson_dialog_fragment_picker_info_text, mFinishedAssignmentsPicker.getValue(), mAvailableAssignmentsPicker.getValue()));
+                public void onValueChange(
+                        NumberPicker numberPicker,
+                        int oldValue,
+                        final int availableAssignments) {
+
+                    int finishedAssignments = mFinishedAssignmentsPicker.getValue();
+
+                    // check whether less assignments are available than have been done
+                    if (finishedAssignments > availableAssignments){
+                        mFinishedAssignmentsPicker.setValue(availableAssignments);
+                        finishedAssignments = availableAssignments;
+                    }
+
+                    // update the resulting percentage view
+                    updateResultingPercentage(finishedAssignments, availableAssignments);
+
+                    // update info text
+                    mInfoView.setText(
+                            getString(R.string.lesson_dialog_fragment_picker_info_text,
+                                    finishedAssignments,
+                                    availableAssignments));
                 }
             });
         }
-        //fallback behaviour if the setting is disabled
+        // fallback behaviour if the setting is disabled
         else {
-            //listener for the vote picker
+            // listener for the vote picker
             NumberPicker.OnValueChangeListener votePickerListener = new NumberPicker.OnValueChangeListener() {
                 @Override
                 public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
@@ -278,7 +302,7 @@ public class AddLessonDialogFragment extends DialogFragment implements DialogInt
                     int maxVoteValue = mAvailableAssignmentsPicker.getValue();
                     mInfoView.setText(getString(R.string.lesson_dialog_fragment_picker_info_text, mFinishedAssignmentsPicker.getValue(), mAvailableAssignmentsPicker.getValue()));
                     boolean isValid = myVoteValue <= maxVoteValue;
-                    ((AlertDialog)getDialog()).getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(isValid);
+                    ((AlertDialog) getDialog()).getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(isValid);
                     updateResultingPercentage(myVoteValue, maxVoteValue);
                     General.applyClueColor(mInfoView, getActivity(), isValid);
                 }
@@ -291,15 +315,18 @@ public class AddLessonDialogFragment extends DialogFragment implements DialogInt
 
     /**
      * Update the resulting percentage based on the available/finished picker values
+     *
+     * @param availableAssignments how many assignments are available to be done
+     * @param finishedAssignments how many assignments have been done
      */
-    private void updateResultingPercentage(int finishedCount, int availableCount) {
+    private void updateResultingPercentage(int finishedAssignments, int availableAssignments) {
         if (!mLiveUpdateResultingPercentage)
             return;
         float newAvg;
         if (mIsNewLesson)
-            newAvg = mMetaItem.getAverageFinished(availableCount, finishedCount);
+            newAvg = mMetaItem.getAverageFinished(availableAssignments, finishedAssignments);
         else
-            newAvg = mMetaItem.getAverageFinished(availableCount - mOldData.availableAssignments, finishedCount - mOldData.finishedAssignments);
+            newAvg = mMetaItem.getAverageFinished(availableAssignments - mOldData.availableAssignments, finishedAssignments - mOldData.finishedAssignments);
         Locale locale = General.getCurrentLocale(getActivity());
         mResultingPercentageView.setText(String.format(locale, "%.1f%%", newAvg));
         General.applyClueColor(mResultingPercentageView, getActivity(), newAvg >= mMetaItem.baselineTargetPercentage);
@@ -308,7 +335,7 @@ public class AddLessonDialogFragment extends DialogFragment implements DialogInt
     /**
      * apply values to given picker
      */
-    private void setPicker(NumberPicker item, int min, int max, int current){
+    private void setPicker(NumberPicker item, int min, int max, int current) {
         item.setMinValue(min);
         item.setMaxValue(max);
         item.setValue(current);
@@ -335,8 +362,7 @@ public class AddLessonDialogFragment extends DialogFragment implements DialogInt
                         val.lessonId = mOldData.lessonId;
                         ((MainActivity) getActivity()).getCurrentAdmissionPercentageFragment().mAdapter.changeLesson(val);
                     }
-                }
-                else
+                } else
                     Toast.makeText(getActivity(), getActivity().getString(R.string.main_dialog_lesson_voted_too_much), Toast.LENGTH_SHORT).show();
                 break;
             //delete
