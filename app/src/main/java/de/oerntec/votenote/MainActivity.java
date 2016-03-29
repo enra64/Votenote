@@ -261,7 +261,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         //select the last selected item
         else {
             int subjectCount = mSubjectDb.getCount();
-            int lastSelected = mLastViewedDb.getLastSelectedSubjectPosition();
+            int lastSelected = mLastViewedDb.getLastSubjectPosition();
 
             boolean hasValidLastSelected = lastSelected >= 0 && lastSelected < subjectCount;
 

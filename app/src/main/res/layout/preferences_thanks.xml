@@ -1,37 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
+    android:orientation="vertical"
     android:layout_height="match_parent"
     android:padding="24dp">
 
     <TextView
-        android:id="@+id/EULA"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
         android:text="@string/pref_help_graphview_description"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <TextView
-        android:id="@+id/preferences_thanks_jjoe_links"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/EULA"
         android:autoLink="web"
         android:linksClickable="true"
         android:text="https://github.com/jjoe64/GraphView"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="7dp"
+        android:text="RecyclerView Animators"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <TextView
+        android:id="@+id/preferences_thanks_jjoe_links"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:autoLink="web"
+        android:linksClickable="true"
+        android:text="https://github.com/wasabeef/recyclerview-animators"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <TextView
         android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
         android:layout_below="@+id/preferences_thanks_jjoe_links"
         android:layout_marginTop="7dp"
         android:text="StackOverflow"
@@ -41,9 +48,6 @@
         android:id="@+id/preferences_thanks_filedialog_links"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/textView2"
-        android:layout_alignStart="@+id/textView2"
-        android:layout_below="@+id/textView2"
         android:autoLink="web"
         android:linksClickable="true"
         android:text="XMLWriter:\nhttp://stackoverflow.com/a/13140325"
@@ -53,9 +57,6 @@
         android:id="@+id/textView4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/preferences_thanks_filedialog_links"
-        android:layout_alignStart="@+id/preferences_thanks_filedialog_links"
-        android:layout_below="@+id/preferences_thanks_filedialog_links"
         android:autoLink="web"
         android:linksClickable="true"
         android:text="RecyclerView OnClick:\nhttp://stackoverflow.com/questions/24471109/recyclerview-onclick"
@@ -65,9 +66,6 @@
         android:id="@+id/textView5"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/textView4"
         android:autoLink="web"
         android:linksClickable="true"
         android:text="Catch all Exceptions:\nhttp://stackoverflow.com/a/19968400"
@@ -77,9 +75,6 @@
         android:id="@+id/fileExport"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/textView5"
         android:autoLink="web"
         android:linksClickable="true"
         android:text="Backup sharing:\nhttp://stackoverflow.com/a/20819742"
@@ -89,9 +84,6 @@
         android:id="@+id/textView6"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/textView5"
-        android:layout_alignStart="@+id/textView5"
-        android:layout_below="@+id/fileExport"
         android:layout_marginTop="7dp"
         android:text="GitHub"
         android:textAppearance="?android:attr/textAppearanceLarge" />
@@ -100,23 +92,9 @@
         android:id="@+id/textView7"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/textView6"
-        android:layout_alignStart="@+id/textView6"
-        android:layout_below="@+id/textView6"
         android:autoLink="web"
         android:linksClickable="true"
         android:text="FileDialog:\nhttps://github.com/18446744073709551615/android-file-chooser-dialog"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
-    <TextView
-        android:id="@+id/textView8"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/textView6"
-        android:layout_alignStart="@+id/textView6"
-        android:layout_below="@+id/textView7"
-        android:autoLink="web"
-        android:linksClickable="true"
-        android:text="SlideDayTimePicker:\nhttps://github.com/jjobes/SlideDayTimePicker\nusing http://www.apache.org/licenses/LICENSE-2.0.html"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-</RelativeLayout>
+</LinearLayout>

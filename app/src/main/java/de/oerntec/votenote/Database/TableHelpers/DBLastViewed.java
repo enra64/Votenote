@@ -15,7 +15,7 @@ public class DBLastViewed {
      */
     protected final SQLiteDatabase mDatabase;
 
-    private DBLastViewed(Context context){
+    private DBLastViewed(Context context) {
         DatabaseCreator dbHelper = DatabaseCreator.getInstance(context);
         mDatabase = dbHelper.getWritableDatabase();
     }
@@ -26,11 +26,17 @@ public class DBLastViewed {
         return mInstance;
     }
 
-    public static DBLastViewed getInstance(){
+    public static DBLastViewed getInstance() {
         return mInstance;
     }
 
-    public int getLastSelectedSubjectPosition(){
+    /**
+     * Get the position in NavigationDrawerFragment that was selected most recently
+     *
+     * @return -1 if no records exist, or a position
+     * @see #getLastPercentageTrackerPosition(int)
+     */
+    public int getLastSubjectPosition() {
         Cursor result = mDatabase.query(true,
                 DatabaseCreator.TABLE_NAME_LAST_VIEWED,
                 new String[]{DatabaseCreator.LAST_VIEWED_SUBJECT_POSITION},
@@ -40,7 +46,7 @@ public class DBLastViewed {
                 null,
                 DatabaseCreator.LAST_VIEWED_TIMESTAMP + " DESC",
                 " 1");
-        if (result.getCount() == 0){
+        if (result.getCount() == 0) {
             result.close();
             return -1;
         }
@@ -50,35 +56,14 @@ public class DBLastViewed {
         return lastSelectedSubjectPosition;
     }
 
-    public void saveSelection(int subjectPosition, int apMetaPosition){
-        //insert new value if no meta id can be found for this subject position
-        if(getLastSelectedAdmissionCounterForSubjectPosition(subjectPosition) == -1)
-            insertSelection(subjectPosition, apMetaPosition);
-        //update old meta position
-        else
-            updateMetaId(subjectPosition, apMetaPosition);
-    }
-
-    private void insertSelection(int subjectPosition, int apMetaPosition){
-        ContentValues v = new ContentValues();
-        v.put(DatabaseCreator.LAST_VIEWED_SUBJECT_POSITION, subjectPosition);
-        v.put(DatabaseCreator.LAST_VIEWED_PERCENTAGE_META_POSITION, apMetaPosition);
-        mDatabase.insert(DatabaseCreator.TABLE_NAME_LAST_VIEWED,
-                null,
-                v);
-    }
-
-    private void updateMetaId(int subjectPosition, int apMetaPosition){
-        ContentValues values = new ContentValues();
-        values.put(DatabaseCreator.LAST_VIEWED_PERCENTAGE_META_POSITION, apMetaPosition);
-        mDatabase.update(DatabaseCreator.TABLE_NAME_LAST_VIEWED,
-                values,
-                DatabaseCreator.LAST_VIEWED_SUBJECT_POSITION + "=?",
-                new String[] {String.valueOf(subjectPosition)}
-        );
-    }
-
-    public int getLastSelectedAdmissionCounterForSubjectPosition(int subjectPosition){
+    /**
+     * Get the most recently selected Percentage Tracker Position for a given subject
+     *
+     * @param subjectPosition Position of the subject
+     * @return -1 if no records exist for the given subject, or a ViewPager position
+     * @see #getLastSubjectPosition()
+     */
+    public int getLastPercentageTrackerPosition(int subjectPosition) {
         Cursor result = mDatabase.query(true,
                 DatabaseCreator.TABLE_NAME_LAST_VIEWED,
                 new String[]{DatabaseCreator.LAST_VIEWED_PERCENTAGE_META_POSITION},
@@ -88,7 +73,7 @@ public class DBLastViewed {
                 null,
                 DatabaseCreator.LAST_VIEWED_TIMESTAMP + " DESC",
                 " 1");
-        if (result.getCount() == 0){
+        if (result.getCount() == 0) {
             result.close();
             return -1;
         }
@@ -96,5 +81,53 @@ public class DBLastViewed {
         int lastSelectedMetaPosition = result.getInt(result.getColumnIndex(DatabaseCreator.LAST_VIEWED_PERCENTAGE_META_POSITION));
         result.close();
         return lastSelectedMetaPosition;
+    }
+
+    /**
+     * Saves the most recently selected percentage tracker and subject position
+     *
+     * @param subjectPosition position of the subject
+     * @param trackerPosition position of the percentage tracker
+     */
+    public void saveLastTrackerAndSubjectPosition(int subjectPosition, int trackerPosition) {
+        //insert new value if no meta id can be found for this subject position
+        if (getLastPercentageTrackerPosition(subjectPosition) == -1)
+            addTrackerPositionForSubject(subjectPosition, trackerPosition);
+            //update old meta position
+        else
+            updateTrackerPositionForSubject(subjectPosition, trackerPosition);
+    }
+
+    /**
+     * Adds a record to the database
+     *
+     * @param subjectPosition           position of the subject
+     * @param percentageTrackerPosition position of the tracker
+     * @see #updateTrackerPositionForSubject(int, int)
+     */
+    private void addTrackerPositionForSubject(int subjectPosition, int percentageTrackerPosition) {
+        ContentValues v = new ContentValues();
+        v.put(DatabaseCreator.LAST_VIEWED_SUBJECT_POSITION, subjectPosition);
+        v.put(DatabaseCreator.LAST_VIEWED_PERCENTAGE_META_POSITION, percentageTrackerPosition);
+        mDatabase.insert(DatabaseCreator.TABLE_NAME_LAST_VIEWED,
+                null,
+                v);
+    }
+
+    /**
+     * Changes a tracker entry in the database
+     *
+     * @param subjectPosition           position of the subject
+     * @param percentageTrackerPosition position of the tracker
+     * @see #addTrackerPositionForSubject(int, int)
+     */
+    private void updateTrackerPositionForSubject(int subjectPosition, int percentageTrackerPosition) {
+        ContentValues values = new ContentValues();
+        values.put(DatabaseCreator.LAST_VIEWED_PERCENTAGE_META_POSITION, percentageTrackerPosition);
+        mDatabase.update(DatabaseCreator.TABLE_NAME_LAST_VIEWED,
+                values,
+                DatabaseCreator.LAST_VIEWED_SUBJECT_POSITION + "=?",
+                new String[]{String.valueOf(subjectPosition)}
+        );
     }
 }

@@ -205,7 +205,7 @@ public class SubjectFragment extends Fragment {
             //is the subject position valid?
             if(subjectPosition >= 0 && mSaveLastMetaId){
                 //see whether we have a saved last viewed admission counter
-                int lastSelectedMetaPosition = DBLastViewed.getInstance().getLastSelectedAdmissionCounterForSubjectPosition(subjectPosition);
+                int lastSelectedMetaPosition = DBLastViewed.getInstance().getLastPercentageTrackerPosition(subjectPosition);
                 //valid position?
                 if (lastSelectedMetaPosition >= 0
                         && lastSelectedMetaPosition < mAdmissionPercentageAdapter.getCount())
@@ -243,13 +243,13 @@ public class SubjectFragment extends Fragment {
                     @Override
                     public void onPageSelected(int position) {
                         //only called on change (eg first load not notified)
-                        DBLastViewed.getInstance().saveSelection(subjectPosition, position);
+                        DBLastViewed.getInstance().saveLastTrackerAndSubjectPosition(subjectPosition, position);
                     }
                 });
             } else
-                DBLastViewed.getInstance().saveSelection(subjectPosition, 0);
+                DBLastViewed.getInstance().saveLastTrackerAndSubjectPosition(subjectPosition, 0);
         } else {
-            DBLastViewed.getInstance().saveSelection(subjectPosition, 0);
+            DBLastViewed.getInstance().saveLastTrackerAndSubjectPosition(subjectPosition, 0);
         }
     }
 
