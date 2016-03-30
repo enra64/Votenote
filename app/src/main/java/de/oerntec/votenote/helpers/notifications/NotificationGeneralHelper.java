@@ -7,6 +7,10 @@ import android.content.Intent;
 import android.support.annotation.Nullable;
 
 import java.util.Calendar;
+import java.util.List;
+
+import de.oerntec.votenote.database.pojo.percentagetracker.PercentageTrackerPojo;
+import de.oerntec.votenote.database.tablehelpers.DBAdmissionPercentageMeta;
 
 /**
  * Bits and pieces to make handling the notifications and their settings easier
@@ -83,6 +87,23 @@ public class NotificationGeneralHelper {
                 admissionPercentageId);
 
         alarmManager.cancel(p);
+    }
+
+    /**
+     * Delete multiple alarms
+     *
+     * @param context   context object, needed for alarm access
+     * @param subjectId if < 0, all alarms found in the db will be deleted. otherwise, only alarms
+     *                  with a matching subject id will get deleted
+     */
+    public static void removeAllAlarmsForSubject(Context context, int subjectId) {
+        List<PercentageTrackerPojo> notificationList =
+                DBAdmissionPercentageMeta.setupInstance(context).getItemsWithNotifications();
+
+        for (PercentageTrackerPojo apm : notificationList) {
+            if (apm.subjectId == subjectId || subjectId < 0)
+                NotificationGeneralHelper.removeAlarmForNotification(context, subjectId, apm.id);
+        }
     }
 
     public static void setAlarmForNotification(Context context, int subjectId, int admissionPercentageId, int day, int hour, int minute) {

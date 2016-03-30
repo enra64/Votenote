@@ -53,6 +53,7 @@ import de.oerntec.votenote.helpers.General;
 import de.oerntec.votenote.helpers.OnItemClickListener;
 import de.oerntec.votenote.helpers.RecyclerItemClickListener;
 import de.oerntec.votenote.helpers.SwipeAnimationUtils;
+import de.oerntec.votenote.helpers.notifications.NotificationGeneralHelper;
 import de.oerntec.votenote.import_export.BackupHelper;
 import de.oerntec.votenote.subject_management.subject_creation.SubjectCreationActivity;
 
@@ -91,6 +92,13 @@ public class SubjectManagementListActivity extends AppCompatActivity implements 
     private RecyclerView mSubjectList;
 
     private Snackbar mDeletionSnackbar;
+
+    /**
+     * Due to the fucked up nature of deleting in this app, we need to save the last long pressed id
+     * in this variable, so we can remove the notifications should the removal not be undone by the
+     * UndoSnackBar
+     */
+    private int mLastDeletedSubjectId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -149,6 +157,7 @@ public class SubjectManagementListActivity extends AppCompatActivity implements 
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         SwipeAnimationUtils.executeProgrammaticSwipeDeletion(veryGoodCoding, veryGoodCoding, view, position);
+                        mLastDeletedSubjectId = (int) view.getTag();
                     }
                 });
             }
@@ -245,6 +254,7 @@ public class SubjectManagementListActivity extends AppCompatActivity implements 
     private void acceptDeletion() {
         if (mLastDeletionSavepointId != null)
             DBSubjects.getInstance().releaseSavepoint(mLastDeletionSavepointId);
+        NotificationGeneralHelper.removeAllAlarmsForSubject(this, mLastDeletedSubjectId);
         mLastDeletionSavepointId = null;
         mDeletionSnackbar = null;
     }

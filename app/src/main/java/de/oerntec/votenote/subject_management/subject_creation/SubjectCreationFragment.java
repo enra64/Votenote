@@ -280,14 +280,18 @@ public class SubjectCreationFragment extends Fragment implements SubjectCreation
     }
 
     private void deleteCurrentSubject() {
-        //abort if this is called for a new subject, that cant work
+        // abort if this is called for a new subject, that cant work
         if (mIsNewSubject)
             throw new AssertionError("tried to delete a new subject");
 
-        //set the result to be retrieved by subject manager
+        // ok i promise the next app will have something resembling an architecture, this is getting
+        // bad// delete all alarms for this subject
+        NotificationGeneralHelper.removeAllAlarmsForSubject(getActivity(), mSubjectId);
+
+        // set the result to be retrieved by subject manager
         setActivityResult(true);
 
-        //kill creator activity
+        // kill creator activity
         getActivity().finish();
     }
 
