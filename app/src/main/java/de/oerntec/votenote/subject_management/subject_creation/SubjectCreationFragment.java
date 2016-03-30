@@ -440,13 +440,6 @@ public class SubjectCreationFragment extends Fragment implements SubjectCreation
                     case SubjectCreationActivity.DIALOG_RESULT_CHANGED:
                         admissionPercentageFinished(itemId,
                                 resultCode == SubjectCreationActivity.DIALOG_RESULT_ADDED);
-                        //check for notification
-                        String recurrenceString =
-                                data.getStringExtra(PercentageTrackerCreationFragment.RECURRENCE_STRING);
-                        if (recurrenceString != null)
-                            mNotificationReminder.setReminder(itemId, recurrenceString);
-                        else
-                            mNotificationReminder.removeReminder(itemId);
                         break;
                     case SubjectCreationActivity.DIALOG_RESULT_DELETE:
                         deleteAdmissionPercentage(itemId);
@@ -455,9 +448,17 @@ public class SubjectCreationFragment extends Fragment implements SubjectCreation
                         dialogClosed();
                         break;
                 }
+                //check for notification. when deleted, this string extra must be null.
+                String recurrenceString =
+                        data.getStringExtra(PercentageTrackerCreationFragment.RECURRENCE_STRING);
+                if (recurrenceString != null)
+                    mNotificationReminder.setReminder(itemId, recurrenceString);
+                else
+                    mNotificationReminder.removeReminder(itemId);
             }
         }
     }
+
 
     public void dialogClosed() {
         General.nukeKeyboard(getActivity());

@@ -470,13 +470,7 @@ public class PercentageTrackerCreationFragment extends Fragment implements Butto
                 mNotificationEnabledCheckBox.isChecked()
         ));
 
-        // do we need to set an alarm?
-        // this works, by the way, because the current string is the hint if not changed, so it
-        // contains the old string
-        if (mNotificationEnabledCheckBox.isChecked()) {
-            PercentageTrackerCreationActivity host = (PercentageTrackerCreationActivity) getActivity();
-            host.setRecurrenceString(mNotificationRecurrenceStringCurrent);
-        }
+        checkNotificationSettings(false/*not canceling*/);
 
         //commit
         mDb.releaseSavepoint(mSavepointId);
@@ -485,6 +479,32 @@ public class PercentageTrackerCreationFragment extends Fragment implements Butto
             return SubjectCreationActivity.DIALOG_RESULT_ADDED;
         else
             return SubjectCreationActivity.DIALOG_RESULT_CHANGED;
+    }
+
+    /**
+     * This function checks whether we need to recreate the notification alarm, and if so, calls
+     * the host activity to set the recurrence string.
+     */
+    private void checkNotificationSettings(boolean canceling) {
+        boolean addNotification = false;
+        boolean saving = !canceling;
+
+        // new tracker? only the isChecked state is relevant for adding a notification
+        if (saving)
+            addNotification = mNotificationEnabledCheckBox.isChecked();
+
+        if (canceling) {
+            if (mIsNewPercentageCounter)
+                addNotification = false;
+            else if (mIsOldPercentageCounter)
+                addNotification = mNotificationEnabledHint;
+        }
+
+        if (addNotification) {
+            PercentageTrackerCreationActivity host = (PercentageTrackerCreationActivity) getActivity();
+            //current gets set to hint, so even if not changed, it holds the correct value
+            host.setRecurrenceString(mNotificationRecurrenceStringCurrent);
+        }
     }
 
     @Override
@@ -500,6 +520,7 @@ public class PercentageTrackerCreationFragment extends Fragment implements Butto
                 break;
             case R.id.giant_cancel_button:
                 mDb.rollbackToSavepoint(mSavepointId);
+                checkNotificationSettings(true/*canceling*/);
                 resultState = SubjectCreationActivity.DIALOG_RESULT_CLOSED;
                 break;
         }

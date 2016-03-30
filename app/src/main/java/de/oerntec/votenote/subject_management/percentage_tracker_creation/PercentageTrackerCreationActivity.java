@@ -9,6 +9,7 @@ import android.widget.Button;
 
 import de.oerntec.votenote.R;
 import de.oerntec.votenote.helpers.General;
+import de.oerntec.votenote.subject_management.subject_creation.SubjectCreationActivity;
 
 public class PercentageTrackerCreationActivity extends AppCompatActivity {
     public static final int INTENT_REQUEST_CODE_ADMISSION_PERCENTAGE_CREATOR = 123;
@@ -80,16 +81,16 @@ public class PercentageTrackerCreationActivity extends AppCompatActivity {
     }
 
     void finishToSubjectCreator(int resultState) {
-        setResult(resultState, getCurrentResultIntent());
+        setResult(resultState, getCurrentResultIntent(resultState));
         finish();
     }
 
-    private Intent getCurrentResultIntent() {
+    private Intent getCurrentResultIntent(int resultState) {
         //save result data into intent
         Intent returnIntent = new Intent();
         returnIntent.putExtra(PercentageTrackerCreationFragment.SUBJECT_ID, mSubjectId);
         returnIntent.putExtra(PercentageTrackerCreationFragment.ADMISSION_PERCENTAGE_ID, mAdmissionPercentageId);
-        if (mRecurrenceString != null)
+        if (mRecurrenceString != null && resultState != SubjectCreationActivity.DIALOG_RESULT_DELETE)
             returnIntent.putExtra(PercentageTrackerCreationFragment.RECURRENCE_STRING, mRecurrenceString);
         return returnIntent;
     }
