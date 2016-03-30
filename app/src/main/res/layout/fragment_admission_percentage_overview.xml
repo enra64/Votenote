@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="de.oerntec.votenote.AdmissionPercentageOverview.AdmissionPercentageOverviewFragment">
+    tools:context="de.oerntec.votenote.percentage_tracker_overview.AdmissionPercentageOverviewFragment">
 
     <ListView
         android:id="@+id/fragment_admission_percentage_overview_list"

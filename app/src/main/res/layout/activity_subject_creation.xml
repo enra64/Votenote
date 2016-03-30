@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".SubjectManagement.SubjectCreation.SubjectCreationActivity">
+    tools:context=".subject_management.subject_creation.SubjectCreationActivity">
 
     <include
         android:id="@+id/subject_creation_activity_toolbar"
@@ -15,7 +15,9 @@
         android:layout_height="match_parent"
         android:layout_below="@+id/subject_creation_activity_toolbar"
         android:paddingBottom="2dp"
+        android:paddingEnd="4dp"
         android:paddingLeft="2dp"
         android:paddingRight="4dp"
+        android:paddingStart="2dp"
         android:paddingTop="2dp" />
 </RelativeLayout>

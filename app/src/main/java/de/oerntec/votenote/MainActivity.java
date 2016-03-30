@@ -43,17 +43,17 @@ import android.widget.Toast;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-import de.oerntec.votenote.PercentageTrackerFragmentStuff.PercentageTrackerFragment;
-import de.oerntec.votenote.Database.TableHelpers.DBAdmissionCounters;
-import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageMeta;
-import de.oerntec.votenote.Database.TableHelpers.DBLastViewed;
-import de.oerntec.votenote.Database.TableHelpers.DBSubjects;
-import de.oerntec.votenote.Chart.ChartActivity;
-import de.oerntec.votenote.Helpers.DialogHelper;
-import de.oerntec.votenote.Helpers.General;
-import de.oerntec.votenote.ImportExport.Writer;
-import de.oerntec.votenote.NavigationDrawer.NavigationDrawerFragment;
-import de.oerntec.votenote.SubjectManagement.SubjectManagementListActivity;
+import de.oerntec.votenote.chart.ChartActivity;
+import de.oerntec.votenote.database.tablehelpers.DBAdmissionCounters;
+import de.oerntec.votenote.database.tablehelpers.DBAdmissionPercentageMeta;
+import de.oerntec.votenote.database.tablehelpers.DBLastViewed;
+import de.oerntec.votenote.database.tablehelpers.DBSubjects;
+import de.oerntec.votenote.helpers.DialogHelper;
+import de.oerntec.votenote.helpers.General;
+import de.oerntec.votenote.import_export.Writer;
+import de.oerntec.votenote.navigationdrawer.NavigationDrawerFragment;
+import de.oerntec.votenote.percentage_tracker_fragment.PercentageTrackerFragment;
+import de.oerntec.votenote.subject_management.SubjectManagementListActivity;
 
 /*
 * VERSION HISTORY

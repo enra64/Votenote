@@ -15,11 +15,11 @@ import android.view.ViewGroup;
 import java.util.HashMap;
 import java.util.List;
 
-import de.oerntec.votenote.PercentageTrackerFragmentStuff.PercentageTrackerFragment;
-import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMetaStuff.AdmissionPercentageMetaPojo;
-import de.oerntec.votenote.Database.TableHelpers.DBAdmissionPercentageMeta;
-import de.oerntec.votenote.Database.TableHelpers.DBLastViewed;
-import de.oerntec.votenote.Helpers.DialogHelper;
+import de.oerntec.votenote.database.pojo.percentagetracker.PercentageTrackerPojo;
+import de.oerntec.votenote.database.tablehelpers.DBAdmissionPercentageMeta;
+import de.oerntec.votenote.database.tablehelpers.DBLastViewed;
+import de.oerntec.votenote.helpers.DialogHelper;
+import de.oerntec.votenote.percentage_tracker_fragment.PercentageTrackerFragment;
 
 /**
  * Designed to display all percentage trackers and admission point counters for any given subject.
@@ -188,7 +188,7 @@ public class SubjectFragment extends Fragment {
      * get the position in the adapter via the id
      */
     private int getPositionFromId(int id) {
-        List<AdmissionPercentageMetaPojo> data = DBAdmissionPercentageMeta.getInstance().getItemsForSubject(mSubjectId);
+        List<PercentageTrackerPojo> data = DBAdmissionPercentageMeta.getInstance().getItemsForSubject(mSubjectId);
         for (int position = 0; position < data.size(); position++)
             if (id == data.get(position).id)
                 return position;
@@ -215,7 +215,7 @@ public class SubjectFragment extends Fragment {
      * load either the last selected, the default, or the forced admission percentage fragment
      */
     private void loadAppropriateAdmissionPercentageFragment() {
-        List<AdmissionPercentageMetaPojo> percentages = DBAdmissionPercentageMeta.getInstance().getItemsForSubject(mSubjectId);
+        List<PercentageTrackerPojo> percentages = DBAdmissionPercentageMeta.getInstance().getItemsForSubject(mSubjectId);
         final int subjectPosition = getArguments().getInt(ARG_SUBJECT_POSITION);
 
         if (mForceAdmissionPercentageFragmentLoad) {
@@ -283,7 +283,7 @@ public class SubjectFragment extends Fragment {
      */
     public class AdmissionPercentageAdapter extends FragmentPagerAdapter {
         private DBAdmissionPercentageMeta mMetaDb;
-        private List<AdmissionPercentageMetaPojo> mData;
+        private List<PercentageTrackerPojo> mData;
         private int mSubjectId;
         private HashMap<Integer, PercentageTrackerFragment> mReferenceMap;
 

@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:layout_above="@+id/navigation_drawer_edit"
         android:layout_alignParentTop="true"
-        tools:context="de.oerntec.votenote.NavigationDrawer.NavigationDrawerFragment" />
+        tools:context="de.oerntec.votenote.navigationdrawer.NavigationDrawerFragment" />
 
     <RelativeLayout
         android:id="@+id/navigation_drawer_bottom_layout"
@@ -34,6 +34,7 @@
             android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
             android:layout_marginLeft="72dp"
+            android:layout_marginStart="72dp"
             android:text="@string/action_show_settings"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textColor="@android:color/tertiary_text_dark" />
@@ -46,7 +47,9 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:layout_marginLeft="12dp"
+            android:layout_marginStart="12dp"
             android:background="#00000000"
+            android:contentDescription="@string/navigation_fragment_icon_description_settings"
             android:minHeight="48dp"
             android:padding="4dp"
             android:scaleType="fitXY"
@@ -73,6 +76,7 @@
             android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
             android:layout_marginLeft="72dp"
+            android:layout_marginStart="72dp"
             android:text="@string/action_control_subjects"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textColor="@android:color/tertiary_text_dark" />
@@ -85,7 +89,9 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:layout_marginLeft="12dp"
+            android:layout_marginStart="12dp"
             android:background="#00000000"
+            android:contentDescription="@string/navigation_fragment_icon_description_subject_management"
             android:minHeight="48dp"
             android:padding="4dp"
             android:scaleType="fitXY"

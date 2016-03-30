@@ -44,7 +44,7 @@
             android:key="language"
             android:title="@string/preferences_language" />
 
-        <de.oerntec.votenote.Preferences.DeletionConfirmationPreference
+        <de.oerntec.votenote.preferences.DeletionConfirmationPreference
             android:key="delete_entries"
             android:title="@string/pref_delete_all_entries" />
 
@@ -52,18 +52,18 @@
 
     <PreferenceCategory android:title="@string/pref_imexport">
 
-        <de.oerntec.votenote.Preferences.CustomActionPreference
+        <de.oerntec.votenote.preferences.CustomActionPreference
             android:key="csv_export"
             android:title="@string/pref_csv_export" />
-        <de.oerntec.votenote.Preferences.CustomActionPreference
+        <de.oerntec.votenote.preferences.CustomActionPreference
             android:key="backup_share"
             android:summary="@string/preferences_backup_share_summary"
             android:title="@string/preferences_backup_share_title" />
-        <de.oerntec.votenote.Preferences.CustomActionPreference
+        <de.oerntec.votenote.preferences.CustomActionPreference
             android:key="backup_export"
             android:summary="@string/preferences_backup_export_summary"
             android:title="@string/preferences_backup_export_title" />
-        <de.oerntec.votenote.Preferences.CustomActionPreference
+        <de.oerntec.votenote.preferences.CustomActionPreference
             android:key="backup_import"
             android:summary="@string/preferences_backup_import_summary"
             android:title="@string/preferences_backup_import_title" />
@@ -73,10 +73,10 @@
         <Preference
             android:key="source_link"
             android:title="@string/pref_git_repo_link" />
-        <de.oerntec.votenote.Preferences.CustomActionPreference
+        <de.oerntec.votenote.preferences.CustomActionPreference
             android:key="used_libraries"
             android:title="@string/pref_used_libraries" />
-        <de.oerntec.votenote.Preferences.CustomActionPreference
+        <de.oerntec.votenote.preferences.CustomActionPreference
             android:key="show_eula"
             android:title="@string/preferences_eula" />
         <Preference

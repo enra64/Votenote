@@ -2,10 +2,10 @@ package de.oerntec.votenote.tests;
 
 import android.test.InstrumentationTestCase;
 
-import de.oerntec.votenote.Database.Pojo.AdmissionPercentageMetaStuff.AdmissionPercentageMetaPojo;
+import de.oerntec.votenote.database.pojo.percentagetracker.PercentageTrackerPojo;
 
 /**
- * Created by arne on 3/21/16.
+ * Tried to test my code, failed with no motivation.
  */
 public class PercentageCalculatorTests extends InstrumentationTestCase {
     public void test() throws Exception {
@@ -16,7 +16,7 @@ public class PercentageCalculatorTests extends InstrumentationTestCase {
         // also create the results in excel, so we have something to compare to
     }
 
-    public AdmissionPercentageMetaPojo test_create_meta(
+    public PercentageTrackerPojo test_create_meta(
             int userAssignmentsPerLessonEstimation,
             int userLessonCountEstimation,
             int baselineTargetPercentage,
@@ -24,7 +24,7 @@ public class PercentageCalculatorTests extends InstrumentationTestCase {
             int bonusTargetPercentage,
             boolean bonusTargetPercentageEnabled
     ) {
-        return new AdmissionPercentageMetaPojo(
+        return new PercentageTrackerPojo(
                 0,
                 1,
                 userAssignmentsPerLessonEstimation,

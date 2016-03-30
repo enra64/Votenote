@@ -208,4 +208,7 @@
     <string name="dialog_delete_abort">Abbrechen</string>
     <string name="dialog_delete_title">%s löschen?</string>
     <string name="dialog_delete_confirm">Löschen</string>
+    <string name="chart_activity_show_x_axis_as_percentage">X-Achse als Prozentwert</string>
+    <string name="navigation_fragment_icon_description_settings">Einstellungsicon</string>
+    <string name="navigation_fragment_icon_description_subject_management">Übungsverwaltungsicon</string>
 </resources>

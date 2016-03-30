@@ -202,4 +202,5 @@
     <string name="dialog_delete_confirm">Delete</string>
     <string name="dialog_delete_title">Delete %s?</string>
     <string name="tutorial_shortcut_title">Hello</string>
+    <string name="chart_activity_show_x_axis_as_percentage">Show progress as percentage on x-axis</string>
 </resources>
