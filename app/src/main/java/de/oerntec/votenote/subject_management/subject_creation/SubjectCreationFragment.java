@@ -130,8 +130,13 @@ public class SubjectCreationFragment extends Fragment implements SubjectCreation
         mIsOldSubject = !mIsNewSubject;
 
         //if this is a new subject, we have to create a subject now to know the subject id, which is conveniently returned by the addItemGetId method
-        if (mIsNewSubject)
+        if (mIsNewSubject) {
             mSubjectId = mSubjectDb.addItemGetId("If you see this, i fucked up.");
+            if (mSubjectId == -1)
+                throw new AssertionError("UNIQUE name constraint violated");
+        }
+
+
 
         setHasOptionsMenu(true);
     }

@@ -22,6 +22,7 @@ import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.sqlite.SQLiteConstraintException;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
@@ -293,7 +294,14 @@ public class SubjectManagementListActivity extends AppCompatActivity implements 
         DBLessons dbLessons = DBLessons.setupInstance(this);
         DBAdmissionCounters dbAdmissionCounters = DBAdmissionCounters.setupInstance(this);
 
-        int subjectId = dbSubjects.addItemGetId("Modul");
+        int subjectId;
+
+        try {
+            subjectId = dbSubjects.addItemGetId("Modul");
+            //thrown if subject name is not unique
+        } catch (SQLiteConstraintException e) {
+            subjectId = dbSubjects.addItemGetId("Modul" + System.currentTimeMillis());
+        }
 
         PercentageTrackerPojo percentage1 = new PercentageTrackerPojo(
                 -1,
@@ -349,7 +357,12 @@ public class SubjectManagementListActivity extends AppCompatActivity implements 
     }
 
     private void createExample() {
-        if (getPreference("example_created", false)) {
+        boolean exampleWasCreatedOnce = getPreference("example_created", false);
+
+        if (!exampleWasCreatedOnce)
+            createExampleForReal();
+
+        if (exampleWasCreatedOnce) {
             AlertDialog.Builder b = new Builder(this);
             b.setTitle(R.string.subject_management_add_example_dialog_title);
             b.setMessage(R.string.subject_management_add_example_dialog_message);
@@ -361,8 +374,7 @@ public class SubjectManagementListActivity extends AppCompatActivity implements 
             });
             b.setNegativeButton(R.string.dialog_button_no, null);
             b.create().show();
-        } else
-            createExampleForReal();
+        }
     }
 
     @Override

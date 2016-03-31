@@ -18,6 +18,7 @@
 package de.oerntec.votenote.import_export;
 
 import android.content.Context;
+import android.database.sqlite.SQLiteConstraintException;
 import android.util.Log;
 import android.util.Xml;
 
@@ -218,7 +219,12 @@ public class XmlImporter {
         parser.nextTag();
         parser.require(XmlPullParser.END_TAG, null, "row");
 
-        sDb.addItemWithId(new Subject(uebung_name, id));
+        try {
+            sDb.addItemWithId(new Subject(uebung_name, id));
+            //this exception gets thrown when the name is not unique
+        } catch (SQLiteConstraintException e) {
+            sDb.addItemGetId(new Subject(uebung_name + System.currentTimeMillis(), id));
+        }
         mDb.addItem(new PercentageTrackerPojo(id, id, uebung_maxvotes_per_ueb, uebung_count, uebung_minvote, "Votierungspunkte", "user", 50, false, "", false));
         cDb.addItem(new AdmissionCounter(-1, id, "Vortragspunkte", uebung_prespoints, uebung_max_prespoints));
     }

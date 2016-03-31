@@ -50,15 +50,6 @@ public class DBSubjects extends CrudDb<Subject> {
         return mInstance;
     }
 
-    @Override
-    public void addItem(Subject item) {
-        throw new Error("not implemented");
-    }
-
-    public void addItemWithId(Subject item){
-        addItemGetId(item, true);
-    }
-
     public void deleteItem(Subject delete) {
         if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
             Log.i("dbsubjects", "deleted " + delete.name + " at " + delete.id);
@@ -69,11 +60,44 @@ public class DBSubjects extends CrudDb<Subject> {
             throw new AssertionError("deleted more than 1?");
     }
 
+    @Override
+    public void addItem(Subject item) {
+        throw new Error("not implemented");
+    }
+
+    /**
+     * Add a subject to the database, forcing <parameter>item</parameter>.id to be the id in the
+     * database
+     *
+     * @param item new item
+     * @throws SQLiteConstraintException when the subject name is not unique
+     * @see #addItemGetId(Subject)
+     * @see #addItemGetId(String)
+     * @see #addItemGetId(Subject, boolean)
+     */
+    public void addItemWithId(Subject item) throws SQLiteConstraintException {
+        addItemGetId(item, true);
+    }
+
     /**
      * Add a subject to the database without forcing the id
+     *
+     * @see #addItemWithId(Subject)
+     * @throws SQLiteConstraintException when the subject name is not unique
      */
-    public int addItemGetId(Subject item){
+    public int addItemGetId(Subject item) throws SQLiteConstraintException {
         return addItemGetId(item, false);
+    }
+
+    /**
+     * Adds a group with the given Parameters
+     *
+     * @param subjectName Name of the new Group
+     * @return -1 if the group name is not unique (violates constraint), the id of the added group otherwise
+     * @throws SQLiteConstraintException when the subject name is not unique
+     */
+    public int addItemGetId(String subjectName) throws SQLiteConstraintException {
+        return addItemGetId(new Subject(subjectName, -1));
     }
 
     /**
@@ -82,24 +106,21 @@ public class DBSubjects extends CrudDb<Subject> {
      * @param item    the item to be added
      * @param forceId whether or not the database id should be the one of the object given
      * @return the id of the new subject
+     * @throws SQLiteConstraintException when the subject name is not unique
      * @see #addItem(Subject)
      */
-    public int addItemGetId(Subject item, boolean forceId) {
+    private int addItemGetId(Subject item, boolean forceId) throws SQLiteConstraintException {
         //create values for insert or update
         ContentValues values = new ContentValues();
         values.put(DatabaseCreator.SUBJECTS_NAME, item.name);
-        if(forceId)
+        if (forceId)
             values.put(DatabaseCreator.SUBJECTS_ID, item.id);
 
         if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
             Log.i("DBGroups", "adding group");
 
         //try to insert the subject. since
-        try{
-            mDatabase.insert(DatabaseCreator.TABLE_NAME_SUBJECTS, null, values);
-        } catch( SQLiteConstraintException e) {
-            return -1;
-        }
+        mDatabase.insert(DatabaseCreator.TABLE_NAME_SUBJECTS, null, values);
 
         // if the id is forced, this must be the id
         if (forceId)
@@ -109,7 +130,7 @@ public class DBSubjects extends CrudDb<Subject> {
         Cursor subjectIdCursor = mDatabase.rawQuery("SELECT MAX(" + DatabaseCreator.SUBJECTS_ID + ") AS maximum_subject_id FROM " + DatabaseCreator.TABLE_NAME_SUBJECTS, null);
 
         //throw error if we have more or less than one result row, because that is bullshit
-        if(subjectIdCursor.getCount() != 1)
+        if (subjectIdCursor.getCount() != 1)
             throw new AssertionError(subjectIdCursor.getCount() + " items in max cursor?");
 
         //retrieve value and close cursor
@@ -121,14 +142,10 @@ public class DBSubjects extends CrudDb<Subject> {
     }
 
     /**
-     * Adds a group with the given Parameters
-     * @param subjectName Name of the new Group
-     * @return -1 if the group name is not unique (violates constraint), the id of the added group otherwise
+     * Get the number of lessons a subject has.
+     * @param subjectId database id of the subject
+     * @return number of lessons
      */
-    public int addItemGetId(String subjectName) {
-        return addItemGetId(new Subject(subjectName, -1));
-    }
-
     public int getNumberOfLessonsForSubject(int subjectId) {
         String data = DatabaseCreator.TABLE_NAME_ADMISSION_PERCENTAGES_DATA;
         String meta = DatabaseCreator.TABLE_NAME_ADMISSION_PERCENTAGES_META;
@@ -143,19 +160,24 @@ public class DBSubjects extends CrudDb<Subject> {
         return number;
     }
 
+    /**
+     * Change the name of a subject
+     *
+     * @param newItem the subject item containing the new name and the id
+     */
     public void changeItem(Subject newItem) {
         ContentValues values = new ContentValues();
         values.put(DatabaseCreator.SUBJECTS_NAME, newItem.name);
 
         String[] whereArgs = {String.valueOf(newItem.id)};
         int affectedRows = mDatabase.update(DatabaseCreator.TABLE_NAME_SUBJECTS, values, DatabaseCreator.SUBJECTS_ID + "=?", whereArgs);
-        if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
-            if (affectedRows != 1)
-                Log.i("AdmissionCounters", "No or more than one entry was changed, something is weird");
         if (affectedRows != 1)
-            throw new AssertionError("not exactly one group was changed");
+            throw new AssertionError(affectedRows + "entries were changed??");
     }
 
+    /**
+     * Get a List of all Subjects
+     */
     public List<Subject> getAllSubjects() {
         Cursor mCursor = mDatabase.query(true,
                 DatabaseCreator.TABLE_NAME_SUBJECTS,
@@ -179,11 +201,21 @@ public class DBSubjects extends CrudDb<Subject> {
         return subjects;
     }
 
+    /**
+     * Are there no subjects?
+     * @return true if no subjects exist, false otherwise
+     */
     public boolean isEmpty() {
         return getAllSubjects().size() == 0;
     }
 
-
+    /**
+     * Get the id of a subject at a position in the ordered list that is returned by
+     * {@link #getAllSubjects()}
+     * @param position position to look for
+     * @return id of the subject at the specified position in the list
+     * @throws AssertionError if the position is greater than the number of subjects
+     */
     public int getIdOfSubject(int position) {
         List<Subject> subjectList = getAllSubjects();
         if (position >= subjectList.size())
