@@ -95,7 +95,7 @@ public class DatabaseCreator extends SQLiteOpenHelper {
     //begin new database system
     private static final String CREATE_TABLE_SUBJECTS = "create table " + TABLE_NAME_SUBJECTS + "( " +
             SUBJECTS_ID + " integer primary key AUTOINCREMENT," + //autoincrement for more clearly defined behaviour
-            SUBJECTS_NAME + " text not null UNIQUE);";
+            SUBJECTS_NAME + " text not null);";
 
     private static final String CREATE_TABLE_ADMISSION_COUNTERS = "create table " + TABLE_NAME_ADMISSION_COUNTERS + "( " +
             ADMISSION_COUNTER_ID + " integer primary key," +

@@ -22,7 +22,6 @@ import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.sqlite.SQLiteConstraintException;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
@@ -296,12 +295,7 @@ public class SubjectManagementListActivity extends AppCompatActivity implements 
 
         int subjectId;
 
-        try {
-            subjectId = dbSubjects.addItemGetId("Modul");
-            //thrown if subject name is not unique
-        } catch (SQLiteConstraintException e) {
-            subjectId = dbSubjects.addItemGetId("Modul" + System.currentTimeMillis());
-        }
+        subjectId = dbSubjects.addItemGetId("Modul");
 
         PercentageTrackerPojo percentage1 = new PercentageTrackerPojo(
                 -1,

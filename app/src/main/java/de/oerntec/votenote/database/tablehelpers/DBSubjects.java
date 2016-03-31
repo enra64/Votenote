@@ -20,7 +20,7 @@ package de.oerntec.votenote.database.tablehelpers;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteConstraintException;
+import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import java.util.LinkedList;
@@ -70,12 +70,11 @@ public class DBSubjects extends CrudDb<Subject> {
      * database
      *
      * @param item new item
-     * @throws SQLiteConstraintException when the subject name is not unique
      * @see #addItemGetId(Subject)
      * @see #addItemGetId(String)
      * @see #addItemGetId(Subject, boolean)
      */
-    public void addItemWithId(Subject item) throws SQLiteConstraintException {
+    public void addItemWithId(Subject item) {
         addItemGetId(item, true);
     }
 
@@ -83,9 +82,8 @@ public class DBSubjects extends CrudDb<Subject> {
      * Add a subject to the database without forcing the id
      *
      * @see #addItemWithId(Subject)
-     * @throws SQLiteConstraintException when the subject name is not unique
      */
-    public int addItemGetId(Subject item) throws SQLiteConstraintException {
+    public int addItemGetId(Subject item) {
         return addItemGetId(item, false);
     }
 
@@ -94,9 +92,8 @@ public class DBSubjects extends CrudDb<Subject> {
      *
      * @param subjectName Name of the new Group
      * @return -1 if the group name is not unique (violates constraint), the id of the added group otherwise
-     * @throws SQLiteConstraintException when the subject name is not unique
      */
-    public int addItemGetId(String subjectName) throws SQLiteConstraintException {
+    public int addItemGetId(String subjectName) {
         return addItemGetId(new Subject(subjectName, -1));
     }
 
@@ -106,10 +103,9 @@ public class DBSubjects extends CrudDb<Subject> {
      * @param item    the item to be added
      * @param forceId whether or not the database id should be the one of the object given
      * @return the id of the new subject
-     * @throws SQLiteConstraintException when the subject name is not unique
      * @see #addItem(Subject)
      */
-    private int addItemGetId(Subject item, boolean forceId) throws SQLiteConstraintException {
+    private int addItemGetId(Subject item, boolean forceId) {
         //create values for insert or update
         ContentValues values = new ContentValues();
         values.put(DatabaseCreator.SUBJECTS_NAME, item.name);
@@ -170,7 +166,16 @@ public class DBSubjects extends CrudDb<Subject> {
         values.put(DatabaseCreator.SUBJECTS_NAME, newItem.name);
 
         String[] whereArgs = {String.valueOf(newItem.id)};
-        int affectedRows = mDatabase.update(DatabaseCreator.TABLE_NAME_SUBJECTS, values, DatabaseCreator.SUBJECTS_ID + "=?", whereArgs);
+
+        int affectedRows;
+
+        affectedRows = mDatabase.updateWithOnConflict(
+                DatabaseCreator.TABLE_NAME_SUBJECTS,
+                values,
+                DatabaseCreator.SUBJECTS_ID + "=?",
+                whereArgs,
+                SQLiteDatabase.CONFLICT_FAIL);
+
         if (affectedRows != 1)
             throw new AssertionError(affectedRows + "entries were changed??");
     }
