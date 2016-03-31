@@ -58,12 +58,14 @@ public class PercentageTrackerFragment extends Fragment implements SwipeAnimatio
      * Savepoint last used, null if no savepoint can currently be used
      */
     private static String mLastRemovalSavePointId = null;
-
     /**
      * Adapter to display the lessons
      */
     public PercentageTrackerAdapter mAdapter;
-
+    /**
+     * If applicable, the latest snackbar, null otherwise
+     */
+    private Snackbar mLastRemovalSnackbar = null;
     /**
      * Save the view that was clicked last so we can execute a programmatic swipe deletion
      */
@@ -100,7 +102,7 @@ public class PercentageTrackerFragment extends Fragment implements SwipeAnimatio
         return fragment;
     }
 
-    /* MAIN FRAGMENT BUILDING
+    /*
      * Build the menu_main fragment containing uebung specific info, and the menu_main listview
      */
     @Override
@@ -200,6 +202,13 @@ public class PercentageTrackerFragment extends Fragment implements SwipeAnimatio
         }));
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (mLastRemovalSnackbar != null)
+            mLastRemovalSnackbar.dismiss();
+    }
+
     public void reloadInfo() {
         mAdapter.notifyItemChanged(0);
     }
@@ -211,7 +220,7 @@ public class PercentageTrackerFragment extends Fragment implements SwipeAnimatio
         mLastRemovalSavePointId = mAdapter.removeLesson(new Lesson(mAdmissionPercentageMetaId, lessonId, -1, -1));
         if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
             Log.i("apf", "creating savepoint " + mLastRemovalSavePointId);
-        Snackbar
+        mLastRemovalSnackbar = Snackbar
                 .make(mRootView.findViewById(R.id.subject_fragment_coordinator_layout), getActivity().getString(R.string.undobar_deleted), Snackbar.LENGTH_LONG)
                 .setAction("UNDO", new View.OnClickListener() {
                     @Override
@@ -227,11 +236,13 @@ public class PercentageTrackerFragment extends Fragment implements SwipeAnimatio
                             case DISMISS_EVENT_TIMEOUT:
                                 //DISMISS_EVENT_CONSECUTIVE: the consecutive remove hits after the next one is released, so that one wont find its savepoint
                                 trySavepointRelease();
+                                mLastRemovalSnackbar = null;
                             default:
                                 super.onDismissed(snackbar, event);
                         }
                     }
-                }).show();
+                });
+        mLastRemovalSnackbar.show();
     }
 
     /**

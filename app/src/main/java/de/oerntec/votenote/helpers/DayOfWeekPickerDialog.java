@@ -47,17 +47,12 @@ public class DayOfWeekPickerDialog extends DialogFragment implements DialogInter
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog dialog = new AlertDialog.Builder(getActivity())
-                // Set Dialog Title
-                .setTitle("Wochentag wählen")
-                // Set Dialog Message
+                .setTitle(getActivity().getString(R.string.dow_picker_title))
                 .setView(R.layout.dow_picker)
-                // Positive button
-                .setPositiveButton("OK", this)
-                // Negative Button
-                .setNegativeButton("Cancel", null).create();
+                .setPositiveButton(R.string.dialog_button_ok, this)
+                .setNegativeButton(R.string.dialog_button_abort, null).create();
 
         dialog.setOnShowListener(this);
-
         return dialog;
     }
 

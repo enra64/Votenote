@@ -228,8 +228,13 @@ public class AddLessonDialogFragment extends DialogFragment implements DialogInt
             currentFinishedAssignments = mOldData.finishedAssignments;
         }
 
-        setPicker(mAvailableAssignmentsPicker, 0, currentAvailableAssignments * 2, currentAvailableAssignments);
-        setPicker(mFinishedAssignmentsPicker, 0, currentAvailableAssignments * 2, currentFinishedAssignments);
+        int maxPickerValues = currentAvailableAssignments * 2;
+
+        if (currentAvailableAssignments == 0)
+            maxPickerValues = 10;
+
+        setPicker(mAvailableAssignmentsPicker, 0, maxPickerValues, currentAvailableAssignments);
+        setPicker(mFinishedAssignmentsPicker, 0, maxPickerValues, currentFinishedAssignments);
 
         updateResultingPercentage(currentFinishedAssignments, currentAvailableAssignments);
     }

@@ -139,6 +139,7 @@ public class DBSubjects extends CrudDb<Subject> {
 
     /**
      * Get the number of lessons a subject has.
+     *
      * @param subjectId database id of the subject
      * @return number of lessons
      */
@@ -208,6 +209,7 @@ public class DBSubjects extends CrudDb<Subject> {
 
     /**
      * Are there no subjects?
+     *
      * @return true if no subjects exist, false otherwise
      */
     public boolean isEmpty() {
@@ -217,6 +219,7 @@ public class DBSubjects extends CrudDb<Subject> {
     /**
      * Get the id of a subject at a position in the ordered list that is returned by
      * {@link #getAllSubjects()}
+     *
      * @param position position to look for
      * @return id of the subject at the specified position in the list
      * @throws AssertionError if the position is greater than the number of subjects
@@ -228,10 +231,24 @@ public class DBSubjects extends CrudDb<Subject> {
         return subjectList.get(position).id;
     }
 
+    /**
+     * Get a single item by id
+     *
+     * @param item item supplying the wanted id
+     * @return the item you wanted
+     * @see #getItem(int)
+     */
+    @Override
     public Subject getItem(Subject item) {
         return getItem(item.id);
     }
 
+    /**
+     * Get a single item by id
+     * @param subjectId the id you need
+     * @return the item you wanted
+     * @see #getItem(Subject)
+     */
     public Subject getItem(int subjectId) {
         Cursor mCursor = mDatabase.query(
                 true,
