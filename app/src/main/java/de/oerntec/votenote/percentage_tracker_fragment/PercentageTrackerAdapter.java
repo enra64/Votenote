@@ -27,7 +27,6 @@ import android.widget.TextView;
 
 import java.util.List;
 
-import de.oerntec.votenote.MainActivity;
 import de.oerntec.votenote.R;
 import de.oerntec.votenote.database.pojo.AdmissionCounter;
 import de.oerntec.votenote.database.pojo.Lesson;
@@ -39,6 +38,7 @@ import de.oerntec.votenote.database.tablehelpers.DBAdmissionCounters;
 import de.oerntec.votenote.database.tablehelpers.DBAdmissionPercentageMeta;
 import de.oerntec.votenote.database.tablehelpers.DBLessons;
 import de.oerntec.votenote.helpers.General;
+import de.oerntec.votenote.helpers.Preferences;
 
 public class PercentageTrackerAdapter extends RecyclerView.Adapter<PercentageTrackerAdapter.Holder> {
     /**
@@ -85,7 +85,7 @@ public class PercentageTrackerAdapter extends RecyclerView.Adapter<PercentageTra
         //get the pojo object corresponding to this adapter
         mMetaPojo = mMetaDb.getItem(admissionPercentageMetaId);
         //do we want reverse sort?
-        mLatestLessonFirst = MainActivity.getPreference("reverse_lesson_sort", false);
+        mLatestLessonFirst = Preferences.getPreference(mContext, "reverse_lesson_sort", false);
         requery();
     }
 

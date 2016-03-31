@@ -48,11 +48,12 @@ import de.oerntec.votenote.database.tablehelpers.DBAdmissionCounters;
 import de.oerntec.votenote.database.tablehelpers.DBAdmissionPercentageMeta;
 import de.oerntec.votenote.database.tablehelpers.DBLessons;
 import de.oerntec.votenote.database.tablehelpers.DBSubjects;
-import de.oerntec.votenote.helpers.DialogHelper;
 import de.oerntec.votenote.helpers.General;
-import de.oerntec.votenote.helpers.OnItemClickListener;
-import de.oerntec.votenote.helpers.RecyclerItemClickListener;
-import de.oerntec.votenote.helpers.SwipeAnimationUtils;
+import de.oerntec.votenote.helpers.dialogs.Dialogs;
+import de.oerntec.votenote.helpers.lists.LinearLayoutManagerWrapper;
+import de.oerntec.votenote.helpers.lists.OnItemClickListener;
+import de.oerntec.votenote.helpers.lists.RecyclerItemClickListener;
+import de.oerntec.votenote.helpers.lists.SwipeAnimationUtils;
 import de.oerntec.votenote.helpers.notifications.NotificationGeneralHelper;
 import de.oerntec.votenote.import_export.BackupHelper;
 import de.oerntec.votenote.subject_management.subject_creation.SubjectCreationActivity;
@@ -131,7 +132,7 @@ public class SubjectManagementListActivity extends AppCompatActivity implements 
         mSubjectList.setHasFixedSize(true);
 
         //give it a layoutmanager (whatever that is)
-        LinearLayoutManager manager = new LinearLayoutManager(this);
+        LinearLayoutManager manager = new LinearLayoutManagerWrapper(this);
         manager.setOrientation(LinearLayoutManager.VERTICAL);
         mSubjectList.setLayoutManager(manager);
 
@@ -149,7 +150,7 @@ public class SubjectManagementListActivity extends AppCompatActivity implements 
             }
 
             public void onItemLongClick(final View view, final int position) {
-                DialogHelper.showDeleteDialog(veryGoodCoding, new DialogInterface.OnClickListener() {
+                Dialogs.showDeleteDialog(veryGoodCoding, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         SwipeAnimationUtils.executeProgrammaticSwipeDeletion(veryGoodCoding, veryGoodCoding, view, position);

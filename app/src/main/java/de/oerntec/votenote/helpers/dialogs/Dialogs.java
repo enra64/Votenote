@@ -15,7 +15,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 * */
-package de.oerntec.votenote.helpers;
+package de.oerntec.votenote.helpers.dialogs;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -34,7 +34,7 @@ import de.oerntec.votenote.database.tablehelpers.DBAdmissionCounters;
 import de.oerntec.votenote.percentage_tracker_fragment.AddLessonDialogFragment;
 import de.oerntec.votenote.subject_management.admission_counter_creation.AdmissionCounterDialogFragment;
 
-public class DialogHelper {
+public class Dialogs {
     private static final int ADD_LESSON_CODE = -2;
 
     public static void showAddLessonDialog(FragmentManager fragmentManager, int apMetaId) {

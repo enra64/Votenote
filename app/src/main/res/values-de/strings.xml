@@ -153,4 +153,6 @@
     <string name="dow_picker_title">Wochentag wählen</string>
     <string name="admission_counter_target_point_count">Zielpunkte</string>
     <string name="file_not_found">Datei nicht gefunden!</string>
+    <string name="logger_could_not_create_folder">Ordner konnte nicht erstellt werden. Eventuell funktioniert das, wenn du einen \"Votenote\"-Ordner in deinem externen Speicherbereich erstellst</string>
+    <string name="logger_could_not_create_file">Konnte keine Logdatei erstellen</string>
 </resources>

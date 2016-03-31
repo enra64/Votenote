@@ -22,6 +22,7 @@ import de.oerntec.votenote.database.pojo.percentagetracker.PercentageTrackerPojo
 import de.oerntec.votenote.database.tablehelpers.DBAdmissionPercentageMeta;
 import de.oerntec.votenote.database.tablehelpers.DBLessons;
 import de.oerntec.votenote.helpers.General;
+import de.oerntec.votenote.helpers.Preferences;
 
 public class AddLessonDialogFragment extends DialogFragment implements DialogInterface.OnClickListener {
     private static final String ARG_AP_META_ID = "apmetaid";
@@ -123,13 +124,13 @@ public class AddLessonDialogFragment extends DialogFragment implements DialogInt
             mIsNewLesson = mLessonId == ADD_LESSON_CODE;
             mIsOldLesson = !mIsNewLesson;
             mMetaItem = DBAdmissionPercentageMeta.getInstance().getItem(mMetaId);
-            mMetaItem.loadData(DBLessons.getInstance(), MainActivity.getPreference("reverse_lesson_sort", false));
+            mMetaItem.loadData(DBLessons.getInstance(), Preferences.getPreference(getActivity(), "reverse_lesson_sort", false));
 
             //load shared settings
             //Whether the lessons are displayed in reverse  or not
-            boolean mReverseLessonSort = MainActivity.getPreference("reverse_lesson_sort", false);
-            mEnableDataAutoFix = MainActivity.getPreference("move_max_assignments_picker", true);
-            mLiveUpdateResultingPercentage = MainActivity.getPreference("live_resulting_percentage", true);
+            boolean mReverseLessonSort = Preferences.getPreference(getActivity(), "reverse_lesson_sort", false);
+            mEnableDataAutoFix = Preferences.getPreference(getActivity(), "move_max_assignments_picker", true);
+            mLiveUpdateResultingPercentage = Preferences.getPreference(getActivity(), "live_resulting_percentage", true);
 
             //get database instance
             mDataDb = DBLessons.getInstance();

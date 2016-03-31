@@ -1,4 +1,4 @@
-package de.oerntec.votenote.helpers;
+package de.oerntec.votenote.helpers.dialogs;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -16,6 +16,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 import de.oerntec.votenote.R;
+import de.oerntec.votenote.helpers.General;
 
 /**
  * Dialog to show

@@ -36,10 +36,11 @@ import de.oerntec.votenote.MainActivity;
 import de.oerntec.votenote.R;
 import de.oerntec.votenote.database.pojo.Lesson;
 import de.oerntec.votenote.database.tablehelpers.DBLessons;
-import de.oerntec.votenote.helpers.DialogHelper;
-import de.oerntec.votenote.helpers.OnItemClickListener;
-import de.oerntec.votenote.helpers.RecyclerItemClickListener;
-import de.oerntec.votenote.helpers.SwipeAnimationUtils;
+import de.oerntec.votenote.helpers.dialogs.Dialogs;
+import de.oerntec.votenote.helpers.lists.LinearLayoutManagerWrapper;
+import de.oerntec.votenote.helpers.lists.OnItemClickListener;
+import de.oerntec.votenote.helpers.lists.RecyclerItemClickListener;
+import de.oerntec.votenote.helpers.lists.SwipeAnimationUtils;
 import de.oerntec.votenote.percentage_tracker_overview.AdmissionPercentageOverviewActivity;
 import de.oerntec.votenote.percentage_tracker_overview.AdmissionPercentageOverviewFragment;
 import de.oerntec.votenote.subject_management.SubjectManagementListActivity;
@@ -115,7 +116,7 @@ public class PercentageTrackerFragment extends Fragment implements SwipeAnimatio
         mLessonList.setHasFixedSize(true);
 
         //give it a layout manager (whatever that is)
-        LinearLayoutManager manager = new LinearLayoutManager(getActivity());
+        LinearLayoutManager manager = new LinearLayoutManagerWrapper(getActivity());
         manager.setOrientation(LinearLayoutManager.VERTICAL);
         mLessonList.setLayoutManager(manager);
 
@@ -144,7 +145,7 @@ public class PercentageTrackerFragment extends Fragment implements SwipeAnimatio
         addFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DialogHelper.showAddLessonDialog(getFragmentManager(), mAdmissionPercentageMetaId);
+                Dialogs.showAddLessonDialog(getFragmentManager(), mAdmissionPercentageMetaId);
             }
         });
 
@@ -178,14 +179,14 @@ public class PercentageTrackerFragment extends Fragment implements SwipeAnimatio
             public void onItemClick(View view, int position) {
                 if (position != 0) {
                     mLastClickedView = view;
-                    DialogHelper.showChangeLessonDialog(getFragmentManager(), mAdmissionPercentageMetaId, (Integer) view.getTag());
+                    Dialogs.showChangeLessonDialog(getFragmentManager(), mAdmissionPercentageMetaId, (Integer) view.getTag());
                 }
             }
 
             public void onItemLongClick(final View view, int position) {
                 if (position != 0) {
                     mLastClickedView = view;
-                    DialogHelper.showDeleteDialog(getActivity(), new DialogInterface.OnClickListener() {
+                    Dialogs.showDeleteDialog(getActivity(), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             Lesson oldLesson = mDataDb.getItem((int) view.getTag(), mAdmissionPercentageMetaId);

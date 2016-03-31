@@ -41,12 +41,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import de.oerntec.votenote.MainActivity;
 import de.oerntec.votenote.R;
 import de.oerntec.votenote.database.pojo.Lesson;
 import de.oerntec.votenote.database.tablehelpers.DBAdmissionPercentageMeta;
 import de.oerntec.votenote.database.tablehelpers.DBLessons;
 import de.oerntec.votenote.helpers.General;
+import de.oerntec.votenote.helpers.Preferences;
 
 
 public class ChartActivity extends AppCompatActivity implements ChartSubjectAdapter.AdapterListener {
@@ -166,7 +166,7 @@ public class ChartActivity extends AppCompatActivity implements ChartSubjectAdap
      * Creates a LineGraphSeries object containing the data points of the specified subject
      */
     private LineGraphSeries<DataPoint> getGroupLineGraph(int metaId, int color) {
-        List<Lesson> data = DBLessons.getInstance().getItemsForMetaId(metaId, MainActivity.getPreference("reverse_lesson_sort", false));
+        List<Lesson> data = DBLessons.getInstance().getItemsForMetaId(metaId, Preferences.getPreference(this, "reverse_lesson_sort", false));
 
         //add uebung data to graph
         DataPoint[] dataPointArray = new DataPoint[data.size()];

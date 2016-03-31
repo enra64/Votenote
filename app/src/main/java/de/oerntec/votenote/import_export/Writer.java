@@ -17,7 +17,10 @@
 * */
 package de.oerntec.votenote.import_export;
 
+import android.content.Context;
 import android.os.Environment;
+import android.support.annotation.Nullable;
+import android.widget.Toast;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -28,7 +31,15 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.Calendar;
 
+import de.oerntec.votenote.R;
+
 public class Writer {
+    /**
+     * Context needed to show toasts
+     */
+    @Nullable
+    public static Context mToastContext;
+
     @SuppressWarnings("ResultOfMethodCallIgnored")
     public static void writeToFile(final String string, final String exportFilePath) throws IOException {
         File file = new File(exportFilePath);
@@ -52,12 +63,15 @@ public class Writer {
     public static void appendLog(String text) {
         text = getDateAndTimeNow() + '\n' + text;
         File directory = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/Votenote/");
-        //noinspection ResultOfMethodCallIgnored
-        directory.mkdirs();
+
+        if (mToastContext != null && !directory.mkdirs())
+            Toast.makeText(mToastContext, R.string.logger_could_not_create_folder, Toast.LENGTH_LONG).show();
+
         File logFile = new File(directory, "log.txt");
         try {
-            //noinspection ResultOfMethodCallIgnored
-            logFile.createNewFile();
+            if (mToastContext != null && !logFile.createNewFile())
+                Toast.makeText(mToastContext, R.string.logger_could_not_create_file, Toast.LENGTH_LONG).show();
+
             //BufferedWriter for performance, true to set append to file flag
             BufferedWriter buf = new BufferedWriter(new FileWriter(logFile, true));
             buf.append(text);

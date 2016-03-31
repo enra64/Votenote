@@ -33,6 +33,7 @@ import de.oerntec.votenote.database.tablehelpers.DBAdmissionCounters;
 import de.oerntec.votenote.database.tablehelpers.DBAdmissionPercentageMeta;
 import de.oerntec.votenote.database.tablehelpers.DBLessons;
 import de.oerntec.votenote.database.tablehelpers.DBSubjects;
+import de.oerntec.votenote.helpers.Preferences;
 
 public class CsvExporter {
     public static void exportDialog(final Context activity) {
@@ -58,7 +59,7 @@ public class CsvExporter {
         String apmHeader = "Name,Required percentage for admission,Bonus Percentage for admission,Bonus Percentage enabled,Estimation mode,User Estimated Assignments per Lesson,Estimated Lesson Count";
         String apdHeader = "Lesson,Finished Assignments,Available Assignments";
         String acHeader = "Current points,Target point count";
-        List<Subject> subjects = getSubjects();
+        List<Subject> subjects = getSubjects(activity);
         //separator for excel
         b.append("sep=;").append(le);
         for(Subject s : subjects){
@@ -88,7 +89,7 @@ public class CsvExporter {
         }
     }
 
-    private static List<Subject> getSubjects(){
+    private static List<Subject> getSubjects(Context context) {
         final DBLessons mApDataDb = DBLessons.getInstance();
         final DBAdmissionPercentageMeta mApMetaDb = DBAdmissionPercentageMeta.getInstance();
         final DBAdmissionCounters mCountersDb = DBAdmissionCounters.getInstance();
@@ -96,7 +97,7 @@ public class CsvExporter {
 
         List<Subject> result = mSubjectDb.getAllSubjects();
         for(Subject s : result)
-            s.loadAllData(mCountersDb, mApDataDb, mApMetaDb, MainActivity.getPreference("reverse_lesson_sort", false));
+            s.loadAllData(mCountersDb, mApDataDb, mApMetaDb, Preferences.getPreference(context, "reverse_lesson_sort", false));
         return result;
     }
 }

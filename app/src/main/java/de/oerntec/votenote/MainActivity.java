@@ -26,6 +26,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -47,8 +48,9 @@ import de.oerntec.votenote.database.tablehelpers.DBAdmissionCounters;
 import de.oerntec.votenote.database.tablehelpers.DBAdmissionPercentageMeta;
 import de.oerntec.votenote.database.tablehelpers.DBLastViewed;
 import de.oerntec.votenote.database.tablehelpers.DBSubjects;
-import de.oerntec.votenote.helpers.DialogHelper;
 import de.oerntec.votenote.helpers.General;
+import de.oerntec.votenote.helpers.Preferences;
+import de.oerntec.votenote.helpers.dialogs.Dialogs;
 import de.oerntec.votenote.import_export.Writer;
 import de.oerntec.votenote.navigationdrawer.NavigationDrawerFragment;
 import de.oerntec.votenote.percentage_tracker_fragment.PercentageTrackerFragment;
@@ -127,7 +129,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
      * BEGIN EXCLUSIVE;] cannot start a transaction within a transaction
      */
     @SuppressWarnings("PointlessBooleanExpression")
-    public static final boolean ENABLE_TRANSACTION_LOG = ENABLE_DEBUG_LOG_CALLS && true;
+    public static final boolean ENABLE_TRANSACTION_LOG = ENABLE_DEBUG_LOG_CALLS && false;
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the
@@ -136,7 +138,6 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
     private static NavigationDrawerFragment mNavigationDrawerFragment;
 
     private static int mCurrentSelectedSubjectId;
-    private static MainActivity me;
     private DBLastViewed mLastViewedDb;
     private DBSubjects mSubjectDb;
 
@@ -154,14 +155,10 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
 
     private boolean mLastKnownAdmissionCounterViewVisibility = true;
 
-    public static boolean getPreference(String key, boolean def) {
-        return PreferenceManager.getDefaultSharedPreferences(me).getBoolean(key, def);
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        me = this;
 
         General.setupDatabaseInstances(getApplicationContext());
 
@@ -175,13 +172,14 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         //if we can not get our toolbar, its rip time anyways
         setSupportActionBar(toolbar);
 
+        Writer.mToastContext = getApplicationContext();
         General.adjustLanguage(this);
 
         mNavigationDrawerFragment =
                 (NavigationDrawerFragment) getFragmentManager().findFragmentById(R.id.navigation_drawer);
 
-        if (getPreference("enable_logging", false)) {
-            //setup handler getting all exceptions to log because google play costs 25 euros
+        if (Preferences.getPreference(this, "enable_logging", false)) {
+            //setup handler getting all exceptions to log file
             Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
                 @Override
                 public void uncaughtException(Thread thread, Throwable e) {
@@ -195,8 +193,6 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
 
         if (ENABLE_DEBUG_LOG_CALLS)
             Log.i("state info", "oncreate");
-
-        //considerAutoSelect();
     }
 
     @Override
@@ -249,14 +245,22 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
             int subjectCount = mSubjectDb.getCount();
             int lastSelected = mLastViewedDb.getLastSubjectPosition();
 
-            boolean hasValidLastSelected = lastSelected >= 0 && lastSelected < subjectCount;
+            //had some weird problems here
+            boolean hasValidLastSelected = true;
+
+            if (lastSelected < 0)
+                hasValidLastSelected = false;
+
+            if (lastSelected >= subjectCount)
+                hasValidLastSelected = false;
 
             //try to load last selected fragment
             if (hasValidLastSelected)
                 mNavigationDrawerFragment.selectItem(lastSelected);
-                //we dont have a valid last selected point.. maybe we can at least load something?
             else if (subjectCount > 0)
                 mNavigationDrawerFragment.selectItem(0);
+            else
+                removeSubjectFragment();
         }
     }
 
@@ -281,7 +285,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
             //    Log.i("state info", "onresume");
 
             //open drawer on each resume because the user may want that
-            if (getPreference("open_drawer_on_start", false)) {
+            if (Preferences.getPreference(this, "open_drawer_on_start", false)) {
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -300,7 +304,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
 
         //tutorials
         if (lessonCount == 0 && subjectCount > 0) {
-            if (!getPreference("tutorial_lessons_read", false)) {
+            if (!Preferences.getPreference(this, "tutorial_lessons_read", false)) {
                 @SuppressWarnings("deprecation")
                 AlertDialog.Builder b = new AlertDialog.Builder(this, AlertDialog.THEME_DEVICE_DEFAULT_LIGHT);
                 b.setTitle("Tutorial");
@@ -310,7 +314,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
                 setPreference("tutorial_lessons_read", true);
             }
         } else if (subjectCount == 0) {
-            if (!getPreference("tutorial_base_read", false)) {
+            if (!Preferences.getPreference(this, "tutorial_base_read", false)) {
                 @SuppressWarnings("deprecation")
                 AlertDialog.Builder b = new AlertDialog.Builder(this, AlertDialog.THEME_DEVICE_DEFAULT_LIGHT);
                 b.setTitle(R.string.tutorial_shortcut_title);
@@ -334,7 +338,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         }
 
         //eula
-        if (!getPreference("eula_agreed", false)) {
+        if (!Preferences.getPreference(this, "eula_agreed", false)) {
             AlertDialog.Builder eulaBuilder = new AlertDialog.Builder(this);
             eulaBuilder.setCancelable(false);
             eulaBuilder.setTitle("End-User License Agreement for Votenote");
@@ -382,7 +386,16 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager
                 .beginTransaction()
-                .replace(R.id.container, newFragment).commit();
+                .replace(R.id.container, newFragment, "subjectFragment").commit();
+    }
+
+    public void removeSubjectFragment() {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        Fragment old = fragmentManager.findFragmentByTag("subjectFragment");
+        if (old != null)
+            fragmentManager.beginTransaction().remove(old).commit();
+        else if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
+            Log.i("main", "no old fragment was found");
     }
 
     /**
@@ -493,7 +506,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
     }
 
     private void onPresentationPointsClick() {
-        DialogHelper.showPresentationPointDialog(this, mCurrentSelectedSubjectId);
+        Dialogs.showPresentationPointDialog(this, mCurrentSelectedSubjectId);
     }
 
     private void setPreference(String key, boolean val) {

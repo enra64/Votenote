@@ -17,7 +17,7 @@ import de.oerntec.votenote.database.pojo.AdmissionCounter;
 import de.oerntec.votenote.database.pojo.percentagetracker.PercentageTrackerPojo;
 import de.oerntec.votenote.database.tablehelpers.DBAdmissionCounters;
 import de.oerntec.votenote.database.tablehelpers.DBAdmissionPercentageMeta;
-import de.oerntec.votenote.helpers.DialogHelper;
+import de.oerntec.votenote.helpers.dialogs.Dialogs;
 import de.oerntec.votenote.helpers.textwatchers.FakeDisabledNotEmptyWatcher;
 
 public class UnifiedCreatorAdapter extends RecyclerView.Adapter<UnifiedCreatorAdapter.ViewHolder> implements View.OnClickListener {
@@ -206,7 +206,7 @@ public class UnifiedCreatorAdapter extends RecyclerView.Adapter<UnifiedCreatorAd
         if (v.getId() == R.id.subject_manager_fragment_main_card_add_percentage_counter) {
             mSubjectCreationFragment.openAdmissionPercentageCreationActivity(SubjectCreationFragment.ID_ADD_ITEM, true);
         } else {
-            DialogHelper.showCounterDialog(mFragmentManager, mSubjectId, SubjectCreationFragment.ID_ADD_ITEM, true);
+            Dialogs.showCounterDialog(mFragmentManager, mSubjectId, SubjectCreationFragment.ID_ADD_ITEM, true);
         }
     }
 

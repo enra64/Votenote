@@ -26,10 +26,11 @@ import de.oerntec.votenote.R;
 import de.oerntec.votenote.database.DatabaseCreator;
 import de.oerntec.votenote.database.pojo.Subject;
 import de.oerntec.votenote.database.tablehelpers.DBSubjects;
-import de.oerntec.votenote.helpers.DialogHelper;
 import de.oerntec.votenote.helpers.General;
-import de.oerntec.votenote.helpers.OnItemClickListener;
-import de.oerntec.votenote.helpers.RecyclerItemClickListener;
+import de.oerntec.votenote.helpers.dialogs.Dialogs;
+import de.oerntec.votenote.helpers.lists.LinearLayoutManagerWrapper;
+import de.oerntec.votenote.helpers.lists.OnItemClickListener;
+import de.oerntec.votenote.helpers.lists.RecyclerItemClickListener;
 import de.oerntec.votenote.helpers.notifications.NotificationGeneralHelper;
 import de.oerntec.votenote.subject_management.SubjectManagementListActivity;
 import de.oerntec.votenote.subject_management.percentage_tracker_creation.PercentageTrackerCreationActivity;
@@ -198,7 +199,7 @@ public class SubjectCreationFragment extends Fragment implements SubjectCreation
         recyclerView.setHasFixedSize(true);
 
         //give it a layoutmanager (whatever that is)
-        LinearLayoutManager manager = new LinearLayoutManager(getActivity());
+        LinearLayoutManager manager = new LinearLayoutManagerWrapper(getActivity());
         manager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(manager);
 
@@ -215,7 +216,7 @@ public class SubjectCreationFragment extends Fragment implements SubjectCreation
         recyclerView.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), recyclerView, new OnItemClickListener() {
             public void onItemClick(View view, int position) {
                 if (mAdapter.getItemViewType(position) == UnifiedCreatorAdapter.VIEW_COUNTER)
-                    DialogHelper.showCounterDialog(getFragmentManager(), mSubjectId, (int) view.getTag(), false);
+                    Dialogs.showCounterDialog(getFragmentManager(), mSubjectId, (int) view.getTag(), false);
                 else if (mAdapter.getItemViewType(position) == UnifiedCreatorAdapter.VIEW_PERCENTAGE) {
                     openAdmissionPercentageCreationActivity((int) view.getTag(), false);
                 }
@@ -224,7 +225,7 @@ public class SubjectCreationFragment extends Fragment implements SubjectCreation
             public void onItemLongClick(final View view, final int position) {
                 if ((int) view.getTag() != ID_ADD_ITEM) {
                     if (mAdapter.getItemViewType(position) == UnifiedCreatorAdapter.VIEW_COUNTER)
-                        DialogHelper.showDeleteDialog(
+                        Dialogs.showDeleteDialog(
                                 getActivity(),
                                 new DialogInterface.OnClickListener() {
                                     @Override
@@ -234,7 +235,7 @@ public class SubjectCreationFragment extends Fragment implements SubjectCreation
                                 },
                                 String.format(getString(R.string.dialog_delete_title), mAdapter.getCounterPojoAtPosition(position).name));
                     else if (mAdapter.getItemViewType(position) == UnifiedCreatorAdapter.VIEW_PERCENTAGE)
-                        DialogHelper.showDeleteDialog(
+                        Dialogs.showDeleteDialog(
                                 getActivity(),
                                 new DialogInterface.OnClickListener() {
                                     @Override

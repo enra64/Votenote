@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import de.oerntec.votenote.MainActivity;
 import de.oerntec.votenote.R;
 import de.oerntec.votenote.database.pojo.percentagetracker.EstimationModeDependentResults;
 import de.oerntec.votenote.database.pojo.percentagetracker.PercentageTrackerCalculationResult;
@@ -26,6 +25,7 @@ import de.oerntec.votenote.database.pojo.percentagetracker.PercentageTrackerCalc
 import de.oerntec.votenote.database.pojo.percentagetracker.PercentageTrackerPojo;
 import de.oerntec.votenote.database.tablehelpers.DBAdmissionPercentageMeta;
 import de.oerntec.votenote.database.tablehelpers.DBLessons;
+import de.oerntec.votenote.helpers.Preferences;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -65,7 +65,7 @@ public class AdmissionPercentageOverviewFragment extends Fragment {
         mAdmissionCounterMetaPojo = DBAdmissionPercentageMeta.getInstance().getItem(admissionCounterId);
 
         //do we want reverse sort?
-        boolean lastestLessonFirst = MainActivity.getPreference("reverse_lesson_sort", false);
+        boolean lastestLessonFirst = Preferences.getPreference(getActivity(), "reverse_lesson_sort", false);
 
         //load all data
         mAdmissionCounterMetaPojo.loadData(DBLessons.getInstance(), lastestLessonFirst);

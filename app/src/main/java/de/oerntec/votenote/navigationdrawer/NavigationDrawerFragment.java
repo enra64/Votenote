@@ -42,6 +42,7 @@ import java.util.List;
 import de.oerntec.votenote.R;
 import de.oerntec.votenote.database.pojo.Subject;
 import de.oerntec.votenote.database.tablehelpers.DBSubjects;
+import de.oerntec.votenote.helpers.lists.LinearLayoutManagerWrapper;
 import de.oerntec.votenote.preferences.PreferencesActivity;
 import de.oerntec.votenote.subject_management.SubjectManagementListActivity;
 
@@ -151,7 +152,7 @@ public class NavigationDrawerFragment extends Fragment implements SelectionCallb
         mAdapter = new NavigationDrawerAdapter(getActivity(), this);
 
         //give it a layoutmanager (whatever that is)
-        LinearLayoutManager manager = new LinearLayoutManager(getActivity());
+        LinearLayoutManager manager = new LinearLayoutManagerWrapper(getActivity());
         manager.setOrientation(LinearLayoutManager.VERTICAL);
         mSubjectList.setLayoutManager(manager);
         mSubjectList.setAdapter(mAdapter);

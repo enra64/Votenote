@@ -18,7 +18,8 @@ import java.util.List;
 import de.oerntec.votenote.database.pojo.percentagetracker.PercentageTrackerPojo;
 import de.oerntec.votenote.database.tablehelpers.DBAdmissionPercentageMeta;
 import de.oerntec.votenote.database.tablehelpers.DBLastViewed;
-import de.oerntec.votenote.helpers.DialogHelper;
+import de.oerntec.votenote.helpers.Preferences;
+import de.oerntec.votenote.helpers.dialogs.Dialogs;
 import de.oerntec.votenote.percentage_tracker_fragment.PercentageTrackerFragment;
 
 /**
@@ -166,7 +167,7 @@ public class SubjectFragment extends Fragment {
         }
 
         //do we need to save that percentage counter we viewed last?
-        mSaveLastMetaId = MainActivity.getPreference("save_last_selected_meta_pos", true);
+        mSaveLastMetaId = Preferences.getPreference(getActivity(), "save_last_selected_meta_pos", true);
 
         ((MainActivity) getActivity()).restoreActionBar();
 
@@ -204,7 +205,7 @@ public class SubjectFragment extends Fragment {
         mViewPager.setCurrentItem(admissionPercentageFragmentPosition);
 
         if (forceLessonAddDialog)
-            DialogHelper.showAddLessonDialog(getFragmentManager(), admissionPercentageFragmentId);
+            Dialogs.showAddLessonDialog(getFragmentManager(), admissionPercentageFragmentId);
     }
 
     /**
