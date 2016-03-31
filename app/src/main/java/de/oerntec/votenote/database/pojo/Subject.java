@@ -36,13 +36,6 @@ public class Subject {
         this.id = id;
     }
 
-    public Subject(String name, int id, List<AdmissionCounter> admissionCounterList, List<PercentageTrackerPojo> percentageTrackerPojoList) {
-        this.name = name;
-        this.id = id;
-        this.admissionCounterList = admissionCounterList;
-        this.percentageTrackerPojoList = percentageTrackerPojoList;
-    }
-
     /**
      * fill the lists that are usually empty containing all other pojos belonging to this subject
      */

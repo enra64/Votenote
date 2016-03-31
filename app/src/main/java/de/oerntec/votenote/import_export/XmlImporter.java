@@ -20,6 +20,7 @@ package de.oerntec.votenote.import_export;
 import android.content.Context;
 import android.util.Log;
 import android.util.Xml;
+import android.widget.Toast;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -31,6 +32,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import de.oerntec.votenote.MainActivity;
+import de.oerntec.votenote.R;
 import de.oerntec.votenote.database.DatabaseCreator;
 import de.oerntec.votenote.database.pojo.AdmissionCounter;
 import de.oerntec.votenote.database.pojo.Lesson;
@@ -50,7 +52,7 @@ class XmlImporter {
             inputStream = new FileInputStream(file);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-            MainActivity.toast("File not found!");
+            Toast.makeText(context, R.string.file_not_found, Toast.LENGTH_SHORT).show();
             return false;
         }
         return startParser(inputStream);

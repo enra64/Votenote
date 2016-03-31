@@ -137,7 +137,7 @@ public class AdmissionCounterDialogFragment extends DialogFragment implements Di
         SubjectCreationActivity host = (SubjectCreationActivity) getActivity();
         if (host == null)
             throw new AssertionError("why cant we find the host?");
-        host.callCreatorFragmentForItemChange(mAdmissionCounterId, false, resultState);
+        host.callCreatorFragmentForCounterChange(mAdmissionCounterId, resultState);
     }
 
     @Override

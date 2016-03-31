@@ -400,9 +400,9 @@ public class SubjectCreationFragment extends Fragment implements SubjectCreation
     public void admissionCounterFinished(int id, boolean isNew) {
         mSubjectHasBeenChanged = true;
         if (isNew)
-            mAdapter.notifyIdAdded(id, true);
+            mAdapter.notifyIdAdded(id, false);
         else
-            mAdapter.notifyOfChangeAtId(id, true);
+            mAdapter.notifyOfChangeAtId(id, false);
         dialogClosed();
     }
 

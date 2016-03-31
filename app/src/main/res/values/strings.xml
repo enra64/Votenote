@@ -158,4 +158,5 @@
     <string name="subject_creation_fragment_back_confirmation_empty_name_warning">Einen leeren Namen kannst du nicht speichern!</string>
     <string name="dow_picker_title">Wochentag wählen</string>
     <string name="admission_counter_target_point_count">Zielpunkte</string>
+    <string name="file_not_found">Datei nicht gefunden!</string>
 </resources>

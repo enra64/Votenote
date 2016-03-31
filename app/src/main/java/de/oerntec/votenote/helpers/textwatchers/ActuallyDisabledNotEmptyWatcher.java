@@ -8,10 +8,6 @@ import android.widget.EditText;
  * This textWatcher actually disables the given button.
  */
 public class ActuallyDisabledNotEmptyWatcher extends AbstractNotEmptyWatcher {
-    public ActuallyDisabledNotEmptyWatcher(EditText editText, String emptyText, @Nullable Button disableOnEmpty) {
-        super(editText, emptyText, disableOnEmpty);
-    }
-
     public ActuallyDisabledNotEmptyWatcher(
             EditText editText,
             String emptyText,

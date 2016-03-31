@@ -39,11 +39,4 @@ public class AdmissionPercentageOverviewActivity extends AppCompatActivity {
                 add(R.id.admission_percentage_overview_fragment_container, mContentFragment)
                 .commit();
     }
-
-    void setToolbarTitle(String title) {
-        if (getSupportActionBar() != null)
-            getSupportActionBar().setTitle(title);
-        else
-            throw new AssertionError("no toolbar found?");
-    }
 }

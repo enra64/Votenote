@@ -38,7 +38,6 @@ import android.view.View;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.Toast;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -154,22 +153,9 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
     private boolean mLastKnownPercentageCounterInfoViewVisibility = true;
 
     private boolean mLastKnownAdmissionCounterViewVisibility = true;
-    private int notificationId = 1;
-
-    public static void toast(String text) {
-        Toast.makeText(me, text, Toast.LENGTH_SHORT).show();
-    }
 
     public static boolean getPreference(String key, boolean def) {
         return PreferenceManager.getDefaultSharedPreferences(me).getBoolean(key, def);
-    }
-
-    public static String getPreference(String key, String def) {
-        return PreferenceManager.getDefaultSharedPreferences(me).getString(key, def);
-    }
-
-    private static int getPreference(String key, int def) {
-        return PreferenceManager.getDefaultSharedPreferences(me).getInt(key, def);
     }
 
     @Override

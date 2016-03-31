@@ -152,4 +152,5 @@
     <string name="subject_creation_fragment_back_confirmation_message">Do you want to save your changes</string>
     <string name="navigation_fragment_icon_description_subject_management">Subject management icon</string>
     <string name="admission_counter_target_point_count">Target point count</string>
+    <string name="file_not_found">File not found!</string>
 </resources>

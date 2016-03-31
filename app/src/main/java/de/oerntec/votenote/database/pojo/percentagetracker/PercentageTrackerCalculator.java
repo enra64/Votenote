@@ -108,14 +108,6 @@ public class PercentageTrackerCalculator {
 
     /**
      * This estimates a lesson count by returning the number of assignments per lesson estimated
-     * accordingly to the item estimation mode
-     */
-    public static float getEstimatedAssignmentsPerLesson(PercentageTrackerPojo item) {
-        return getEstimatedAssignmentsPerLesson(item, item.estimationMode);
-    }
-
-    /**
-     * This estimates a lesson count by returning the number of assignments per lesson estimated
      * accordingly to the given estimation mode
      */
     private static float getEstimatedAssignmentsPerLesson(PercentageTrackerPojo item, EstimationMode estimationMode) {

@@ -65,26 +65,17 @@ public class SubjectCreationActivity extends AppCompatActivity {
         General.setupDatabaseInstances(getApplicationContext());
     }
 
-    public void callCreatorFragmentForItemChange(int itemId, boolean isPercentage, int state) {
+    public void callCreatorFragmentForCounterChange(int itemId, int state) {
         SubjectCreationFragment creator = (SubjectCreationFragment) getFragmentManager().findFragmentById(R.id.activity_subject_creation_fragment_container);
         switch (state) {
             case DIALOG_RESULT_ADDED:
-                if (isPercentage)
-                    creator.admissionPercentageFinished(itemId, true);
-                else
-                    creator.admissionCounterFinished(itemId, true);
+                creator.admissionCounterFinished(itemId, true);
                 break;
             case DIALOG_RESULT_CHANGED:
-                if (isPercentage)
-                    creator.admissionPercentageFinished(itemId, false);
-                else
-                    creator.admissionCounterFinished(itemId, false);
+                creator.admissionCounterFinished(itemId, false);
                 break;
             case DIALOG_RESULT_DELETE:
-                if (isPercentage)
-                    creator.deleteAdmissionPercentage(itemId);
-                else
-                    creator.deleteAdmissionCounter(itemId);
+                creator.deleteAdmissionCounter(itemId);
                 break;
             case DIALOG_RESULT_CLOSED:
                 creator.dialogClosed();

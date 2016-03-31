@@ -143,10 +143,6 @@ public class SubjectFragment extends Fragment {
             mForcedAdmissionPercentageId = getArguments().getInt(ARG_FORCED_PERCENTAGE_TRACKER_ID, -1);
     }
 
-    public int getSubjectId(){
-        return mSubjectId;
-    }
-
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
