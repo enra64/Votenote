@@ -127,7 +127,7 @@ public class PreferencesActivity extends AppCompatActivity {
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
                     if (!Permissions.hasPermission(getActivity(), android.Manifest.permission.WRITE_EXTERNAL_STORAGE))
                         Permissions.requestPermission(getActivity(), android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
-                    return false;
+                    return true;
                 }
             };
 
@@ -142,7 +142,7 @@ public class PreferencesActivity extends AppCompatActivity {
                         if (!Permissions.hasPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE))
                             Permissions.requestPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE);
                     }
-                    return false;
+                    return true;
                 }
             });
 
