@@ -24,6 +24,10 @@ public class UnifiedCreatorAdapter extends RecyclerView.Adapter<UnifiedCreatorAd
     static final int VIEW_PERCENTAGE = 1;
     static final int VIEW_COUNTER = 2;
     private static final int VIEW_INFO = 0;
+    private static final int VIEW_TUTORIAL = 3;
+
+    private static final int NUMBER_OF_INFO_VIEWS = 1;
+
     private final DBAdmissionCounters mCounterDb;
     private final DBAdmissionPercentageMeta mPercentageDb;
     private final int mSubjectId;
@@ -40,6 +44,16 @@ public class UnifiedCreatorAdapter extends RecyclerView.Adapter<UnifiedCreatorAd
     private List<PercentageTrackerPojo> mPercentageData;
     private EditText mNameInput;
     private String mSubjectName = null;
+
+    /**
+     * Should we display the tutorial?
+     */
+    private boolean mDisplayTutorial = false;
+
+    /**
+     * If we show a tutorial, this is 1, so we can add it to things like getCount etc
+     */
+    private int mNumberOfTutorialViews = 0;
 
     //this got out of hand
     public UnifiedCreatorAdapter(
@@ -59,7 +73,7 @@ public class UnifiedCreatorAdapter extends RecyclerView.Adapter<UnifiedCreatorAd
         mSubjectCreationFragment = subjectCreationFragment;
         mParentOkButton = okButton;
         mEnabledOnClickListener = enabledOnClickListener;
-        requery();
+        reQuery();
     }
 
     @Override
@@ -68,21 +82,24 @@ public class UnifiedCreatorAdapter extends RecyclerView.Adapter<UnifiedCreatorAd
         View root;
         switch (viewType) {
             case VIEW_INFO:
-                root = inflater.inflate(R.layout.subject_manager_fragment_main_card, parent, false);
+                root = inflater.inflate(R.layout.subject_creator_unified_list_main_card, parent, false);
                 InfoViewHolder infoHolder = new InfoViewHolder(root);
                 infoHolder.percentageAddButton = (Button) root.findViewById(R.id.subject_manager_fragment_main_card_add_percentage_counter);
                 infoHolder.counterAddButton = (Button) root.findViewById(R.id.subject_manager_fragment_main_card_add_counter);
                 mNameInput = (EditText) root.findViewById(R.id.subject_manager_fragment_main_card_name);
                 infoHolder.name = mNameInput;
                 return infoHolder;
+            case VIEW_TUTORIAL:
+                root = inflater.inflate(R.layout.subject_creator_unified_list_tutorial, parent, false);
+                return new TutorialViewHolder(root);
             case VIEW_COUNTER:
-                root = inflater.inflate(R.layout.subject_manager_fragment_counter_card, parent, false);
+                root = inflater.inflate(R.layout.subject_creator_unified_list_counter_card, parent, false);
                 CounterViewHolder counterHolder = new CounterViewHolder(root);
                 counterHolder.targetPoints = (TextView) root.findViewById(R.id.subject_manager_fragment_counter_card_target_count);
                 counterHolder.name = (TextView) root.findViewById(R.id.subject_manager_fragment_counter_card_name);
                 return counterHolder;
             case VIEW_PERCENTAGE:
-                root = inflater.inflate(R.layout.subject_manager_fragment_percentage_card, parent, false);
+                root = inflater.inflate(R.layout.subject_creator_unified_list_percentage_card, parent, false);
                 PercentageViewHolder percentageHolder = new PercentageViewHolder(root);
                 percentageHolder.targetPercentage = (TextView) root.findViewById(R.id.subject_manager_fragment_percentage_card_target_percentage);
                 percentageHolder.targetLessonCount = (TextView) root.findViewById(R.id.subject_manager_fragment_percentage_card_target_lesson_count);
@@ -134,29 +151,46 @@ public class UnifiedCreatorAdapter extends RecyclerView.Adapter<UnifiedCreatorAd
                 percentageHolder.targetLessonCount.setText(mContext.getString(R.string.percentage_card_target_lesson_conut, percentageData.userLessonCountEstimation));
                 percentageHolder.targetPercentage.setText(mContext.getString(R.string.percentage_card_target_percentage, percentageData.baselineTargetPercentage));
                 break;
+            case VIEW_TUTORIAL:
+                break;
+            default:
+                throw new AssertionError("wat");
         }
     }
 
     @Override
     public int getItemCount() {
-        return mCounterData.size() + mPercentageData.size() + 1;
+        return mCounterData.size() + mPercentageData.size() + NUMBER_OF_INFO_VIEWS + mNumberOfTutorialViews;
+    }
+
+    private void displayTutorial(boolean display) {
+        mDisplayTutorial = display;
+        mNumberOfTutorialViews = display ? 1 : 0;
+        notifyDataSetChanged();
     }
 
     @Override
     public int getItemViewType(int position) {
         if (position == 0)
             return VIEW_INFO;
-        else if (position <= mCounterData.size())
+        else if (mDisplayTutorial) {
+            if (position > 1)
+                throw new AssertionError("the tutorial is only supposed to be shown when the list is empty");
+            return VIEW_TUTORIAL;
+        } else if (position < mCounterData.size() + NUMBER_OF_INFO_VIEWS + mNumberOfTutorialViews)
             return VIEW_COUNTER;
         else
             return VIEW_PERCENTAGE;
     }
 
-    private void requery() {
+    private void reQuery() {
         mCounterData = null;
         mPercentageData = null;
         mCounterData = mCounterDb.getItemsForSubject(mSubjectId);
         mPercentageData = mPercentageDb.getItemsForSubject(mSubjectId);
+
+        //if we have no other data, show a tutorial
+        displayTutorial(mPercentageData.isEmpty() && mCounterData.isEmpty());
     }
 
     private int convertCounterIdToPosition(int id) {
@@ -164,7 +198,7 @@ public class UnifiedCreatorAdapter extends RecyclerView.Adapter<UnifiedCreatorAd
         for (pos = 0; pos < mCounterData.size(); pos++)
             if (mCounterData.get(pos).id == id)
                 break;
-        return pos + 1;
+        return pos + NUMBER_OF_INFO_VIEWS + mNumberOfTutorialViews;
     }
 
     private int convertPercentageIdToPosition(int id) {
@@ -172,7 +206,7 @@ public class UnifiedCreatorAdapter extends RecyclerView.Adapter<UnifiedCreatorAd
         for (pos = 0; pos < mPercentageData.size(); pos++)
             if (mPercentageData.get(pos).id == id)
                 break;
-        return pos + mCounterData.size() + 1;
+        return pos + mCounterData.size() + NUMBER_OF_INFO_VIEWS + mNumberOfTutorialViews;
     }
 
     public void removeCounter(int admissionCounterId) {
@@ -180,7 +214,7 @@ public class UnifiedCreatorAdapter extends RecyclerView.Adapter<UnifiedCreatorAd
 
         notifyItemRemoved(recyclerViewPosition);
         mCounterDb.deleteItem(admissionCounterId);
-        requery();
+        reQuery();
     }
 
     public void removePercentage(int percentageId) {
@@ -188,16 +222,16 @@ public class UnifiedCreatorAdapter extends RecyclerView.Adapter<UnifiedCreatorAd
 
         notifyItemRemoved(recyclerViewPosition);
         mPercentageDb.deleteItem(percentageId);
-        requery();
+        reQuery();
     }
 
     public void notifyOfChangeAtId(int id, boolean isPercentage) {
-        requery();
+        reQuery();
         notifyItemChanged(isPercentage ? convertPercentageIdToPosition(id) : convertCounterIdToPosition(id));
     }
 
     public void notifyIdAdded(int id, boolean isPercentage) {
-        requery();
+        reQuery();
         notifyItemInserted(isPercentage ? convertPercentageIdToPosition(id) : convertCounterIdToPosition(id));
     }
 
@@ -222,6 +256,7 @@ public class UnifiedCreatorAdapter extends RecyclerView.Adapter<UnifiedCreatorAd
         return mNameInput.getText().toString();
     }
 
+
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final int type;
 
@@ -237,6 +272,12 @@ public class UnifiedCreatorAdapter extends RecyclerView.Adapter<UnifiedCreatorAd
 
         public InfoViewHolder(View itemView) {
             super(itemView, VIEW_INFO);
+        }
+    }
+
+    public class TutorialViewHolder extends ViewHolder {
+        public TutorialViewHolder(View itemView) {
+            super(itemView, VIEW_TUTORIAL);
         }
     }
 

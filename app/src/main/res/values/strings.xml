@@ -123,8 +123,8 @@
     <string name="action_create_example_title">Beispiel erstellen</string>
     <string name="example_subject_presentation_points">Vortragspunkte</string>
     <string name="example_subject_proof_assignments_counter_name">Belegaufgabe</string>
-    <string name="example_subject_percentage_counter_1_name">Votierungstracker 1</string>
-    <string name="example_subject_percentage_counter_2_name">Votierungstracker 2</string>
+    <string name="example_subject_percentage_counter_1_name">Votierungen Theoretische Aufgaben</string>
+    <string name="example_subject_percentage_counter_2_name">Votierungen Praktische Aufgaben</string>
     <string name="percentage_creator_dow_empty_button_text">Wochentag</string>
     <string name="percentage_creator_time_empty_button_text">Zeit</string>
     <string name="percentage_creator_notification_enabled_summary">Wöchentliche Erinnerung zu votieren.</string>
@@ -168,4 +168,8 @@
     <string name="permissions_ext_read_success">Nun kann der Log oder das Backup geschrieben werden.</string>
     <string name="permissions_ext_read_failure">Ohne diese Berechtigung kann kein Log oder Backup erstellt werden!</string>
     <string name="name">Name</string>
+    <string name="percentage_tracker">Votierungstracker</string>
+    <string name="point_counter">Punktezähler</string>
+    <string name="percentage_tracker_tutorial_description">Mit Votierungstrackern verfolgst du, wie viel Prozent du votiert hast, und wie viele Aufgaben du in der Zukunft noch votieren musst.</string>
+    <string name="point_counter_tutorial_description">Punktezähler speichern eine Zahl, mit der man zum Beispiel Vortragspunkte nachhalten kann.</string>
 </resources>
