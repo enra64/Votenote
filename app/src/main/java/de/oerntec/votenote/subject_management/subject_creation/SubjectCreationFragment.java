@@ -41,14 +41,14 @@ import de.oerntec.votenote.subject_management.percentage_tracker_creation.Percen
  */
 public class SubjectCreationFragment extends Fragment implements SubjectCreationDialogInterface, View.OnClickListener {
     /**
-     * Lesson should be added, not changed
-     */
-    public static final int ADD_SUBJECT_CODE = -1;
-    /**
      * ID used for adding percentage or counter
      */
     public static final int ID_ADD_ITEM = -2;
-    NotificationReminder mNotificationReminder = new NotificationReminder();
+    /**
+     * Lesson should be added, not changed
+     */
+    private static final int ADD_SUBJECT_CODE = -1;
+    private final NotificationReminder mNotificationReminder = new NotificationReminder();
     /**
      * DB for the subjects
      */
@@ -399,7 +399,10 @@ public class SubjectCreationFragment extends Fragment implements SubjectCreation
     @Override
     public void admissionCounterFinished(int id, boolean isNew) {
         mSubjectHasBeenChanged = true;
-        mAdapter.notifyOfChangeAtId(id, false);
+        if (isNew)
+            mAdapter.notifyIdAdded(id, true);
+        else
+            mAdapter.notifyOfChangeAtId(id, true);
         dialogClosed();
     }
 
@@ -484,7 +487,7 @@ public class SubjectCreationFragment extends Fragment implements SubjectCreation
      * added
      */
     private class NotificationReminder {
-        private List<Reminder> notificationList = new ArrayList<>();
+        private final List<Reminder> notificationList = new ArrayList<>();
 
         /**
          * remove a reminder
@@ -521,8 +524,8 @@ public class SubjectCreationFragment extends Fragment implements SubjectCreation
         }
 
         class Reminder {
-            int trackerId;
-            String recurrenceString;
+            final int trackerId;
+            final String recurrenceString;
 
             public Reminder(int trackerId, String recurrenceString) {
                 this.trackerId = trackerId;

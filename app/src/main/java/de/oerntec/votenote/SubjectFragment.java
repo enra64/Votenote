@@ -282,10 +282,10 @@ public class SubjectFragment extends Fragment {
      * percentage counter
      */
     public class AdmissionPercentageAdapter extends FragmentPagerAdapter {
-        private DBAdmissionPercentageMeta mMetaDb;
+        private final DBAdmissionPercentageMeta mMetaDb;
+        private final int mSubjectId;
+        private final HashMap<Integer, PercentageTrackerFragment> mReferenceMap;
         private List<PercentageTrackerPojo> mData;
-        private int mSubjectId;
-        private HashMap<Integer, PercentageTrackerFragment> mReferenceMap;
 
         public AdmissionPercentageAdapter(FragmentManager fm, DBAdmissionPercentageMeta dbMeta, int subjectId) {
             super(fm);

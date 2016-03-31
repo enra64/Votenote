@@ -31,7 +31,7 @@ import de.oerntec.votenote.import_export.BackupHelper;
 import de.oerntec.votenote.import_export.CsvExporter;
 
 public class CustomActionPreference extends Preference {
-    String mActionKey;
+    private final String mActionKey;
 
     public CustomActionPreference(Context context, AttributeSet attrs) {
         super(context, attrs);

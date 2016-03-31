@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent" android:layout_height="match_parent"
     android:padding="12dp">
 
@@ -11,7 +12,8 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:text="Name"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        tools:ignore="HardcodedText" />
 
     <EditText
         android:id="@+id/subject_manager_fragment_dialog_admission_counter_name_edittext"
@@ -21,7 +23,8 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/textView16" />
+        android:layout_below="@+id/textView16"
+        android:inputType="textNoSuggestions" />
 
     <TextView
         android:id="@+id/textView17"
@@ -31,7 +34,7 @@
         android:layout_alignParentStart="true"
         android:layout_below="@+id/subject_manager_fragment_dialog_admission_counter_name_edittext"
         android:layout_marginTop="10dp"
-        android:text="Target point count"
+        android:text="@string/admission_counter_target_point_count"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <SeekBar
@@ -43,6 +46,7 @@
         android:layout_alignParentStart="true"
         android:layout_alignRight="@+id/subject_manager_fragment_dialog_admission_counter_current"
         android:layout_below="@+id/textView17"
+        android:layout_toLeftOf="@+id/subject_manager_fragment_dialog_admission_counter_current"
         android:layout_toStartOf="@+id/subject_manager_fragment_dialog_admission_counter_current" />
 
     <TextView
@@ -52,7 +56,6 @@
         android:layout_above="@+id/subject_manager_fragment_dialog_admission_counter_target_seekbar"
         android:layout_alignEnd="@+id/subject_manager_fragment_dialog_admission_counter_name_edittext"
         android:layout_alignRight="@+id/subject_manager_fragment_dialog_admission_counter_name_edittext"
-        android:text="5"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:textColor="@android:color/secondary_text_dark" />
 

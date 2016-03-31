@@ -13,7 +13,6 @@
         android:layout_height="wrap_content">
 
         <TextView
-            android:id="@+id/textView9"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
@@ -28,7 +27,6 @@
             android:layout_height="wrap_content">
 
             <ImageView
-                android:id="@+id/imageView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
@@ -36,7 +34,6 @@
                 android:src="@mipmap/background_tutorial" />
 
             <ImageView
-                android:id="@+id/imageView2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
@@ -53,7 +50,6 @@
         android:layout_marginTop="4dp">
 
         <TextView
-            android:id="@+id/textView10"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
@@ -68,7 +64,6 @@
             android:layout_height="wrap_content">
 
             <ImageView
-                android:id="@+id/imageView3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
@@ -76,7 +71,6 @@
                 android:src="@mipmap/background_tutorial" />
 
             <ImageView
-                android:id="@+id/imageView4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
@@ -92,7 +86,6 @@
         android:layout_marginTop="4dp">
 
         <TextView
-            android:id="@+id/textView18"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
@@ -107,7 +100,6 @@
             android:layout_height="wrap_content">
 
             <ImageView
-                android:id="@+id/imageView15"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
@@ -115,7 +107,6 @@
                 android:src="@mipmap/background_tutorial" />
 
             <ImageView
-                android:id="@+id/imageView16"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
@@ -125,12 +116,10 @@
     </RelativeLayout>
 
     <TextView
-        android:id="@+id/textView3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:text="@string/tutorial_create_your_first_subject"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textColor="@color/primary_text_default_material_light" />
+        android:textAppearance="?android:attr/textAppearanceLarge" />
 
 </LinearLayout>

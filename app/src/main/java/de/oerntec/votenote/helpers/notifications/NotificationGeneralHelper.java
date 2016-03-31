@@ -47,7 +47,7 @@ public class NotificationGeneralHelper {
     /**
      * Returns a calendar set to the day of week, hour and minute given
      */
-    public static Calendar getCalendar(int day, int hour, int minute) {
+    private static Calendar getCalendar(int day, int hour, int minute) {
         //set the calendar to the given time
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
@@ -69,7 +69,7 @@ public class NotificationGeneralHelper {
         return calendar;
     }
 
-    public static PendingIntent getAlarmPendingIntent(Context context, int subjectId, int admissionPercentageId) {
+    private static PendingIntent getAlarmPendingIntent(Context context, int subjectId, int admissionPercentageId) {
         Intent intent = new Intent(context, NotificationAlarmReceiver.class);
         intent.setAction("de.oerntec.votenote.notifications");
         intent.putExtra("subject_id_notification", subjectId);

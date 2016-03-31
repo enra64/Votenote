@@ -9,12 +9,12 @@ import android.widget.EditText;
 /**
  * Sets an error if the EditText is empty
  */
-public abstract class AbstractNotEmptyWatcher implements TextWatcher {
-    protected final EditText mEditText;
-    protected final Button mButton;
-    protected String mErrorString;
+abstract class AbstractNotEmptyWatcher implements TextWatcher {
+    final Button mButton;
+    private final EditText mEditText;
+    private final String mErrorString;
 
-    public AbstractNotEmptyWatcher(
+    AbstractNotEmptyWatcher(
             EditText editText,
             String emptyText,
             @Nullable Button disableOnEmpty) {

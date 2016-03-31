@@ -6,8 +6,12 @@ import de.oerntec.votenote.database.NameAndIdPojo;
  * POJO for representing an admission counter
  */
 public class AdmissionCounter implements Cloneable, NameAndIdPojo {
-    public int id, subjectId, currentValue, targetValue;
-    public String name;
+    public final int id;
+    public final int subjectId;
+
+    public final int targetValue;
+    public final String name;
+    public int currentValue;
 
     public AdmissionCounter(int id, int subjectId, String name, int currentValue, int targetValue) {
         this.id = id;

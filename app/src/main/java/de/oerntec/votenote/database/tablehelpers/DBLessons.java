@@ -36,8 +36,8 @@ public class DBLessons extends CrudDb<Lesson> {
      */
     private static DBLessons mInstance;
 
-    private DBLessons(Context context, String tableName) {
-        super(context, tableName);
+    private DBLessons(Context context) {
+        super(context, DatabaseCreator.TABLE_NAME_ADMISSION_PERCENTAGES_DATA);
     }
 
     /**
@@ -48,7 +48,7 @@ public class DBLessons extends CrudDb<Lesson> {
      */
     public static DBLessons setupInstance(Context context) {
         if (mInstance == null)
-            mInstance = new DBLessons(context, DatabaseCreator.TABLE_NAME_ADMISSION_PERCENTAGES_DATA);
+            mInstance = new DBLessons(context);
         return mInstance;
     }
 

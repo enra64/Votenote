@@ -55,15 +55,15 @@ import java.util.List;
 import de.oerntec.votenote.MainActivity;
 import de.oerntec.votenote.R;
 
-public class FileDialog {
+class FileDialog {
     private static final int FileOpen = 0;
     private static final int FileSave = 1;
     private static final int FolderChoose = 2;
     private static final boolean ENABLE_FILE_DIALOG_LOG = false;
+    private final Context mContext;
     public String defaultFileName = "export.db";
     private int Select_type = FileSave;
     private String mSdcardDirectory = "";
-    private Context mContext;
     private String selectedFileName = defaultFileName;
     private EditText inputText;
     private TextView breadcrumbsText;

@@ -40,8 +40,8 @@ public class DBAdmissionCounters extends CrudDb<AdmissionCounter> implements Poj
     /**
      * Private constructor for singleton
      */
-    private DBAdmissionCounters(Context context, String tableName) {
-        super(context, tableName);
+    private DBAdmissionCounters(Context context) {
+        super(context, DatabaseCreator.TABLE_NAME_ADMISSION_COUNTERS);
     }
 
     /**
@@ -52,7 +52,7 @@ public class DBAdmissionCounters extends CrudDb<AdmissionCounter> implements Poj
      */
     public static DBAdmissionCounters setupInstance(Context context) {
         if (mInstance == null)
-            mInstance = new DBAdmissionCounters(context, DatabaseCreator.TABLE_NAME_ADMISSION_COUNTERS);
+            mInstance = new DBAdmissionCounters(context);
         return mInstance;
     }
 

@@ -36,20 +36,17 @@ import java.util.Locale;
 import de.oerntec.votenote.MainActivity;
 
 public class DatabaseCreator extends SQLiteOpenHelper {
-    public static final String DATABASE_NAME = "uebungen";
     //new
     public static final String TABLE_NAME_SUBJECTS = "subjects";
     public static final String TABLE_NAME_ADMISSION_COUNTERS = "admission_counters";
     public static final String TABLE_NAME_ADMISSION_PERCENTAGES_META = "admission_percentages_meta";
     public static final String TABLE_NAME_ADMISSION_PERCENTAGES_DATA = "admission_percentages_data";
     public static final String TABLE_NAME_LAST_VIEWED = "last_viewed";
-
     /***********************************************************************************************
      * admission counter database start
      **********************************************************************************************/
     public static final String SUBJECTS_ID = "_id";
     public static final String SUBJECTS_NAME = "uebung_name";
-
     /***********************************************************************************************
      * admission counter database start
      **********************************************************************************************/
@@ -58,7 +55,6 @@ public class DatabaseCreator extends SQLiteOpenHelper {
     public static final String ADMISSION_COUNTER_COUNTER_NAME = "counter_name";
     public static final String ADMISSION_COUNTER_CURRENT = "current";
     public static final String ADMISSION_COUNTER_TARGET = "target";
-
     /***********************************************************************************************
      * admission percentage names database start
      **********************************************************************************************/
@@ -73,7 +69,6 @@ public class DatabaseCreator extends SQLiteOpenHelper {
     public static final String ADMISSION_PERCENTAGES_META_ESTIMATION_MODE = "estimation_mode";
     public static final String ADMISSION_PERCENTAGES_META_TARGET_LESSON_COUNT = "target_lesson_count";
     public static final String ADMISSION_PERCENTAGES_META_USER_ESTIMATED_ASSIGNMENTS_PER_LESSON = "target_assignments_per_lesson";
-
     /***********************************************************************************************
      * admission percentage data database start
      **********************************************************************************************/
@@ -81,16 +76,15 @@ public class DatabaseCreator extends SQLiteOpenHelper {
     public static final String ADMISSION_PERCENTAGES_DATA_ADMISSION_PERCENTAGE_ID = "admission_percentage_id";
     public static final String ADMISSION_PERCENTAGES_DATA_FINISHED_ASSIGNMENTS = "finished_assignments";
     public static final String ADMISSION_PERCENTAGES_DATA_AVAILABLE_ASSIGNMENTS = "available_assignments";
-
     public static final String LAST_VIEWED_TIMESTAMP = "timestamp";
     public static final String LAST_VIEWED_SUBJECT_POSITION = "subject_id";
     public static final String LAST_VIEWED_PERCENTAGE_META_POSITION = "meta_id";
-
+    private static final String DATABASE_NAME = "uebungen";
     //switched to db v13 in commit 22.10.15 13:49
     //db14: 8.3.16 14:22
     //db15: 9.3.16 20:58
     //db16: 17.3.16. 21:38
-    public static final int DATABASE_VERSION = 16;
+    private static final int DATABASE_VERSION = 16;
 
     //begin new database system
     private static final String CREATE_TABLE_SUBJECTS = "create table " + TABLE_NAME_SUBJECTS + "( " +
@@ -169,7 +163,7 @@ public class DatabaseCreator extends SQLiteOpenHelper {
      * @param fromFile - FileInputStream for the file to copy from.
      * @param toFile   - FileInputStream for the file to copy to.
      */
-    public static void copyFile(FileInputStream fromFile, FileOutputStream toFile) throws IOException {
+    private static void copyFile(FileInputStream fromFile, FileOutputStream toFile) throws IOException {
         FileChannel fromChannel = null;
         FileChannel toChannel = null;
         try {
@@ -249,7 +243,7 @@ public class DatabaseCreator extends SQLiteOpenHelper {
                 ADMISSION_PERCENTAGES_META_ESTIMATION_MODE + " STRING NOT NULL DEFAULT 'user'");
     }
 
-    public void transferFrom12To13(SQLiteDatabase database){
+    private void transferFrom12To13(SQLiteDatabase database) {
         if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
             Log.w(DatabaseCreator.class.getName(), "creating new databases for multiple counters, percentages, new subject db");
         database.execSQL(CREATE_TABLE_SUBJECTS);
@@ -301,7 +295,7 @@ public class DatabaseCreator extends SQLiteOpenHelper {
      * Copies the database file at the specified location over the current
      * internal application database.
      * */
-    public boolean importDatabase(String externalDbPath) throws IOException {
+    public void importDatabase(String externalDbPath) throws IOException {
         String targetPath = getReadableDatabase().getPath();
         File source = new File(externalDbPath);
         File target = new File(targetPath);
@@ -310,7 +304,6 @@ public class DatabaseCreator extends SQLiteOpenHelper {
             // Access the copied database so SQLiteHelper will cache it and mark
             // it as created.
             getWritableDatabase();
-            return true;
         }
         else
             throw new FileNotFoundException("could not find source file");
@@ -346,14 +339,13 @@ public class DatabaseCreator extends SQLiteOpenHelper {
             Log.i("rodb del", "no old dir found");
     }
 
-    public boolean exportDatabase(String externalDbPath) throws IOException {
+    public void exportDatabase(String externalDbPath) throws IOException {
         String path = getReadableDatabase().getPath();
         File source = new File(path);
         File target = new File(externalDbPath);
         if (source.exists()) {
             copyFile(new FileInputStream(source), new FileOutputStream(target));
             getWritableDatabase();
-            return true;
         } else
             throw new FileNotFoundException("could not find source file");
     }

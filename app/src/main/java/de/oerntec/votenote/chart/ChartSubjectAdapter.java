@@ -38,9 +38,9 @@ import de.oerntec.votenote.database.tablehelpers.DBSubjects;
 public class ChartSubjectAdapter extends RecyclerView.Adapter<ChartSubjectAdapter.SubjectHolder> {
     //private DBGroups mSubjectDb = DBGroups.getInstance();
 
-    private AdapterListener mAdapterListener;
-    private int[] mColorArray;
-    private Context mContext;
+    private final AdapterListener mAdapterListener;
+    private final int[] mColorArray;
+    private final Context mContext;
     private List<PercentageTrackerPojo> mData;
 
     public ChartSubjectAdapter(Context context, int[] colorArray) {

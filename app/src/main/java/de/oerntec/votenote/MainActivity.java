@@ -134,12 +134,12 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
      * Fragment managing the behaviors, interactions and presentation of the
      * navigation drawer.
      */
-    public static NavigationDrawerFragment mNavigationDrawerFragment;
+    private static NavigationDrawerFragment mNavigationDrawerFragment;
 
     private static int mCurrentSelectedSubjectId;
     private static MainActivity me;
-    DBLastViewed mLastViewedDb;
-    DBSubjects mSubjectDb;
+    private DBLastViewed mLastViewedDb;
+    private DBSubjects mSubjectDb;
 
     /**
      * set on subject fragment load
@@ -199,13 +199,13 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
             Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
                 @Override
                 public void uncaughtException(Thread thread, Throwable e) {
-                    handleUncaughtException(thread, e);
+                    handleUncaughtException(e);
                 }
             });
         }
 
         // Set up the drawer.
-        mNavigationDrawerFragment.setUp(R.id.navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout));
+        mNavigationDrawerFragment.setUp((DrawerLayout) findViewById(R.id.drawer_layout));
 
         if (ENABLE_DEBUG_LOG_CALLS)
             Log.i("state info", "oncreate");
@@ -275,7 +275,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
     }
 
     //http://stackoverflow.com/a/19968400
-    private void handleUncaughtException(Thread thread, Throwable e) {
+    private void handleUncaughtException(Throwable e) {
         e.printStackTrace(); // not all Android versions will print the stack trace automatically
         StringWriter stringWriter = new StringWriter();
         PrintWriter printWriter = new PrintWriter(stringWriter);

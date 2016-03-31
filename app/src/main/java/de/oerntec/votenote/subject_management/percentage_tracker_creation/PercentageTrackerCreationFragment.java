@@ -395,7 +395,7 @@ public class PercentageTrackerCreationFragment extends Fragment implements Butto
     private void initEstimationModeSpinner() {
         PercentageTrackerPojo.EstimationMode estimationMode = PercentageTrackerPojo.EstimationMode.valueOf(mEstimationModeHint);
 
-        mEstimationModeSpinner.setAdapter(new EstimationModeSpinnerAdapter(getActivity(), 0));
+        mEstimationModeSpinner.setAdapter(new EstimationModeSpinnerAdapter(getActivity()));
         mEstimationModeSpinner.setSelection(estimationMode.ordinal());
 
         mEstimationModeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {

@@ -233,8 +233,8 @@ public class AddLessonDialogFragment extends DialogFragment implements DialogInt
         if (currentAvailableAssignments == 0)
             maxPickerValues = 10;
 
-        setPicker(mAvailableAssignmentsPicker, 0, maxPickerValues, currentAvailableAssignments);
-        setPicker(mFinishedAssignmentsPicker, 0, maxPickerValues, currentFinishedAssignments);
+        setPicker(mAvailableAssignmentsPicker, maxPickerValues, currentAvailableAssignments);
+        setPicker(mFinishedAssignmentsPicker, maxPickerValues, currentFinishedAssignments);
 
         updateResultingPercentage(currentFinishedAssignments, currentAvailableAssignments);
     }
@@ -340,8 +340,8 @@ public class AddLessonDialogFragment extends DialogFragment implements DialogInt
     /**
      * apply values to given picker
      */
-    private void setPicker(NumberPicker item, int min, int max, int current) {
-        item.setMinValue(min);
+    private void setPicker(NumberPicker item, int max, int current) {
+        item.setMinValue(0);
         item.setMaxValue(max);
         item.setValue(current);
     }

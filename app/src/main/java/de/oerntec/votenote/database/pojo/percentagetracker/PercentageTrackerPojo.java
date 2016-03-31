@@ -13,59 +13,55 @@ public class PercentageTrackerPojo implements NameAndIdPojo {
     /**
      * Database ID. Given in constructor.
      */
-    public int id;
+    public final int id;
 
     /**
      * Subject ID. Not equal to Database id. Given in constructor.
      */
-    public int subjectId;
+    public final int subjectId;
 
     /**
      * How many lessosns does the user think will this percentage counter have?
      */
-    public int userLessonCountEstimation;
+    public final int userLessonCountEstimation;
 
     /**
      * This is the always existent baseline target percentage. If a bonus percentage is given,
      * the user should aim for that.
      */
-    public int baselineTargetPercentage;
+    public final int baselineTargetPercentage;
 
     /**
      * How many assignments does the user think are available in each lesson.
      */
-    public int userAssignmentsPerLessonEstimation;
+    public final int userAssignmentsPerLessonEstimation;
 
     /**
      * If bonusTargetPercentageEnabled is true, reaching this percentage will give the user a bonus
      */
-    public int bonusTargetPercentage;
+    public final int bonusTargetPercentage;
 
     /**
      * Is there a bonus percentage?
      */
-    public boolean bonusTargetPercentageEnabled;
+    public final boolean bonusTargetPercentageEnabled;
 
     /**
      * Admission Counter Percentage name
      */
-    public String name;
-
+    public final String name;
+    /**
+     * Are recurring notifications dis- or enabled?
+     */
+    public final boolean notificationEnabled;
+    /**
+     * This String contains the recurrance data according to the dow/time picker library used
+     */
+    public final String notificationRecurrenceString;
     /**
      * the estimation mode the user has set for this admission percentage counter
      */
     public EstimationMode estimationMode = EstimationMode.undefined;
-
-    /**
-     * Are recurring notifications dis- or enabled?
-     */
-    public boolean notificationEnabled;
-
-    /**
-     * This String contains the recurrance data according to the dow/time picker library used
-     */
-    public String notificationRecurrenceString;
-
     /**
      * If the data has been loaded, this list contains all lessons in this apm, simplifying data
      * calculation
@@ -109,9 +105,9 @@ public class PercentageTrackerPojo implements NameAndIdPojo {
         mDataLoaded = true;
     }
 
-    public boolean hasLessons(){
+    public boolean hasNoLessons() {
         if (!mDataLoaded) throw new AssertionError("pojo has not loaded data");
-        return mDataList.size() > 0;
+        return mDataList.size() == 0;
     }
 
     public int lessonCount(){

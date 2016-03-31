@@ -37,8 +37,8 @@ import de.oerntec.votenote.database.tablehelpers.DBAdmissionPercentageMeta;
 import de.oerntec.votenote.database.tablehelpers.DBSubjects;
 
 public class SubjectAdapter extends RecyclerView.Adapter<SubjectAdapter.SubjectHolder> {
+    private final Context mContext;
     private DBSubjects mSubjectDb;
-    private Context mContext;
     private List<Subject> mData;
 
     public SubjectAdapter(Activity activity) {

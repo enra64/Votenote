@@ -36,13 +36,13 @@ public class DBSubjects extends CrudDb<Subject> {
      */
     private static DBSubjects mInstance;
 
-    private DBSubjects(Context context, String tableName) {
-        super(context, tableName);
+    private DBSubjects(Context context) {
+        super(context, DatabaseCreator.TABLE_NAME_SUBJECTS);
     }
 
     public static DBSubjects setupInstance(Context context) {
         if (mInstance == null)
-            mInstance = new DBSubjects(context, DatabaseCreator.TABLE_NAME_SUBJECTS);
+            mInstance = new DBSubjects(context);
         return mInstance;
     }
 

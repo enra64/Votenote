@@ -4,22 +4,14 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 public class SeekerListener implements SeekBar.OnSeekBarChangeListener {
-    TextView mAffected;
-    String mEndingAddition;
-
-    public SeekerListener(TextView affected, String endingAddition) {
-        mAffected = affected;
-        mEndingAddition = endingAddition;
-    }
+    private final TextView mAffected;
 
     public SeekerListener(TextView affected) {
-        this(affected, "");
+        mAffected = affected;
     }
-
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean b) {
-        String concatenated = progress + mEndingAddition;
-        mAffected.setText(concatenated);
+        mAffected.setText(String.format(General.getCurrentLocale(seekBar.getContext()), "%d", progress));
     }
 
     @Override

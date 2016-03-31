@@ -13,13 +13,14 @@ public class DBLastViewed {
     /**
      * Database object used for accessing the database
      */
-    protected final SQLiteDatabase mDatabase;
+    private final SQLiteDatabase mDatabase;
 
     private DBLastViewed(Context context) {
         DatabaseCreator dbHelper = DatabaseCreator.getInstance(context);
         mDatabase = dbHelper.getWritableDatabase();
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     public static DBLastViewed setupInstance(Context context) {
         if (mInstance == null)
             mInstance = new DBLastViewed(context);

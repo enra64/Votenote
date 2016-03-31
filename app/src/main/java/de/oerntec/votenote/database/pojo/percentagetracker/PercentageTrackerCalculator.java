@@ -100,7 +100,7 @@ public class PercentageTrackerCalculator {
      * This just calculates how many assignments are needed per lesson, but does not write it anywhere,
      * so we can check whether the bonus target percentage may still be hit
      */
-    public static float calcNeededAssignmentsPerLesson(PercentageTrackerPojo item, float target, float numberOfFutureLessons) {
+    private static float calcNeededAssignmentsPerLesson(PercentageTrackerPojo item, float target, float numberOfFutureLessons) {
         float numberOfNeededAssignments = (item.userAssignmentsPerLessonEstimation * target) / 100f;
         float remainingNeededAssignments = numberOfNeededAssignments - getNumberOfPastFinishedAssignments(item.mDataList);
         return remainingNeededAssignments / numberOfFutureLessons;
@@ -123,7 +123,7 @@ public class PercentageTrackerCalculator {
             case user:
                 return item.userAssignmentsPerLessonEstimation;
             case mean:
-                if (!item.hasLessons())
+                if (item.hasNoLessons())
                     return item.userAssignmentsPerLessonEstimation;
                 return (float) getNumberOfPastAvailableAssignments(item.mDataList) / (float) item.lessonCount();
             case best:

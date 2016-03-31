@@ -11,19 +11,18 @@ import de.oerntec.votenote.database.DatabaseCreator;
 public abstract class CrudDb<T> {
     private static final boolean ENABLE_SAVEPOINT_LOG = false;
     /**
-     * name of the table the crud table helper is for
-     */
-    protected final String TABLE_NAME;
-
-    /**
      * Database object used for accessing the database
      */
-    protected final SQLiteDatabase mDatabase;
+    final SQLiteDatabase mDatabase;
+    /**
+     * name of the table the crud table helper is for
+     */
+    private final String TABLE_NAME;
 
     /**
      * Private constructor for singleton
      */
-    protected CrudDb(Context context, String tableName) {
+    CrudDb(Context context, String tableName) {
         DatabaseCreator dbHelper = DatabaseCreator.getInstance(context);
         mDatabase = dbHelper.getWritableDatabase();
         TABLE_NAME = tableName;

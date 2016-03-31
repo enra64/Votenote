@@ -41,7 +41,7 @@ import de.oerntec.votenote.database.tablehelpers.DBAdmissionPercentageMeta;
 import de.oerntec.votenote.database.tablehelpers.DBLessons;
 import de.oerntec.votenote.database.tablehelpers.DBSubjects;
 
-public class XmlImporter {
+class XmlImporter {
     public static boolean importXml(String filename, Context context) {
         File file = new File(filename);
         InputStream inputStream;

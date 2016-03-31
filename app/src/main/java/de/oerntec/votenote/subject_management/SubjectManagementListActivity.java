@@ -60,25 +60,21 @@ import de.oerntec.votenote.subject_management.subject_creation.SubjectCreationAc
 @SuppressLint("InflateParams")
 public class SubjectManagementListActivity extends AppCompatActivity implements SwipeAnimationUtils.UndoSnackBarHost {
     /**
-     * Lesson is to be added, not changed
-     */
-    public static final int ADD_SUBJECT_CODE = -1;
-
-    /**
      * result code if the subject was deleted
      */
     public static final int SUBJECT_CREATOR_RESULT_DELETE = 3;
-
     /**
      * result code of the subject creator when it created a new subject
      */
     public static final int SUBJECT_CREATOR_RESULT_NEW = 1;
-
     /**
      * result code of the subject creator when it changed a subject
      */
     public static final int SUBJECT_CREATOR_RESULT_CHANGED = 2;
-
+    /**
+     * Lesson is to be added, not changed
+     */
+    private static final int ADD_SUBJECT_CODE = -1;
     /**
      * the subject adapter used to fill the list
      */
@@ -170,7 +166,7 @@ public class SubjectManagementListActivity extends AppCompatActivity implements 
         addFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showSubjectCreator(ADD_SUBJECT_CODE);
+                showSubjectCreatorForNewSubject();
             }
         });
     }
@@ -182,8 +178,8 @@ public class SubjectManagementListActivity extends AppCompatActivity implements 
         acceptDeletion();
     }
 
-    private void showSubjectCreator(int subjectId) {
-        showSubjectCreator(subjectId, -1);
+    private void showSubjectCreatorForNewSubject() {
+        showSubjectCreator(SubjectManagementListActivity.ADD_SUBJECT_CODE, -1);
     }
 
     private void showSubjectCreator(int subjectId, int recyclerViewPosition) {
@@ -385,11 +381,11 @@ public class SubjectManagementListActivity extends AppCompatActivity implements 
         mSubjectList.swapAdapter(new SubjectAdapter(this), false);
     }
 
-    public boolean getPreference(String key, boolean def) {
+    private boolean getPreference(String key, boolean def) {
         return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(key, def);
     }
 
-    public void setPreference(String key, boolean newValue) {
+    private void setPreference(String key, boolean newValue) {
         PreferenceManager.getDefaultSharedPreferences(this).edit().putBoolean(key, newValue).apply();
     }
 }

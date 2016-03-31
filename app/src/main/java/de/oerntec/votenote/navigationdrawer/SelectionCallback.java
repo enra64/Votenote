@@ -17,6 +17,6 @@
 * */
 package de.oerntec.votenote.navigationdrawer;
 
-public interface SelectionCallback {
+interface SelectionCallback {
     void onItemClick(int position);
 }

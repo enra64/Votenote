@@ -27,12 +27,12 @@ public class FakeDisabledNotEmptyWatcher extends AbstractNotEmptyWatcher {
     /**
      * OnClickListener that is used when the button is "disabled"
      */
-    private View.OnClickListener mDisabledOnClickListener;
+    private final View.OnClickListener mDisabledOnClickListener;
 
     /**
      * OnClickListener that is used when the button is "enabled"
      */
-    private View.OnClickListener mEnabledOnClickListener;
+    private final View.OnClickListener mEnabledOnClickListener;
 
     public FakeDisabledNotEmptyWatcher(
             EditText editText,

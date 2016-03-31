@@ -40,8 +40,8 @@ public class DBAdmissionPercentageMeta extends CrudDb<PercentageTrackerPojo> imp
     /**
      * Private constructor for singleton
      */
-    private DBAdmissionPercentageMeta(Context context, String tableName) {
-        super(context, tableName);
+    private DBAdmissionPercentageMeta(Context context) {
+        super(context, DatabaseCreator.TABLE_NAME_ADMISSION_PERCENTAGES_META);
     }
 
     /**
@@ -52,7 +52,7 @@ public class DBAdmissionPercentageMeta extends CrudDb<PercentageTrackerPojo> imp
      */
     public static DBAdmissionPercentageMeta setupInstance(Context context) {
         if (mInstance == null)
-            mInstance = new DBAdmissionPercentageMeta(context, DatabaseCreator.TABLE_NAME_ADMISSION_PERCENTAGES_META);
+            mInstance = new DBAdmissionPercentageMeta(context);
         return mInstance;
     }
 

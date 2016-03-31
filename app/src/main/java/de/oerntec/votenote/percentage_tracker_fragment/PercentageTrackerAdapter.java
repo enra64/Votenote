@@ -50,36 +50,30 @@ public class PercentageTrackerAdapter extends RecyclerView.Adapter<PercentageTra
      * use the card for lessons
      */
     private static final int VIEW_TYPE_LESSON = 1;
-
+    /**
+     * The meta pojo belonging to the given admission percentage meta id
+     */
+    private final PercentageTrackerPojo mMetaPojo;
+    private final Context mContext;
+    private final int mAdmissionPercentageMetaId;
+    private final boolean mLatestLessonFirst;
     /**
      * Admission Percentage Meta Database
      */
     @SuppressWarnings("FieldCanBeLocal")
     private DBAdmissionPercentageMeta mMetaDb = DBAdmissionPercentageMeta.getInstance();
-
     /**
      * Admission Percentage Data Database
      */
     private DBLessons mDataDb = DBLessons.getInstance();
-
-    /**
-     * The meta pojo belonging to the given admission percentage meta id
-     */
-    private PercentageTrackerPojo mMetaPojo;
-
     /**
      * Holds the position of the item that was last deleted, so we know what to do for an undo
      */
     private Integer mLastDeletedPosition;
-
     /**
      * List of current data objects
      */
     private List<Lesson> mData;
-
-    private Context mContext;
-    private int mAdmissionPercentageMetaId;
-    private boolean mLatestLessonFirst;
 
     public PercentageTrackerAdapter(Context context, int admissionPercentageMetaId) {
         mContext = context;
@@ -159,7 +153,7 @@ public class PercentageTrackerAdapter extends RecyclerView.Adapter<PercentageTra
         return savePointId;
     }
 
-    protected void requery() {
+    private void requery() {
         mData = mDataDb.getItemsForMetaId(mAdmissionPercentageMetaId, mLatestLessonFirst);
     }
 
@@ -289,7 +283,7 @@ public class PercentageTrackerAdapter extends RecyclerView.Adapter<PercentageTra
         float average = meta.getAverageFinished();
 
         //no votes have been given
-        if (!meta.hasLessons())
+        if (meta.hasNoLessons())
             averageVoteView.setText(mContext.getString(R.string.infoview_vote_average_no_data));
 
         //get minvote for section

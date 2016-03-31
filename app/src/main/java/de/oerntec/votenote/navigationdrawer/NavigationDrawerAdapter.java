@@ -33,11 +33,11 @@ import de.oerntec.votenote.database.pojo.Subject;
 import de.oerntec.votenote.database.tablehelpers.DBSubjects;
 
 public class NavigationDrawerAdapter extends RecyclerView.Adapter<NavigationDrawerAdapter.SubjectHolder> {
-    private DBSubjects mSubjectDb = DBSubjects.getInstance();
+    private final DBSubjects mSubjectDb = DBSubjects.getInstance();
+    private final SelectionCallback mOnClickCallback;
+    private final Context mContext;
     private List<Subject> mData;
-    private SelectionCallback mOnClickCallback;
     private int mCurrentSelection;
-    private Context mContext;
 
     public NavigationDrawerAdapter(Context context, SelectionCallback callbacks) {
         mOnClickCallback = callbacks;

@@ -1,7 +1,11 @@
 package de.oerntec.votenote.database.pojo;
 
 public class Lesson {
-    public int id, admissionPercentageMetaId, lessonId, finishedAssignments, availableAssignments;
+    public final int admissionPercentageMetaId;
+    public final int finishedAssignments;
+    public final int availableAssignments;
+    public int id;
+    public int lessonId;
 
     public Lesson(int id, int admissionPercentageMetaId, int lessonId, int finishedAssignments, int availableAssignments) {
         this.id = id;

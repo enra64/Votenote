@@ -1,6 +1,6 @@
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/card_view"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="3dp"
@@ -28,10 +28,10 @@
             android:layout_marginBottom="4dp"
             android:text="Modellierung"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textSize="30sp" />
+            android:textSize="30sp"
+            tools:ignore="HardcodedText" />
 
         <View
-            android:id="@+id/view_divider"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_above="@+id/subject_manager_subject_card_percentage_counter_count"
@@ -48,7 +48,8 @@
             android:layout_below="@+id/subject_manager_subject_card_title"
             android:layout_marginTop="4dp"
             android:text="70%"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            tools:ignore="HardcodedText" />
 
         <TextView
             android:id="@+id/subject_manager_subject_card_counter_count"
@@ -58,7 +59,8 @@
             android:layout_alignStart="@+id/subject_manager_subject_card_percentage_counter_count"
             android:layout_below="@+id/subject_manager_subject_card_percentage_counter_count"
             android:text="3 Vortragspunkte"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            tools:ignore="HardcodedText" />
 
     </RelativeLayout>
 </android.support.v7.widget.CardView>

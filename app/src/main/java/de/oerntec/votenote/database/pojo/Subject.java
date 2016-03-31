@@ -25,8 +25,8 @@ import de.oerntec.votenote.database.tablehelpers.DBAdmissionPercentageMeta;
 import de.oerntec.votenote.database.tablehelpers.DBLessons;
 
 public class Subject {
-    public String name;
-    public int id;
+    public final String name;
+    public final int id;
     public List<AdmissionCounter> admissionCounterList = null;
     public List<PercentageTrackerPojo> percentageTrackerPojoList = null;
 

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="48dp"
     android:background="?attr/selectableItemBackground"
@@ -14,10 +15,10 @@
         android:layout_centerVertical="true"
         android:background="#00000000"
         android:paddingLeft="72dp"
-        android:paddingStart="16dp"
-        android:text="TESTTEST"
+        android:paddingStart="72dp"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textColor="#000" />
+        android:textColor="#000"
+        tools:ignore="RtlSymmetry" />
 
     <ImageView
         android:id="@+id/navigation_fragment_list_item_selection_indicator"
@@ -28,6 +29,8 @@
         android:layout_centerVertical="true"
         android:background="#00000000"
         android:paddingLeft="16dp"
-        android:src="@drawable/selection_indicator" />
+        android:paddingStart="16dp"
+        android:src="@drawable/selection_indicator"
+        tools:ignore="RtlSymmetry" />
 
 </RelativeLayout>

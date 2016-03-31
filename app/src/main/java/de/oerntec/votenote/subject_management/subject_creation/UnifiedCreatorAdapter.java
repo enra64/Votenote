@@ -21,33 +21,25 @@ import de.oerntec.votenote.helpers.DialogHelper;
 import de.oerntec.votenote.helpers.textwatchers.FakeDisabledNotEmptyWatcher;
 
 public class UnifiedCreatorAdapter extends RecyclerView.Adapter<UnifiedCreatorAdapter.ViewHolder> implements View.OnClickListener {
-    static final int VIEW_INFO = 0;
     static final int VIEW_PERCENTAGE = 1;
     static final int VIEW_COUNTER = 2;
-
-    private List<AdmissionCounter> mCounterData;
-    private List<PercentageTrackerPojo> mPercentageData;
-
-    private DBAdmissionCounters mCounterDb;
-    private DBAdmissionPercentageMeta mPercentageDb;
-
-    private EditText mNameInput;
-
-    private String mSubjectName = null;
-    private int mSubjectId;
-
-    private Context mContext;
-    private FragmentManager mFragmentManager;
-
-    private Button mParentOkButton;
-
-    private View.OnClickListener mEnabledOnClickListener;
-
+    private static final int VIEW_INFO = 0;
+    private final DBAdmissionCounters mCounterDb;
+    private final DBAdmissionPercentageMeta mPercentageDb;
+    private final int mSubjectId;
+    private final Context mContext;
+    private final FragmentManager mFragmentManager;
+    private final Button mParentOkButton;
+    private final View.OnClickListener mEnabledOnClickListener;
     /**
      * Instance of the calling subject creation fragment, because we want to create the intents for
      * admission percentage counters there
      */
-    private SubjectCreationFragment mSubjectCreationFragment;
+    private final SubjectCreationFragment mSubjectCreationFragment;
+    private List<AdmissionCounter> mCounterData;
+    private List<PercentageTrackerPojo> mPercentageData;
+    private EditText mNameInput;
+    private String mSubjectName = null;
 
     //this got out of hand
     public UnifiedCreatorAdapter(
@@ -231,7 +223,7 @@ public class UnifiedCreatorAdapter extends RecyclerView.Adapter<UnifiedCreatorAd
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        public int type;
+        public final int type;
 
         public ViewHolder(View itemView, int type) {
             super(itemView);

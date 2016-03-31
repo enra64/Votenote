@@ -59,6 +59,10 @@ public class PercentageTrackerFragment extends Fragment implements SwipeAnimatio
      */
     private static String mLastRemovalSavePointId = null;
     /**
+     * db holding percentage data
+     */
+    private final DBLessons mDataDb = DBLessons.getInstance();
+    /**
      * Adapter to display the lessons
      */
     public PercentageTrackerAdapter mAdapter;
@@ -70,26 +74,18 @@ public class PercentageTrackerFragment extends Fragment implements SwipeAnimatio
      * Save the view that was clicked last so we can execute a programmatic swipe deletion
      */
     private View mLastClickedView = null;
-
     /**
      * The percentage meta id all data in this fragment has
      */
     private int mAdmissionPercentageMetaId;
-
     /**
      * Parent viewgroup
      */
     private View mRootView;
-
     /**
      * List containing the vote data
      */
     private RecyclerView mLessonList;
-
-    /**
-     * db holding percentage data
-     */
-    private DBLessons mDataDb = DBLessons.getInstance();
 
     /**
      * Returns a new instance of this fragment for the given section number.
@@ -177,7 +173,6 @@ public class PercentageTrackerFragment extends Fragment implements SwipeAnimatio
      * attach an onClick listener on the lesson list
      */
     private void enableOnClickForLessons() {
-        final PercentageTrackerFragment bestCoding = this;
         //onClick for lessons
         mLessonList.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), mLessonList, new OnItemClickListener() {
             public void onItemClick(View view, int position) {

@@ -10,7 +10,6 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/header_general"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:clickable="false"
@@ -23,10 +22,10 @@
             android:id="@+id/percentage_creator_name_edittext"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/settings_line_side_paddings"
-            android:layout_marginStart="@dimen/settings_line_side_paddings"
-            android:layout_marginRight="@dimen/settings_line_side_paddings"
             android:layout_marginEnd="@dimen/settings_line_side_paddings"
+            android:layout_marginLeft="@dimen/settings_line_side_paddings"
+            android:layout_marginRight="@dimen/settings_line_side_paddings"
+            android:layout_marginStart="@dimen/settings_line_side_paddings"
             android:layout_marginTop="8dp"
             android:ems="10"
             android:inputType="textNoSuggestions"
@@ -77,7 +76,6 @@
             android:layout_height="wrap_content" />
 
         <TextView
-            android:id="@+id/header_percentages"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
@@ -116,7 +114,6 @@
             android:layout_height="wrap_content" />
 
         <TextView
-            android:id="@+id/header_estimations"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"

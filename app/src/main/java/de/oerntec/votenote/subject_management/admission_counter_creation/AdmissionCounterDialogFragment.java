@@ -72,7 +72,7 @@ public class AdmissionCounterDialogFragment extends DialogFragment implements Di
             throw new AssertionError("why are there no arguments here?");
     }
 
-    public View createView(LayoutInflater inflater) {
+    private View createView(LayoutInflater inflater) {
         // we may pass null to the inflater here, because in a dialog, we simply do not know what
         // parent we attach to
         //noinspection RedundantCast
@@ -164,7 +164,7 @@ public class AdmissionCounterDialogFragment extends DialogFragment implements Di
             mNameInput.setHint(R.string.admission_percentage_creator_name_hint);
     }
 
-    public String getTitle() {
+    private String getTitle() {
         String title;
         if (mIsNew)
             title = "New admission counter";

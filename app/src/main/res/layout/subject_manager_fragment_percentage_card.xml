@@ -1,6 +1,6 @@
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/card_view"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="3dp"
@@ -30,35 +30,39 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Votierungspunkte"
-                android:textAppearance="?android:attr/textAppearanceLarge" />
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                tools:ignore="HardcodedText" />
 
             <TextView
                 android:id="@+id/subject_manager_fragment_percentage_card_target_percentage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Mindestens 46%"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                tools:ignore="HardcodedText" />
 
             <TextView
                 android:id="@+id/subject_manager_fragment_percentage_card_assignments_per_lesson"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="3 Aufgaben pro Übung"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                tools:ignore="HardcodedText" />
 
             <TextView
                 android:id="@+id/subject_manager_fragment_percentage_card_target_lesson_count"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="705 Übungen"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                tools:ignore="HardcodedText" />
 
         </LinearLayout>
 
         <ImageView
-            android:id="@+id/imageView14"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:src="@drawable/icon_percentage" />
 

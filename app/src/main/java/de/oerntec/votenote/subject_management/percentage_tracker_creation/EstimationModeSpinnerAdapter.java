@@ -15,11 +15,11 @@ import de.oerntec.votenote.database.pojo.percentagetracker.PercentageTrackerPojo
 /**
  * Class used to populate the spinner for {@link PercentageTrackerCreationActivity}
  */
-public class EstimationModeSpinnerAdapter extends ArrayAdapter<String> implements SpinnerAdapter {
-    LayoutInflater mInflater;
+class EstimationModeSpinnerAdapter extends ArrayAdapter<String> implements SpinnerAdapter {
+    private final LayoutInflater mInflater;
 
-    public EstimationModeSpinnerAdapter(Context context, int resource) {
-        super(context, resource);
+    public EstimationModeSpinnerAdapter(Context context) {
+        super(context, 0);
         mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 

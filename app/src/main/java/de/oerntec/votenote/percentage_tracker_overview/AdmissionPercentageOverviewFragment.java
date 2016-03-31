@@ -37,7 +37,6 @@ public class AdmissionPercentageOverviewFragment extends Fragment {
 
     private PercentageTrackerPojo mAdmissionCounterMetaPojo;
 
-    private ListView mDataListView;
     private Spinner mEstimationModeSpinner;
 
     private List<List<String>> mContentList;
@@ -167,7 +166,7 @@ public class AdmissionPercentageOverviewFragment extends Fragment {
         setHasOptionsMenu(true);
 
         //find views
-        mDataListView = (ListView) rootView.findViewById(R.id.fragment_admission_percentage_overview_list);
+        ListView mDataListView = (ListView) rootView.findViewById(R.id.fragment_admission_percentage_overview_list);
 
         //listView init
         mAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, new ArrayList<String>());

@@ -139,11 +139,10 @@ public class NavigationDrawerFragment extends Fragment implements SelectionCallb
      * Users of this fragment must call this method to set up the navigation
      * drawer interactions.
      *
-     * @param fragmentId   The android:id of this fragment in its activity's layout.
      * @param drawerLayout The DrawerLayout containing this fragment's UI.
      */
-    public void setUp(int fragmentId, DrawerLayout drawerLayout) {
-        mFragmentContainerView = getActivity().findViewById(fragmentId);
+    public void setUp(DrawerLayout drawerLayout) {
+        mFragmentContainerView = getActivity().findViewById(R.id.navigation_drawer);
         mDrawerLayout = drawerLayout;
 
         // set a custom shadow that overlays the menu_main content when the drawer opens
@@ -239,7 +238,7 @@ public class NavigationDrawerFragment extends Fragment implements SelectionCallb
         forceAdmissionPercentageFragmentDialog(getPositionFromId(subjectId), admissionPercentageId);
     }
 
-    public void forceAdmissionPercentageFragmentDialog(int position, int admissionPercentageId) {
+    private void forceAdmissionPercentageFragmentDialog(int position, int admissionPercentageId) {
         mCurrentSelectedPosition = position;
         if (mAdapter != null)
             mAdapter.setCurrentSelection(position);

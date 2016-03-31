@@ -36,7 +36,6 @@
         android:layout_centerInParent="true"
         android:gravity="center"
         android:text="@string/keine_prozentz_hler_vorhanden_f_ge_in_den_einstellungen_welche_hinzu"
-        android:textAlignment="center"
         android:visibility="visible" />
 </RelativeLayout>
 

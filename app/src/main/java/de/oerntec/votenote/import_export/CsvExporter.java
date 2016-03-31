@@ -35,7 +35,7 @@ import de.oerntec.votenote.database.tablehelpers.DBLessons;
 import de.oerntec.votenote.database.tablehelpers.DBSubjects;
 
 public class CsvExporter {
-    public static FileDialog exportDialog(final Context activity) {
+    public static void exportDialog(final Context activity) {
         FileDialog fileOpenDialog = new FileDialog(
                 activity,
                 "FileSave",
@@ -49,7 +49,6 @@ public class CsvExporter {
         //You can change the default filename using the public variable "Default_File_Name"
         fileOpenDialog.defaultFileName = "export.csv";
         fileOpenDialog.chooseFile_or_Dir();
-        return fileOpenDialog;
     }
 
     private static void export(final String path, final Context activity) {
