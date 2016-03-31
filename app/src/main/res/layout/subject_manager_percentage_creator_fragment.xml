@@ -28,6 +28,7 @@
             android:layout_marginStart="@dimen/settings_line_side_paddings"
             android:layout_marginTop="8dp"
             android:ems="10"
+            android:hint="@string/name"
             android:inputType="textNoSuggestions"
             android:textSize="20sp" />
 

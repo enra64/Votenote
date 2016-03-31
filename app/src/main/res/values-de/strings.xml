@@ -70,7 +70,7 @@
     <string name="title_activity_subject_creation">Übung erstellen</string>
     <string name="admission_counter_change_dialog_title">%1$s ändern</string>
     <string name="lesson_dialog_fragment_picker_info_text">%1$d von %2$d Votierungen</string>
-    <string name="pref_summary_save_last_selected_meta_pos">Speichern, welcher Prozentzähler zuletzt aktiviert war. Die Übung wird auf jeden Fall gespeichert.</string>
+    <string name="pref_summary_save_last_selected_meta_pos">Speichern, welcher Votierungstracker zuletzt gezeigt wurde. Die Übung wird auf jeden Fall gespeichert.</string>
     <string name="pref_title_save_last_selected_meta_pos">Gewählte Positionen speichern</string>
     <string name="voted_assignments_w_placeholder_info_card">%1$d votierte Aufgaben</string>
     <string name="number_of_done_assignments_lesson_card">%1$d von %2$d Votierungen</string>
@@ -87,7 +87,7 @@
     <string name="estimation_name_mean">Mittel</string>
     <string name="estimation_name_user">Nutzer</string>
     <string name="estimation_name_worst">Worst case</string>
-    <string name="keine_prozentz_hler_vorhanden_f_ge_in_den_einstellungen_welche_hinzu">Keine Prozentzähler vorhanden. Füge in den Einstellungen welche hinzu!</string>
+    <string name="keine_prozentz_hler_vorhanden_f_ge_in_den_einstellungen_welche_hinzu">Keine Votierungstracker vorhanden. Füge in den Einstellungen welche hinzu!</string>
     <string name="notification_title_vote">Votierung</string>
     <string name="notification_text">Für %1$s muss eine Votierung eingetragen werden.</string>
     <string name="notifcation_action">Votieren</string>
@@ -117,8 +117,8 @@
     <string name="action_create_example_title">Beispiel erstellen</string>
     <string name="example_subject_presentation_points">Vortragspunkte</string>
     <string name="example_subject_proof_assignments_counter_name">Belegaufgabe</string>
-    <string name="example_subject_percentage_counter_1_name">Votierungszähler 1</string>
-    <string name="example_subject_percentage_counter_2_name">Votierungszähler 2</string>
+    <string name="example_subject_percentage_counter_1_name">Votierungstracker 1</string>
+    <string name="example_subject_percentage_counter_2_name">Votierungstracker 2</string>
     <string name="percentage_creator_dow_empty_button_text">Wochentag</string>
     <string name="percentage_creator_time_empty_button_text">Zeit</string>
     <string name="percentage_creator_notification_enabled_summary">Wöchentliche Erinnerung zu votieren.</string>
@@ -127,8 +127,8 @@
     <string name="percentage_creator_bonus_enabled_title">Bonus-Votierungsgrenze aktivieren</string>
     <string name="percentage_creator_bonus_enabled_summary">Das Erreichen dieser Grenze gibt Bonuspunkte.</string>
     <string name="subject_adapter_card_counter_count">%1$d Punktezähler</string>
-    <string name="subject_adapter_percentage_count">%1$d Prozentzähler</string>
-    <string name="subject_manager_main_card_add_percentage">+ Prozentzähler</string>
+    <string name="subject_adapter_percentage_count">%1$d Votierungstracker</string>
+    <string name="subject_manager_main_card_add_percentage">+ Votierungstracker</string>
     <string name="subject_manager_main_card_add_counter">+ Punktezähler</string>
     <string name="name_der_bung">Name der Übung</string>
     <string name="subject_management_example_created_toast">Ein Beispiel wurde erstellt</string>
@@ -161,4 +161,5 @@
     <string name="permissions_ext_write_failure">Ohne diese Berechtigung können keine Backups eingelesen werden!</string>
     <string name="permissions_ext_read_success">Nun kann der Log oder das Backup geschrieben werden.</string>
     <string name="permissions_ext_read_failure">Ohne diese Berechtigung kann kein Log oder Backup erstellt werden!</string>
+    <string name="name">Name</string>
 </resources>

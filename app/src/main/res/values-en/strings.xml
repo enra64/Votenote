@@ -69,8 +69,8 @@
     <string name="preferences_eula">EULA</string>
     <string name="title_activity_subject_creation">Subject Creation</string>
     <string name="admission_counter_change_dialog_title">Change %1$s</string>
-    <string name="pref_summary_save_last_selected_meta_pos">Save the most recently selected percentage counter. The most recently selected subject is always saved.</string>
-    <string name="pref_title_save_last_selected_meta_pos">Remember last selected percentage counter</string>
+    <string name="pref_summary_save_last_selected_meta_pos">Save the most recently selected percentage tracker. The most recently selected subject is always saved.</string>
+    <string name="pref_title_save_last_selected_meta_pos">Remember last selected percentage tracker</string>
     <string name="lesson_dialog_fragment_picker_info_text">%1$d of %2$d assignments</string>
     <string name="voted_assignments_w_placeholder_info_card">%1$d voted Assignments</string>
     <string name="number_of_done_assignments_lesson_card">%1$d of %2$d Votes</string>
@@ -87,7 +87,7 @@
     <string name="estimation_description_mean">This forecast mode uses the average value given for the number of available assignments in this subject as \"assignments per lesson\"</string>
     <string name="estimation_description_user">This forecast mode uses the \"available assignments per lesson\" value given here. This is the default.</string>
     <string name="estimation_description_worst">This forecast mode uses the largest value given for available assignments in this subject as \"assignments per lesson\".</string>
-    <string name="keine_prozentz_hler_vorhanden_f_ge_in_den_einstellungen_welche_hinzu">No admission percentage counters available, add some in subject management.</string>
+    <string name="keine_prozentz_hler_vorhanden_f_ge_in_den_einstellungen_welche_hinzu">No admission percentage trackers available, add some in subject management.</string>
     <string name="notifcation_action">Add lesson</string>
     <string name="notification_text">Don\'t forget to add the lesson to %1$s!</string>
     <string name="notification_title_vote">Lesson entry</string>
@@ -115,8 +115,8 @@
     <string name="eula_dialog_title">End-User License Agreement for Votenote</string>
     <string name="tutorial_create_example">Create Example</string>
     <string name="action_create_example_title">Create example</string>
-    <string name="example_subject_percentage_counter_1_name">Percentage counter 1</string>
-    <string name="example_subject_percentage_counter_2_name">Percentage counter 2</string>
+    <string name="example_subject_percentage_counter_1_name">Percentage tracker 1</string>
+    <string name="example_subject_percentage_counter_2_name">Percentage tracker 2</string>
     <string name="example_subject_presentation_points">Presentation points</string>
     <string name="example_subject_proof_assignments_counter_name">Proof assignments</string>
     <string name="percentage_creator_bonus_enabled_summary">Reaching this target grants bonuses.</string>
@@ -129,7 +129,7 @@
     <string name="subject_adapter_card_counter_count">%1$d Admission Counters</string>
     <string name="subject_adapter_percentage_count">%1$d Percentage Admission Counters</string>
     <string name="subject_manager_main_card_add_counter">+ Point counter</string>
-    <string name="subject_manager_main_card_add_percentage">+ Percentage counter</string>
+    <string name="subject_manager_main_card_add_percentage">+ Percentage tracker</string>
     <string name="name_der_bung">Subject name</string>
     <string name="dialog_button_no">No</string>
     <string name="dialog_button_yes">Yes</string>
@@ -153,4 +153,13 @@
     <string name="navigation_fragment_icon_description_subject_management">Subject management icon</string>
     <string name="admission_counter_target_point_count">Target point count</string>
     <string name="file_not_found">File not found!</string>
+    <string name="logger_could_not_create_file">Could not create log file</string>
+    <string name="logger_could_not_create_folder">Could not create folder. Maybe try to create a \"Votenote\" folder on the sd card?</string>
+    <string name="permissions_ext_read_failure">Without this permission no log nor backup can be created</string>
+    <string name="permissions_ext_read_success">Now logs and backups can be created</string>
+    <string name="permissions_ext_write_failure">Without this permission no backups can be read!</string>
+    <string name="permissions_ext_write_success">With this permission backups can be read</string>
+    <string name="permissions_reboot_receiver_failure">Without this permission, the notifications can not be recreated on reboot</string>
+    <string name="permissions_reboot_receiver_success">Now notifications can survive reboots!</string>
+    <string name="name">Name</string>
 </resources>
