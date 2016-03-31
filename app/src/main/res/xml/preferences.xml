@@ -4,7 +4,7 @@
 
         <PreferenceScreen android:title="@string/pres_control_subjects">
             <intent
-                android:targetClass="de.oerntec.votenote.SubjectManagerStuff.SubjectManagementListActivity"
+                android:targetClass="de.oerntec.votenote.subject_management.SubjectManagementListActivity"
                 android:targetPackage="de.oerntec.votenote" />
         </PreferenceScreen>
 

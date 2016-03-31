@@ -69,10 +69,21 @@ public class DBSubjects extends CrudDb<Subject> {
             throw new AssertionError("deleted more than 1?");
     }
 
+    /**
+     * Add a subject to the database without forcing the id
+     */
     public int addItemGetId(Subject item){
         return addItemGetId(item, false);
     }
 
+    /**
+     * add a subject to the database
+     *
+     * @param item    the item to be added
+     * @param forceId whether or not the database id should be the one of the object given
+     * @return the id of the new subject
+     * @see #addItem(Subject)
+     */
     public int addItemGetId(Subject item, boolean forceId) {
         //create values for insert or update
         ContentValues values = new ContentValues();
@@ -90,12 +101,16 @@ public class DBSubjects extends CrudDb<Subject> {
             return -1;
         }
 
+        // if the id is forced, this must be the id
+        if (forceId)
+            return item.id;
+
         //get maximum id value. because id is autoincrement, that must be the id of the subject we just added
         Cursor subjectIdCursor = mDatabase.rawQuery("SELECT MAX(" + DatabaseCreator.SUBJECTS_ID + ") AS maximum_subject_id FROM " + DatabaseCreator.TABLE_NAME_SUBJECTS, null);
 
         //throw error if we have more or less than one result row, because that is bullshit
         if(subjectIdCursor.getCount() != 1)
-            throw new AssertionError("somehow we got more than one result with a max query?");
+            throw new AssertionError(subjectIdCursor.getCount() + " items in max cursor?");
 
         //retrieve value and close cursor
         subjectIdCursor.moveToFirst();

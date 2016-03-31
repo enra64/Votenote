@@ -312,28 +312,28 @@ public class SubjectCreationFragment extends Fragment implements SubjectCreation
         }
         //create dialog if data was changed
         AlertDialog.Builder b = new AlertDialog.Builder(getActivity());
-        b.setTitle("Speichern?");
-        b.setMessage("Möchtest du deine Änderungen speichern?");
+        b.setTitle(R.string.subject_creation_fragment_back_confirmation_title);
+        b.setMessage(R.string.subject_creation_fragment_back_confirmation_message);
 
         //create buttons
-        b.setPositiveButton("Speichern", new DialogInterface.OnClickListener() {
+        b.setPositiveButton(R.string.dialog_button_save, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 saveAndClose();
             }
         });
-        b.setNegativeButton("Verwerfen", new DialogInterface.OnClickListener() {
+        b.setNegativeButton(R.string.dialog_button_discard, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 abortAndClose();
             }
         });
-        b.setNeutralButton("Abbrechen", null);
+        b.setNeutralButton(R.string.dialog_button_abort, null);
         //check for invalid name
         AlertDialog dialog = b.show();
         if (hasEmptyName) {
             dialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(false);
-            dialog.setMessage("Einen leeren Namen kannst du nicht speichern!");
+            dialog.setMessage(getActivity().getString(R.string.subject_creation_fragment_back_confirmation_empty_name_warning));
         }
     }
 
