@@ -176,7 +176,7 @@ public class SubjectManagementListActivity extends AppCompatActivity implements 
     protected void onPause() {
         super.onPause();
         //accept the deletion to release the savepoint if the undobar is ignored
-        acceptDeletion();
+        acceptDeletionIfExists();
     }
 
     private void showSubjectCreatorForNewSubject() {
@@ -219,6 +219,7 @@ public class SubjectManagementListActivity extends AppCompatActivity implements 
      * delete the subject, get a backup, show a undobar, and enable restoring the subject by tapping undo
      */
     public void showUndoSnackBar(final int subjectId, final int position) {
+        acceptDeletionIfExists();
         mLastDeletionSavepointId = "SP_REM_SUB_ID_" + subjectId;
         DBSubjects.getInstance().createSavepoint(mLastDeletionSavepointId);
         mSubjectAdapter.removeSubject(subjectId, position);
@@ -232,7 +233,7 @@ public class SubjectManagementListActivity extends AppCompatActivity implements 
                             case DISMISS_EVENT_CONSECUTIVE:
                             case DISMISS_EVENT_MANUAL:
                             case DISMISS_EVENT_TIMEOUT:
-                                acceptDeletion();
+                                acceptDeletionIfExists();
                                 break;
                             default:
                                 super.onDismissed(snackbar, event);
@@ -248,7 +249,7 @@ public class SubjectManagementListActivity extends AppCompatActivity implements 
         mDeletionSnackbar.show();
     }
 
-    private void acceptDeletion() {
+    private void acceptDeletionIfExists() {
         if (mLastDeletionSavepointId != null)
             DBSubjects.getInstance().releaseSavepoint(mLastDeletionSavepointId);
         NotificationGeneralHelper.removeAllAlarmsForSubject(this, mLastDeletedSubjectId);
