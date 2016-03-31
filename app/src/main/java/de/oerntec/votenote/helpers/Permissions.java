@@ -1,51 +1,77 @@
 package de.oerntec.votenote.helpers;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.os.Build;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.widget.Toast;
 
 /**
  * Class designed to be used for requesting permissions on Android 6+
  */
 public class Permissions {
+    public static final int MY_PERMISSION_REQUEST_CODE_EXTERNAL_READ = 0;
+    public static final int MY_PERMISSION_REQUEST_CODE_EXTERNAL_WRITE = 1;
+    public static final int MY_PERMISSION_REQUEST_CODE_REBOOT_RECEIVER = 2;
+
     /**
-     * Whether we have external write permissions granted
+     * Request a permission to be granted
+     */
+    public static void requestPermission(Activity activity, String permission) {
+        // Here, thisActivity is the current activity
+        if (!hasPermission(activity, permission)) {
+
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(activity, Manifest.permission.READ_CONTACTS)) {
+                //show explanation
+                Toast.makeText(activity, getExplanation(permission), Toast.LENGTH_LONG).show();
+            } else {
+                ActivityCompat.requestPermissions(activity,
+                        new String[]{permission},
+                        getRequestCode(permission));
+            }
+        }
+    }
+
+    /**
+     * Get my corresponding request code for the permission
      *
-     * @param context the context to act in
-     * @return whether we are permitted to write external storage
-     * @see #hasPermission(Context, String)
-     * @see #hasExternalReadPermission(Context)
-     * @see #hasRebootPermission(Context)
+     * @param permission one of the three permission strings requestable for votenote
+     * @return one of {@link #MY_PERMISSION_REQUEST_CODE_EXTERNAL_READ},
+     * {@link #MY_PERMISSION_REQUEST_CODE_EXTERNAL_WRITE},
+     * {@link #MY_PERMISSION_REQUEST_CODE_REBOOT_RECEIVER},
      */
-    public static boolean hasExternalWritePermission(Context context) {
-        return hasPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+    public static int getRequestCode(String permission) {
+        switch (permission) {
+            case Manifest.permission.READ_EXTERNAL_STORAGE:
+                return MY_PERMISSION_REQUEST_CODE_EXTERNAL_READ;
+            case Manifest.permission.WRITE_EXTERNAL_STORAGE:
+                return MY_PERMISSION_REQUEST_CODE_EXTERNAL_WRITE;
+            case Manifest.permission.RECEIVE_BOOT_COMPLETED:
+                return MY_PERMISSION_REQUEST_CODE_REBOOT_RECEIVER;
+            default:
+                throw new AssertionError("this permission was not requested!");
+        }
     }
 
     /**
-     * @param context the context to act in
-     * @return whether we are permitted to receive an intent on reboot
-     * @see #hasPermission(Context, String)
-     * @see #hasExternalReadPermission(Context)
-     * @see #hasExternalWritePermission(Context)
+     * Get an explanation as to why a specific permission is needed
+     *
+     * @param permission one of the three permission strings requestable for votenote
      */
-    public static boolean hasRebootPermission(Context context) {
-        return hasPermission(context, Manifest.permission.RECEIVE_BOOT_COMPLETED);
-    }
-
-    /**
-     * @param context the context to act in
-     * @return whether we are permitted to read external storage
-     * @see #hasPermission(Context, String)
-     * @see #hasExternalWritePermission(Context)
-     * @see #hasRebootPermission(Context)
-     */
-    @SuppressWarnings("SimplifiableIfStatement")
-    public static boolean hasExternalReadPermission(Context context) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN)
-            return true;
-        return hasPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE);
+    private static String getExplanation(String permission) {
+        switch (permission) {
+            case Manifest.permission.READ_EXTERNAL_STORAGE:
+                return "Diese Berechtigung wird benötigt, um Backups laden zu können";
+            case Manifest.permission.WRITE_EXTERNAL_STORAGE:
+                return "Diese Berechtigung wird benötigt, um Backups speichern zu können, und Logs schreiben zu können";
+            case Manifest.permission.RECEIVE_BOOT_COMPLETED:
+                return "Diese Berechtigung wird benötigt, um nach einem Neustart die Erinnerungen wiederherzustellen";
+            default:
+                throw new AssertionError("this permission was not requested!");
+        }
     }
 
     /**
@@ -54,11 +80,8 @@ public class Permissions {
      * @param context    the context to act in
      * @param permission the operation to check for
      * @return whether the operation is permitted
-     * @see #hasExternalReadPermission(Context)
-     * @see #hasExternalWritePermission(Context)
-     * @see #hasRebootPermission(Context)
      */
-    private static boolean hasPermission(Context context, String permission) {
+    public static boolean hasPermission(Context context, String permission) {
         return ContextCompat.checkSelfPermission(context, permission)
                 == PackageManager.PERMISSION_GRANTED;
     }

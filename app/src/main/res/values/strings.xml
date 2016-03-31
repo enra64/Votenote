@@ -161,4 +161,10 @@
     <string name="file_not_found">Datei nicht gefunden!</string>
     <string name="logger_could_not_create_folder">Ordner konnte nicht erstellt werden. Eventuell funktioniert das, wenn du einen \"Votenote\"-Ordner in deinem externen Speicherbereich erstellst</string>
     <string name="logger_could_not_create_file">Konnte keine Logdatei erstellen</string>
+    <string name="permissions_reboot_receiver_success">Jetzt können die Erinnerungen Neustarts überleben!</string>
+    <string name="permissions_reboot_receiver_failure">Ohne diese Berechtigung werden nach einem Neustart keine Erinnerungen mehr angezeigt.</string>
+    <string name="permissions_ext_write_success">Mit dieser Berechtigung können Backups eingelesen werden</string>
+    <string name="permissions_ext_write_failure">Ohne diese Berechtigung können keine Backups eingelesen werden!</string>
+    <string name="permissions_ext_read_success">Nun kann der Log oder das Backup geschrieben werden.</string>
+    <string name="permissions_ext_read_failure">Ohne diese Berechtigung kann kein Log oder Backup erstellt werden!</string>
 </resources>

@@ -1,7 +1,9 @@
 package de.oerntec.votenote.subject_management.percentage_tracker_creation;
 
 import android.app.TimePickerDialog;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -15,6 +17,7 @@ import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -24,6 +27,7 @@ import de.oerntec.votenote.R;
 import de.oerntec.votenote.database.pojo.percentagetracker.PercentageTrackerPojo;
 import de.oerntec.votenote.database.tablehelpers.DBAdmissionPercentageMeta;
 import de.oerntec.votenote.helpers.General;
+import de.oerntec.votenote.helpers.Permissions;
 import de.oerntec.votenote.helpers.SeekerListener;
 import de.oerntec.votenote.helpers.dialogs.DayOfWeekPickerDialog;
 import de.oerntec.votenote.helpers.notifications.NotificationGeneralHelper;
@@ -528,10 +532,27 @@ public class PercentageTrackerCreationFragment extends Fragment implements Butto
         host.finishToSubjectCreator(resultState);
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
+        if (requestCode == Permissions.getRequestCode(android.Manifest.permission.RECEIVE_BOOT_COMPLETED))
+            // If request is cancelled, the result arrays are empty.
+            if (grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+                Toast.makeText(getActivity(), R.string.permissions_reboot_receiver_success, Toast.LENGTH_LONG).show();
+            else
+                Toast.makeText(getActivity(), R.string.permissions_reboot_receiver_failure, Toast.LENGTH_LONG).show();
+    }
+
     /**
      * Get the cow/time from the currernt recurrence string and set the button texts appropriately
      */
     private void updateNotificationButtons(boolean enableButtons) {
+        //we need to activate the boot receiver, so we check whether the permission is given
+        if (enableButtons) {
+            if (!Permissions.hasPermission(getActivity(), android.Manifest.permission.RECEIVE_BOOT_COMPLETED)) {
+                Permissions.requestPermission(getActivity(), android.Manifest.permission.RECEIVE_BOOT_COMPLETED);
+            }
+        }
         Calendar currentCalendar = NotificationGeneralHelper.getCalendar(mNotificationRecurrenceStringCurrent);
 
         if (currentCalendar != null) {
