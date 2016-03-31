@@ -169,7 +169,7 @@ public class SubjectCreationFragment extends Fragment implements SubjectCreation
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         //inflate view, extract views
-        View input = inflater.inflate(R.layout.subject_manager_fragment_subject_settings, container, false);
+        View input = inflater.inflate(R.layout.subject_creator_fragment, container, false);
 
         if (mIsOldSubject) {
             Subject oldData = mSubjectDb.getItem(mSubjectId);

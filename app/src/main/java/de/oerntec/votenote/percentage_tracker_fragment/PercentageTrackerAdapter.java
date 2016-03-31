@@ -198,7 +198,7 @@ public class PercentageTrackerAdapter extends RecyclerView.Adapter<PercentageTra
         if (viewType == VIEW_TYPE_INFO) {
             //inflate layout
             LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-            View root = inflater.inflate(R.layout.subject_fragment_card_subject_info, parent, false);
+            View root = inflater.inflate(R.layout.percentage_tracker_info_card, parent, false);
             //create lessonholder for the views
             InfoHolder infoHolder = new InfoHolder(root);
             //save view references
@@ -211,7 +211,7 @@ public class PercentageTrackerAdapter extends RecyclerView.Adapter<PercentageTra
         } else if (viewType == VIEW_TYPE_LESSON) {
             //inflate layout
             LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-            View root = inflater.inflate(R.layout.subject_fragment_card_lesson, parent, false);
+            View root = inflater.inflate(R.layout.percentage_tracker_lesson_card, parent, false);
             //create lesson holder
             LessonHolder lessonHolder = new LessonHolder(root);
             //try to save the holder in the view to enable programatically deleting entries

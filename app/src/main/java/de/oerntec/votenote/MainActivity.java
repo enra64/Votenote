@@ -422,8 +422,8 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         final MenuItem presPointItem = menu.findItem(R.id.action_admission_counter);
         final MenuItem infoItem = menu.findItem(R.id.action_percentage_counter);
 
-        presPointItem.setActionView(R.layout.subject_fragment_action_presentation_points);
-        infoItem.setActionView(R.layout.subject_fragment_action_info);
+        presPointItem.setActionView(R.layout.menu_action_view_points);
+        infoItem.setActionView(R.layout.menu_action_view_info);
 
         presPointItem.getActionView().setOnClickListener(this);
         presPointItem.getActionView().setTag(R.id.action_admission_counter);

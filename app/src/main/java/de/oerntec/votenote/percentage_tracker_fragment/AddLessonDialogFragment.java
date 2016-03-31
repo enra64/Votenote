@@ -148,7 +148,7 @@ public class AddLessonDialogFragment extends DialogFragment implements DialogInt
     private View createView(LayoutInflater inflater) {
         //inflate rootView
         //noinspection RedundantCast because in a dialog, we cant know the parent yet
-        final View rootView = inflater.inflate(R.layout.subject_fragment_dialog_newentry, (ViewGroup) null);
+        final View rootView = inflater.inflate(R.layout.percentage_tracker_change_lesson_dialog, (ViewGroup) null);
 
         //find all necessary views
         mInfoView = (TextView) rootView.findViewById(R.id.infoTextView);

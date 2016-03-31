@@ -100,7 +100,7 @@ public class SubjectManagementListActivity extends AppCompatActivity implements 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.subject_manager_activity);
+        setContentView(R.layout.subject_manager_activity_list);
         setSupportActionBar((Toolbar) findViewById(R.id.subject_manager_toolbar));
 
         ActionBar actionBar = getSupportActionBar();

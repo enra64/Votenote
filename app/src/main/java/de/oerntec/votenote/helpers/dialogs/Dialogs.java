@@ -79,7 +79,7 @@ public class Dialogs {
         final AdmissionCounter item = db.getItem(counterId);
 
         //noinspection RedundantCast because we cant yet know the parent for the dialog
-        final View inputView = activity.getLayoutInflater().inflate(R.layout.subject_fragment_dialog_presentation_points, (ViewGroup) null);
+        final View inputView = activity.getLayoutInflater().inflate(R.layout.percentage_tracker_change_counter_dialog, (ViewGroup) null);
         final NumberPicker presPointPicker = (NumberPicker) inputView.findViewById(R.id.mainfragment_dialog_prespoints_picker);
 
         presPointPicker.setMinValue(0);

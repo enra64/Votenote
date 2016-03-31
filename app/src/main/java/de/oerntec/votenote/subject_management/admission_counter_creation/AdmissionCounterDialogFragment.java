@@ -76,7 +76,7 @@ public class AdmissionCounterDialogFragment extends DialogFragment implements Di
         // we may pass null to the inflater here, because in a dialog, we simply do not know what
         // parent we attach to
         //noinspection RedundantCast
-        View view = inflater.inflate(R.layout.subject_manager_fragment_dialog_admission_counter, (ViewGroup) null, false);
+        View view = inflater.inflate(R.layout.creation_admission_counter_dialog, (ViewGroup) null, false);
 
         mNameInput = (EditText) view.findViewById(R.id.subject_manager_fragment_dialog_admission_counter_name_edittext);
         mTargetPointCountSeek = (SeekBar) view.findViewById(R.id.subject_manager_fragment_dialog_admission_counter_target_seekbar);

@@ -191,7 +191,7 @@ public class PercentageTrackerCreationFragment extends Fragment implements Butto
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.subject_manager_percentage_creator_fragment, container, false);
+        View view = inflater.inflate(R.layout.creation_percentage_tracker_fragment, container, false);
         nameInput = (EditText) view.findViewById(R.id.percentage_creator_name_edittext);
 
         View baselinePercentageLayout = view.findViewById(R.id.percentage_creator_baseline_percentage_layout);
