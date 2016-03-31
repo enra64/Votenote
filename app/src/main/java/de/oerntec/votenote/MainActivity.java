@@ -496,10 +496,6 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         DialogHelper.showPresentationPointDialog(this, mCurrentSelectedSubjectId);
     }
 
-    private void setPreference(String key, int val) {
-        PreferenceManager.getDefaultSharedPreferences(this).edit().putInt(key, val).apply();
-    }
-
     private void setPreference(String key, boolean val) {
         PreferenceManager.getDefaultSharedPreferences(this).edit().putBoolean(key, val).apply();
     }
