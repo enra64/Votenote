@@ -6,8 +6,8 @@
     <string name="action_set_prespoints">Punkte verwalten</string>
     <string name="action_show_diagram">Diagramm</string>
     <string name="action_show_settings">Einstellungen</string>
-    <string name="navigation_drawer_close">Navigation Drawer schließen</string>
-    <string name="navigation_drawer_open">Navigation Drawer öffnen</string>
+    <string name="navigation_drawer_close">Navigationsleiste schließen</string>
+    <string name="navigation_drawer_open">Navigationsleiste öffnen</string>
     <string name="new_folder_button">Neuer Ordner</string>
     <string name="subjectmanager_assignments_per_lesson">Aufgaben pro Übung</string>
     <string name="subjectmanager_lesson_count">Anzahl Übungen</string>
@@ -31,8 +31,8 @@
     <string name="subject_fragment_reached_scheduled_lesson_count">Alle vorgegebenen Übungen wurden eingetragen.</string>
     <string name="action_show_all_info">Info</string>
     <string name="pref_csv_export">CSV-Datei erstellen</string>
-    <string name="pref_drawer_start_title">Drawer-Start</string>
-    <string name="pref_drawer_start_description">Beim Starten immer den Drawer öffnen</string>
+    <string name="pref_drawer_start_title">Navigation automatisch öffnen</string>
+    <string name="pref_drawer_start_description">Bei gesetzter Checkbox wird die Seitenleiste mit der Übungsnavigation (Navigation Drawer) beim Starten angezeigt.</string>
     <string name="pref_lesson_sort">Zeige die neueste Übung als erste</string>
     <string name="pref_lesson_sort_title">Übungsreihenfolge</string>
     <string name="tutorial_import_description">Übungen importieren</string>
