@@ -18,6 +18,12 @@
         android:layout_below="@+id/subject_manager_toolbar"
         android:padding="2dp" />
 
+    <FrameLayout
+        android:id="@+id/subject_manager_list_tutorial_frame"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true" />
+
     <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/subject_manager_coordinator_layout"
         android:layout_width="match_parent"

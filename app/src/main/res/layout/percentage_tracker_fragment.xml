@@ -38,4 +38,3 @@
         android:text="@string/keine_prozentz_hler_vorhanden_f_ge_in_den_einstellungen_welche_hinzu"
         android:visibility="visible" />
 </RelativeLayout>
-

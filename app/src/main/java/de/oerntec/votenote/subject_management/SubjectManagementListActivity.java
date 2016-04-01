@@ -35,6 +35,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import java.util.Random;
@@ -179,6 +180,16 @@ public class SubjectManagementListActivity extends AppCompatActivity implements 
         acceptDeletionIfExists();
     }
 
+    private void checkDisplayBackgroundTutorial() {
+        FrameLayout frame = (FrameLayout) findViewById(R.id.subject_manager_list_tutorial_frame);
+        if (frame == null)
+            throw new AssertionError("could not find tutorial frame");
+        if (DBSubjects.getInstance().isEmpty())
+            getLayoutInflater().inflate(R.layout.tutorial_subjects, frame, true);
+        else
+            frame.removeAllViews();
+    }
+
     private void showSubjectCreatorForNewSubject() {
         showSubjectCreator(SubjectManagementListActivity.ADD_SUBJECT_CODE, -1);
     }
@@ -189,6 +200,12 @@ public class SubjectManagementListActivity extends AppCompatActivity implements 
         //a -1 does not matter, its default anyways
         subjectManagerIntent.putExtra(SubjectCreationActivity.ARG_CREATOR_VIEW_POSITION, recyclerViewPosition);
         startActivityForResult(subjectManagerIntent, 420);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        checkDisplayBackgroundTutorial();
     }
 
     @Override
@@ -212,6 +229,7 @@ public class SubjectManagementListActivity extends AppCompatActivity implements 
             int recyclerViewPosition = data.getIntExtra(SubjectCreationActivity.ARG_CREATOR_VIEW_POSITION, 0);
             SwipeAnimationUtils.executeProgrammaticSwipeDeletion(this, this, mSubjectList.getLayoutManager().getChildAt(recyclerViewPosition), recyclerViewPosition);
         }
+
     }
 
 
@@ -247,6 +265,7 @@ public class SubjectManagementListActivity extends AppCompatActivity implements 
                     }
                 });
         mDeletionSnackbar.show();
+        checkDisplayBackgroundTutorial();
     }
 
     private void acceptDeletionIfExists() {
@@ -258,8 +277,10 @@ public class SubjectManagementListActivity extends AppCompatActivity implements 
     }
 
     private void onUndo() {
-        if (mLastDeletionSavepointId != null)
+        if (mLastDeletionSavepointId != null) {
             DBSubjects.getInstance().rollbackToSavepoint(mLastDeletionSavepointId);
+            checkDisplayBackgroundTutorial();
+        }
         else
             throw new AssertionError("could not rollback subject deletion!");
         mLastDeletionSavepointId = null;
@@ -381,6 +402,7 @@ public class SubjectManagementListActivity extends AppCompatActivity implements 
      */
     public void reloadAdapter() {
         mSubjectList.swapAdapter(new SubjectAdapter(this), false);
+        checkDisplayBackgroundTutorial();
     }
 
     private boolean getPreference(String key, boolean def) {

@@ -122,7 +122,7 @@ public class UnifiedCreatorAdapter extends RecyclerView.Adapter<UnifiedCreatorAd
                         new FakeDisabledNotEmptyWatcher(
                                 infoHolder.name,
                                 mParentOkButton.getContext().getString(R.string.edit_text_empty_error_text),
-                                mSubjectName == null || mSubjectName.isEmpty(),
+                                getCurrentName() == null || getCurrentName().isEmpty(),
                                 new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
@@ -253,6 +253,8 @@ public class UnifiedCreatorAdapter extends RecyclerView.Adapter<UnifiedCreatorAd
     }
 
     public String getCurrentName() {
+        if (mNameInput == null)
+            return null;
         return mNameInput.getText().toString();
     }
 
