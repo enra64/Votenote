@@ -30,6 +30,7 @@ import de.oerntec.votenote.helpers.General;
 import de.oerntec.votenote.helpers.Permissions;
 import de.oerntec.votenote.helpers.SeekerListener;
 import de.oerntec.votenote.helpers.dialogs.DayOfWeekPickerDialog;
+import de.oerntec.votenote.helpers.forecasting.ForecastModeSpinnerAdapter;
 import de.oerntec.votenote.helpers.notifications.NotificationGeneralHelper;
 import de.oerntec.votenote.helpers.textwatchers.FakeDisabledNotEmptyWatcher;
 import de.oerntec.votenote.subject_management.subject_creation.SubjectCreationActivity;
@@ -399,7 +400,7 @@ public class PercentageTrackerCreationFragment extends Fragment implements Butto
     private void initEstimationModeSpinner() {
         PercentageTrackerPojo.EstimationMode estimationMode = PercentageTrackerPojo.EstimationMode.valueOf(mEstimationModeHint);
 
-        mEstimationModeSpinner.setAdapter(new EstimationModeSpinnerAdapter(getActivity()));
+        mEstimationModeSpinner.setAdapter(new ForecastModeSpinnerAdapter(getActivity()));
         mEstimationModeSpinner.setSelection(estimationMode.ordinal());
 
         mEstimationModeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {

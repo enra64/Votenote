@@ -4,9 +4,6 @@ package de.oerntec.votenote.percentage_tracker_overview;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -15,7 +12,6 @@ import android.widget.ListView;
 import android.widget.Spinner;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import de.oerntec.votenote.R;
@@ -26,6 +22,7 @@ import de.oerntec.votenote.database.pojo.percentagetracker.PercentageTrackerPojo
 import de.oerntec.votenote.database.tablehelpers.DBAdmissionPercentageMeta;
 import de.oerntec.votenote.database.tablehelpers.DBLessons;
 import de.oerntec.votenote.helpers.Preferences;
+import de.oerntec.votenote.helpers.forecasting.ForecastModeSpinnerAdapter;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -76,39 +73,7 @@ public class AdmissionPercentageOverviewFragment extends Fragment {
 
         mContentList = new ArrayList<>();
 
-        setHasOptionsMenu(true);
-
         fillContentList(mAdmissionCounterMetaPojo, data);
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_subject_overview, menu);
-        MenuItem spinnerMenuItem = menu.findItem(R.id.overview_spinner);
-        View view1 = spinnerMenuItem.setActionView(new Spinner(getContext())).getActionView();
-        if (view1 instanceof Spinner) {
-            mEstimationModeSpinner = (Spinner) view1;
-
-            String user = getString(R.string.estimation_name_user);
-            String mean = getString(R.string.estimation_name_mean);
-            String best = getString(R.string.estimation_name_best);
-            String worst = getString(R.string.estimation_name_worst);
-
-            List<String> dataList = Arrays.asList(user, mean, best, worst);
-
-            mEstimationModeSpinner.setAdapter(new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_dropdown_item, dataList));
-
-            mEstimationModeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                @Override
-                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                    onEstimationModeChange(position);
-                }
-
-                @Override
-                public void onNothingSelected(AdapterView<?> parent) {
-                }
-            });
-        }
     }
 
     private void fillContentList(PercentageTrackerPojo metaPojo, PercentageTrackerCalculationResult data) {
@@ -125,8 +90,8 @@ public class AdmissionPercentageOverviewFragment extends Fragment {
         mAdapter.notifyDataSetChanged();
     }
 
-    private void onEstimationModeChange(int seekbarProgress) {
-        setAdapterDataset(seekbarProgress);
+    private void onForecastModeChange(int ordinal) {
+        setAdapterDataset(ordinal);
     }
 
     private ArrayList<String> createSingleList(PercentageTrackerPojo metaPojo, PercentageTrackerCalculationResult data, PercentageTrackerPojo.EstimationMode mode) {
@@ -167,15 +132,32 @@ public class AdmissionPercentageOverviewFragment extends Fragment {
 
         //find views
         ListView mDataListView = (ListView) rootView.findViewById(R.id.fragment_admission_percentage_overview_list);
+        mEstimationModeSpinner = (Spinner) rootView.findViewById(R.id.fragment_admission_percentage_overview_spinner);
 
         //listView init
         mAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, new ArrayList<String>());
         mDataListView.setAdapter(mAdapter);
 
-        if (mEstimationModeSpinner != null)
-            mEstimationModeSpinner.setSelection(mAdmissionCounterMetaPojo.estimationMode.ordinal());
+        spinnerInitialisation();
 
         return rootView;
+    }
+
+    private void spinnerInitialisation() {
+        mEstimationModeSpinner.setAdapter(new ForecastModeSpinnerAdapter(getActivity()));
+
+        mEstimationModeSpinner.setSelection(mAdmissionCounterMetaPojo.estimationMode.ordinal());
+
+        mEstimationModeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                onForecastModeChange(position);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
     }
 
 }
