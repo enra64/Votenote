@@ -286,7 +286,8 @@ public class SubjectCreationFragment extends Fragment implements SubjectCreation
             throw new AssertionError("tried to delete a new subject");
 
         // ok i promise the next app will have something resembling an architecture, this is getting
-        // bad// delete all alarms for this subject
+        // bad
+        // delete all alarms for this subject
         NotificationGeneralHelper.removeAllAlarmsForSubject(getActivity(), mSubjectId);
 
         // set the result to be retrieved by subject manager
@@ -427,6 +428,7 @@ public class SubjectCreationFragment extends Fragment implements SubjectCreation
     @Override
     public void deleteAdmissionPercentage(int itemId) {
         mSubjectHasBeenChanged = true;
+        NotificationGeneralHelper.removeAlarmForNotification(getActivity(), mSubjectId, itemId);
         mAdapter.removePercentage(itemId);
         dialogClosed();
     }

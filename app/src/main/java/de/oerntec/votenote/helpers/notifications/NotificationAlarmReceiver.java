@@ -10,6 +10,7 @@ import android.util.Log;
 
 import de.oerntec.votenote.MainActivity;
 import de.oerntec.votenote.R;
+import de.oerntec.votenote.database.pojo.Subject;
 import de.oerntec.votenote.database.tablehelpers.DBSubjects;
 
 /**
@@ -46,18 +47,25 @@ public class NotificationAlarmReceiver extends BroadcastReceiver {
         if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
             Log.i("not_al", "received notification alarm key_abc, notification id " + id);
 
-        // build notification
-        // the addAction re-use the same intent to keep the example short
-        NotificationCompat.Builder b = new NotificationCompat.Builder(context)
-                .setContentTitle(context.getString(R.string.notification_title_vote))
-                .setContentText(String.format(context.getString(R.string.notification_text), DBSubjects.setupInstance(context).getItem(subjectId).name))
-                .setSmallIcon(R.drawable.ic_notification)
-                .addAction(R.drawable.ic_button_add, context.getString(R.string.notifcation_action), pIntent)
-                .setAutoCancel(true);
+        try {
+            Subject subject = DBSubjects.setupInstance(context).getItem(subjectId);
 
-        NotificationManager notificationManager =
-                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+            // build notification
+            // the addAction re-use the same intent to keep the example short
+            NotificationCompat.Builder b = new NotificationCompat.Builder(context)
+                    .setContentTitle(context.getString(R.string.notification_title_vote))
+                    .setContentText(String.format(context.getString(R.string.notification_text), subject.name))
+                    .setSmallIcon(R.drawable.ic_notification)
+                    .addAction(R.drawable.ic_button_add, context.getString(R.string.notifcation_action), pIntent)
+                    .setAutoCancel(true);
 
-        notificationManager.notify(id, b.build());
+            NotificationManager notificationManager =
+                    (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+
+            notificationManager.notify(id, b.build());
+        } catch (AssertionError e) {
+            // the subject this notification is for does not exist anymore
+            NotificationGeneralHelper.removeAllAlarmsForSubject(context, subjectId);
+        }
     }
 }

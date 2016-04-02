@@ -5,10 +5,12 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import java.util.Calendar;
 import java.util.List;
 
+import de.oerntec.votenote.MainActivity;
 import de.oerntec.votenote.database.pojo.percentagetracker.PercentageTrackerPojo;
 import de.oerntec.votenote.database.tablehelpers.DBAdmissionPercentageMeta;
 
@@ -75,7 +77,14 @@ public class NotificationGeneralHelper {
         intent.putExtra("subject_id_notification", subjectId);
         intent.putExtra("admission_percentage_id_notification", admissionPercentageId);
 
-        return PendingIntent.getBroadcast(context, subjectId * 4096 + admissionPercentageId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
+            Log.i("notif", "intent hash: " + intent.filterHashCode() + ", id: " + admissionPercentageId);
+
+        return PendingIntent.getBroadcast(//893110327
+                context,
+                admissionPercentageId,
+                intent,
+                PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
     public static void removeAlarmForNotification(Context context, int subjectId, int admissionPercentageId) {
@@ -86,6 +95,10 @@ public class NotificationGeneralHelper {
                 subjectId,
                 admissionPercentageId);
 
+        if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
+            Log.i("notifications", "removed notification");
+
+        p.cancel();
         alarmManager.cancel(p);
     }
 
@@ -106,10 +119,14 @@ public class NotificationGeneralHelper {
         }
     }
 
+    public static void removeAllAlarms(Context context) {
+        removeAllAlarmsForSubject(context, -1);
+    }
+
     public static void setAlarmForNotification(Context context, int subjectId, int admissionPercentageId, int day, int hour, int minute) {
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
-        // as of api 19, everything is inexact, so the user will get the notification up to 10
+        // as of api 19, everything is inexact, so the user will get the notification up to 1 shitload
         // minutes later than scheduled
         alarmManager.setInexactRepeating(AlarmManager.RTC,
                 NotificationGeneralHelper.getCalendar(day, hour, minute).getTimeInMillis(),
@@ -121,18 +138,7 @@ public class NotificationGeneralHelper {
     }
 
     public static void setAlarmForNotification(Context context, int subjectId, int admissionPercentageId, String recurrenceString) {
-        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-
         int[] data = convertFromRecurrenceRule(recurrenceString);
-
-        // as of api 19, everything is inexact, so the user will get the notification up to 10
-        // minutes later than scheduled
-        alarmManager.setInexactRepeating(AlarmManager.RTC,
-                NotificationGeneralHelper.getCalendar(data[0], data[1], data[2]).getTimeInMillis(),
-                AlarmManager.INTERVAL_DAY * 7,
-                getAlarmPendingIntent(
-                        context,
-                        subjectId,
-                        admissionPercentageId));
+        setAlarmForNotification(context, subjectId, admissionPercentageId, data[0], data[1], data[2]);
     }
 }

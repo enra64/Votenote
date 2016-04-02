@@ -23,6 +23,7 @@ import android.util.AttributeSet;
 
 import de.oerntec.votenote.R;
 import de.oerntec.votenote.database.DatabaseCreator;
+import de.oerntec.votenote.helpers.notifications.NotificationGeneralHelper;
 
 public class DeletionConfirmationPreference extends DialogPreference {
     public DeletionConfirmationPreference(Context context, AttributeSet attrs) {
@@ -36,6 +37,7 @@ public class DeletionConfirmationPreference extends DialogPreference {
     @Override
     protected void onDialogClosed(boolean positiveResult) {
         if (positiveResult) {
+            NotificationGeneralHelper.removeAllAlarms(getContext());
             DatabaseCreator db = DatabaseCreator.getInstance(getContext());
             db.reset();
         } else

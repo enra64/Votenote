@@ -262,7 +262,7 @@ public class DBSubjects extends CrudDb<Subject> {
                 null);
 
         if (mCursor.getCount() != 1)
-            throw new AssertionError("id is primary key?");
+            throw new AssertionError("found " + mCursor.getCount() + " subjects with that id");
 
         mCursor.moveToFirst();
 

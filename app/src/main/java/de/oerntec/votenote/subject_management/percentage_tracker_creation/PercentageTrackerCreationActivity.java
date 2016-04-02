@@ -54,10 +54,15 @@ public class PercentageTrackerCreationActivity extends AppCompatActivity {
                 add(R.id.admission_percentage_creation_fragment_container, mContentFragment)
                 .commit();
 
+
         //set fragment to be the listener for our buttons
         findViewById(R.id.giant_ok_button).setOnClickListener(mContentFragment);
         findViewById(R.id.giant_cancel_button).setOnClickListener(mContentFragment);
         findViewById(R.id.giant_delete_button).setOnClickListener(mContentFragment);
+    }
+
+    void updatePercentageTrackerId(int newId) {
+        mAdmissionPercentageId = newId;
     }
 
     void setRecurrenceString(String recurrence) {

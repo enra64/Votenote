@@ -41,7 +41,7 @@ public class PercentageTrackerCreationFragment extends Fragment implements Butto
     public static final String SUBJECT_IS_NEW = "subject_is_new";
     public static final String RECURRENCE_STRING = "percentage_recurrence_string";
 
-    private int mSubjectId, mAdmissionPercentageId;
+    private int mSubjectId, mPercentageTrackerId;
 
     private DBAdmissionPercentageMeta mDb;
 
@@ -167,7 +167,7 @@ public class PercentageTrackerCreationFragment extends Fragment implements Butto
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mSubjectId = getArguments().getInt(SUBJECT_ID);
-            mAdmissionPercentageId = getArguments().getInt(ADMISSION_PERCENTAGE_ID);
+            mPercentageTrackerId = getArguments().getInt(ADMISSION_PERCENTAGE_ID);
             mIsNewPercentageCounter = getArguments().getBoolean(SUBJECT_IS_NEW);
             mIsOldPercentageCounter = !mIsNewPercentageCounter;
             mDb = DBAdmissionPercentageMeta.getInstance();
@@ -176,13 +176,19 @@ public class PercentageTrackerCreationFragment extends Fragment implements Butto
             mSavepointId = "APCMETA" + mSubjectId;
             mDb.createSavepoint(mSavepointId);
 
-            //create a new meta entry for this so we have an id to work with
-            if (mIsNewPercentageCounter)
-                mAdmissionPercentageId = mDb.addItemGetId(new PercentageTrackerPojo(-1, mSubjectId, 0, 0, 0, "if you see this, i fucked up.", "undefined", 0, false, "", false));
+            if (mIsNewPercentageCounter) {
+                //create a new meta entry for this so we have an id to work with
+                mPercentageTrackerId = mDb.addItemGetId(new PercentageTrackerPojo(-1, mSubjectId, 0, 0, 0, "if you see this, i fucked up.", "undefined", 0, false, "", false));
 
-            //hide the delete button if this is a new subject
-            if (mIsNewPercentageCounter)
-                ((PercentageTrackerCreationActivity) getActivity()).hideDeleteButton();
+                PercentageTrackerCreationActivity parent = (PercentageTrackerCreationActivity) getActivity();
+
+                //hide the delete button if this is a new subject
+                parent.hideDeleteButton();
+
+                //update the id variable in the parent
+                parent.updatePercentageTrackerId(mPercentageTrackerId);
+            }
+
 
         } else
             throw new AssertionError("why are there no arguments here?");
@@ -278,7 +284,7 @@ public class PercentageTrackerCreationFragment extends Fragment implements Butto
             throw new AssertionError("this is a new subject, we cannot load data for it!");
 
         //try to get old subject data; returns null if no subject is found
-        PercentageTrackerPojo oldState = mDb.getItem(mAdmissionPercentageId);
+        PercentageTrackerPojo oldState = mDb.getItem(mPercentageTrackerId);
 
         //extract subject data
         nameHint = oldState.name;
@@ -298,7 +304,7 @@ public class PercentageTrackerCreationFragment extends Fragment implements Butto
 
         // try to remove the notification for this. when saving, it will be regenerated if the check-
         // box is checked.
-        NotificationGeneralHelper.removeAlarmForNotification(getActivity(), mSubjectId, mAdmissionPercentageId);
+        NotificationGeneralHelper.removeAlarmForNotification(getActivity(), mSubjectId, mPercentageTrackerId);
     }
 
     /**
@@ -462,7 +468,7 @@ public class PercentageTrackerCreationFragment extends Fragment implements Butto
     private int save() {
         //change the item we created at the beginning of this dialog to the actual values
         mDb.changeItem(new PercentageTrackerPojo(
-                mAdmissionPercentageId,
+                mPercentageTrackerId,
                 mSubjectId,
                 mEstimatedAssignmentsPerLessonSeekBar.getProgress(),
                 mEstimatedLessonCountSeekBar.getProgress(),
