@@ -166,4 +166,6 @@
     <string name="percentage_tracker_tutorial_description">With percentage trackers you can track what percentage of assignments you have done, and how many you must finish per lesson in the future.</string>
     <string name="point_counter">Point counter</string>
     <string name="point_counter_tutorial_description">You can use point counters to track any number, for example how often you already did a presentation.</string>
+    <string name="main_activity_no_subject_button">Manage Subjects</string>
+    <string name="main_activity_no_subject_warning">No Subjects in the database!</string>
 </resources>

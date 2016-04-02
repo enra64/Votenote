@@ -291,7 +291,7 @@ public class PercentageTrackerAdapter extends RecyclerView.Adapter<PercentageTra
         int bonusTargetPercentage = meta.bonusTargetPercentage;
 
         //write percentage and color coding to summaryview
-        if (Float.isNaN(average))
+        if (Float.isNaN(average) || average < 0)
             averageVoteView.setText(mContext.getString(R.string.infoview_vote_average_no_data));
         else
             averageVoteView.setText(String.format(General.getCurrentLocale(mContext), "%.1f%%", average));

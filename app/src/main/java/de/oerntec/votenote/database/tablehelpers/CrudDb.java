@@ -60,6 +60,7 @@ public abstract class CrudDb<T> {
         if (MainActivity.ENABLE_DEBUG_LOG_CALLS && ENABLE_SAVEPOINT_LOG)
             Log.i("db", "rolling back to savepoint: " + id);
         mDatabase.execSQL(";ROLLBACK TO SAVEPOINT " + id);
+        // TODO: happy birthday. there seems to be a bug in the java wrapper for transactions in sqlite, so that after this, no more transactions may be started.
     }
 
     /**

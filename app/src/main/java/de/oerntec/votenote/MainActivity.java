@@ -39,6 +39,9 @@ import android.view.View;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -155,6 +158,10 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
 
     private boolean mLastKnownAdmissionCounterViewVisibility = true;
 
+    /**
+     * This is the layout that contains notice & button for when no subjects exist
+     */
+    private LinearLayout mNoSubjectWarningLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -187,6 +194,21 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
                 }
             });
         }
+
+        mNoSubjectWarningLayout = (LinearLayout) findViewById(R.id.main_actvity_no_subject_warning_layout);
+
+        //This button accompanies a notice that no subjects exist, and takes the user to subject manag.
+        TextView mNoSubjectWarningButton = (Button) findViewById(R.id.main_actvity_no_subject_warning_button);
+
+        if (mNoSubjectWarningButton == null)
+            throw new AssertionError("why does that button not exist?");
+
+        mNoSubjectWarningButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, SubjectManagementListActivity.class));
+            }
+        });
 
         // Set up the drawer.
         mNavigationDrawerFragment.setUp((DrawerLayout) findViewById(R.id.drawer_layout));
@@ -240,7 +262,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         //handle the given intent
         if (isIntentGiven)
             handleIntent(getIntent());
-        //select the last selected item
+            //select the last selected item
         else {
             int subjectCount = mSubjectDb.getCount();
             int lastSelected = mLastViewedDb.getLastSubjectPosition();
@@ -260,7 +282,10 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
             else if (subjectCount > 0)
                 mNavigationDrawerFragment.selectItem(0);
             else
-                removeSubjectFragment();
+                onNoSubjectExists();
+
+            if (hasValidLastSelected || subjectCount > 0)
+                showBackgroundTutorial(false);
         }
     }
 
@@ -280,9 +305,6 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
 
         if (mNavigationDrawerFragment != null) {
             mNavigationDrawerFragment.reloadAdapter();
-
-            //if(ENABLE_DEBUG_LOG_CALLS)
-            //    Log.i("state info", "onresume");
 
             //open drawer on each resume because the user may want that
             if (Preferences.getPreference(this, "open_drawer_on_start", false)) {
@@ -389,13 +411,22 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
                 .replace(R.id.container, newFragment, "subjectFragment").commit();
     }
 
-    public void removeSubjectFragment() {
+    /**
+     * This explicitly tries to remove the last set subject fragment, as there are no subjects
+     */
+    private void onNoSubjectExists() {
         FragmentManager fragmentManager = getSupportFragmentManager();
         Fragment old = fragmentManager.findFragmentByTag("subjectFragment");
         if (old != null)
             fragmentManager.beginTransaction().remove(old).commit();
         else if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
             Log.i("main", "no old fragment was found");
+
+        showBackgroundTutorial(true);
+    }
+
+    private void showBackgroundTutorial(boolean show) {
+        mNoSubjectWarningLayout.setVisibility(show ? View.VISIBLE : View.GONE);
     }
 
     /**

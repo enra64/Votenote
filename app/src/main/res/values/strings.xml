@@ -172,4 +172,6 @@
     <string name="point_counter">Punktezähler</string>
     <string name="percentage_tracker_tutorial_description">Mit Votierungstrackern verfolgst du, wie viel Prozent du votiert hast, und wie viele Aufgaben du in der Zukunft noch votieren musst.</string>
     <string name="point_counter_tutorial_description">Punktezähler speichern eine Zahl, mit der man zum Beispiel Vortragspunkte nachhalten kann.</string>
+    <string name="main_activity_no_subject_warning">Keine Übung vorhanden!</string>
+    <string name="main_activity_no_subject_button">Übungen verwalten</string>
 </resources>
