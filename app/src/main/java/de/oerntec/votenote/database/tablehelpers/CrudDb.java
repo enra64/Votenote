@@ -45,7 +45,7 @@ public abstract class CrudDb<T> {
      */
     public void createSavepoint(String id) {
         //noinspection ConstantConditions,PointlessBooleanExpression
-        if (MainActivity.ENABLE_DEBUG_LOG_CALLS && ENABLE_SAVEPOINT_LOG)
+        if (MainActivity.ENABLE_TRANSACTION_LOG)
             Log.i("db", "creating savepoint: " + id);
         mDatabase.execSQL(";SAVEPOINT " + id);
     }
@@ -57,10 +57,13 @@ public abstract class CrudDb<T> {
      */
     public void rollbackToSavepoint(String id) {
         //noinspection ConstantConditions,PointlessBooleanExpression
-        if (MainActivity.ENABLE_DEBUG_LOG_CALLS && ENABLE_SAVEPOINT_LOG)
+        if (MainActivity.ENABLE_TRANSACTION_LOG)
             Log.i("db", "rolling back to savepoint: " + id);
         mDatabase.execSQL(";ROLLBACK TO SAVEPOINT " + id);
-        // TODO: happy birthday. there seems to be a bug in the java wrapper for transactions in sqlite, so that after this, no more transactions may be started.
+
+        // i think we need this because a ROLLBACK TO does not end the transaction, so we have to
+        // specifically say "close the transaction" after we seid "rollback"
+        releaseSavepoint(id);
     }
 
     /**
@@ -70,7 +73,7 @@ public abstract class CrudDb<T> {
      */
     public void releaseSavepoint(String id) {
         //noinspection ConstantConditions,PointlessBooleanExpression
-        if (MainActivity.ENABLE_DEBUG_LOG_CALLS && ENABLE_SAVEPOINT_LOG)
+        if (MainActivity.ENABLE_TRANSACTION_LOG)
             Log.i("db", "releasing savepoint: " + id);
         mDatabase.execSQL(";RELEASE SAVEPOINT " + id);
     }

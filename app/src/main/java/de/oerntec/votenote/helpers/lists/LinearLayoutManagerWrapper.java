@@ -5,6 +5,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 
+import de.oerntec.votenote.MainActivity;
+
 public class LinearLayoutManagerWrapper extends LinearLayoutManager {
     public LinearLayoutManagerWrapper(Context context) {
         super(context);
@@ -16,7 +18,8 @@ public class LinearLayoutManagerWrapper extends LinearLayoutManager {
         try {
             super.onLayoutChildren(recycler, state);
         } catch (IndexOutOfBoundsException e) {
-            Log.e("probe", "meet a IOOBE in RecyclerView");
+            if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
+                Log.e("probe", "meet a IOOBE in RecyclerView");
         }
     }
 }

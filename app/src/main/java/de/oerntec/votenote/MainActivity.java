@@ -521,11 +521,11 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
             case R.id.action_admission_counter:
                 onPresentationPointsClick();
                 return true;
-            case R.id.action_show_diagram:
-                //Intent testIntent = new Intent();
-                //testIntent.putExtra("admission_percentage_id_notification", notificationId);
-                //testIntent.putExtra("subject_id_notification", notificationId++);
-                //new NotificationAlarmReceiver().onReceive(this, testIntent);
+            case R.id.action_show_diagram:/*
+                Intent testIntent = new Intent();
+                testIntent.putExtra("admission_percentage_id_notification", 1);
+                testIntent.putExtra("subject_id_notification", 24);
+                new NotificationAlarmReceiver().onReceive(this, testIntent);*/
                 onDiagramClick();
                 return true;
         }
