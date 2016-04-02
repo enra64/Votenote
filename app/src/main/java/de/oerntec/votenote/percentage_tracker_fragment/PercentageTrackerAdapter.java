@@ -286,30 +286,13 @@ public class PercentageTrackerAdapter extends RecyclerView.Adapter<PercentageTra
         if (meta.hasNoLessons())
             averageVoteView.setText(mContext.getString(R.string.infoview_vote_average_no_data));
 
-        //get minvote for section
-        int baselineTargetPercentage = meta.baselineTargetPercentage;
-        int bonusTargetPercentage = meta.bonusTargetPercentage;
-
         //write percentage and color coding to summaryview
         if (Float.isNaN(average) || average < 0)
             averageVoteView.setText(mContext.getString(R.string.infoview_vote_average_no_data));
         else
             averageVoteView.setText(String.format(General.getCurrentLocale(mContext), "%.1f%%", average));
 
-        //color text in
-        if (!meta.bonusTargetPercentageEnabled) {
-            if (average >= baselineTargetPercentage)
-                averageVoteView.setTextColor(ContextCompat.getColor(mContext, R.color.ok_green));
-            else
-                averageVoteView.setTextColor(ContextCompat.getColor(mContext, R.color.warning_red));
-        } else {
-            if (average < baselineTargetPercentage)
-                averageVoteView.setTextColor(ContextCompat.getColor(mContext, R.color.warning_red));
-            else if (average < bonusTargetPercentage)
-                averageVoteView.setTextColor(ContextCompat.getColor(mContext, R.color.warning_orange));
-            else
-                averageVoteView.setTextColor(ContextCompat.getColor(mContext, R.color.ok_green));
-        }
+        General.triStateClueColors(averageVoteView, mContext, meta, 0, 0);
     }
 
     private void setAverageNeededAssignments(TextView averageNeededVotesView,

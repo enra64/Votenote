@@ -13,6 +13,7 @@ import android.widget.TextView;
 import java.util.Locale;
 
 import de.oerntec.votenote.R;
+import de.oerntec.votenote.database.pojo.percentagetracker.PercentageTrackerPojo;
 import de.oerntec.votenote.database.tablehelpers.DBAdmissionCounters;
 import de.oerntec.votenote.database.tablehelpers.DBAdmissionPercentageMeta;
 import de.oerntec.votenote.database.tablehelpers.DBLastViewed;
@@ -81,7 +82,26 @@ public class General {
         DBLastViewed.setupInstance(context);
     }
 
-    public static void applyClueColor(TextView textView, Context context, boolean isOk) {
-        textView.setTextColor(ContextCompat.getColor(context, isOk ? R.color.ok_green : R.color.warning_red));
+    public static void triStateClueColors(
+            TextView textView,
+            Context context,
+            PercentageTrackerPojo meta,
+            int addToFinished,
+            int addToAvailable) {
+        float average = meta.getAverageFinished(addToAvailable, addToFinished);
+        //color text in
+        if (!meta.bonusTargetPercentageEnabled) {
+            if (average >= meta.baselineTargetPercentage)
+                textView.setTextColor(ContextCompat.getColor(context, R.color.ok_green));
+            else
+                textView.setTextColor(ContextCompat.getColor(context, R.color.warning_red));
+        } else {
+            if (average < meta.baselineTargetPercentage)
+                textView.setTextColor(ContextCompat.getColor(context, R.color.warning_red));
+            else if (average < meta.bonusTargetPercentage)
+                textView.setTextColor(ContextCompat.getColor(context, R.color.warning_orange));
+            else
+                textView.setTextColor(ContextCompat.getColor(context, R.color.ok_green));
+        }
     }
 }

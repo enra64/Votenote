@@ -193,10 +193,6 @@ public class AddLessonDialogFragment extends DialogFragment implements DialogInt
 
         //set the current values of the pickers as explanation text
         mInfoView.setText(getString(R.string.lesson_dialog_fragment_picker_info_text, mFinishedAssignmentsPicker.getValue(), mAvailableAssignmentsPicker.getValue()));
-
-        //if the autofixer is not enabled, make the text green, because green/red hints validity
-        if (!mEnableDataAutoFix)
-            General.applyClueColor(mInfoView, getActivity(), true);
     }
 
     /**
@@ -310,7 +306,6 @@ public class AddLessonDialogFragment extends DialogFragment implements DialogInt
                     boolean isValid = myVoteValue <= maxVoteValue;
                     ((AlertDialog) getDialog()).getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(isValid);
                     updateResultingPercentage(myVoteValue, maxVoteValue);
-                    General.applyClueColor(mInfoView, getActivity(), isValid);
                 }
             };
             //add change listener to update dialog explanation if pickers changed
@@ -335,7 +330,12 @@ public class AddLessonDialogFragment extends DialogFragment implements DialogInt
             newAvg = mMetaItem.getAverageFinished(availableAssignments - mOldData.availableAssignments, finishedAssignments - mOldData.finishedAssignments);
         Locale locale = General.getCurrentLocale(getActivity());
         mResultingPercentageView.setText(String.format(locale, "%.1f%%", newAvg));
-        General.applyClueColor(mResultingPercentageView, getActivity(), newAvg >= mMetaItem.baselineTargetPercentage);
+        General.triStateClueColors(
+                mResultingPercentageView,
+                getActivity(),
+                mMetaItem,
+                finishedAssignments,
+                availableAssignments);
     }
 
     /**
