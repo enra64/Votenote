@@ -114,7 +114,7 @@
     <string name="overview_past_finished_count">Anzahl votierter Aufgaben:</string>
     <string name="overview_percentage">Prozentzahl votierter Aufgaben: </string>
     <string name="overview_available_assignments_per_lesson">Geschätzte Aufgaben pro Übung (in der Zukunft): </string>
-    <string name="overview_overall_available_assignments">Geschätzte Gesamtanzahl an Aufgaben: </string>
+    <string name="overview_overall_available_assignments">Geschätzte Gesamtanzahl an verfügbaren Aufgaben:</string>
     <string name="overview_overall_required_assignments">Geschätzte Anzahl an gesamt benötigten Aufgaben:</string>
     <string name="overview_remaining_required_finished_assignments">Geschätzte Anzahl an noch benötigten Aufgaben: </string>
     <string name="overview_assignments_per_lesson">Geschätzte Anzahl an pro Übung benötigten Aufgaben: </string>
@@ -175,4 +175,10 @@
     <string name="main_activity_no_subject_warning">Keine Übung vorhanden!</string>
     <string name="main_activity_no_subject_button">Übungen verwalten</string>
     <string name="percentage_tracker_overview_calculated_values">Berechnete Werte</string>
+    <string name="overview_bonus_not_activated">Bonus nicht aktiviert.</string>
+    <string name="overview_bonus_reachable">Bonus erreichbar: </string>
+    <string name="yes">Ja</string>
+    <string name="no">Nein</string>
+    <string name="overview_resulting_targe_percentage">Resultierendes Ziel: %s%%</string>
+    <string name="overview_future_available_assignments">Geschätzte Anzahl an zukünftig verfügbaren Aufgaben:</string>
 </resources>

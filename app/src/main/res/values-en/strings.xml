@@ -105,13 +105,13 @@
     <string name="overview_entered_lesson_count">Entered lessons: </string>
     <string name="overview_future_lesson_count">Future lessons: </string>
     <string name="overview_assignments_per_lesson">Estimated number of assignments required per lesson: </string>
-    <string name="overview_overall_available_assignments">Estimated overall assignment count: </string>
+    <string name="overview_overall_available_assignments">Estimated overall available assignment count: </string>
     <string name="overview_overall_lessons">Estimated lesson count: </string>
     <string name="overview_overall_required_assignments">Estimated overall required assignments: </string>
     <string name="overview_past_available_count">Past available assignments count: </string>
-    <string name="overview_past_finished_count">Past finished assignments:</string>
-    <string name="overview_percentage">Percentage of finished assignments:</string>
-    <string name="overview_remaining_required_finished_assignments">Estimated number of overall assignments required:</string>
+    <string name="overview_past_finished_count">Past finished assignments: </string>
+    <string name="overview_percentage">Percentage of finished assignments: </string>
+    <string name="overview_remaining_required_finished_assignments">Estimated number of required assignments in the future:</string>
     <string name="eula_dialog_title">End-User License Agreement for Votenote</string>
     <string name="tutorial_create_example">Create Example</string>
     <string name="action_create_example_title">Create example</string>
@@ -169,4 +169,10 @@
     <string name="main_activity_no_subject_button">Manage Subjects</string>
     <string name="main_activity_no_subject_warning">No Subjects in the database!</string>
     <string name="percentage_tracker_overview_calculated_values">Computed values</string>
+    <string name="no">No</string>
+    <string name="yes">Yes</string>
+    <string name="overview_resulting_targe_percentage">Resulting target percentage: %s%%</string>
+    <string name="overview_bonus_reachable">Bonus reachable: </string>
+    <string name="overview_bonus_not_activated">Bonus not activated</string>
+    <string name="overview_future_available_assignments">Estimated number of future available assignments:</string>
 </resources>

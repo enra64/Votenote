@@ -37,10 +37,11 @@ public class PercentageTrackerCalculator {
         EstimationModeDependentResults results = new EstimationModeDependentResults();
         results.numberOfAssignmentsEstimatedPerLesson = getEstimatedAssignmentsPerLesson(item, mode);
 
-        float estimatedNumberOfFutureAvailableAssignments =
+        results.numberOfEstimatedFutureAvailableAssignments =
                 getEstimatedAssignmentsPerLesson(item, mode) * independentResults.numberOfFutureLessons;
 
-        results.numberOfEstimatedOverallAssignments = estimatedNumberOfFutureAvailableAssignments +
+        results.numberOfEstimatedOverallAvailableAssignments =
+                results.numberOfEstimatedFutureAvailableAssignments +
                 independentResults.numberOfPastAvailableAssignments;
 
         //default to baseline target percentage
@@ -51,6 +52,7 @@ public class PercentageTrackerCalculator {
         if (item.bonusTargetPercentageEnabled) {
             float neededAssignmentsPerLessonForBonus = calcNeededAssignmentsPerLesson(
                     item,
+                    results.numberOfEstimatedOverallAvailableAssignments,
                     item.bonusTargetPercentage,
                     independentResults.numberOfFutureLessons);
 
@@ -61,11 +63,47 @@ public class PercentageTrackerCalculator {
             }
         }
 
-        results.numberOfNeededAssignments = (results.numberOfEstimatedOverallAssignments * localTargetPercentage) / 100f;
+        results.numberOfNeededAssignments = (results.numberOfEstimatedOverallAvailableAssignments * localTargetPercentage) / 100f;
         results.numberOfRemainingNeededAssignments = results.numberOfNeededAssignments - independentResults.numberOfFinishedAssignments;
         results.numberOfAssignmentsNeededPerLesson = results.numberOfRemainingNeededAssignments / independentResults.numberOfFutureLessons;
 
         return results;
+    }
+
+    /**
+     * This just calculates how many assignments are needed per lesson, but does not write it anywhere,
+     * so we can check whether the bonus target percentage may still be hit
+     */
+    private static float calcNeededAssignmentsPerLesson(
+            PercentageTrackerPojo item,
+            float numberOfEstimatedOverallAvailableAssignments,
+            float target,
+            float numberOfFutureLessons) {
+        float numberOfNeededAssignments = (numberOfEstimatedOverallAvailableAssignments * target) / 100f;
+        float remainingNeededAssignments = numberOfNeededAssignments - getNumberOfPastFinishedAssignments(item.mDataList);
+        return remainingNeededAssignments / numberOfFutureLessons;
+    }
+
+    /**
+     * This estimates a lesson count by returning the number of assignments per lesson estimated
+     * accordingly to the given estimation mode
+     */
+    private static float getEstimatedAssignmentsPerLesson(PercentageTrackerPojo item, EstimationMode estimationMode) {
+        switch (estimationMode) {
+            case user:
+                return item.userAssignmentsPerLessonEstimation;
+            case mean:
+                if (item.hasNoLessons())
+                    return item.userAssignmentsPerLessonEstimation;
+                return (float) getNumberOfPastAvailableAssignments(item.mDataList) / (float) item.lessonCount();
+            case best:
+                return getMinimumPastAvailableAssignments(item.mDataList);
+            case worst:
+                return getMaximumPastAvailableAssignments(item.mDataList);
+            default:
+            case undefined:
+                throw new AssertionError("undefined estimation mode!");
+        }
     }
 
     private static int getNumberOfPastFinishedAssignments(List<Lesson> mDataList) {
@@ -94,37 +132,5 @@ public class PercentageTrackerCalculator {
         for (Lesson d : mDataList)
             maxAvailableAssignments = d.availableAssignments > maxAvailableAssignments ? d.availableAssignments : maxAvailableAssignments;
         return maxAvailableAssignments;
-    }
-
-    /**
-     * This just calculates how many assignments are needed per lesson, but does not write it anywhere,
-     * so we can check whether the bonus target percentage may still be hit
-     */
-    private static float calcNeededAssignmentsPerLesson(PercentageTrackerPojo item, float target, float numberOfFutureLessons) {
-        float numberOfNeededAssignments = (item.userAssignmentsPerLessonEstimation * target) / 100f;
-        float remainingNeededAssignments = numberOfNeededAssignments - getNumberOfPastFinishedAssignments(item.mDataList);
-        return remainingNeededAssignments / numberOfFutureLessons;
-    }
-
-    /**
-     * This estimates a lesson count by returning the number of assignments per lesson estimated
-     * accordingly to the given estimation mode
-     */
-    private static float getEstimatedAssignmentsPerLesson(PercentageTrackerPojo item, EstimationMode estimationMode) {
-        switch (estimationMode) {
-            case user:
-                return item.userAssignmentsPerLessonEstimation;
-            case mean:
-                if (item.hasNoLessons())
-                    return item.userAssignmentsPerLessonEstimation;
-                return (float) getNumberOfPastAvailableAssignments(item.mDataList) / (float) item.lessonCount();
-            case best:
-                return getMinimumPastAvailableAssignments(item.mDataList);
-            case worst:
-                return getMaximumPastAvailableAssignments(item.mDataList);
-            default:
-            case undefined:
-                throw new AssertionError("undefined estimation mode!");
-        }
     }
 }

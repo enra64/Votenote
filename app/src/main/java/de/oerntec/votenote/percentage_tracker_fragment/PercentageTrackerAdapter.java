@@ -320,7 +320,7 @@ public class PercentageTrackerAdapter extends RecyclerView.Adapter<PercentageTra
                             dependentResults.numberOfAssignmentsNeededPerLesson),
                     mContext.getString(R.string.lesson_fragment_info_card_assignments_per_lesson_description)));
 
-        if (dependentResults.numberOfEstimatedOverallAssignments < 0)
+        if (dependentResults.numberOfEstimatedOverallAvailableAssignments < 0)
             averageNeededVotesView.setText(mContext.getString(R.string.subject_fragment_error_detected));
 
         if (meta.bonusTargetPercentageEnabled) {

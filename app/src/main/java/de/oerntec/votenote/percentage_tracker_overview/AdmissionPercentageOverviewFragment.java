@@ -108,14 +108,25 @@ public class AdmissionPercentageOverviewFragment extends Fragment {
         EstimationModeDependentResults results =
                 data.getEstimationDependentResults(mode);
 
+        float resultingTargetPercentage = metaPojo.baselineTargetPercentage;
+
         //estimation mode dependent results
-        if (mAdmissionCounterMetaPojo.bonusTargetPercentageEnabled)
-            list.add("Bonus erreichbar: " + (results.bonusReachable ? "Ja" : "Nein"));
+        if (mAdmissionCounterMetaPojo.bonusTargetPercentageEnabled) {
+            list.add(getActivity().getString(R.string.overview_bonus_reachable) +
+                    (results.bonusReachable ?
+                            getActivity().getString(R.string.yes) :
+                            getActivity().getString(R.string.no)));
+            if (results.bonusReachable)
+                resultingTargetPercentage = metaPojo.bonusTargetPercentage;
+        }
         else
-            list.add("Bonus nicht aktiviert.");
+            list.add(getActivity().getString(R.string.overview_bonus_not_activated));
+
+        list.add(String.format(getActivity().getString(R.string.overview_resulting_targe_percentage), resultingTargetPercentage));
 
         list.add(getActivity().getString(R.string.overview_available_assignments_per_lesson) + results.numberOfAssignmentsEstimatedPerLesson);
-        list.add(getActivity().getString(R.string.overview_overall_available_assignments) + results.numberOfEstimatedOverallAssignments);
+        list.add(getActivity().getString(R.string.overview_future_available_assignments) + results.numberOfEstimatedFutureAvailableAssignments);
+        list.add(getActivity().getString(R.string.overview_overall_available_assignments) + results.numberOfEstimatedOverallAvailableAssignments);
         list.add(getActivity().getString(R.string.overview_overall_required_assignments) + results.numberOfNeededAssignments);
         list.add(getActivity().getString(R.string.overview_remaining_required_finished_assignments) + results.numberOfRemainingNeededAssignments);
         list.add(getActivity().getString(R.string.overview_assignments_per_lesson) + results.numberOfAssignmentsNeededPerLesson);
