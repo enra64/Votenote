@@ -21,8 +21,8 @@ import java.util.List;
 
 import de.oerntec.votenote.database.pojo.percentagetracker.PercentageTrackerPojo;
 import de.oerntec.votenote.database.tablehelpers.DBAdmissionCounters;
-import de.oerntec.votenote.database.tablehelpers.DBAdmissionPercentageMeta;
 import de.oerntec.votenote.database.tablehelpers.DBLessons;
+import de.oerntec.votenote.database.tablehelpers.DBPercentageTracker;
 
 public class Subject {
     public final String name;
@@ -39,7 +39,7 @@ public class Subject {
     /**
      * fill the lists that are usually empty containing all other pojos belonging to this subject
      */
-    public void loadAllData(DBAdmissionCounters counterDb, DBLessons dataDb, DBAdmissionPercentageMeta metaDb, boolean latestLessonFirst) {
+    public void loadAllData(DBAdmissionCounters counterDb, DBLessons dataDb, DBPercentageTracker metaDb, boolean latestLessonFirst) {
         admissionCounterList = counterDb.getItemsForSubject(id);
         percentageTrackerPojoList = metaDb.getItemsForSubject(id);
         for (PercentageTrackerPojo meta : percentageTrackerPojoList) {

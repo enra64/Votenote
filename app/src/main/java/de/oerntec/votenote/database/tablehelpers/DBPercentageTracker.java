@@ -31,16 +31,16 @@ import de.oerntec.votenote.database.DatabaseCreator;
 import de.oerntec.votenote.database.PojoDatabase;
 import de.oerntec.votenote.database.pojo.percentagetracker.PercentageTrackerPojo;
 
-public class DBAdmissionPercentageMeta extends CrudDb<PercentageTrackerPojo> implements PojoDatabase<PercentageTrackerPojo> {
+public class DBPercentageTracker extends CrudDb<PercentageTrackerPojo> implements PojoDatabase<PercentageTrackerPojo> {
     /**
      * Singleton instance
      */
-    private static DBAdmissionPercentageMeta mInstance;
+    private static DBPercentageTracker mInstance;
 
     /**
      * Private constructor for singleton
      */
-    private DBAdmissionPercentageMeta(Context context) {
+    private DBPercentageTracker(Context context) {
         super(context, DatabaseCreator.TABLE_NAME_ADMISSION_PERCENTAGES_META);
     }
 
@@ -50,9 +50,9 @@ public class DBAdmissionPercentageMeta extends CrudDb<PercentageTrackerPojo> imp
      * @param context context needed for creating the db access
      * @return the instance itself
      */
-    public static DBAdmissionPercentageMeta setupInstance(Context context) {
+    public static DBPercentageTracker setupInstance(Context context) {
         if (mInstance == null)
-            mInstance = new DBAdmissionPercentageMeta(context);
+            mInstance = new DBPercentageTracker(context);
         return mInstance;
     }
 
@@ -61,7 +61,7 @@ public class DBAdmissionPercentageMeta extends CrudDb<PercentageTrackerPojo> imp
      *
      * @return the singleton instance
      */
-    public static DBAdmissionPercentageMeta getInstance() {
+    public static DBPercentageTracker getInstance() {
         return mInstance;
     }
 

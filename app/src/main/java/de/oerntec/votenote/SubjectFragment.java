@@ -16,11 +16,11 @@ import java.util.HashMap;
 import java.util.List;
 
 import de.oerntec.votenote.database.pojo.percentagetracker.PercentageTrackerPojo;
-import de.oerntec.votenote.database.tablehelpers.DBAdmissionPercentageMeta;
 import de.oerntec.votenote.database.tablehelpers.DBLastViewed;
-import de.oerntec.votenote.helpers.Preferences;
+import de.oerntec.votenote.database.tablehelpers.DBPercentageTracker;
 import de.oerntec.votenote.helpers.dialogs.Dialogs;
 import de.oerntec.votenote.percentage_tracker_fragment.PercentageTrackerFragment;
+import de.oerntec.votenote.preferences.Preferences;
 
 /**
  * Designed to display all percentage trackers and admission point counters for any given subject.
@@ -151,7 +151,7 @@ public class SubjectFragment extends Fragment {
 
         //create and assign an adapter for showing the individual admission percentage fragments
         mViewPager = (ViewPager) rootView.findViewById(R.id.fragment_lesson_tabbed_pager);
-        mAdmissionPercentageAdapter = new AdmissionPercentageAdapter(getChildFragmentManager(), DBAdmissionPercentageMeta.getInstance(), mSubjectId);
+        mAdmissionPercentageAdapter = new AdmissionPercentageAdapter(getChildFragmentManager(), DBPercentageTracker.getInstance(), mSubjectId);
         mViewPager.setAdapter(mAdmissionPercentageAdapter);
 
         //hide the top bar showing the percentage counter titles if only one exists
@@ -185,7 +185,7 @@ public class SubjectFragment extends Fragment {
      * get the position in the adapter via the id
      */
     private int getPositionFromId(int id) {
-        List<PercentageTrackerPojo> data = DBAdmissionPercentageMeta.getInstance().getItemsForSubject(mSubjectId);
+        List<PercentageTrackerPojo> data = DBPercentageTracker.getInstance().getItemsForSubject(mSubjectId);
         for (int position = 0; position < data.size(); position++)
             if (id == data.get(position).id)
                 return position;
@@ -212,7 +212,7 @@ public class SubjectFragment extends Fragment {
      * load either the last selected, the default, or the forced admission percentage fragment
      */
     private void loadAppropriateAdmissionPercentageFragment() {
-        List<PercentageTrackerPojo> percentages = DBAdmissionPercentageMeta.getInstance().getItemsForSubject(mSubjectId);
+        List<PercentageTrackerPojo> percentages = DBPercentageTracker.getInstance().getItemsForSubject(mSubjectId);
         final int subjectPosition = getArguments().getInt(ARG_SUBJECT_POSITION);
 
         if (mForceAdmissionPercentageFragmentLoad) {
@@ -250,7 +250,7 @@ public class SubjectFragment extends Fragment {
         loadAppropriateAdmissionPercentageFragment();
 
         if(mSaveLastMetaId){
-            if (DBAdmissionPercentageMeta.getInstance().getItemsForSubject(mSubjectId).size() > 1) {
+            if (DBPercentageTracker.getInstance().getItemsForSubject(mSubjectId).size() > 1) {
                 mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
                     @Override
                     public void onPageScrollStateChanged(int state) {
@@ -279,12 +279,12 @@ public class SubjectFragment extends Fragment {
      * percentage counter
      */
     public class AdmissionPercentageAdapter extends FragmentPagerAdapter {
-        private final DBAdmissionPercentageMeta mMetaDb;
+        private final DBPercentageTracker mMetaDb;
         private final int mSubjectId;
         private final HashMap<Integer, PercentageTrackerFragment> mReferenceMap;
         private List<PercentageTrackerPojo> mData;
 
-        public AdmissionPercentageAdapter(FragmentManager fm, DBAdmissionPercentageMeta dbMeta, int subjectId) {
+        public AdmissionPercentageAdapter(FragmentManager fm, DBPercentageTracker dbMeta, int subjectId) {
             super(fm);
             mMetaDb = dbMeta;
             mSubjectId = subjectId;

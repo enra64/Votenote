@@ -16,8 +16,8 @@
     <string name="title_activity_group_management">Übungen verwalten</string>
     <string name="title_activity_settings">Einstellungen</string>
     <string name="tutorial_add_button">Übung hinzufügen</string>
-    <string name="tutorial_control_prespoints">Präsentationspunkte verwalten</string>
-    <string name="tutorial_create_your_first_subject">Erstelle mit dem Plus unten links deine erste Übung!</string>
+    <string name="tutorial_control_prespoints">Punktezähler verwalten</string>
+    <string name="tutorial_create_your_first_subject">Erstelle mit dem Plus unten rechts deine erste Übung!</string>
     <string name="dialog_button_abort">Abbrechen</string>
     <string name="dialog_button_ok">OK</string>
     <string name="main_dialog_lesson_new_lesson_title">Neue Übungsnotiz</string>
@@ -36,9 +36,9 @@
     <string name="pref_lesson_sort">Zeige die neueste Übung als erste</string>
     <string name="pref_lesson_sort_title">Übungsreihenfolge</string>
     <string name="tutorial_import_description">Übungen importieren</string>
-    <string name="tutorial_lessons_about">Berechnete Werte anzeigen</string>
+    <string name="tutorial_lessons_about">Errechnete Zwischenwerte anzeigen</string>
     <string name="tutorial_lessons_add">Eintrag hinzufügen</string>
-    <string name="tutorial_lessons_diagram">Diagramm anzeigen</string>
+    <string name="tutorial_lessons_diagram">Beteiligungsgraph anzeigen</string>
     <string name="xml_import_dialog_title">Import</string>
     <string name="xml_import_warning_message">Alle derzeitigen Einträge und Übungen werden gelöscht!</string>
     <string name="import_result_bad">Fehler</string>

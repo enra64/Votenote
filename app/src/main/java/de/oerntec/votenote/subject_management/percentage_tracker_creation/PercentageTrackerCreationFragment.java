@@ -25,7 +25,7 @@ import java.util.Date;
 
 import de.oerntec.votenote.R;
 import de.oerntec.votenote.database.pojo.percentagetracker.PercentageTrackerPojo;
-import de.oerntec.votenote.database.tablehelpers.DBAdmissionPercentageMeta;
+import de.oerntec.votenote.database.tablehelpers.DBPercentageTracker;
 import de.oerntec.votenote.helpers.General;
 import de.oerntec.votenote.helpers.Permissions;
 import de.oerntec.votenote.helpers.SeekerListener;
@@ -43,7 +43,7 @@ public class PercentageTrackerCreationFragment extends Fragment implements Butto
 
     private int mSubjectId, mPercentageTrackerId;
 
-    private DBAdmissionPercentageMeta mDb;
+    private DBPercentageTracker mDb;
 
     //views needed for configuring a new percentage counter
     private EditText nameInput;
@@ -170,7 +170,7 @@ public class PercentageTrackerCreationFragment extends Fragment implements Butto
             mPercentageTrackerId = getArguments().getInt(ADMISSION_PERCENTAGE_ID);
             mIsNewPercentageCounter = getArguments().getBoolean(SUBJECT_IS_NEW);
             mIsOldPercentageCounter = !mIsNewPercentageCounter;
-            mDb = DBAdmissionPercentageMeta.getInstance();
+            mDb = DBPercentageTracker.getInstance();
 
             //create a savepoint now, so we can rollback if the user decides to abort
             mSavepointId = "APCMETA" + mSubjectId;

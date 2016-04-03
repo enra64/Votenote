@@ -31,8 +31,8 @@ import java.util.List;
 
 import de.oerntec.votenote.R;
 import de.oerntec.votenote.database.pojo.percentagetracker.PercentageTrackerPojo;
-import de.oerntec.votenote.database.tablehelpers.DBAdmissionPercentageMeta;
 import de.oerntec.votenote.database.tablehelpers.DBLessons;
+import de.oerntec.votenote.database.tablehelpers.DBPercentageTracker;
 import de.oerntec.votenote.database.tablehelpers.DBSubjects;
 
 public class ChartSubjectAdapter extends RecyclerView.Adapter<ChartSubjectAdapter.SubjectHolder> {
@@ -51,7 +51,7 @@ public class ChartSubjectAdapter extends RecyclerView.Adapter<ChartSubjectAdapte
     }
 
     private void requery() {
-        mData = DBAdmissionPercentageMeta.getInstance().getAllItems();
+        mData = DBPercentageTracker.getInstance().getAllItems();
     }
 
     @Override

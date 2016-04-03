@@ -16,7 +16,7 @@
     <string name="title_activity_group_management">Manage subjects</string>
     <string name="title_activity_settings">Settings</string>
     <string name="tutorial_add_button">Add subject</string>
-    <string name="tutorial_control_prespoints">Manage presentation points</string>
+    <string name="tutorial_control_prespoints">Manage point counters</string>
     <string name="tutorial_create_your_first_subject">Add your first subject using the floating action button!</string>
     <string name="subject_fragment_reached_scheduled_lesson_count">All scheduled lessons have been entered.</string>
     <string name="subject_fragment_overshot_lesson_count">More lessons than scheduled</string>
@@ -35,9 +35,9 @@
     <string name="pref_drawer_start_title">Drawer start</string>
     <string name="pref_drawer_start_description">Open the navigation drawer whenever the app resumes.</string>
     <string name="pref_csv_export">Create CSV export</string>
-    <string name="tutorial_lessons_diagram">Show a diagram</string>
+    <string name="tutorial_lessons_diagram">Show participation chart</string>
     <string name="tutorial_lessons_add">Add a lesson</string>
-    <string name="tutorial_lessons_about">Show calculated values</string>
+    <string name="tutorial_lessons_about">Show all calculated values</string>
     <string name="tutorial_import_description">Import backup</string>
     <string name="xml_import_warning_message">All current lessons and subjects will be lost!</string>
     <string name="xml_import_dialog_title">Import</string>

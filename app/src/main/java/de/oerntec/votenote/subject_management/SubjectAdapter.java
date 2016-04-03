@@ -33,7 +33,7 @@ import de.oerntec.votenote.MainActivity;
 import de.oerntec.votenote.R;
 import de.oerntec.votenote.database.pojo.Subject;
 import de.oerntec.votenote.database.tablehelpers.DBAdmissionCounters;
-import de.oerntec.votenote.database.tablehelpers.DBAdmissionPercentageMeta;
+import de.oerntec.votenote.database.tablehelpers.DBPercentageTracker;
 import de.oerntec.votenote.database.tablehelpers.DBSubjects;
 
 public class SubjectAdapter extends RecyclerView.Adapter<SubjectAdapter.SubjectHolder> {
@@ -117,7 +117,7 @@ public class SubjectAdapter extends RecyclerView.Adapter<SubjectAdapter.SubjectH
         //load strings
         int subjectId = item.id;
         String name = item.name;
-        int metaCount = DBAdmissionPercentageMeta.getInstance().getItemsForSubject(item.id).size();
+        int metaCount = DBPercentageTracker.getInstance().getItemsForSubject(item.id).size();
         int counterCount = DBAdmissionCounters.getInstance().getItemsForSubject(item.id).size();
 
         //set tag for later identification avoiding all

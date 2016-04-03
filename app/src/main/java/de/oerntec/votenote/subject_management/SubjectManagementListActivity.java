@@ -46,8 +46,8 @@ import de.oerntec.votenote.database.pojo.AdmissionCounter;
 import de.oerntec.votenote.database.pojo.Lesson;
 import de.oerntec.votenote.database.pojo.percentagetracker.PercentageTrackerPojo;
 import de.oerntec.votenote.database.tablehelpers.DBAdmissionCounters;
-import de.oerntec.votenote.database.tablehelpers.DBAdmissionPercentageMeta;
 import de.oerntec.votenote.database.tablehelpers.DBLessons;
+import de.oerntec.votenote.database.tablehelpers.DBPercentageTracker;
 import de.oerntec.votenote.database.tablehelpers.DBSubjects;
 import de.oerntec.votenote.helpers.General;
 import de.oerntec.votenote.helpers.dialogs.Dialogs;
@@ -308,7 +308,7 @@ public class SubjectManagementListActivity extends AppCompatActivity implements 
 
         //these all need instances
         DBSubjects dbSubjects = DBSubjects.setupInstance(this);
-        DBAdmissionPercentageMeta dbAdmissionPercentageMeta = DBAdmissionPercentageMeta.setupInstance(this);
+        DBPercentageTracker dbPercentageTracker = DBPercentageTracker.setupInstance(this);
         DBLessons dbLessons = DBLessons.setupInstance(this);
         DBAdmissionCounters dbAdmissionCounters = DBAdmissionCounters.setupInstance(this);
 
@@ -342,8 +342,8 @@ public class SubjectManagementListActivity extends AppCompatActivity implements 
                 "4:12:0",
                 false);
 
-        int percentage1Id = dbAdmissionPercentageMeta.addItemGetId(percentage1);
-        int percentage2Id = dbAdmissionPercentageMeta.addItemGetId(percentage2);
+        int percentage1Id = dbPercentageTracker.addItemGetId(percentage1);
+        int percentage2Id = dbPercentageTracker.addItemGetId(percentage2);
 
         Random r = new Random();
 
@@ -367,6 +367,7 @@ public class SubjectManagementListActivity extends AppCompatActivity implements 
                 1));
 
         mSubjectAdapter.notifySubjectAdded();
+        checkDisplayBackgroundTutorial();
     }
 
     private void createExample() {

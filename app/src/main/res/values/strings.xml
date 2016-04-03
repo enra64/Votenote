@@ -15,8 +15,8 @@
 
     <string name="new_folder_button">Neuer Ordner</string>
 
-    <string name="tutorial_control_prespoints">Präsentationspunkte verwalten</string>
-    <string name="tutorial_create_your_first_subject">Erstelle mit dem Plus unten links deine erste Übung!</string>
+    <string name="tutorial_control_prespoints">Punktezähler verwalten</string>
+    <string name="tutorial_create_your_first_subject">Erstelle mit dem Plus unten rechts deine erste Übung!</string>
     <string name="tutorial_add_button">Übung hinzufügen</string>
 
     <string name="subjectmanager_needed_work">Erforderliche Votierung</string>
@@ -43,8 +43,8 @@
     <string name="pref_drawer_start_title">Navigation automatisch öffnen</string>
     <string name="tutorial_import_description">Übungen importieren</string>
     <string name="tutorial_lessons_add">Eintrag hinzufügen</string>
-    <string name="tutorial_lessons_about">Berechnete Werte anzeigen</string>
-    <string name="tutorial_lessons_diagram">Diagramm anzeigen</string>
+    <string name="tutorial_lessons_about">Errechnete Zwischenwerte anzeigen</string>
+    <string name="tutorial_lessons_diagram">Beteiligungsgraph anzeigen</string>
     <string name="xml_import_warning_message">Alle derzeitigen Einträge und Übungen werden gelöscht!</string>
     <string name="xml_import_dialog_title">Import</string>
     <string name="import_result_ok">Kein Fehler</string>

@@ -9,7 +9,7 @@ import java.util.List;
 
 import de.oerntec.votenote.MainActivity;
 import de.oerntec.votenote.database.pojo.percentagetracker.PercentageTrackerPojo;
-import de.oerntec.votenote.database.tablehelpers.DBAdmissionPercentageMeta;
+import de.oerntec.votenote.database.tablehelpers.DBPercentageTracker;
 
 /**
  * This is supposed to recreate all notifications on reboot
@@ -18,7 +18,7 @@ public class RebootReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         List<PercentageTrackerPojo> notificationList =
-                DBAdmissionPercentageMeta.setupInstance(context).getItemsWithNotifications();
+                DBPercentageTracker.setupInstance(context).getItemsWithNotifications();
 
         if (!Intent.ACTION_BOOT_COMPLETED.equals(intent.getAction())) {
             if (MainActivity.ENABLE_DEBUG_LOG_CALLS)

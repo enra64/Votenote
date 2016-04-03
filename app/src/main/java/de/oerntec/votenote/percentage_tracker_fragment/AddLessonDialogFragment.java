@@ -19,10 +19,10 @@ import de.oerntec.votenote.MainActivity;
 import de.oerntec.votenote.R;
 import de.oerntec.votenote.database.pojo.Lesson;
 import de.oerntec.votenote.database.pojo.percentagetracker.PercentageTrackerPojo;
-import de.oerntec.votenote.database.tablehelpers.DBAdmissionPercentageMeta;
 import de.oerntec.votenote.database.tablehelpers.DBLessons;
+import de.oerntec.votenote.database.tablehelpers.DBPercentageTracker;
 import de.oerntec.votenote.helpers.General;
-import de.oerntec.votenote.helpers.Preferences;
+import de.oerntec.votenote.preferences.Preferences;
 
 public class AddLessonDialogFragment extends DialogFragment implements DialogInterface.OnClickListener {
     private static final String ARG_AP_META_ID = "apmetaid";
@@ -123,7 +123,7 @@ public class AddLessonDialogFragment extends DialogFragment implements DialogInt
             mLessonId = getArguments().getInt(ARG_LESSON_ID);
             mIsNewLesson = mLessonId == ADD_LESSON_CODE;
             mIsOldLesson = !mIsNewLesson;
-            mMetaItem = DBAdmissionPercentageMeta.getInstance().getItem(mMetaId);
+            mMetaItem = DBPercentageTracker.getInstance().getItem(mMetaId);
             mMetaItem.loadData(DBLessons.getInstance(), Preferences.getPreference(getActivity(), "reverse_lesson_sort", false));
 
             //load shared settings
@@ -212,7 +212,7 @@ public class AddLessonDialogFragment extends DialogFragment implements DialogInt
 
         if (mIsNewLesson) {
             if (mIsFirstLesson) {
-                PercentageTrackerPojo metaItem = DBAdmissionPercentageMeta.getInstance().getItem(mMetaId);
+                PercentageTrackerPojo metaItem = DBPercentageTracker.getInstance().getItem(mMetaId);
                 currentAvailableAssignments = metaItem.userAssignmentsPerLessonEstimation;
                 currentFinishedAssignments = currentAvailableAssignments / 2;
             } else {

@@ -35,10 +35,10 @@ import de.oerntec.votenote.database.pojo.percentagetracker.PercentageTrackerCalc
 import de.oerntec.votenote.database.pojo.percentagetracker.PercentageTrackerCalculator;
 import de.oerntec.votenote.database.pojo.percentagetracker.PercentageTrackerPojo;
 import de.oerntec.votenote.database.tablehelpers.DBAdmissionCounters;
-import de.oerntec.votenote.database.tablehelpers.DBAdmissionPercentageMeta;
 import de.oerntec.votenote.database.tablehelpers.DBLessons;
+import de.oerntec.votenote.database.tablehelpers.DBPercentageTracker;
 import de.oerntec.votenote.helpers.General;
-import de.oerntec.votenote.helpers.Preferences;
+import de.oerntec.votenote.preferences.Preferences;
 
 public class PercentageTrackerAdapter extends RecyclerView.Adapter<PercentageTrackerAdapter.Holder> {
     /**
@@ -61,7 +61,7 @@ public class PercentageTrackerAdapter extends RecyclerView.Adapter<PercentageTra
      * Admission Percentage Meta Database
      */
     @SuppressWarnings("FieldCanBeLocal")
-    private DBAdmissionPercentageMeta mMetaDb = DBAdmissionPercentageMeta.getInstance();
+    private DBPercentageTracker mMetaDb = DBPercentageTracker.getInstance();
     /**
      * Admission Percentage Data Database
      */
@@ -75,10 +75,15 @@ public class PercentageTrackerAdapter extends RecyclerView.Adapter<PercentageTra
      */
     private List<Lesson> mData;
 
-    public PercentageTrackerAdapter(Context context, int admissionPercentageMetaId) {
+    /**
+     * Needed for showing/not showing tutorial
+     */
+    private PercentageTrackerFragment mParentFragment;
+
+    public PercentageTrackerAdapter(Context context, PercentageTrackerFragment percentageTrackerFragment, int admissionPercentageMetaId) {
         mContext = context;
         //get db
-        mMetaDb = DBAdmissionPercentageMeta.getInstance();
+        mMetaDb = DBPercentageTracker.getInstance();
         mDataDb = DBLessons.getInstance();
         //transfer the percentage meta id this adapter is for
         mAdmissionPercentageMetaId = admissionPercentageMetaId;
@@ -86,6 +91,8 @@ public class PercentageTrackerAdapter extends RecyclerView.Adapter<PercentageTra
         mMetaPojo = mMetaDb.getItem(admissionPercentageMetaId);
         //do we want reverse sort?
         mLatestLessonFirst = Preferences.getPreference(mContext, "reverse_lesson_sort", false);
+        //save parent
+        mParentFragment = percentageTrackerFragment;
         requery();
     }
 
@@ -155,6 +162,7 @@ public class PercentageTrackerAdapter extends RecyclerView.Adapter<PercentageTra
 
     private void requery() {
         mData = mDataDb.getItemsForMetaId(mAdmissionPercentageMetaId, mLatestLessonFirst);
+        mParentFragment.checkShowTutorial(mData.isEmpty());
     }
 
     int getRecyclerViewPosition(Lesson item) {

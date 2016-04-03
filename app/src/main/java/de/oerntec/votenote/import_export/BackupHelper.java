@@ -33,22 +33,22 @@ import de.oerntec.votenote.database.tablehelpers.DBSubjects;
 import de.oerntec.votenote.subject_management.SubjectManagementListActivity;
 
 public class BackupHelper {
-    public static void importDialog(final Context activity) {
+    public static void importDialog(final Context context) {
         //if there already are subjects, ask the user whether he truly wants to delete everything
         if (DBSubjects.getInstance().getCount() > 0) {
-            AlertDialog.Builder b = new AlertDialog.Builder(activity);
-            b.setTitle(activity.getString(R.string.xml_import_dialog_title));
-            b.setMessage(activity.getString(R.string.xml_import_warning_message));
+            AlertDialog.Builder b = new AlertDialog.Builder(context);
+            b.setTitle(context.getString(R.string.xml_import_dialog_title));
+            b.setMessage(context.getString(R.string.xml_import_warning_message));
             b.setPositiveButton(R.string.dialog_button_ok, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    startDialog(activity);
+                    startDialog(context);
                 }
             });
             b.setNegativeButton(R.string.dialog_button_abort, null);
             b.show();
         } else
-            startDialog(activity);
+            startDialog(context);
     }
 
     private static void startDialog(final Context context) {
@@ -76,10 +76,10 @@ public class BackupHelper {
     }
 
     private static void handleFileType(String chosenDir, Context context) throws IOException {
-        if (chosenDir.contains("db")) {
+        if (chosenDir.contains(".db")) {
             DatabaseCreator.getInstance(context).importDatabase(chosenDir);
             Toast.makeText(context, context.getString(R.string.import_result_ok), Toast.LENGTH_LONG).show();
-        } else if (chosenDir.contains("xml")) {
+        } else if (chosenDir.contains(".xml")) {
             int result = XmlImporter.importXml(chosenDir, context) ? R.string.import_result_ok : R.string.import_result_bad;
             Toast.makeText(context, context.getString(result), Toast.LENGTH_LONG).show();
         } else

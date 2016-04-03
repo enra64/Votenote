@@ -3,21 +3,24 @@ package de.oerntec.votenote.helpers;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
+import android.database.sqlite.SQLiteConstraintException;
 import android.preference.PreferenceManager;
 import android.support.v4.content.ContextCompat;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.Locale;
 
 import de.oerntec.votenote.R;
+import de.oerntec.votenote.database.DatabaseCreator;
 import de.oerntec.votenote.database.pojo.percentagetracker.PercentageTrackerPojo;
 import de.oerntec.votenote.database.tablehelpers.DBAdmissionCounters;
-import de.oerntec.votenote.database.tablehelpers.DBAdmissionPercentageMeta;
 import de.oerntec.votenote.database.tablehelpers.DBLastViewed;
 import de.oerntec.votenote.database.tablehelpers.DBLessons;
+import de.oerntec.votenote.database.tablehelpers.DBPercentageTracker;
 import de.oerntec.votenote.database.tablehelpers.DBSubjects;
 
 /**
@@ -74,12 +77,18 @@ public class General {
      * Set up singletons for all databases
      */
     public static void setupDatabaseInstances(Context context){
-        //database access
-        DBSubjects.setupInstance(context);
-        DBAdmissionCounters.setupInstance(context);
-        DBLessons.setupInstance(context);
-        DBAdmissionPercentageMeta.setupInstance(context);
-        DBLastViewed.setupInstance(context);
+        try {
+            //database access
+            DBSubjects.setupInstance(context);
+            DBAdmissionCounters.setupInstance(context);
+            DBLessons.setupInstance(context);
+            DBPercentageTracker.setupInstance(context);
+            DBLastViewed.setupInstance(context);
+        } catch (SQLiteConstraintException e) {
+            DatabaseCreator.logConstraintException(e);
+            Toast.makeText(context, "Foreign key constraint violated!", Toast.LENGTH_LONG).show();
+            throw e;
+        }
     }
 
     public static void triStateClueColors(

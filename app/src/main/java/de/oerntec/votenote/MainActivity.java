@@ -48,15 +48,15 @@ import java.io.StringWriter;
 
 import de.oerntec.votenote.chart.ChartActivity;
 import de.oerntec.votenote.database.tablehelpers.DBAdmissionCounters;
-import de.oerntec.votenote.database.tablehelpers.DBAdmissionPercentageMeta;
 import de.oerntec.votenote.database.tablehelpers.DBLastViewed;
+import de.oerntec.votenote.database.tablehelpers.DBPercentageTracker;
 import de.oerntec.votenote.database.tablehelpers.DBSubjects;
 import de.oerntec.votenote.helpers.General;
-import de.oerntec.votenote.helpers.Preferences;
 import de.oerntec.votenote.helpers.dialogs.Dialogs;
 import de.oerntec.votenote.import_export.Writer;
 import de.oerntec.votenote.navigationdrawer.NavigationDrawerFragment;
 import de.oerntec.votenote.percentage_tracker_fragment.PercentageTrackerFragment;
+import de.oerntec.votenote.preferences.Preferences;
 import de.oerntec.votenote.subject_management.SubjectManagementListActivity;
 
 /*
@@ -394,7 +394,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         mCurrentSelectedSubjectId = mSubjectDb.getIdOfSubject(position);
 
         mCurrentSubjectHasAdmissionCounters = DBAdmissionCounters.getInstance().getItemsForSubject(mCurrentSelectedSubjectId).size() > 0;
-        mCurrentSubjectHasPercentageCounters = DBAdmissionPercentageMeta.getInstance().getItemsForSubject(mCurrentSelectedSubjectId).size() > 0;
+        mCurrentSubjectHasPercentageCounters = DBPercentageTracker.getInstance().getItemsForSubject(mCurrentSelectedSubjectId).size() > 0;
 
         SubjectFragment newFragment;
 

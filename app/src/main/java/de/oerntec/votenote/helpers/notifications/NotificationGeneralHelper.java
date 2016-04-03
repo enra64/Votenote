@@ -12,7 +12,7 @@ import java.util.List;
 
 import de.oerntec.votenote.MainActivity;
 import de.oerntec.votenote.database.pojo.percentagetracker.PercentageTrackerPojo;
-import de.oerntec.votenote.database.tablehelpers.DBAdmissionPercentageMeta;
+import de.oerntec.votenote.database.tablehelpers.DBPercentageTracker;
 
 /**
  * Bits and pieces to make handling the notifications and their settings easier
@@ -111,7 +111,7 @@ public class NotificationGeneralHelper {
      */
     public static void removeAllAlarmsForSubject(Context context, int subjectId) {
         List<PercentageTrackerPojo> notificationList =
-                DBAdmissionPercentageMeta.setupInstance(context).getItemsWithNotifications();
+                DBPercentageTracker.setupInstance(context).getItemsWithNotifications();
 
         for (PercentageTrackerPojo apm : notificationList) {
             if (apm.subjectId == subjectId || subjectId < 0)

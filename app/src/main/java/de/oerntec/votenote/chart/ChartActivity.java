@@ -43,10 +43,10 @@ import java.util.Random;
 
 import de.oerntec.votenote.R;
 import de.oerntec.votenote.database.pojo.Lesson;
-import de.oerntec.votenote.database.tablehelpers.DBAdmissionPercentageMeta;
 import de.oerntec.votenote.database.tablehelpers.DBLessons;
+import de.oerntec.votenote.database.tablehelpers.DBPercentageTracker;
 import de.oerntec.votenote.helpers.General;
-import de.oerntec.votenote.helpers.Preferences;
+import de.oerntec.votenote.preferences.Preferences;
 
 
 public class ChartActivity extends AppCompatActivity implements ChartSubjectAdapter.AdapterListener {
@@ -54,7 +54,7 @@ public class ChartActivity extends AppCompatActivity implements ChartSubjectAdap
     private Random r;
     private Map<Integer, LineGraphSeries<DataPoint>> lineGraphMap;
     private boolean usePercentageForXAxis = false;
-    private DBAdmissionPercentageMeta mMetaDb;
+    private DBPercentageTracker mMetaDb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,7 +72,7 @@ public class ChartActivity extends AppCompatActivity implements ChartSubjectAdap
             actionBar.setDisplayHomeAsUpEnabled(true);
 
         //db instances
-        mMetaDb = DBAdmissionPercentageMeta.getInstance();
+        mMetaDb = DBPercentageTracker.getInstance();
 
         //init random
         r = new Random();

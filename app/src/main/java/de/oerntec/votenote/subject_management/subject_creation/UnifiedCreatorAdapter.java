@@ -16,7 +16,7 @@ import de.oerntec.votenote.R;
 import de.oerntec.votenote.database.pojo.AdmissionCounter;
 import de.oerntec.votenote.database.pojo.percentagetracker.PercentageTrackerPojo;
 import de.oerntec.votenote.database.tablehelpers.DBAdmissionCounters;
-import de.oerntec.votenote.database.tablehelpers.DBAdmissionPercentageMeta;
+import de.oerntec.votenote.database.tablehelpers.DBPercentageTracker;
 import de.oerntec.votenote.helpers.dialogs.Dialogs;
 import de.oerntec.votenote.helpers.textwatchers.FakeDisabledNotEmptyWatcher;
 
@@ -29,7 +29,7 @@ public class UnifiedCreatorAdapter extends RecyclerView.Adapter<UnifiedCreatorAd
     private static final int NUMBER_OF_INFO_VIEWS = 1;
 
     private final DBAdmissionCounters mCounterDb;
-    private final DBAdmissionPercentageMeta mPercentageDb;
+    private final DBPercentageTracker mPercentageDb;
     private final int mSubjectId;
     private final Context mContext;
     private final FragmentManager mFragmentManager;
@@ -66,7 +66,7 @@ public class UnifiedCreatorAdapter extends RecyclerView.Adapter<UnifiedCreatorAd
             View.OnClickListener enabledOnClickListener) {
         mContext = context;
         mCounterDb = DBAdmissionCounters.getInstance();
-        mPercentageDb = DBAdmissionPercentageMeta.getInstance();
+        mPercentageDb = DBPercentageTracker.getInstance();
         mSubjectName = subjectName;
         mSubjectId = subjectId;
         mFragmentManager = fragmentManager;

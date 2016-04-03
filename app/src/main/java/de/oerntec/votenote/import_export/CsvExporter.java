@@ -30,10 +30,10 @@ import de.oerntec.votenote.database.pojo.Lesson;
 import de.oerntec.votenote.database.pojo.Subject;
 import de.oerntec.votenote.database.pojo.percentagetracker.PercentageTrackerPojo;
 import de.oerntec.votenote.database.tablehelpers.DBAdmissionCounters;
-import de.oerntec.votenote.database.tablehelpers.DBAdmissionPercentageMeta;
 import de.oerntec.votenote.database.tablehelpers.DBLessons;
+import de.oerntec.votenote.database.tablehelpers.DBPercentageTracker;
 import de.oerntec.votenote.database.tablehelpers.DBSubjects;
-import de.oerntec.votenote.helpers.Preferences;
+import de.oerntec.votenote.preferences.Preferences;
 
 public class CsvExporter {
     public static void exportDialog(final Context activity) {
@@ -91,7 +91,7 @@ public class CsvExporter {
 
     private static List<Subject> getSubjects(Context context) {
         final DBLessons mApDataDb = DBLessons.getInstance();
-        final DBAdmissionPercentageMeta mApMetaDb = DBAdmissionPercentageMeta.getInstance();
+        final DBPercentageTracker mApMetaDb = DBPercentageTracker.getInstance();
         final DBAdmissionCounters mCountersDb = DBAdmissionCounters.getInstance();
         final DBSubjects mSubjectDb = DBSubjects.getInstance();
 

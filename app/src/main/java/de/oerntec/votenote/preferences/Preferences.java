@@ -1,4 +1,4 @@
-package de.oerntec.votenote.helpers;
+package de.oerntec.votenote.preferences;
 
 import android.content.Context;
 import android.preference.PreferenceManager;

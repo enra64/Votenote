@@ -19,6 +19,7 @@ package de.oerntec.votenote.database;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
@@ -34,6 +35,7 @@ import java.util.Calendar;
 import java.util.Locale;
 
 import de.oerntec.votenote.MainActivity;
+import de.oerntec.votenote.import_export.Writer;
 
 public class DatabaseCreator extends SQLiteOpenHelper {
     //new
@@ -183,6 +185,13 @@ public class DatabaseCreator extends SQLiteOpenHelper {
         }
     }
 
+    public static void logConstraintException(SQLiteConstraintException e) {
+        Writer.appendLog("Foreign key constraint violated. Please search your backup file for" +
+                "data violating the foreign key constraints. " + e.getMessage());
+        if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
+            Log.e("sql exc", "SQLiteConstraintException thrown!");
+    }
+
     @Override
     public void onOpen(SQLiteDatabase db) {
         super.onOpen(db);
@@ -303,7 +312,12 @@ public class DatabaseCreator extends SQLiteOpenHelper {
             copyFile(new FileInputStream(source), new FileOutputStream(target));
             // Access the copied database so SQLiteHelper will cache it and mark
             // it as created.
-            getWritableDatabase();
+            try {
+                getWritableDatabase();
+            } catch (SQLiteConstraintException e) {
+                logConstraintException(e);
+                throw e;
+            }
         }
         else
             throw new FileNotFoundException("could not find source file");
