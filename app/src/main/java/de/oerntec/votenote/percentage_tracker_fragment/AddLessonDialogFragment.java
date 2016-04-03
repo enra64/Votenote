@@ -13,8 +13,6 @@ import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.Locale;
-
 import de.oerntec.votenote.MainActivity;
 import de.oerntec.votenote.R;
 import de.oerntec.votenote.database.pojo.Lesson;
@@ -323,13 +321,21 @@ public class AddLessonDialogFragment extends DialogFragment implements DialogInt
     private void updateResultingPercentage(int finishedAssignments, int availableAssignments) {
         if (!mLiveUpdateResultingPercentage)
             return;
-        float newAvg;
-        if (mIsNewLesson)
-            newAvg = mMetaItem.getAverageFinished(availableAssignments, finishedAssignments);
-        else
-            newAvg = mMetaItem.getAverageFinished(availableAssignments - mOldData.availableAssignments, finishedAssignments - mOldData.finishedAssignments);
-        Locale locale = General.getCurrentLocale(getActivity());
-        mResultingPercentageView.setText(String.format(locale, "%.1f%%", newAvg));
+        // if the subject is old, we need to subtract the old values from the picker values to offset
+        // the old lesson values
+        if (mIsOldLesson) {
+            availableAssignments = availableAssignments - mOldData.availableAssignments;
+            finishedAssignments = finishedAssignments - mOldData.finishedAssignments;
+        }
+
+        // set percentage text
+        mResultingPercentageView.setText(
+                String.format(
+                        General.getCurrentLocale(getActivity()),
+                        "%.1f%%",
+                        mMetaItem.getAverageFinished(availableAssignments, finishedAssignments)));
+
+        //give the percentage text an appropriate clue color
         General.triStateClueColors(
                 mResultingPercentageView,
                 getActivity(),
