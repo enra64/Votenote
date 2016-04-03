@@ -210,10 +210,10 @@ public class SubjectFragment extends Fragment {
 
     /**
      * load either the last selected, the default, or the forced admission percentage fragment
+     * @param subjectPosition position of the subject to load
      */
-    private void loadAppropriateAdmissionPercentageFragment() {
+    private void loadAppropriateAdmissionPercentageFragment(int subjectPosition) {
         List<PercentageTrackerPojo> percentages = DBPercentageTracker.getInstance().getItemsForSubject(mSubjectId);
-        final int subjectPosition = getArguments().getInt(ARG_SUBJECT_POSITION);
 
         if (mForceAdmissionPercentageFragmentLoad) {
             setAdmissionPercentageFragmentById(mForcedAdmissionPercentageId, mForceAddLessonDialog);
@@ -226,16 +226,41 @@ public class SubjectFragment extends Fragment {
             if(subjectPosition >= 0 && mSaveLastMetaId){
                 //see whether we have a saved last viewed admission counter
                 int lastSelectedMetaPosition = DBLastViewed.getInstance().getLastPercentageTrackerPosition(subjectPosition);
-                //valid position?
-                if (lastSelectedMetaPosition >= 0
-                        && lastSelectedMetaPosition < mAdmissionPercentageAdapter.getCount())
-                    //valid last viewed admission percentage position -> view that
-                    mViewPager.setCurrentItem(lastSelectedMetaPosition, true);
-                    //nah, log that
-                else if(MainActivity.ENABLE_DEBUG_LOG_CALLS)
-                    Log.i("subject fragment", "invalid meta position");
-            }
-            else
+
+                // no previous entries exist
+                if (lastSelectedMetaPosition < 0) {
+                    // is there anything we can select?
+                    if (mAdmissionPercentageAdapter.getCount() > 0) {
+                        // load some percentage tracker
+                        mViewPager.setCurrentItem(0);
+
+                        // because the listener does not get called with setCurrentItem, we save this manually.
+                        DBLastViewed.getInstance().saveLastTrackerAndSubjectPosition(subjectPosition, 0);
+
+                        // logging
+                        if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
+                            Log.i("subject fragment", "no previous percentage tracker pos recorded");
+                    }
+                }
+
+                // previous entries exist
+                else if (lastSelectedMetaPosition >= 0) {
+                    // is that entry valid?
+                    if (lastSelectedMetaPosition < mAdmissionPercentageAdapter.getCount()) {
+                        // set current item
+                        mViewPager.setCurrentItem(lastSelectedMetaPosition);
+
+                        // logging
+                        if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
+                            Log.i("subject fragment", "valid percentage tracker position, selected");
+                    }
+                    // the previous entry is invalid
+                    else {
+                        if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
+                            Log.i("subject fragment", "invalid percentage tracker position");
+                    }
+                }
+            } else // just load the first available tracker
                 mViewPager.setCurrentItem(0);
         }
     }
@@ -247,7 +272,7 @@ public class SubjectFragment extends Fragment {
 
         final int subjectPosition = getArguments().getInt(ARG_SUBJECT_POSITION);
 
-        loadAppropriateAdmissionPercentageFragment();
+        loadAppropriateAdmissionPercentageFragment(subjectPosition);
 
         if(mSaveLastMetaId){
             if (DBPercentageTracker.getInstance().getItemsForSubject(mSubjectId).size() > 1) {
@@ -266,7 +291,10 @@ public class SubjectFragment extends Fragment {
                         DBLastViewed.getInstance().saveLastTrackerAndSubjectPosition(subjectPosition, position);
                     }
                 });
-            } else
+            }
+            // there is only one percentage tracker for this subject, but we still need to save the
+            // last select subject
+            else
                 DBLastViewed.getInstance().saveLastTrackerAndSubjectPosition(subjectPosition, 0);
         } else {
             DBLastViewed.getInstance().saveLastTrackerAndSubjectPosition(subjectPosition, 0);
