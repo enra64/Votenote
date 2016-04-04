@@ -269,8 +269,8 @@ public class PercentageTrackerCreationFragment extends Fragment implements Butto
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
         if (mIsOldPercentageCounter)
             loadOldSubjectValues();
         setValuesForViews();
@@ -316,7 +316,7 @@ public class PercentageTrackerCreationFragment extends Fragment implements Butto
         nameInput.addTextChangedListener(new FakeDisabledNotEmptyWatcher(
                 nameInput,
                 emptyError,
-                mIsNewPercentageCounter,
+                nameInput.getText().length() == 0,
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
