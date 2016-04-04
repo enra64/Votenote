@@ -56,6 +56,7 @@ public class NotificationAlarmReceiver extends BroadcastReceiver {
                     .setContentTitle(context.getString(R.string.notification_title_vote))
                     .setContentText(String.format(context.getString(R.string.notification_text), subject.name))
                     .setSmallIcon(R.drawable.ic_notification)
+                    .setContentIntent(pIntent)
                     .addAction(R.drawable.ic_button_add, context.getString(R.string.notifcation_action), pIntent)
                     .setAutoCancel(true);
 
