@@ -47,14 +47,13 @@ public class PercentageTrackerCreationFragment extends Fragment implements Butto
 
     //views needed for configuring a new percentage counter
     private EditText nameInput;
-    private TextView
-            mBaselinePercentageCurrentValueTextView,
-            mEstimatedAssignmentsPerLessonCurrentValueTextView,
-            mEstimatedLessonCountCurrentValueTextView;
-    private SeekBar
-            mBaselinePercentageSeekBar,
-            mEstimatedAssignmentsPerLessonSeekBar,
-            mEstimatedLessonCountSeekBar;
+    private TextView mBaselinePercentageCurrentValueTextView;
+    private TextView mEstimatedAssignmentsPerLessonCurrentValueTextView;
+    private TextView mEstimatedLessonCountCurrentValueTextView;
+
+    private SeekBar mBaselinePercentageSeekBar;
+    private SeekBar mEstimatedAssignmentsPerLessonSeekBar;
+    private SeekBar mEstimatedLessonCountSeekBar;
 
     /**
      * Spinner to show the different choices for the estimation mode
@@ -330,6 +329,8 @@ public class PercentageTrackerCreationFragment extends Fragment implements Butto
         //set old name as hint
         if (mIsOldPercentageCounter)
             nameInput.setText(nameHint);
+        else if (mIsNewPercentageCounter)
+            nameInput.setText(R.string.percentage_tracker);
 
         initSeekbar(mBaselinePercentageSeekBar, mBaselinePercentageCurrentValueTextView, requiredPercentageHint, 100);
         initSeekbar(mBonusPercentageSeekBar, mBonusPercentageCurrentValueTextView, mBonusPercentageHint, 100);
