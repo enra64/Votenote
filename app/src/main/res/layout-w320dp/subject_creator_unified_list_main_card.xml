@@ -29,7 +29,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
+            android:orientation="vertical"
             android:layout_below="@+id/subject_manager_fragment_main_card_name">
 
             <Button
@@ -46,7 +46,7 @@
                 style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="200dp"
                 android:layout_height="wrap_content"
-                android:gravity="end|center_vertical"
+                android:gravity="start|center_vertical"
                 android:text="@string/subject_manager_main_card_add_counter" />
 
         </LinearLayout>
