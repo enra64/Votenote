@@ -437,8 +437,19 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         if (actionBar == null) return;
         actionBar.setDisplayShowTitleEnabled(true);
 
-        String title = mSubjectDb.getItem(mCurrentSelectedSubjectId).name;
+        String title = "VoteNote";
+
+        if(mCurrentSelectedSubjectId >= 0){
+            try{
+                title = mSubjectDb.getItem(mCurrentSelectedSubjectId).name;
+            } catch (AssertionError e){
+                if(ENABLE_DEBUG_LOG_CALLS)
+                    Log.w("setTitle", "tried to get title for unknow subject id: " + mCurrentSelectedSubjectId);
+                Writer.appendLog("tried to get title for unknow subject id: " + mCurrentSelectedSubjectId);
+            }
+        }
         actionBar.setTitle(title);
+
 
         //basically calls onCreateOptionsMenu
         invalidateOptionsMenu();
