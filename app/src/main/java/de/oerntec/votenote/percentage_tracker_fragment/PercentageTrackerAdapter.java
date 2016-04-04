@@ -178,6 +178,9 @@ public class PercentageTrackerAdapter extends RecyclerView.Adapter<PercentageTra
         checkShowTutorial();
     }
 
+    /**
+     * Enable or disable the tutorial. notifyDataSetChanged if display state changed
+     */
     private void checkShowTutorial() {
         boolean tutorialDisplayedOnLastCheck = mDisplayTutorial;
         boolean isEmpty = mData.isEmpty();
