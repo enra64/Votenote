@@ -1,40 +1,41 @@
-<?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:support="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context="de.oerntec.votenote.MainActivity">
 
-    <android.support.v4.view.ViewPager
-        android:id="@+id/fragment_lesson_tabbed_pager"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/subject_fragment_recyclerview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".TabbedFragment">
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:paddingLeft="4dp"
+        android:paddingRight="4dp"
+        android:paddingTop="4dp" />
 
-        <!--
-        This title strip will display the currently visible page title, as well as the page
-        titles for adjacent pages.
-        -->
+    <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/subject_fragment_coordinator_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-        <android.support.v4.view.PagerTitleStrip
-            android:id="@+id/fragment_lesson_tabbed_pager_title_strip"
-            android:layout_width="match_parent"
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/subject_fragment_add_fab"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="top"
-            android:paddingBottom="4dp"
-            android:paddingTop="4dp" />
-        <!--android:background="#33b5e5"-->
-        <!-- android:textColor="#fff"-->
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="@dimen/add_fab_compat_margin"
+            android:src="@drawable/ic_button_add"
+            support:backgroundTint="@color/colorPrimary"
+            support:borderWidth="0dp"
+            support:elevation="6dp"
+            support:pressedTranslationZ="12dp" />
+    </android.support.design.widget.CoordinatorLayout>
 
 
-    </android.support.v4.view.ViewPager>
-
-
-    <TextView
-        android:id="@+id/no_admission_percentage_counters_warner_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:gravity="center"
-        android:text="@string/keine_prozentz_hler_vorhanden_f_ge_in_den_einstellungen_welche_hinzu"
-        android:visibility="visible" />
 </RelativeLayout>

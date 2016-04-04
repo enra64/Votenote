@@ -147,7 +147,7 @@ public class SubjectFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.percentage_tracker_fragment, container, false);
+        View rootView = inflater.inflate(R.layout.percentage_tracker_host_fragment, container, false);
 
         //create and assign an adapter for showing the individual admission percentage fragments
         mViewPager = (ViewPager) rootView.findViewById(R.id.fragment_lesson_tabbed_pager);

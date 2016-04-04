@@ -108,7 +108,7 @@ public class PercentageTrackerFragment extends Fragment implements SwipeAnimatio
         mAdmissionPercentageMetaId = getArguments().getInt(ARG_PERCENTAGE_META_ID);
 
         //inflate root view
-        View rootView = inflater.inflate(R.layout.admission_percentage_fragment, container, false);
+        View rootView = inflater.inflate(R.layout.percentage_tracker_fragment, container, false);
 
 
         //config the recyclerview
@@ -130,7 +130,7 @@ public class PercentageTrackerFragment extends Fragment implements SwipeAnimatio
         }
 
         //create and set adapter for the lesson list -> show lessons for this percentage counter
-        mAdapter = new PercentageTrackerAdapter(getActivity(), this, mAdmissionPercentageMetaId);
+        mAdapter = new PercentageTrackerAdapter(getActivity(), mAdmissionPercentageMetaId);
         mLessonList.setAdapter(mAdapter);
 
         //log entry if no subjects are available
@@ -151,21 +151,6 @@ public class PercentageTrackerFragment extends Fragment implements SwipeAnimatio
 
         mRootView = rootView;
         return rootView;
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        checkShowTutorial(mAdapter.getItemCount() <= 1);
-    }
-
-    void checkShowTutorial(boolean show) {
-        View root = getView();
-        if (root != null) {
-            View tutorial = root.findViewById(R.id.percentage_tracker_fragment_tutorial_background);
-            if (tutorial != null)
-                tutorial.setVisibility(show ? View.VISIBLE : View.GONE);
-        }
     }
 
     @Override
