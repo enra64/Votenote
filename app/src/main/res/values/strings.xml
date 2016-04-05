@@ -170,7 +170,7 @@
     <string name="name">Name</string>
     <string name="percentage_tracker">Votierungstracker</string>
     <string name="point_counter">Punktezähler</string>
-    <string name="percentage_tracker_tutorial_description">Mit Votierungstrackern verfolgst du, wie viel Prozent du votiert hast, und wie viele Aufgaben du in der Zukunft noch votieren musst.</string>
+    <string name="percentage_tracker_tutorial_description">Mit Votierungstrackern verfolgst du, wie viel Prozent du votiert hast, und wie viele Aufgaben du in der Zukunft noch votieren musst. Du kannst mehrere erstellen, zum Beispiel um praktische und theoretische Aufgaben zu verfolgen.</string>
     <string name="point_counter_tutorial_description">Punktezähler speichern eine Zahl, mit der man zum Beispiel Vortragspunkte nachhalten kann.</string>
     <string name="main_activity_no_subject_warning">Keine Übung vorhanden!</string>
     <string name="main_activity_no_subject_button">Übungen verwalten</string>
@@ -181,4 +181,5 @@
     <string name="no">Nein</string>
     <string name="overview_resulting_targe_percentage">Resultierendes Ziel: %s%%</string>
     <string name="overview_future_available_assignments">Geschätzte Anzahl an zukünftig verfügbaren Aufgaben:</string>
+    <string name="percentage_creator_name_header">Name dieses Votierungstrackers</string>
 </resources>

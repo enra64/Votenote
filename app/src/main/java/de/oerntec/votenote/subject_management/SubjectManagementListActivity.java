@@ -270,9 +270,6 @@ public class SubjectManagementListActivity extends AppCompatActivity implements 
                         setFabEnabled(false);
                     }
 
-                    private void setFabEnabled(boolean enabled) {
-                        mFloatingActionButton.setEnabled(enabled);
-                    }
                 })
                 .setAction("UNDO", new View.OnClickListener() {
                     @Override
@@ -282,6 +279,11 @@ public class SubjectManagementListActivity extends AppCompatActivity implements 
                 });
         mDeletionSnackbar.show();
         checkDisplayBackgroundTutorial();
+    }
+
+
+    private void setFabEnabled(boolean enabled) {
+        mFloatingActionButton.setEnabled(enabled);
     }
 
     private void acceptDeletionIfExists() {
@@ -299,6 +301,7 @@ public class SubjectManagementListActivity extends AppCompatActivity implements 
         }
         else
             throw new AssertionError("could not rollback subject deletion!");
+        setFabEnabled(true);
         mLastDeletionSavepointId = null;
         mDeletionSnackbar = null;
         mSubjectAdapter.notifySubjectAdded();

@@ -248,12 +248,12 @@ public class PercentageTrackerFragment extends Fragment implements SwipeAnimatio
                         super.onShown(snackbar);
                         setFabEnabled(false);
                     }
-
-                    private void setFabEnabled(boolean enabled) {
-                        mFloatingActionButton.setEnabled(enabled);
-                    }
                 });
         mLastRemovalSnackbar.show();
+    }
+
+    private void setFabEnabled(boolean enabled) {
+        mFloatingActionButton.setEnabled(enabled);
     }
 
     /**
@@ -276,6 +276,7 @@ public class PercentageTrackerFragment extends Fragment implements SwipeAnimatio
             mLastRemovalSavePointId = null;
             mAdapter.reinstateLesson();
         }
+        setFabEnabled(true);
     }
 
     /**
