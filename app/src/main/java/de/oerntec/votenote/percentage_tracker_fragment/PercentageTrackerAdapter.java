@@ -44,17 +44,20 @@ public class PercentageTrackerAdapter extends RecyclerView.Adapter<PercentageTra
     /**
      * Use the infocard
      */
-    private static final int VIEW_TYPE_INFO = 0;
+    static final int VIEW_TYPE_INFO = 0;
 
     /**
      * use the card for lessons
      */
-    private static final int VIEW_TYPE_LESSON = 1;
+    static final int VIEW_TYPE_LESSON = 1;
 
     /**
      * cards used for tutorial
      */
-    private static final int VIEW_TYPE_TUTORIAL = 2;
+    static final int VIEW_TYPE_TUTORIAL = 2;
+    /**
+     * Convenience constant to ease reading of various previous "+ 1"'s
+     */
     private static final int NUMBER_OF_INFO_VIEWS = 1;
     /**
      * The meta pojo belonging to the given admission percentage meta id
@@ -231,7 +234,7 @@ public class PercentageTrackerAdapter extends RecyclerView.Adapter<PercentageTra
             case VIEW_TYPE_INFO:
                 root = inflater.inflate(R.layout.percentage_tracker_info_card, parent, false);
                 //create lessonholder for the views
-                InfoHolder infoHolder = new InfoHolder(root);
+                InfoHolder infoHolder = new InfoHolder(root, VIEW_TYPE_INFO);
                 //save view references
                 infoHolder.title = (TextView) root.findViewById(R.id.subject_fragment_subject_card_title);
                 infoHolder.prespoints = (TextView) root.findViewById(R.id.subject_fragment_subject_card_prespoints);
@@ -242,14 +245,14 @@ public class PercentageTrackerAdapter extends RecyclerView.Adapter<PercentageTra
             case VIEW_TYPE_LESSON:
                 root = inflater.inflate(R.layout.percentage_tracker_lesson_card, parent, false);
                 //create lesson holder
-                LessonHolder lessonHolder = new LessonHolder(root);
+                LessonHolder lessonHolder = new LessonHolder(root, VIEW_TYPE_LESSON);
                 //save references
                 lessonHolder.vote = (TextView) root.findViewById(R.id.subject_fragment_card_upper);
                 lessonHolder.lessonId = (TextView) root.findViewById(R.id.subject_fragment_card_lower);
                 return lessonHolder;
             case VIEW_TYPE_TUTORIAL:
                 root = inflater.inflate(R.layout.tutorial_lessons, parent, false);
-                return new TutorialHolder(root);
+                return new TutorialHolder(root, VIEW_TYPE_TUTORIAL);
             default:
                 throw new AssertionError("unknown viewType");
         }
@@ -415,22 +418,25 @@ public class PercentageTrackerAdapter extends RecyclerView.Adapter<PercentageTra
     static class InfoHolder extends Holder {
         TextView title, prespoints, avgLeft, votedAssignments, percentage;
 
-        public InfoHolder(View itemView) {
+        public InfoHolder(View itemView, int viewType) {
             super(itemView);
+            itemView.setTag(viewType);
         }
     }
 
     static class LessonHolder extends Holder {
         TextView vote, lessonId;
 
-        public LessonHolder(View itemView) {
+        public LessonHolder(View itemView, int viewType) {
             super(itemView);
+            itemView.setTag(viewType);
         }
     }
 
     static class TutorialHolder extends Holder {
-        public TutorialHolder(View itemView) {
+        public TutorialHolder(View itemView, int viewType) {
             super(itemView);
+            itemView.setTag(viewType);
         }
     }
 }
