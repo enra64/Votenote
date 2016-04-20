@@ -138,7 +138,7 @@ public class PercentageTrackerFragment extends Fragment implements SwipeAnimatio
             if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
                 Log.e("Main Listview", "no lessons in " + mAdapter.getCurrentMeta().getDisplayName() + " with id " + mAdmissionPercentageMetaId);
 
-        enableOnClickForLessons();
+        attachOnListItemClickListener();
 
         //find the add button and add a listener
         FloatingActionButton addFab = (FloatingActionButton) rootView.findViewById(R.id.subject_fragment_add_fab);
@@ -173,7 +173,7 @@ public class PercentageTrackerFragment extends Fragment implements SwipeAnimatio
     /**
      * attach an onClick listener on the lesson list
      */
-    private void enableOnClickForLessons() {
+    private void attachOnListItemClickListener() {
         //onClick for lessons
         mLessonList.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), mLessonList, new OnItemClickListener() {
             public void onItemClick(View view, int position) {

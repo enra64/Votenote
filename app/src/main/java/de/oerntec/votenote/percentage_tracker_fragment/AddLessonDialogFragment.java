@@ -160,9 +160,9 @@ public class AddLessonDialogFragment extends DialogFragment implements DialogInt
         if (!mLiveUpdateResultingPercentage)
             mResultingPercentageView.setVisibility(View.GONE);
         else if (mIsOldLesson)
-            updateResultingPercentage(mOldData.finishedAssignments, mOldData.availableAssignments);
+            onPercentageUpdate(mOldData.finishedAssignments, mOldData.availableAssignments);
         else
-            updateResultingPercentage(0, 0);
+            onPercentageUpdate(0, 0);
 
         return rootView;
     }
@@ -231,7 +231,7 @@ public class AddLessonDialogFragment extends DialogFragment implements DialogInt
         setPicker(mAvailableAssignmentsPicker, maxPickerValues, currentAvailableAssignments);
         setPicker(mFinishedAssignmentsPicker, maxPickerValues, currentFinishedAssignments);
 
-        updateResultingPercentage(currentFinishedAssignments, currentAvailableAssignments);
+        onPercentageUpdate(currentFinishedAssignments, currentAvailableAssignments);
     }
 
     /**
@@ -246,7 +246,6 @@ public class AddLessonDialogFragment extends DialogFragment implements DialogInt
                         NumberPicker numberPicker,
                         int oldValue,
                         final int finishedAssignments) {
-
                     int availableAssignments = mAvailableAssignmentsPicker.getValue();
 
                     // check whether less assignments are available than have been done
@@ -256,13 +255,7 @@ public class AddLessonDialogFragment extends DialogFragment implements DialogInt
                     }
 
                     // update the resulting percentage view
-                    updateResultingPercentage(finishedAssignments, availableAssignments);
-
-                    // update info text
-                    mInfoView.setText(
-                            getString(R.string.lesson_dialog_fragment_picker_info_text,
-                                    finishedAssignments,
-                                    availableAssignments));
+                    onPercentageUpdate(finishedAssignments, availableAssignments);
                 }
             });
             mAvailableAssignmentsPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
@@ -271,7 +264,6 @@ public class AddLessonDialogFragment extends DialogFragment implements DialogInt
                         NumberPicker numberPicker,
                         int oldValue,
                         final int availableAssignments) {
-
                     int finishedAssignments = mFinishedAssignmentsPicker.getValue();
 
                     // check whether less assignments are available than have been done
@@ -280,14 +272,14 @@ public class AddLessonDialogFragment extends DialogFragment implements DialogInt
                         finishedAssignments = availableAssignments;
                     }
 
-                    // update the resulting percentage view
-                    updateResultingPercentage(finishedAssignments, availableAssignments);
+                    int increaseMaximumAvailableAssignmentsTreshold =
+                            (int) (((float) numberPicker.getMaxValue()) * 3f / 4f);
 
-                    // update info text
-                    mInfoView.setText(
-                            getString(R.string.lesson_dialog_fragment_picker_info_text,
-                                    finishedAssignments,
-                                    availableAssignments));
+                    if(availableAssignments >= increaseMaximumAvailableAssignmentsTreshold)
+                        numberPicker.setMaxValue(increaseMaximumAvailableAssignmentsTreshold * 2);
+
+                    // update the resulting percentage view
+                    onPercentageUpdate(finishedAssignments, availableAssignments);
                 }
             });
         }
@@ -300,10 +292,9 @@ public class AddLessonDialogFragment extends DialogFragment implements DialogInt
                     //load new values
                     int myVoteValue = mFinishedAssignmentsPicker.getValue();
                     int maxVoteValue = mAvailableAssignmentsPicker.getValue();
-                    mInfoView.setText(getString(R.string.lesson_dialog_fragment_picker_info_text, mFinishedAssignmentsPicker.getValue(), mAvailableAssignmentsPicker.getValue()));
                     boolean isValid = myVoteValue <= maxVoteValue;
                     ((AlertDialog) getDialog()).getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(isValid);
-                    updateResultingPercentage(myVoteValue, maxVoteValue);
+                    onPercentageUpdate(myVoteValue, maxVoteValue);
                 }
             };
             //add change listener to update dialog explanation if pickers changed
@@ -318,7 +309,7 @@ public class AddLessonDialogFragment extends DialogFragment implements DialogInt
      * @param availableAssignments how many assignments are available to be done
      * @param finishedAssignments  how many assignments have been done
      */
-    private void updateResultingPercentage(int finishedAssignments, int availableAssignments) {
+    private void onPercentageUpdate(int finishedAssignments, int availableAssignments) {
         if (!mLiveUpdateResultingPercentage)
             return;
         // if the subject is old, we need to subtract the old values from the picker values to offset
@@ -327,6 +318,13 @@ public class AddLessonDialogFragment extends DialogFragment implements DialogInt
             availableAssignments = availableAssignments - mOldData.availableAssignments;
             finishedAssignments = finishedAssignments - mOldData.finishedAssignments;
         }
+
+        // set info text
+        mInfoView.setText(
+                getString(
+                        R.string.lesson_dialog_fragment_picker_info_text,
+                        mFinishedAssignmentsPicker.getValue(),
+                        mAvailableAssignmentsPicker.getValue()));
 
         // set percentage text
         mResultingPercentageView.setText(
