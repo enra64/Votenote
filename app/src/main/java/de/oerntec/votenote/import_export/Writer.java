@@ -64,20 +64,21 @@ public class Writer {
         text = getDateAndTimeNow() + '\n' + text;
         File directory = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/Votenote/");
 
-        if (mToastContext != null && !directory.mkdirs())
-            Toast.makeText(mToastContext, R.string.logger_could_not_create_folder, Toast.LENGTH_LONG).show();
+        // the directory does not exist, and we could not create it
+        if(!(directory.mkdirs() || directory.isDirectory()))
+            return;
 
         File logFile = new File(directory, "log.txt");
         try {
-            if (mToastContext != null && !logFile.createNewFile())
-                Toast.makeText(mToastContext, R.string.logger_could_not_create_file, Toast.LENGTH_LONG).show();
+            if(logFile.exists() || logFile.createNewFile()){
+                //BufferedWriter for performance, true to set append to file flag
+                BufferedWriter buf = new BufferedWriter(new FileWriter(logFile, true));
+                buf.append(text);
+                buf.newLine();
+                buf.flush();
+                buf.close();
+            }
 
-            //BufferedWriter for performance, true to set append to file flag
-            BufferedWriter buf = new BufferedWriter(new FileWriter(logFile, true));
-            buf.append(text);
-            buf.newLine();
-            buf.flush();
-            buf.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
