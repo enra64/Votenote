@@ -81,6 +81,6 @@
             android:title="@string/preferences_eula" />
         <Preference
             android:key="version_key"
-            android:title="Version 1.4" />
+            android:title="Version 1.4.1" />
     </PreferenceCategory>
 </PreferenceScreen>

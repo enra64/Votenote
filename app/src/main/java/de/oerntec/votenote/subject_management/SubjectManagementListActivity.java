@@ -98,6 +98,11 @@ public class SubjectManagementListActivity extends AppCompatActivity implements 
      */
     private int mLastDeletedSubjectId;
 
+    /**
+     * Floating action button for adding a subject
+     */
+    private FloatingActionButton mFloatingActionButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -113,7 +118,7 @@ public class SubjectManagementListActivity extends AppCompatActivity implements 
 
         //show tutorial if no subjects are present and the tutorial has not yet been read
         if (DBSubjects.getInstance().isEmpty() && !getPreference("tutorial_subjects_read", false)) {
-            Builder b = new AlertDialog.Builder(this);
+            Builder b = new Builder(this);
             b.setTitle("Tutorial");
             b.setView(this.getLayoutInflater().inflate(R.layout.tutorial_subjects, null));
             b.setPositiveButton(getString(R.string.dialog_button_ok), new DialogInterface.OnClickListener() {
@@ -162,10 +167,10 @@ public class SubjectManagementListActivity extends AppCompatActivity implements 
         }));
 
         //add listener to fab
-        FloatingActionButton addFab = (FloatingActionButton) findViewById(R.id.subject_manager_add_fab);
-        if (addFab == null)
+        mFloatingActionButton = (FloatingActionButton) findViewById(R.id.subject_manager_add_fab);
+        if (mFloatingActionButton == null)
             throw new AssertionError("could not find floating action button");
-        addFab.setOnClickListener(new View.OnClickListener() {
+        mFloatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 showSubjectCreatorForNewSubject();
@@ -252,11 +257,19 @@ public class SubjectManagementListActivity extends AppCompatActivity implements 
                             case DISMISS_EVENT_MANUAL:
                             case DISMISS_EVENT_TIMEOUT:
                                 acceptDeletionIfExists();
+                                setFabEnabled(true);
                                 break;
                             default:
                                 super.onDismissed(snackbar, event);
                         }
                     }
+
+                    @Override
+                    public void onShown(Snackbar snackbar) {
+                        super.onShown(snackbar);
+                        setFabEnabled(false);
+                    }
+
                 })
                 .setAction("UNDO", new View.OnClickListener() {
                     @Override
@@ -266,6 +279,11 @@ public class SubjectManagementListActivity extends AppCompatActivity implements 
                 });
         mDeletionSnackbar.show();
         checkDisplayBackgroundTutorial();
+    }
+
+
+    private void setFabEnabled(boolean enabled) {
+        mFloatingActionButton.setEnabled(enabled);
     }
 
     private void acceptDeletionIfExists() {
@@ -283,6 +301,7 @@ public class SubjectManagementListActivity extends AppCompatActivity implements 
         }
         else
             throw new AssertionError("could not rollback subject deletion!");
+        setFabEnabled(true);
         mLastDeletionSavepointId = null;
         mDeletionSnackbar = null;
         mSubjectAdapter.notifySubjectAdded();

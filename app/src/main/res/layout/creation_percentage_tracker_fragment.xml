@@ -13,7 +13,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:clickable="false"
-            android:text="@string/percentage_creator_header_general"
+            android:text="@string/percentage_creator_name_header"
             android:textColor="@color/accent"
             android:textSize="14sp"
             android:textStyle="bold" />
@@ -32,16 +32,22 @@
             android:inputType="textNoSuggestions"
             android:textSize="20sp" />
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="?android:attr/dividerVertical" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:clickable="false"
+            android:text="@string/percentage_creator_header_general"
+            android:textColor="@color/accent"
+            android:textSize="14sp"
+            android:textStyle="bold" />
 
         <include
             android:id="@+id/percentage_creator_notification_enabled_layout"
             layout="@layout/settings_checkbox"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp" />
 
         <View
             android:layout_width="match_parent"

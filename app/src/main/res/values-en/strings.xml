@@ -163,7 +163,7 @@
     <string name="permissions_reboot_receiver_success">Now notifications can survive reboots!</string>
     <string name="name">Name</string>
     <string name="percentage_tracker">Percentage tracker</string>
-    <string name="percentage_tracker_tutorial_description">With percentage trackers you can track what percentage of assignments you have done, and how many you must finish per lesson in the future.</string>
+    <string name="percentage_tracker_tutorial_description">With percentage trackers you can track what percentage of assignments you have done, and how many you must finish per lesson in the future. You may create multiple for one Subject, for example to track both the theoretical and practical assignments for a subject.</string>
     <string name="point_counter">Point counter</string>
     <string name="point_counter_tutorial_description">You can use point counters to track any number, for example how often you already did a presentation.</string>
     <string name="main_activity_no_subject_button">Manage Subjects</string>
@@ -175,4 +175,5 @@
     <string name="overview_bonus_reachable">Bonus reachable: </string>
     <string name="overview_bonus_not_activated">Bonus not activated</string>
     <string name="overview_future_available_assignments">Estimated number of future available assignments:</string>
+    <string name="percentage_creator_name_header">Percentage tracker name</string>
 </resources>

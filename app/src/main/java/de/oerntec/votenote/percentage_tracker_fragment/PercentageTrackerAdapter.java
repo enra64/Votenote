@@ -44,18 +44,21 @@ public class PercentageTrackerAdapter extends RecyclerView.Adapter<PercentageTra
     /**
      * Use the infocard
      */
-    private static final int VIEW_TYPE_INFO = 0;
+    static final int VIEW_TYPE_INFO = 0;
 
     /**
      * use the card for lessons
      */
-    private static final int VIEW_TYPE_LESSON = 1;
+    static final int VIEW_TYPE_LESSON = 1;
 
     /**
      * cards used for tutorial
      */
-    private static final int VIEW_TYPE_TUTORIAL = 2;
-
+    static final int VIEW_TYPE_TUTORIAL = 2;
+    /**
+     * Convenience constant to ease reading of various previous "+ 1"'s
+     */
+    private static final int NUMBER_OF_INFO_VIEWS = 1;
     /**
      * The meta pojo belonging to the given admission percentage meta id
      */
@@ -80,14 +83,10 @@ public class PercentageTrackerAdapter extends RecyclerView.Adapter<PercentageTra
      * List of current data objects
      */
     private List<Lesson> mData;
-
     /**
      * Should we display the tutorial?
      */
     private boolean mDisplayTutorial = false;
-
-    private static final int NUMBER_OF_INFO_VIEWS = 1;
-
     /**
      * If we show a tutorial, this is 1, so we can add it to things like getCount etc
      */
@@ -183,12 +182,11 @@ public class PercentageTrackerAdapter extends RecyclerView.Adapter<PercentageTra
      */
     private void checkShowTutorial() {
         boolean tutorialDisplayedOnLastCheck = mDisplayTutorial;
-        boolean isEmpty = mData.isEmpty();
-        mDisplayTutorial = !isEmpty;
-        mNumberOfTutorialViews = isEmpty ? 0 : 1;
+        mDisplayTutorial = mData.isEmpty();
+        mNumberOfTutorialViews = mDisplayTutorial ? 1 : 0;
 
         // only notify of data set refresh if the state changed
-        if(tutorialDisplayedOnLastCheck != mDisplayTutorial)
+        if (tutorialDisplayedOnLastCheck != mDisplayTutorial)
             notifyDataSetChanged();
     }
 
@@ -236,7 +234,7 @@ public class PercentageTrackerAdapter extends RecyclerView.Adapter<PercentageTra
             case VIEW_TYPE_INFO:
                 root = inflater.inflate(R.layout.percentage_tracker_info_card, parent, false);
                 //create lessonholder for the views
-                InfoHolder infoHolder = new InfoHolder(root);
+                InfoHolder infoHolder = new InfoHolder(root, VIEW_TYPE_INFO);
                 //save view references
                 infoHolder.title = (TextView) root.findViewById(R.id.subject_fragment_subject_card_title);
                 infoHolder.prespoints = (TextView) root.findViewById(R.id.subject_fragment_subject_card_prespoints);
@@ -247,14 +245,14 @@ public class PercentageTrackerAdapter extends RecyclerView.Adapter<PercentageTra
             case VIEW_TYPE_LESSON:
                 root = inflater.inflate(R.layout.percentage_tracker_lesson_card, parent, false);
                 //create lesson holder
-                LessonHolder lessonHolder = new LessonHolder(root);
+                LessonHolder lessonHolder = new LessonHolder(root, VIEW_TYPE_LESSON);
                 //save references
                 lessonHolder.vote = (TextView) root.findViewById(R.id.subject_fragment_card_upper);
                 lessonHolder.lessonId = (TextView) root.findViewById(R.id.subject_fragment_card_lower);
                 return lessonHolder;
             case VIEW_TYPE_TUTORIAL:
-                root = inflater.inflate(R.layout.subject_creator_unified_list_tutorial, parent, false);
-                return new TutorialHolder(root);
+                root = inflater.inflate(R.layout.tutorial_lessons, parent, false);
+                return new TutorialHolder(root, VIEW_TYPE_TUTORIAL);
             default:
                 throw new AssertionError("unknown viewType");
         }
@@ -262,7 +260,7 @@ public class PercentageTrackerAdapter extends RecyclerView.Adapter<PercentageTra
 
     @Override
     public void onBindViewHolder(Holder holder, int position) {
-        if (position == 0) {
+        if (holder instanceof InfoHolder) {
             InfoHolder infoHolder = (InfoHolder) holder;
             mMetaPojo.loadData(DBLessons.getInstance(), mLatestLessonFirst);
             PercentageTrackerCalculationResult result = PercentageTrackerCalculator.calculateAll(mMetaPojo);
@@ -301,8 +299,8 @@ public class PercentageTrackerAdapter extends RecyclerView.Adapter<PercentageTra
         } else //noinspection StatementWithEmptyBody
             if (holder instanceof TutorialHolder) {
 
-        } else
-            throw new AssertionError("the view type is not lesson, but position is not 0 either");
+            } else
+                throw new AssertionError("the view type is not lesson, but position is not 0 either");
     }
 
     private void setCurrentPresentationPointStatus(TextView presentationPointsView, int counterId) {
@@ -377,7 +375,7 @@ public class PercentageTrackerAdapter extends RecyclerView.Adapter<PercentageTra
 
     @Override
     public int getItemCount() {
-        if(mData == null)
+        if (mData == null)
             return 0;
         else
             return mData.size() + NUMBER_OF_INFO_VIEWS + mNumberOfTutorialViews;
@@ -385,23 +383,30 @@ public class PercentageTrackerAdapter extends RecyclerView.Adapter<PercentageTra
 
     @Override
     public int getItemViewType(int position) {
+        int viewType;
         if (mDisplayTutorial) {
             switch (position) {
                 case 0:
-                    return VIEW_TYPE_INFO;
+                    viewType = VIEW_TYPE_INFO;
+                    break;
                 case 1:
-                    return VIEW_TYPE_TUTORIAL;
+                    viewType = VIEW_TYPE_TUTORIAL;
+                    break;
                 default:
-                    return VIEW_TYPE_LESSON;
+                    viewType = VIEW_TYPE_LESSON;
+                    break;
             }
         } else {
             switch (position) {
                 case 0:
-                    return VIEW_TYPE_INFO;
+                    viewType = VIEW_TYPE_INFO;
+                    break;
                 default:
-                    return VIEW_TYPE_LESSON;
+                    viewType = VIEW_TYPE_LESSON;
+                    break;
             }
         }
+        return viewType;
     }
 
     static class Holder extends RecyclerView.ViewHolder {
@@ -413,22 +418,25 @@ public class PercentageTrackerAdapter extends RecyclerView.Adapter<PercentageTra
     static class InfoHolder extends Holder {
         TextView title, prespoints, avgLeft, votedAssignments, percentage;
 
-        public InfoHolder(View itemView) {
+        public InfoHolder(View itemView, int viewType) {
             super(itemView);
+            itemView.setTag(viewType);
         }
     }
 
     static class LessonHolder extends Holder {
         TextView vote, lessonId;
 
-        public LessonHolder(View itemView) {
+        public LessonHolder(View itemView, int viewType) {
             super(itemView);
+            itemView.setTag(viewType);
         }
     }
 
     static class TutorialHolder extends Holder {
-        public TutorialHolder(View itemView) {
+        public TutorialHolder(View itemView, int viewType) {
             super(itemView);
+            itemView.setTag(viewType);
         }
     }
 }

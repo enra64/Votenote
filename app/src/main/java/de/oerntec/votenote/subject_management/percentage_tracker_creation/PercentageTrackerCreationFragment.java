@@ -332,11 +332,11 @@ public class PercentageTrackerCreationFragment extends Fragment implements Butto
         else if (mIsNewPercentageCounter)
             nameInput.setText(R.string.percentage_tracker);
 
-        initSeekbar(mBaselinePercentageSeekBar, mBaselinePercentageCurrentValueTextView, requiredPercentageHint, 100);
-        initSeekbar(mBonusPercentageSeekBar, mBonusPercentageCurrentValueTextView, mBonusPercentageHint, 100);
+        initSeekbar(mBaselinePercentageSeekBar, mBaselinePercentageCurrentValueTextView, "%", requiredPercentageHint, 100);
+        initSeekbar(mBonusPercentageSeekBar, mBonusPercentageCurrentValueTextView, "%", mBonusPercentageHint, 100);
 
-        initSeekbar(mEstimatedAssignmentsPerLessonSeekBar, mEstimatedAssignmentsPerLessonCurrentValueTextView, estimatedAssignmentsHint, 50);
-        initSeekbar(mEstimatedLessonCountSeekBar, mEstimatedLessonCountCurrentValueTextView, estimatedLessonCountHint, 50);
+        initSeekbar(mEstimatedAssignmentsPerLessonSeekBar, mEstimatedAssignmentsPerLessonCurrentValueTextView, null, estimatedAssignmentsHint, 50);
+        initSeekbar(mEstimatedLessonCountSeekBar, mEstimatedLessonCountCurrentValueTextView, null, estimatedLessonCountHint, 50);
 
         createBonusSeekbarLimitEnforcer();
 
@@ -438,7 +438,7 @@ public class PercentageTrackerCreationFragment extends Fragment implements Butto
         }
     }
 
-    private void initSeekbar(SeekBar item, TextView currentValueView, int hintOrOldValue, int max) {
+    private void initSeekbar(SeekBar item, TextView currentValueView, String ending, int hintOrOldValue, int max) {
         //set the textview that displays the current value
         currentValueView.setText(String.valueOf(hintOrOldValue));
         //configure the seekbar maximum
@@ -446,7 +446,7 @@ public class PercentageTrackerCreationFragment extends Fragment implements Butto
         //set seekbar progress
         item.setProgress(hintOrOldValue);
         //set listener to update current value view
-        item.setOnSeekBarChangeListener(new SeekerListener(currentValueView));
+        item.setOnSeekBarChangeListener(new SeekerListener(currentValueView, ending));
     }
 
     private String getTitle() {

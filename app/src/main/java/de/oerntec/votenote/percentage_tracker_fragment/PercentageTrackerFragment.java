@@ -87,6 +87,10 @@ public class PercentageTrackerFragment extends Fragment implements SwipeAnimatio
      * List containing the vote data
      */
     private RecyclerView mLessonList;
+    /**
+     * The floating action button for adding lessons
+     */
+    private FloatingActionButton mFloatingActionButton;
 
     /**
      * Returns a new instance of this fragment for the given section number.
@@ -141,8 +145,8 @@ public class PercentageTrackerFragment extends Fragment implements SwipeAnimatio
         attachOnListItemClickListener();
 
         //find the add button and add a listener
-        FloatingActionButton addFab = (FloatingActionButton) rootView.findViewById(R.id.subject_fragment_add_fab);
-        addFab.setOnClickListener(new View.OnClickListener() {
+        mFloatingActionButton = (FloatingActionButton) rootView.findViewById(R.id.subject_fragment_add_fab);
+        mFloatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Dialogs.showAddLessonDialog(getFragmentManager(), mAdmissionPercentageMetaId);
@@ -177,14 +181,14 @@ public class PercentageTrackerFragment extends Fragment implements SwipeAnimatio
         //onClick for lessons
         mLessonList.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), mLessonList, new OnItemClickListener() {
             public void onItemClick(View view, int position) {
-                if (position != 0) {
+                if ((int) view.getTag() == PercentageTrackerAdapter.VIEW_TYPE_LESSON) {
                     mLastClickedView = view;
                     Dialogs.showChangeLessonDialog(getFragmentManager(), mAdmissionPercentageMetaId, (Integer) view.getTag());
                 }
             }
 
             public void onItemLongClick(final View view, int position) {
-                if (position != 0) {
+                if ((int) view.getTag() == PercentageTrackerAdapter.VIEW_TYPE_LESSON) {
                     mLastClickedView = view;
                     Dialogs.showDeleteDialog(getActivity(), new DialogInterface.OnClickListener() {
                         @Override
@@ -232,13 +236,24 @@ public class PercentageTrackerFragment extends Fragment implements SwipeAnimatio
                             case DISMISS_EVENT_TIMEOUT:
                                 //DISMISS_EVENT_CONSECUTIVE: the consecutive remove hits after the next one is released, so that one wont find its savepoint
                                 trySavepointRelease();
+                                setFabEnabled(true);
                                 mLastRemovalSnackbar = null;
                             default:
                                 super.onDismissed(snackbar, event);
                         }
                     }
+
+                    @Override
+                    public void onShown(Snackbar snackbar) {
+                        super.onShown(snackbar);
+                        setFabEnabled(false);
+                    }
                 });
         mLastRemovalSnackbar.show();
+    }
+
+    private void setFabEnabled(boolean enabled) {
+        mFloatingActionButton.setEnabled(enabled);
     }
 
     /**
@@ -261,6 +276,7 @@ public class PercentageTrackerFragment extends Fragment implements SwipeAnimatio
             mLastRemovalSavePointId = null;
             mAdapter.reinstateLesson();
         }
+        setFabEnabled(true);
     }
 
     /**
