@@ -58,7 +58,7 @@ public class PercentageTrackerAdapter extends RecyclerView.Adapter<PercentageTra
 
     static final int VIEW_TYPE_TAG = R.id.infoTextView;
 
-    static final int ID_TAG = R.id.action_create_example;
+    public static final int ID_TAG = R.id.action_create_example;
     /**
      * Convenience constant to ease reading of various previous "+ 1"'s
      */

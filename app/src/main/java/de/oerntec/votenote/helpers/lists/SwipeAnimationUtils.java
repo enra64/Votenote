@@ -23,6 +23,8 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 
+import de.oerntec.votenote.percentage_tracker_fragment.PercentageTrackerAdapter;
+
 public class SwipeAnimationUtils {
     /**
      * Swipe view to the right to show user fast deletion method. Also calls UndoSnackBar
@@ -53,8 +55,16 @@ public class SwipeAnimationUtils {
                     }
                 }, anim.getDuration());
 
+                // get the id. it may be only accessible under
+                Integer id = (Integer) animatedView.getTag(PercentageTrackerAdapter.ID_TAG);
+                if(id == null)
+                    id = (Integer) animatedView.getTag();
+
+                if(id == null)
+                    throw new AssertionError("unknown lesson id format");
+
                 //delete the lesson from db with undobar
-                snackBarHost.showUndoSnackBar((Integer) animatedView.getTag(), position);
+                snackBarHost.showUndoSnackBar(id, position);
             }
         }, 300);
     }

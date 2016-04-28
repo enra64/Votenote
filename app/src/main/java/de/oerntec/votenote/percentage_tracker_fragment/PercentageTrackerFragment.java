@@ -181,14 +181,14 @@ public class PercentageTrackerFragment extends Fragment implements SwipeAnimatio
         //onClick for lessons
         mLessonList.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), mLessonList, new OnItemClickListener() {
             public void onItemClick(View view, int position) {
-                if ((int) view.getTag(PercentageTrackerAdapter.ID_TAG) == PercentageTrackerAdapter.VIEW_TYPE_LESSON) {
+                if ((int) view.getTag(PercentageTrackerAdapter.VIEW_TYPE_TAG) == PercentageTrackerAdapter.VIEW_TYPE_LESSON) {
                     mLastClickedView = view;
                     Dialogs.showChangeLessonDialog(getFragmentManager(), mAdmissionPercentageMetaId, (Integer) view.getTag(PercentageTrackerAdapter.ID_TAG));
                 }
             }
 
             public void onItemLongClick(final View view, int position) {
-                if ((int) view.getTag(PercentageTrackerAdapter.ID_TAG) == PercentageTrackerAdapter.VIEW_TYPE_LESSON) {
+                if ((int) view.getTag(PercentageTrackerAdapter.VIEW_TYPE_TAG) == PercentageTrackerAdapter.VIEW_TYPE_LESSON) {
                     mLastClickedView = view;
                     Dialogs.showDeleteDialog(getActivity(), new DialogInterface.OnClickListener() {
                         @Override
