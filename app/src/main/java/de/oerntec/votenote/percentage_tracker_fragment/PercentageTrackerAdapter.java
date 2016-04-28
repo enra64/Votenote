@@ -44,17 +44,21 @@ public class PercentageTrackerAdapter extends RecyclerView.Adapter<PercentageTra
     /**
      * Use the infocard
      */
-    static final int VIEW_TYPE_INFO = 0;
+    static final int VIEW_TYPE_INFO = -5;
 
     /**
      * use the card for lessons
      */
-    static final int VIEW_TYPE_LESSON = 1;
+    static final int VIEW_TYPE_LESSON = -6;
 
     /**
      * cards used for tutorial
      */
-    static final int VIEW_TYPE_TUTORIAL = 2;
+    static final int VIEW_TYPE_TUTORIAL = -7;
+
+    static final int VIEW_TYPE_TAG = R.id.infoTextView;
+
+    static final int ID_TAG = R.id.action_create_example;
     /**
      * Convenience constant to ease reading of various previous "+ 1"'s
      */
@@ -287,7 +291,7 @@ public class PercentageTrackerAdapter extends RecyclerView.Adapter<PercentageTra
             String lessonIndex = String.valueOf(data.lessonId);
 
             //tag for identification without mistakes
-            lessonHolder.itemView.setTag(data.lessonId);
+            lessonHolder.itemView.setTag(ID_TAG, data.lessonId);
 
             //set visible, because the programmatic swipe sets views invisible to avoid flickering
             lessonHolder.itemView.setVisibility(View.VISIBLE);
@@ -420,7 +424,7 @@ public class PercentageTrackerAdapter extends RecyclerView.Adapter<PercentageTra
 
         public InfoHolder(View itemView, int viewType) {
             super(itemView);
-            itemView.setTag(viewType);
+            itemView.setTag(VIEW_TYPE_TAG, viewType);
         }
     }
 
@@ -429,14 +433,14 @@ public class PercentageTrackerAdapter extends RecyclerView.Adapter<PercentageTra
 
         public LessonHolder(View itemView, int viewType) {
             super(itemView);
-            itemView.setTag(viewType);
+            itemView.setTag(VIEW_TYPE_TAG, viewType);
         }
     }
 
     static class TutorialHolder extends Holder {
-        public TutorialHolder(View itemView, int viewType) {
+        public TutorialHolder(View itemView, Integer viewType) {
             super(itemView);
-            itemView.setTag(viewType);
+            itemView.setTag(VIEW_TYPE_TAG, viewType);
         }
     }
 }
