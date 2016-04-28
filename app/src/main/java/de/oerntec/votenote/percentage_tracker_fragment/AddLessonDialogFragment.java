@@ -223,7 +223,10 @@ public class AddLessonDialogFragment extends DialogFragment implements DialogInt
             currentFinishedAssignments = mOldData.finishedAssignments;
         }
 
-        int maxPickerValues = currentAvailableAssignments * 2;
+        // avoid overflowing to negative ints
+        int factor = currentAvailableAssignments < Integer.MAX_VALUE / 2 ? 2 : 1;
+
+        int maxPickerValues = currentAvailableAssignments * factor;
 
         if (currentAvailableAssignments == 0)
             maxPickerValues = 10;
@@ -276,7 +279,7 @@ public class AddLessonDialogFragment extends DialogFragment implements DialogInt
                             (int) (((float) numberPicker.getMaxValue()) * 3f / 4f);
 
                     if(availableAssignments >= increaseMaximumAvailableAssignmentsTreshold)
-                        numberPicker.setMaxValue(increaseMaximumAvailableAssignmentsTreshold * 2);
+                        numberPicker.setMaxValue(increaseMaximumAvailableAssignmentsTreshold + 10);
 
                     // update the resulting percentage view
                     onPercentageUpdate(finishedAssignments, availableAssignments);
