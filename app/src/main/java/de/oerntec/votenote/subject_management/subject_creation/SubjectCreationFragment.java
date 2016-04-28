@@ -363,7 +363,8 @@ public class SubjectCreationFragment extends Fragment implements SubjectCreation
 
         //set notifications
         for (NotificationReminder.Reminder r : mNotificationReminder.notificationList)
-            NotificationGeneralHelper.setAlarmForNotification(getActivity(),
+            NotificationGeneralHelper.setAlarmForNotification(
+                    getActivity(),
                     mSubjectId,
                     r.trackerId,
                     r.recurrenceString);

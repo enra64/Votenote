@@ -10,6 +10,7 @@ import java.util.List;
 import de.oerntec.votenote.MainActivity;
 import de.oerntec.votenote.database.pojo.percentagetracker.PercentageTrackerPojo;
 import de.oerntec.votenote.database.tablehelpers.DBPercentageTracker;
+import de.oerntec.votenote.import_export.Writer;
 
 /**
  * This is supposed to recreate all notifications on reboot
@@ -26,14 +27,11 @@ public class RebootReceiver extends BroadcastReceiver {
         }
 
         for (PercentageTrackerPojo apm : notificationList) {
-            int[] tmp = NotificationGeneralHelper.convertFromRecurrenceRule(apm.notificationRecurrenceString);
             NotificationGeneralHelper.setAlarmForNotification(
                     context,
                     apm.subjectId,
                     apm.id,
-                    tmp[0],
-                    tmp[1],
-                    tmp[2]);
+                    apm.notificationRecurrenceString);
         }
     }
 }
