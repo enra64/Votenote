@@ -91,7 +91,7 @@
 
         <receiver android:name=".helpers.notifications.NotificationAlarmReceiver" />
 
-        <receiver android:name=".helpers.notifications.RebootReceiver">
+        <receiver android:name="de.oerntec.votenote.helpers.notifications.RebootReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
