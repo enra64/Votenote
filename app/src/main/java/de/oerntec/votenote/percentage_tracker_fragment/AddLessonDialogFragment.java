@@ -257,6 +257,14 @@ public class AddLessonDialogFragment extends DialogFragment implements DialogInt
                         availableAssignments = finishedAssignments;
                     }
 
+                    int increaseMaximumAvailableAssignmentsTreshold =
+                            (int) (((float) numberPicker.getMaxValue()) * 3f / 4f);
+
+                    if(availableAssignments >= increaseMaximumAvailableAssignmentsTreshold){
+                        mAvailableAssignmentsPicker.setMaxValue(numberPicker.getMaxValue() + 10);
+                        numberPicker.setMaxValue(numberPicker.getMaxValue() + 10);
+                    }
+
                     // update the resulting percentage view
                     onPercentageUpdate(finishedAssignments, availableAssignments);
                 }
@@ -278,8 +286,10 @@ public class AddLessonDialogFragment extends DialogFragment implements DialogInt
                     int increaseMaximumAvailableAssignmentsTreshold =
                             (int) (((float) numberPicker.getMaxValue()) * 3f / 4f);
 
-                    if(availableAssignments >= increaseMaximumAvailableAssignmentsTreshold)
-                        numberPicker.setMaxValue(increaseMaximumAvailableAssignmentsTreshold + 10);
+                    if(availableAssignments >= increaseMaximumAvailableAssignmentsTreshold){
+                        mFinishedAssignmentsPicker.setMaxValue(numberPicker.getMaxValue() + 10);
+                        numberPicker.setMaxValue(numberPicker.getMaxValue() + 10);
+                    }
 
                     // update the resulting percentage view
                     onPercentageUpdate(finishedAssignments, availableAssignments);
@@ -329,12 +339,18 @@ public class AddLessonDialogFragment extends DialogFragment implements DialogInt
                         mFinishedAssignmentsPicker.getValue(),
                         mAvailableAssignmentsPicker.getValue()));
 
+        float avg = mMetaItem.getAverageFinished(availableAssignments, finishedAssignments);
+
+        // ...
+        // hide the result if the value is bad
+        mResultingPercentageView.setVisibility(avg < 0 ? View.INVISIBLE : View.VISIBLE);
+
         // set percentage text
         mResultingPercentageView.setText(
                 String.format(
                         General.getCurrentLocale(getActivity()),
                         "%.1f%%",
-                        mMetaItem.getAverageFinished(availableAssignments, finishedAssignments)));
+                        avg));
 
         //give the percentage text an appropriate clue color
         General.triStateClueColors(
