@@ -1,5 +1,5 @@
 <resources>
-    <dimen name="add_fab_compat_margin">0dp</dimen>
+    <dimen name="add_fab_compat_margin">12dp</dimen><!-- was zero in 143. why?-->
     <dimen name="settings_line_side_paddings">16dp</dimen>
     <dimen name="navigation_drawer_width">240dp</dimen>
 </resources>
