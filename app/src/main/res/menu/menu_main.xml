@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".MainActivity">
     <item
-        android:id="@+id/action_admission_counter"
+        android:id="@+id/action_show_admission_counter_dialog"
         android:actionLayout="@layout/menu_action_view_points"
         android:icon="@drawable/ic_button_presentation_points"
         android:showAsAction="ifRoom"
@@ -11,7 +11,7 @@
         app:showAsAction="ifRoom"
         tools:ignore="AppCompatResource" />
     <item
-        android:id="@+id/action_percentage_counter"
+        android:id="@+id/action_show_info_view"
         android:actionLayout="@layout/menu_action_view_info"
         android:icon="@drawable/ic_button_info"
         android:showAsAction="ifRoom"

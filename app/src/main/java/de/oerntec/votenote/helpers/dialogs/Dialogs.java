@@ -51,7 +51,7 @@ public class Dialogs {
      * if only one counter exists, immediately display the change dialog for that one.
      * if more exist, display a list of all available counters
      */
-    public static void showPresentationPointDialog(final MainActivity activity, int subjectId){
+    public static void showAdmissionCounterDialog(final MainActivity activity, int subjectId){
         final List<AdmissionCounter> list = DBAdmissionCounters.getInstance().getItemsForSubject(subjectId);
         if(list.size() == 1){
             showCounterDialog(activity, list.get(0).id);

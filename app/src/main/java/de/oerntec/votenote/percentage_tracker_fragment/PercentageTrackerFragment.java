@@ -159,7 +159,7 @@ public class PercentageTrackerFragment extends Fragment implements SwipeAnimatio
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.action_percentage_counter) {
+        if (item.getItemId() == R.id.action_show_info_view) {
             showInfoActivity();
             //handy-dandy exception thrower for exception handling testing
             //Integer.valueOf("rip");

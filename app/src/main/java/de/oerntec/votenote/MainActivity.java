@@ -461,20 +461,21 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         getMenuInflater().inflate(R.menu.menu_main, menu);
 
         //prepare animations
-        final MenuItem presPointItem = menu.findItem(R.id.action_admission_counter);
-        final MenuItem infoItem = menu.findItem(R.id.action_percentage_counter);
+        final MenuItem presPointItem = menu.findItem(R.id.action_show_admission_counter_dialog);
+        final MenuItem infoItem = menu.findItem(R.id.action_show_info_view);
 
         presPointItem.setActionView(R.layout.menu_action_view_points);
         infoItem.setActionView(R.layout.menu_action_view_info);
 
         presPointItem.getActionView().setOnClickListener(this);
-        presPointItem.getActionView().setTag(R.id.action_admission_counter);
+        presPointItem.getActionView().setTag(R.id.action_show_admission_counter_dialog);
+
         infoItem.getActionView().setOnClickListener(this);
-        infoItem.getActionView().setTag(R.id.action_percentage_counter);
+        infoItem.getActionView().setTag(R.id.action_show_info_view);
 
 
-        menu.findItem(R.id.action_admission_counter).setVisible(mLastKnownAdmissionCounterViewVisibility);
-        menu.findItem(R.id.action_percentage_counter).setVisible(mLastKnownPercentageCounterInfoViewVisibility);
+        menu.findItem(R.id.action_show_admission_counter_dialog).setVisible(mLastKnownAdmissionCounterViewVisibility);
+        menu.findItem(R.id.action_show_info_view).setVisible(mLastKnownPercentageCounterInfoViewVisibility);
 
         return true;
     }
@@ -482,8 +483,8 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
     // Called whenever we call invalidateOptionsMenu(), whenever the menu is shown
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        final MenuItem admissionCountersItem = menu.findItem(R.id.action_admission_counter);
-        final MenuItem admissionPercentageItem = menu.findItem(R.id.action_percentage_counter);
+        final MenuItem admissionCountersItem = menu.findItem(R.id.action_show_admission_counter_dialog);
+        final MenuItem admissionPercentageItem = menu.findItem(R.id.action_show_info_view);
 
         View admissionCounterActionView = admissionCountersItem.getActionView();
         final View admissionPercentageActionView = admissionPercentageItem.getActionView();
@@ -494,20 +495,16 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         Animation fade = AnimationUtils.loadAnimation(this, navDrawerClosing ?
                 android.R.anim.fade_in : android.R.anim.fade_out);
 
-        //set both to last known state
-        //admissionPercentageItem.setVisible(mLastKnownPercentageCounterInfoViewVisibility);
-        //admissionCountersItem.setVisible(mLastKnownAdmissionCounterViewVisibility);
-
-        final boolean testPC = mCurrentSubjectHasPercentageCounters;
-        final boolean testAC = mCurrentSubjectHasAdmissionCounters;
+        final boolean finalHasPercentageCounters = mCurrentSubjectHasPercentageCounters;
+        final boolean finalHasAdmissionCounters = mCurrentSubjectHasAdmissionCounters;
 
         fade.setInterpolator(new AccelerateInterpolator());
         fade.setDuration(300);
 
         new Handler().postDelayed(new Runnable() {
             public void run() {
-                admissionPercentageItem.setVisible(navDrawerClosing && testPC);
-                admissionCountersItem.setVisible(navDrawerClosing && testAC);
+                admissionPercentageItem.setVisible(navDrawerClosing && finalHasPercentageCounters);
+                admissionCountersItem.setVisible(navDrawerClosing && finalHasAdmissionCounters);
             }
         }, fade.getDuration() - 10);
 
@@ -529,8 +526,8 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_admission_counter:
-                onPresentationPointsClick();
+            case R.id.action_show_admission_counter_dialog:
+                onAdmissionCounterClick();
                 return true;
             case R.id.action_show_diagram:/*
                 Intent testIntent = new Intent();
@@ -539,16 +536,28 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
                 new NotificationAlarmReceiver().onReceive(this, testIntent);*/
                 onDiagramClick();
                 return true;
+            case R.id.action_show_info_view:
+                getCurrentAdmissionPercentageFragment().showInfoActivity();
+                return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onClick(View view) {
+        int id = (int) view.getTag();
+        if (id == R.id.action_show_info_view)
+            getCurrentAdmissionPercentageFragment().showInfoActivity();
+        if (id == R.id.action_show_admission_counter_dialog)
+            onAdmissionCounterClick();
     }
 
     private void onDiagramClick() {
         startActivity(new Intent(this, ChartActivity.class));
     }
 
-    private void onPresentationPointsClick() {
-        Dialogs.showPresentationPointDialog(this, mCurrentSelectedSubjectId);
+    private void onAdmissionCounterClick() {
+        Dialogs.showAdmissionCounterDialog(this, mCurrentSelectedSubjectId);
     }
 
     private void setPreference(String key, boolean val) {
@@ -568,16 +577,8 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
 
     public PercentageTrackerFragment getCurrentAdmissionPercentageFragment() {
         SubjectFragment currentSubjectFragment = getCurrentSubjectFragment();
-        if (currentSubjectFragment == null) return null;
+        if (currentSubjectFragment == null)
+            return null;
         return currentSubjectFragment.getCurrentFragment();
-    }
-
-    @Override
-    public void onClick(View view) {
-        int id = (int) view.getTag();
-        if (id == R.id.action_percentage_counter)
-            getCurrentAdmissionPercentageFragment().showInfoActivity();
-        if (id == R.id.action_admission_counter)
-            onPresentationPointsClick();
     }
 }
