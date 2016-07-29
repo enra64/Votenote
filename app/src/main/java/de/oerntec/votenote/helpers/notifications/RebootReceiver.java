@@ -21,9 +21,11 @@ public class RebootReceiver extends BroadcastReceiver {
         List<PercentageTrackerPojo> notificationList =
                 DBPercentageTracker.setupInstance(context).getItemsWithNotifications();
 
-        if (!Intent.ACTION_BOOT_COMPLETED.equals(intent.getAction())) {
-            if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
+        if (MainActivity.ENABLE_DEBUG_LOG_CALLS){
+            if (!Intent.ACTION_BOOT_COMPLETED.equals(intent.getAction()))
                 Log.i("rebootreceiver", "reboot receiver received non boot-complete intent");
+            else
+                Log.i("rebootreceiver", "reboot receiver received boot-complete intent");
         }
 
         for (PercentageTrackerPojo apm : notificationList) {
