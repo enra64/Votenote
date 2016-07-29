@@ -20,9 +20,7 @@ public class Permissions {
      * Request a permission to be granted
      */
     public static void requestPermission(Activity activity, String permission) {
-        // Here, thisActivity is the current activity
         if (!hasPermission(activity, permission)) {
-
             // Should we show an explanation?
             if (ActivityCompat.shouldShowRequestPermissionRationale(activity, Manifest.permission.READ_CONTACTS)) {
                 //show explanation

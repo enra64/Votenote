@@ -135,7 +135,7 @@ public class DBPercentageTracker extends CrudDb<PercentageTrackerPojo> implement
         Cursor c = mDatabase.query(true, DatabaseCreator.TABLE_NAME_ADMISSION_PERCENTAGES_META, null, DatabaseCreator.ADMISSION_PERCENTAGES_META_SUBJECT_ID + "=?",
                 whereArgs, null, null, DatabaseCreator.ADMISSION_PERCENTAGES_META_ID + " ASC", null);
 
-        return listifyItems(c);
+        return listFromCursor(c);
     }
 
     /**
@@ -211,9 +211,10 @@ public class DBPercentageTracker extends CrudDb<PercentageTrackerPojo> implement
         );
     }
 
-    private List<PercentageTrackerPojo> listifyItems(Cursor c) {
+    private List<PercentageTrackerPojo> listFromCursor(Cursor c) {
         List<PercentageTrackerPojo> items = new LinkedList<>();
-        while (c.moveToNext()) items.add(itemFromCursor(c));
+        while (c.moveToNext())
+            items.add(itemFromCursor(c));
         c.close();
         return items;
     }
@@ -222,7 +223,7 @@ public class DBPercentageTracker extends CrudDb<PercentageTrackerPojo> implement
         Cursor c = mDatabase.query(true, DatabaseCreator.TABLE_NAME_ADMISSION_PERCENTAGES_META, null, null,
                 null, null, null, DatabaseCreator.ADMISSION_PERCENTAGES_META_ID + " ASC", null);
 
-        return listifyItems(c);
+        return listFromCursor(c);
     }
 
     public List<PercentageTrackerPojo> getItemsWithNotifications() {
@@ -230,6 +231,6 @@ public class DBPercentageTracker extends CrudDb<PercentageTrackerPojo> implement
                 DatabaseCreator.ADMISSION_PERCENTAGES_META_RECURRENCE_NOTIFICATION_ENABLED + "=1",
                 null, null, null, DatabaseCreator.ADMISSION_PERCENTAGES_META_ID + " ASC", null);
 
-        return listifyItems(c);
+        return listFromCursor(c);
     }
 }

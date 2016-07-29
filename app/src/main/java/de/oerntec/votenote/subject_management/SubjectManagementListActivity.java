@@ -17,13 +17,17 @@
 * */
 package de.oerntec.votenote.subject_management;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
@@ -50,6 +54,7 @@ import de.oerntec.votenote.database.tablehelpers.DBLessons;
 import de.oerntec.votenote.database.tablehelpers.DBPercentageTracker;
 import de.oerntec.votenote.database.tablehelpers.DBSubjects;
 import de.oerntec.votenote.helpers.General;
+import de.oerntec.votenote.helpers.Permissions;
 import de.oerntec.votenote.helpers.dialogs.Dialogs;
 import de.oerntec.votenote.helpers.lists.LinearLayoutManagerWrapper;
 import de.oerntec.votenote.helpers.lists.OnItemClickListener;
@@ -308,10 +313,27 @@ public class SubjectManagementListActivity extends AppCompatActivity implements 
     }
 
     @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
+        if (requestCode == Permissions.getRequestCode(Manifest.permission.READ_EXTERNAL_STORAGE)) {
+            if (grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+                Toast.makeText(this, R.string.permissions_ext_write_success, Toast.LENGTH_LONG).show();
+            else
+                Toast.makeText(this, R.string.permissions_ext_write_failure, Toast.LENGTH_LONG).show();
+        }
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_read_from_storage:
-                BackupHelper.importDialog(this);
+                // check whether we need to ask for permissions
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN &&
+                        !Permissions.hasPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)){
+                    Permissions.requestPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
+                }
+                else
+                    BackupHelper.importDialog(this);
                 return true;
             case R.id.action_create_example:
                 createExample();

@@ -23,7 +23,7 @@ public class RebootReceiver extends BroadcastReceiver {
 
         if (!Intent.ACTION_BOOT_COMPLETED.equals(intent.getAction())) {
             if (MainActivity.ENABLE_DEBUG_LOG_CALLS)
-                Log.i("uuh", "this is weird");
+                Log.i("rebootreceiver", "reboot receiver received non boot-complete intent");
         }
 
         for (PercentageTrackerPojo apm : notificationList) {

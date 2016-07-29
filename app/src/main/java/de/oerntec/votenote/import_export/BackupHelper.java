@@ -17,9 +17,11 @@
 * */
 package de.oerntec.votenote.import_export;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.os.Build;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -30,6 +32,7 @@ import de.oerntec.votenote.MainActivity;
 import de.oerntec.votenote.R;
 import de.oerntec.votenote.database.DatabaseCreator;
 import de.oerntec.votenote.database.tablehelpers.DBSubjects;
+import de.oerntec.votenote.helpers.Permissions;
 import de.oerntec.votenote.subject_management.SubjectManagementListActivity;
 
 public class BackupHelper {
