@@ -42,6 +42,8 @@ public class CustomActionPreference extends Preference {
     protected void onClick() {
         switch (mActionKey) {
             case "csv_export":
+                // trigger onsharedpreferencechanged
+                persistBoolean(true);
                 CsvExporter.exportDialog(getContext());
                 break;
             case "backup_share":
@@ -60,10 +62,14 @@ public class CustomActionPreference extends Preference {
                 getContext().startActivity(chooser);
                 break;
             case "backup_export":
+                // trigger onsharedpreferencechanged
+                persistBoolean(true);
                 BackupHelper.exportDialog(getContext());
                 break;
             case "backup_import":
                 BackupHelper.importDialog(getContext());
+                // trigger onsharedpreferencechanged
+                persistBoolean(true);
                 break;
             default:
                 super.onClick();
