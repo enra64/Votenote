@@ -12,6 +12,8 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
             android:clickable="false"
             android:text="@string/percentage_creator_name_header"
             android:textColor="@color/accent"

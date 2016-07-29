@@ -46,7 +46,7 @@ public class PercentageTrackerCreationFragment extends Fragment implements Butto
     private DBPercentageTracker mDb;
 
     //views needed for configuring a new percentage counter
-    private EditText nameInput;
+    private EditText mNameInput;
     private TextView mBaselinePercentageCurrentValueTextView;
     private TextView mEstimatedAssignmentsPerLessonCurrentValueTextView;
     private TextView mEstimatedLessonCountCurrentValueTextView;
@@ -198,7 +198,7 @@ public class PercentageTrackerCreationFragment extends Fragment implements Butto
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.creation_percentage_tracker_fragment, container, false);
-        nameInput = (EditText) view.findViewById(R.id.percentage_creator_name_edittext);
+        mNameInput = (EditText) view.findViewById(R.id.percentage_creator_name_edittext);
 
         View baselinePercentageLayout = view.findViewById(R.id.percentage_creator_baseline_percentage_layout);
         mBaselinePercentageCurrentValueTextView = (TextView) baselinePercentageLayout.findViewById(R.id.current);
@@ -312,14 +312,14 @@ public class PercentageTrackerCreationFragment extends Fragment implements Butto
     private void setValuesForViews() {
         //display an error if the edittext is empty
         final String emptyError = getActivity().getString(R.string.edit_text_empty_error_text);
-        nameInput.addTextChangedListener(new FakeDisabledNotEmptyWatcher(
-                nameInput,
+        mNameInput.addTextChangedListener(new FakeDisabledNotEmptyWatcher(
+                mNameInput,
                 emptyError,
-                nameInput.getText().length() == 0,
+                mNameInput.getText().length() == 0,
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        nameInput.setError(emptyError);
+                        mNameInput.setError(emptyError);
                     }
                 },
                 this,
@@ -328,9 +328,9 @@ public class PercentageTrackerCreationFragment extends Fragment implements Butto
 
         //set old name as hint
         if (mIsOldPercentageCounter)
-            nameInput.setText(nameHint);
+            mNameInput.setText(nameHint);
         else if (mIsNewPercentageCounter)
-            nameInput.setText(R.string.percentage_tracker);
+            mNameInput.setText(R.string.percentage_tracker);
 
         initSeekbar(mBaselinePercentageSeekBar, mBaselinePercentageCurrentValueTextView, "%", requiredPercentageHint, 100);
         initSeekbar(mBonusPercentageSeekBar, mBonusPercentageCurrentValueTextView, "%", mBonusPercentageHint, 100);
@@ -362,6 +362,8 @@ public class PercentageTrackerCreationFragment extends Fragment implements Butto
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
+                mNameInput.clearFocus();
+                seekBar.requestFocus();
             }
 
             @Override
@@ -384,6 +386,8 @@ public class PercentageTrackerCreationFragment extends Fragment implements Butto
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
+                mNameInput.clearFocus();
+                seekBar.requestFocus();
             }
 
             @Override
@@ -446,7 +450,8 @@ public class PercentageTrackerCreationFragment extends Fragment implements Butto
         //set seekbar progress
         item.setProgress(hintOrOldValue);
         //set listener to update current value view
-        item.setOnSeekBarChangeListener(new SeekerListener(currentValueView, ending));
+        item.setOnSeekBarChangeListener(new SeekerListener(currentValueView, ending, mNameInput));
+
     }
 
     private String getTitle() {
@@ -474,7 +479,7 @@ public class PercentageTrackerCreationFragment extends Fragment implements Butto
                 mEstimatedAssignmentsPerLessonSeekBar.getProgress(),
                 mEstimatedLessonCountSeekBar.getProgress(),
                 mBaselinePercentageSeekBar.getProgress(),
-                nameInput.getText().toString(),
+                mNameInput.getText().toString(),
                 mCurrentEstimationMode,
                 mBonusPercentageSeekBar.getProgress(),
                 mBonusRequiredPercentageActivationCheckBox.isChecked(),
